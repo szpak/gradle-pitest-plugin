@@ -13,6 +13,11 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             mavenCentral()
             //Needed only for Pitest SNAPSHOT versions
             maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+            //Needed to use a plugin JAR uploaded to GitHub (not available in a Maven repository)
+            add(new org.apache.ivy.plugins.resolver.URLResolver()) {
+                name = 'GitHub'
+                addArtifactPattern 'http://cloud.github.com/downloads/szpak/[module]/[module]-[revision].[ext]'
+            }
         }
         dependencies {
             classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.28.0-SNAPSHOT'
@@ -79,7 +84,8 @@ There are a few known issues:
 
 ## Support
 
-gradle-pitest-plugin was written by Marcin Zajączkowski. The author can be contacted directly via email: mszpak ATT wp DOTT pl.
+[gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-plugin) was written by Marcin Zajączkowski.
+The author can be contacted directly via email: mszpak ATT wp DOTT pl.
 There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
