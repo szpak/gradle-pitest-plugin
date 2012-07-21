@@ -1,0 +1,38 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+group = 'info.solidsoft.gradle.pitest'
+version = '0.28.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    //MZA: Needed only for Pitest SNAPSHOT versions
+    maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+    compile gradleApi()
+    groovy localGroovy()
+
+    compile "org.pitest:pitest:0.28-SNAPSHOT"
+
+    testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
+    testCompile 'junit:junit:4.10'
+}
+
+idea {
+    project {
+        jdkName = '1.6'
+    }
+}
+
+//MZA: To make "gradle install" work with local repo
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            mavenLocal()
+        }
+    }
+}
