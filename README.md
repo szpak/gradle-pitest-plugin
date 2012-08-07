@@ -74,13 +74,23 @@ gradle-pitest-plugin 0.28.0-SNAPSHOT uses pitest-0.28-SNAPSHOT.
 
 Note. 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 
-gradle-pitest-plugin 0.28.0 was tested with Gradle 1.0.
+gradle-pitest-plugin 0.28.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7.0_05 and Sun 1.6.0_33.
+
+## FAQ
+
+1. Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?
+
+    As a workaround add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block
+
+        pitest {
+            ...
+            jvmArgs = '-XX:-UseSplitVerifier'
+        }
 
 ## Known issues
 
-There are a few known issues:
- - java.lang.VerifyError: Expecting a stackmap frame when using with Java 7
  - too verbose output from PIT
+ - possible incompatibility with Windows platform (test on Windows is needed)
 
 ## Support
 
@@ -89,6 +99,6 @@ The author can be contacted directly via email: mszpak ATT wp DOTT pl.
 There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
-However it is often a better idea to send a questions to the [PIT mailing list](http://groups.google.com/group/pitusers).
+However it is often a better idea to send a questions to the [PIT mailing list](http://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of the Apache License, Version 2.0.
