@@ -20,8 +20,8 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.28.0-SNAPSHOT'
-            classpath "org.pitest:pitest:0.28-SNAPSHOT"
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.28.0'
+            classpath "org.pitest:pitest:0.28"
         }
     }
 
@@ -29,7 +29,7 @@ Add a pitest configuration closure:
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.28-SNAPSHOT" //not needed when a default PIT version should be used
+        pitestVersion = "0.28" //not needed when a default PIT version should be used
     }
 
 Call Gradle with pitest task:
@@ -54,7 +54,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.28-SNAPSHOT" //not needed when a default PIT version should be used
+        pitestVersion = "0.28" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -70,7 +70,7 @@ in a pitest configuration closure *and* specifying *the same* version as a build
 
 Note. There could be some issues when using different PIT versions.
 
-gradle-pitest-plugin 0.28.0-SNAPSHOT uses pitest-0.28-SNAPSHOT.
+gradle-pitest-plugin 0.28.0 uses pitest-0.28.
 
 Note. 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 
@@ -91,6 +91,16 @@ gradle-pitest-plugin 0.28.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7
 
  - too verbose output from PIT
  - possible incompatibility with Windows platform (test on Windows is needed)
+
+## Development
+
+gradle-pitest-plugin cloned from the repository can be built using Gradle command:
+
+    gradle build
+
+The easiest way to make a JAR with local changes visible in another project is to install it into local Maven repository
+
+    gradle install
 
 ## Support
 
