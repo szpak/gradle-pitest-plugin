@@ -3,7 +3,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 group = 'info.solidsoft.gradle.pitest'
-version = '0.28.0'
+version = '0.28.1-SNAPSHOT'
 
 repositories {
     mavenLocal()
