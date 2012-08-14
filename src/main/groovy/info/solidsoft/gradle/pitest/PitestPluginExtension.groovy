@@ -46,7 +46,8 @@ class PitestPluginExtension {
     Set<String> includedTestNGGroups
     Set<String> excludedTestNGGroups
     File configFile
-    Boolean timestampedReports  ///requires Pitest 0.28
+    Boolean detectInlinedCode   //requires Pitest 0.28
+    Boolean timestampedReports  //requires Pitest 0.28
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)

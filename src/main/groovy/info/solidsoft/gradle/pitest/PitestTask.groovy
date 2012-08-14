@@ -112,6 +112,10 @@ class PitestTask extends SourceTask {
 
     @Input
     @Optional
+    Boolean detectInlinedCode
+
+    @Input
+    @Optional
     Boolean timestampedReports
 
     //TODO: MZA: Not used but leave due to a problem with resolving pitest version. See a comment in PitestTask.
@@ -160,6 +164,7 @@ class PitestTask extends SourceTask {
         map['includedTestNGGroups'] = getIncludedTestNGGroups()?.join(',')
         map['excludedTestNGGroups'] = getExcludedTestNGGroups()?.join(',')
         map['configFile'] = getConfigFile()?.path
+        map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
 
         return removeEntriesWithNullValue(map)

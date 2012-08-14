@@ -78,7 +78,7 @@ class PitestPlugin implements Plugin<Project> {
 //        extension.targetClasses = ...
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
         extension.sourceDirsAsFiles = project.sourceSets.main.java.srcDirs
-        extension.pitestVersion = DEFAULT_PITEST_VERSION    //TODO: MZA: Make a constant
+        extension.pitestVersion = DEFAULT_PITEST_VERSION
     }
 
     private void configureTaskDefault(PitestTask task) {
@@ -133,6 +133,7 @@ class PitestPlugin implements Plugin<Project> {
             includedTestNGGroups = { extension.includedTestNGGroups }
             excludedTestNGGroups = { extension.excludedTestNGGroups }
             configFile = { extension.configFile }
+            detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }
         }
     }
