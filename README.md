@@ -98,17 +98,17 @@ gradle-pitest-plugin cloned from the repository can be built using Gradle comman
 
     gradle build
 
-The easiest way to make a JAR with local changes visible in another project is to install it into local Maven repository
+The easiest way to make a JAR with local changes visible in another project is to install it into the local Maven repository
 
     gradle install
 
 ## Support
 
-[gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-plugin) was written by Marcin Zajączkowski.
+[gradle-pitest-plugin](http://gradle-pitest-plugin.solidsoft.info/) was written by Marcin Zajączkowski.
 The author can be contacted directly via email: mszpak ATT wp DOTT pl.
 There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
 However it is often a better idea to send a questions to the [PIT mailing list](http://groups.google.com/group/pitusers) first.
 
-The plugin is licensed under the terms of the Apache License, Version 2.0.
+The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
