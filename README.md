@@ -12,7 +12,7 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             mavenLocal()
             mavenCentral()
             //Needed only for Pitest SNAPSHOT versions
-            maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+            //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
             //Needed to use a plugin JAR uploaded to GitHub (not available in a Maven repository)
             add(new org.apache.ivy.plugins.resolver.URLResolver()) {
                 name = 'GitHub'
