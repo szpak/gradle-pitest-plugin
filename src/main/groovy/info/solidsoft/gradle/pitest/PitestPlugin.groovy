@@ -28,7 +28,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    final static DEFAULT_PITEST_VERSION = '0.28'
+    final static DEFAULT_PITEST_VERSION = '0.29-SNAPSHOT'
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
@@ -135,6 +135,8 @@ class PitestPlugin implements Plugin<Project> {
             configFile = { extension.configFile }
             detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }
+            historyInputFile = { extension.historyInputFile }
+            historyOutputFile = { extension.historyOutputFile }
         }
     }
 }

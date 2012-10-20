@@ -46,8 +46,11 @@ class PitestPluginExtension {
     Set<String> includedTestNGGroups
     Set<String> excludedTestNGGroups
     File configFile
-    Boolean detectInlinedCode   //requires Pitest 0.28
-    Boolean timestampedReports  //requires Pitest 0.28
+    Boolean detectInlinedCode   //new in PIT 0.28
+    Boolean timestampedReports
+    File historyInputFile       //new in PIT 0.29
+    File historyOutputFile
+    //TODO: Add enableIncrementalAnalysis
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)
@@ -65,5 +68,13 @@ class PitestPluginExtension {
 
     void setConfigFile(String configFile) {
         this.configFile = new File(configFile)
+    }
+
+    void setHistoryInputFile(String historyInputFile) {
+        this.historyInputFile = new File(historyInputFile)
+    }
+
+    void setHistoryOutputFile(String historyOutputFile) {
+        this.historyOutputFile = new File(historyOutputFile)
     }
 }

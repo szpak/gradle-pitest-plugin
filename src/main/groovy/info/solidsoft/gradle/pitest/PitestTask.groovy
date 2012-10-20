@@ -129,6 +129,14 @@ class PitestTask extends SourceTask {
     @Input
     Set<File> mutableCodePaths
 
+    @Input
+    @Optional
+    File historyInputFile
+
+    @Input
+    @Optional
+    File historyOutputFile
+
     @TaskAction
     void run() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
@@ -166,6 +174,8 @@ class PitestTask extends SourceTask {
         map['configFile'] = getConfigFile()?.path
         map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
+        map['historyInputLocation'] = getHistoryInputFile()
+        map['historyOutputLocation'] = getHistoryOutputFile()
 
         return removeEntriesWithNullValue(map)
     }
