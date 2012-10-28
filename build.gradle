@@ -23,7 +23,11 @@ dependencies {
 
     compile "org.pitest:pitest:$pitVersion"
 
-    testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
+    testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
+        //groovy 1.8.6 is already provided by Gradle itself
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    }
+    testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
     testCompile 'junit:junit:4.10'
 }
 

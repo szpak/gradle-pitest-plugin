@@ -61,6 +61,9 @@ following example).
 
 Check PIT documentation for a [list](http://pitest.org/quickstart/commandline/) of all available command line parameters.
 
+There is one parameter specific for Gradle plugin:
+ - enableDefaultIncrementalAnalysis - enable incremental analysis in PIT using the default settings (build/pitHistory.txt
+file for both input and output locations)
 
 ## Versions
 

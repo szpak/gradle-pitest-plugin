@@ -48,9 +48,9 @@ class PitestPluginExtension {
     File configFile
     Boolean detectInlinedCode   //new in PIT 0.28
     Boolean timestampedReports
-    File historyInputFile       //new in PIT 0.29
-    File historyOutputFile
-    //TODO: Add enableIncrementalAnalysis
+    File historyInputLocation       //new in PIT 0.29
+    File historyOutputLocation
+    Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)
@@ -70,11 +70,11 @@ class PitestPluginExtension {
         this.configFile = new File(configFile)
     }
 
-    void setHistoryInputFile(String historyInputFile) {
-        this.historyInputFile = new File(historyInputFile)
+    void setHistoryInputLocation(String historyInputLocationPath) {
+        this.historyInputLocation = new File(historyInputLocationPath)
     }
 
-    void setHistoryOutputFile(String historyOutputFile) {
-        this.historyOutputFile = new File(historyOutputFile)
+    void setHistoryOutputLocation(String historyOutputLocationPath) {
+        this.historyOutputLocation = new File(historyOutputLocationPath)
     }
 }

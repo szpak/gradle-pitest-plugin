@@ -23,6 +23,7 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.internal.tasks.DefaultSourceSet
 import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.tasks.TaskInstantiationException
+import com.google.common.annotations.VisibleForTesting
 
 /**
  * The main class for Pitest plugin.
@@ -32,6 +33,9 @@ class PitestPlugin implements Plugin<Project> {
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
+
+    @VisibleForTesting
+    final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     Project project
     PitestPluginExtension extension
@@ -135,8 +139,10 @@ class PitestPlugin implements Plugin<Project> {
             configFile = { extension.configFile }
             detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }
-            historyInputFile = { extension.historyInputFile }
-            historyOutputFile = { extension.historyOutputFile }
+            historyInputLocation = { extension.historyInputLocation }
+            historyOutputLocation = { extension.historyOutputLocation }
+            enableDefaultIncrementalAnalysis = { extension.enableDefaultIncrementalAnalysis }
+            defaultFileForHistoryDate = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
         }
     }
 }

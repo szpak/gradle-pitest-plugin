@@ -19,6 +19,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.*;
 
 import org.pitest.mutationtest.MutationCoverageReport
+import com.google.common.annotations.VisibleForTesting
 
 /**
  * Gradle task implementation for Pitest.
@@ -131,11 +132,18 @@ class PitestTask extends SourceTask {
 
     @Input
     @Optional
-    File historyInputFile
+    File historyInputLocation
 
     @Input
     @Optional
-    File historyOutputFile
+    File historyOutputLocation
+
+    @Input
+    @Optional
+    Boolean enableDefaultIncrementalAnalysis
+
+    @Input
+    File defaultFileForHistoryDate
 
     @TaskAction
     void run() {
@@ -145,7 +153,8 @@ class PitestTask extends SourceTask {
         MutationCoverageReport.main(arg)
     }
 
-    private Map<String, String> createTaskArgumentMap() {
+    @VisibleForTesting
+    Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         //TODO: MZA: Multiple source dirs are probably unsupported by Pit, write warning if found?
         map['sourceDirs'] = (getSourceDirs()*.path).join(',')
@@ -174,10 +183,21 @@ class PitestTask extends SourceTask {
         map['configFile'] = getConfigFile()?.path
         map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
-        map['historyInputLocation'] = getHistoryInputFile()
-        map['historyOutputLocation'] = getHistoryOutputFile()
+        map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)
+    }
+
+    private Map<String, String> prepareMapForIncrementalAnalysis() {
+        Map<String, String> map = [:]
+        if (getEnableDefaultIncrementalAnalysis()) {
+            map['historyInputLocation'] = getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path
+            map['historyOutputLocation'] = getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryDate().path
+        } else {
+            map['historyInputLocation'] = getHistoryInputLocation()?.path
+            map['historyOutputLocation'] = getHistoryOutputLocation()?.path
+        }
+        map
     }
 
     private Map removeEntriesWithNullValue(Map map) {
