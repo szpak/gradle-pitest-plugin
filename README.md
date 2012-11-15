@@ -20,8 +20,8 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.28.0'
-            classpath "org.pitest:pitest:0.28"
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.29.0'
+            classpath "org.pitest:pitest:0.29"
         }
     }
 
@@ -29,7 +29,6 @@ Add a pitest configuration closure:
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.28" //not needed when a default PIT version should be used
     }
 
 Call Gradle with pitest task:
@@ -54,7 +53,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.28" //not needed when a default PIT version should be used
+        pitestVersion = "0.29" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -71,19 +70,20 @@ Every gradle-pitest-plugin version by default uses a predefined PIT version. Usu
 of PIT available at the time of releasing a plugin version. It can be overridden by using pitestVersion parameter
 in a pitest configuration closure *and* specifying *the same* version as a buildscript dependency.
 
-Note. There could be some issues when using different PIT versions.
+Note. There could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 0.28.0 uses pitest-0.28.
+gradle-pitest-plugin 0.29.0 uses  PIT 0.29. 0.28.0 uses PIT 0.28.
 
 Note. 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 
-gradle-pitest-plugin 0.28.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7.0_05 and Sun 1.6.0_33.
+gradle-pitest-plugin 0.29.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7.0_09 and Sun 1.6.0_33.
 
 ## FAQ
 
 1. Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?
 
-    As a workaround add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block
+    It should be fixed in PIT 0.29.
+    As a workaround in older versions add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block
 
         pitest {
             ...
