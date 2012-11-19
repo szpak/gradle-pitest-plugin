@@ -99,11 +99,11 @@ gradle-pitest-plugin 0.29.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7
 
 gradle-pitest-plugin cloned from the repository can be built using Gradle command:
 
-    gradle build
+    ./gradlew build
 
 The easiest way to make a JAR with local changes visible in another project is to install it into the local Maven repository
 
-    gradle install
+    ./gradlew install
 
 ## Support
 
