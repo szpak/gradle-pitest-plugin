@@ -25,6 +25,10 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
         }
     }
 
+Apply plugin:
+
+    apply plugin: "pitest"
+
 Add a pitest configuration closure:
 
     pitest {
