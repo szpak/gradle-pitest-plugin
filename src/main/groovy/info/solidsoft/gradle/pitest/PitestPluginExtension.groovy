@@ -48,9 +48,11 @@ class PitestPluginExtension {
     File configFile
     Boolean detectInlinedCode   //new in PIT 0.28
     Boolean timestampedReports
-    File historyInputLocation       //new in PIT 0.29
+    File historyInputLocation   //new in PIT 0.29
     File historyOutputLocation
     Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin
+    Integer mutationThreshold   //new in PIT 0.30
+    String mutationEngine
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)

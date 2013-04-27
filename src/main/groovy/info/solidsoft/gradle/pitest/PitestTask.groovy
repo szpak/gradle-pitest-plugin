@@ -145,6 +145,14 @@ class PitestTask extends SourceTask {
     @Input
     File defaultFileForHistoryDate
 
+    @Input
+    @Optional
+    Integer mutationThreshold
+
+    @Input
+    @Optional
+    String mutationEngine
+
     @TaskAction
     void run() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
@@ -183,6 +191,8 @@ class PitestTask extends SourceTask {
         map['configFile'] = getConfigFile()?.path
         map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
+        map['mutationThreshold'] = getMutationThreshold()
+        map['mutationEngine'] = getMutationEngine()
         map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)

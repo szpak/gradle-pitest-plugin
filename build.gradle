@@ -2,10 +2,11 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
+//TODO: MZA: Move to gradle.properties
 group = 'info.solidsoft.gradle.pitest'
-version = '0.29.1-SNAPSHOT'
+version = '0.30.0-SNAPSHOT'
 
-project.ext['pitVersion'] = '0.29'
+project.ext['pitVersion'] = '0.30-SNAPSHOT'
 
 repositories {
     mavenLocal()
