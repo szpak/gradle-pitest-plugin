@@ -2,6 +2,7 @@
 *.iml
 *.ipr
 *.iws
-build
+build/
 .gradle
 .idea
+out/
