@@ -9,19 +9,14 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
 
     buildscript {
         repositories {
-            mavenLocal()
             mavenCentral()
-            //Needed only for Pitest SNAPSHOT versions
+            mavenLocal()
+            //Needed only for SNAPSHOT versions
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-            //Needed to use a plugin JAR uploaded to GitHub (not available in a Maven repository)
-            add(new org.apache.ivy.plugins.resolver.URLResolver()) {
-                name = 'GitHub'
-                addArtifactPattern 'http://cloud.github.com/downloads/szpak/[module]/[module]-[revision].[ext]'
-            }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.29.0'
-            classpath "org.pitest:pitest:0.29"
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.30.0'
+            classpath "org.pitest:pitest:0.30"
         }
     }
 
@@ -57,7 +52,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.29" //not needed when a default PIT version should be used
+        pitestVersion = "0.30" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -76,11 +71,11 @@ in a pitest configuration closure *and* specifying *the same* version as a build
 
 Note. There could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 0.29.0 uses  PIT 0.29. 0.28.0 uses PIT 0.28.
+gradle-pitest-plugin 0.30.0 uses PIT 0.30, 0.29.0 uses PIT 0.29. etc.
 
 Note. 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 
-gradle-pitest-plugin 0.29.0 was tested with Gradle 1.0 and 1.1 under OpenJDK 1.7.0_09 and Sun 1.6.0_33.
+gradle-pitest-plugin 0.30.0 was tested with Gradle 1.5 and 1.6 under OpenJDK 7 and Sun 1.6.
 
 ## FAQ
 
