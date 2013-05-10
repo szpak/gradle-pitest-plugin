@@ -2,9 +2,13 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
+ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
+
+sourceCompatibility = 1.6
+
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
 
     if (project.pitVersion.endsWith('SNAPSHOT')) {
         //This repo is Needed only for PIT SNAPSHOT versions
@@ -32,11 +36,98 @@ idea {
     }
 }
 
-//MZA: To make "gradle install" work with local repo
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task groovydocJar(type: Jar, dependsOn: javadocJar) {
+    classifier = 'groovydoc'
+    from groovydoc.outputs.files
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives groovydocJar
+}
+
+if (isReleaseVersion) {
+    //activate signing only for release versions (it is not needed for 'gradle install')
+    apply plugin: 'signing'
+
+    signing {
+        sign configurations.archives
+    }
+
+    gradle.taskGraph.whenReady { taskGraph ->
+        if (taskGraph.allTasks.any { it instanceof org.gradle.plugins.signing.Sign }) {
+            if (!project.hasProperty("signing.keyId") || !project.hasProperty("signing.secretKeyRingFile")) {
+                throw new GradleException("signing.keyId and signing.secretKeyRingFile has to be configured (e.g. in ~/.gradle/gradle.properties)")
+            }
+            Console console = System.console()
+            if (console) {
+                def keyPassword = console.readPassword("\nEnter a private key password: ")
+                ext."signing.password" = keyPassword
+            } else {
+                throw new GradleException("Unable to get console. Make sure to not running a signing task in a daemon mode (e.g. use --no-daemon).")
+            }
+        }
+    }
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
-            mavenLocal()
+            name = 'Sonatype OSS'
+            repository(id: 'sonatype-nexus-staging', url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+                //TODO: MZA: It will fail a build when there is no sonatypeUserName or sonatypePassword defined (e.g. in ~/.gradle/gradle.properties)
+                authentication(userName: sonatypeUserName, password: sonatypePassword)
+            }
+            snapshotRepository(id: 'sonatype-nexus-snapshots', url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+                authentication(userName: sonatypeUserName, password: sonatypePassword)
+            }
+
+            beforeDeployment {
+                if (isReleaseVersion) {
+                    signing.signPom it
+                }
+            }
+
+            pom.project {
+                name 'Gradle PIT Plugin'
+                description 'Gradle plugin for PIT Mutation Testing'
+                url 'http://gradle-pitest-plugin.solidsoft.info/'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'szpak'
+                        name 'Marcin Zajączkowski'
+                        email 'mszpak ATT wp DOTT pl'
+                        roles {
+                            role 'founder'
+                            role 'despot'
+                            role 'developer'
+                        }
+                    }
+                }
+                scm {
+                    connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
+                    developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
+                    url 'https://github.com/szpak/gradle-pitest-plugin'
+                }
+            }
         }
     }
 }
