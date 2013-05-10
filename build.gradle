@@ -1,18 +1,22 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'uploadAuth'
 
 ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
 
-//TODO: MZA: A workaround to not fail build on CI server - replace with gradle-maven-publish-auth
-if (!project.hasProperty("sonatypeUserName")) {
-    ext.sonatypeUserName = ''
-}
-if (!project.hasProperty("sonatypePassword")) {
-    ext.sonatypePassword = ''
-}
-
 sourceCompatibility = 1.6
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        //TODO: MZA: Upgrade to 2.0.x when fixed: https://github.com/sebersole/gradle-maven-publish-auth/issues/7
+        classpath 'org.hibernate.build.gradle:gradle-upload-auth-plugin:1.1.1'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -93,12 +97,8 @@ uploadArchives {
     repositories {
         mavenDeployer {
             name = 'Sonatype OSS'
-            repository(id: 'sonatype-nexus-staging', url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-                authentication(userName: sonatypeUserName, password: sonatypePassword)
-            }
-            snapshotRepository(id: 'sonatype-nexus-snapshots', url: 'https://oss.sonatype.org/content/repositories/snapshots') {
-                authentication(userName: sonatypeUserName, password: sonatypePassword)
-            }
+            repository(id: 'sonatype-nexus-staging', url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2')
+            snapshotRepository(id: 'sonatype-nexus-snapshots', url: 'https://oss.sonatype.org/content/repositories/snapshots')
 
             beforeDeployment {
                 if (isReleaseVersion) {
