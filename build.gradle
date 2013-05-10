@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    groovy localGroovy()
+    compile localGroovy()
 
     compile "org.pitest:pitest:$pitVersion"
 
@@ -23,7 +23,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
-    testCompile 'junit:junit:4.10'
+    testCompile 'junit:junit:4.11'
 }
 
 idea {
