@@ -4,6 +4,14 @@ apply plugin: 'maven'
 
 ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
 
+//TODO: MZA: A workaround to not fail build on CI server - replace with gradle-maven-publish-auth
+if (!project.hasProperty("sonatypeUserName")) {
+    ext.sonatypeUserName = ''
+}
+if (!project.hasProperty("sonatypePassword")) {
+    ext.sonatypePassword = ''
+}
+
 sourceCompatibility = 1.6
 
 repositories {
@@ -86,7 +94,6 @@ uploadArchives {
         mavenDeployer {
             name = 'Sonatype OSS'
             repository(id: 'sonatype-nexus-staging', url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-                //TODO: MZA: It will fail a build when there is no sonatypeUserName or sonatypePassword defined (e.g. in ~/.gradle/gradle.properties)
                 authentication(userName: sonatypeUserName, password: sonatypePassword)
             }
             snapshotRepository(id: 'sonatype-nexus-snapshots', url: 'https://oss.sonatype.org/content/repositories/snapshots') {
