@@ -1,7 +1,8 @@
 apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'signing'
+
+ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
 
 sourceCompatibility = 1.6
 
@@ -56,21 +57,26 @@ artifacts {
     archives groovydocJar
 }
 
-signing {
-    sign configurations.archives
-}
+if (isReleaseVersion) {
+    //activate signing only for release versions (it is not needed for 'gradle install')
+    apply plugin: 'signing'
 
-gradle.taskGraph.whenReady { taskGraph ->
-    if (taskGraph.allTasks.any { it instanceof org.gradle.plugins.signing.Sign }) {
-        if (!project.hasProperty("signing.keyId") || !project.hasProperty("signing.secretKeyRingFile")) {
-            throw new GradleException("signing.keyId and signing.secretKeyRingFile has to be configured (e.g. in ~/.gradle/gradle.properties)")
-        }
-        Console console = System.console()
-        if (console) {
-            def keyPassword = console.readPassword("\nEnter a private key password: ")
-            ext."signing.password" = keyPassword
-        } else {
-            throw new GradleException("Unable to get console. Make sure to not running a signing task in a daemon mode (e.g. use --no-daemon).")
+    signing {
+        sign configurations.archives
+    }
+
+    gradle.taskGraph.whenReady { taskGraph ->
+        if (taskGraph.allTasks.any { it instanceof org.gradle.plugins.signing.Sign }) {
+            if (!project.hasProperty("signing.keyId") || !project.hasProperty("signing.secretKeyRingFile")) {
+                throw new GradleException("signing.keyId and signing.secretKeyRingFile has to be configured (e.g. in ~/.gradle/gradle.properties)")
+            }
+            Console console = System.console()
+            if (console) {
+                def keyPassword = console.readPassword("\nEnter a private key password: ")
+                ext."signing.password" = keyPassword
+            } else {
+                throw new GradleException("Unable to get console. Make sure to not running a signing task in a daemon mode (e.g. use --no-daemon).")
+            }
         }
     }
 }
@@ -87,7 +93,11 @@ uploadArchives {
                 authentication(userName: sonatypeUserName, password: sonatypePassword)
             }
 
-            beforeDeployment { signing.signPom it }
+            beforeDeployment {
+                if (isReleaseVersion) {
+                    signing.signPom it
+                }
+            }
 
             pom.project {
                 name 'Gradle PIT Plugin'
