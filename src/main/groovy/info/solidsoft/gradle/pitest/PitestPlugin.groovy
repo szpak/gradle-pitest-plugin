@@ -51,8 +51,8 @@ class PitestPlugin implements Plugin<Project> {
                 description = "Run Pitest analysis for java classes"
                 group = PITEST_TASK_GROUP
             }
-            //TODO: MZA: Is it used internally by Gradle?
-            task.setSource(project.sourceSets.main.java.srcDirs)
+            //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
+            task.setSource(project.sourceSets.main.allSource)
             task.dependsOn("cleanTest", "test")
             configureTaskDefault(task)
         }
@@ -81,7 +81,7 @@ class PitestPlugin implements Plugin<Project> {
         //TODO: MZA: Set target classed based on project group and name?
 //        extension.targetClasses = ...
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
-        extension.sourceDirsAsFiles = project.sourceSets.main.java.srcDirs
+        extension.sourceDirsAsFiles = project.sourceSets.main.allSource.srcDirs
         extension.pitestVersion = DEFAULT_PITEST_VERSION
     }
 
