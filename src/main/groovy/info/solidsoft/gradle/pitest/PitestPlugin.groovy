@@ -83,6 +83,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
         extension.sourceDirsAsFiles = project.sourceSets.main.allSource.srcDirs
         extension.pitestVersion = DEFAULT_PITEST_VERSION
+        extension.testSourceSets = [project.sourceSets.test]
     }
 
     private void configureTaskDefault(PitestTask task) {
@@ -100,7 +101,8 @@ class PitestPlugin implements Plugin<Project> {
                 config
             }
             taskClasspath = {
-                FileCollection testRuntimeClasspath = project.sourceSets.test.runtimeClasspath
+                List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
+
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
                 combinedTaskClasspath += project.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspath

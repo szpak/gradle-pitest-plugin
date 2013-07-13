@@ -15,6 +15,8 @@
  */
 package info.solidsoft.gradle.pitest
 
+import org.gradle.api.tasks.SourceSet
+
 /**
  * Extension class with configurable parameters for Pitest plugin.
  *
@@ -50,9 +52,10 @@ class PitestPluginExtension {
     Boolean timestampedReports
     File historyInputLocation   //new in PIT 0.29
     File historyOutputLocation
-    Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin
+    Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
     Integer mutationThreshold   //new in PIT 0.30
     String mutationEngine
+    Set<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)
