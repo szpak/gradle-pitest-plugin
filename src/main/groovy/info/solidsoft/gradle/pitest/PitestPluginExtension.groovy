@@ -16,6 +16,7 @@
 package info.solidsoft.gradle.pitest
 
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.TaskInstantiationException
 
 /**
  * Extension class with configurable parameters for Pitest plugin.
@@ -25,7 +26,7 @@ import org.gradle.api.tasks.SourceSet
  */
 class PitestPluginExtension {
     String pitestVersion
-    Set<File> sourceDirs
+//    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
     File reportDir
     Set<String> targetClasses
@@ -56,19 +57,24 @@ class PitestPluginExtension {
     Integer mutationThreshold   //new in PIT 0.30
     String mutationEngine
     Set<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
+    Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
 
     void setReportDir(String reportDir) {
         this.reportDir = new File(reportDir)
     }
 
     void setSourceDirsAsFiles(Set<File> sourceDirs) {
-        this.sourceDirs = sourceDirs
+        throwExceptionAboutRemovedManualSettingOfSourceDirs()
     }
 
     void setSourceDirs(Set<String> sourceDirs) {
-        Set<File> sourceDirsAsFiles = [] as Set
-        sourceDirs.each { sourceDirsAsFiles.add(new File(it))}
-        this.sourceDirs = sourceDirsAsFiles
+        throwExceptionAboutRemovedManualSettingOfSourceDirs()
+    }
+
+    private throwExceptionAboutRemovedManualSettingOfSourceDirs() {
+        throw new TaskInstantiationException("Manual setting of sourceDirs was removed in version 0.30.1. " +
+                "Use mainSourceSets property to select source sets which would be used to get source directories. " +
+                "Feel free to raise an issue if you need removed feature.")
     }
 
     void setConfigFile(String configFile) {

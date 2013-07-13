@@ -19,8 +19,6 @@ import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.SourceSet
-import org.gradle.api.internal.tasks.DefaultSourceSet
 import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.tasks.TaskInstantiationException
 import com.google.common.annotations.VisibleForTesting
@@ -48,11 +46,9 @@ class PitestPlugin implements Plugin<Project> {
         project.plugins.withType(JavaBasePlugin) {
             PitestTask task = project.tasks.add(PITEST_TASK_NAME, PitestTask)
             task.with {
-                description = "Run Pitest analysis for java classes"
+                description = "Run PIT analysis for java classes"
                 group = PITEST_TASK_GROUP
             }
-            //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
-            task.setSource(project.sourceSets.main.allSource)
             task.dependsOn("cleanTest", "test")
             configureTaskDefault(task)
         }
@@ -81,9 +77,9 @@ class PitestPlugin implements Plugin<Project> {
         //TODO: MZA: Set target classed based on project group and name?
 //        extension.targetClasses = ...
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
-        extension.sourceDirsAsFiles = project.sourceSets.main.allSource.srcDirs
         extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.testSourceSets = [project.sourceSets.test]
+        extension.testSourceSets = [project.sourceSets.test] as Set
+        extension.mainSourceSets = [project.sourceSets.main] as Set
     }
 
     private void configureTaskDefault(PitestTask task) {
@@ -107,8 +103,14 @@ class PitestPlugin implements Plugin<Project> {
                 combinedTaskClasspath += project.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspath
             }
-            mutableCodePaths = { [project.sourceSets.main.output.classesDir] as Set }
-            sourceDirs = { extension.sourceDirs }
+            mutableCodePaths = {
+                extension.mainSourceSets*.output.classesDir.flatten() as Set
+            }
+            sourceDirs = {
+                //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
+                task.setSource(extension.mainSourceSets*.allSource)
+                extension.mainSourceSets*.allSource.srcDirs.flatten() as Set
+            }
 
             reportDir = { extension.reportDir }
             targetClasses = { extension.targetClasses }

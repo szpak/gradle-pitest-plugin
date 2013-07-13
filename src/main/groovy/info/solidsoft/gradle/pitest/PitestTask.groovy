@@ -164,7 +164,6 @@ class PitestTask extends SourceTask {
     @VisibleForTesting
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
-        //TODO: MZA: Multiple source dirs are probably unsupported by Pit, write warning if found?
         map['sourceDirs'] = (getSourceDirs()*.path).join(',')
         map['reportDir'] = getReportDir()
         map['targetClasses'] = getTargetClasses()?.join(',')
