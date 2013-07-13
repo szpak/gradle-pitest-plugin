@@ -100,20 +100,12 @@ class PitestPlugin implements Plugin<Project> {
                 config
             }
             taskClasspath = {
-                List<FileCollection> testRuntimeClasspath = project.sourceSets.findAll { SourceSet sourceSet ->
-                    //MZA: Test classpath already contains main classpath - maybe it can be simplified
-                    sourceSet.getName() == DefaultSourceSet.TEST_SOURCE_SET_NAME
-                }*.runtimeClasspath
+                FileCollection testRuntimeClasspath = project.sourceSets.test.runtimeClasspath
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
                 combinedTaskClasspath += project.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspath
             }
-            mutableCodePaths = {
-                Set<File> mainClassesOutputDirs = project.sourceSets.findAll { SourceSet sourceSet ->
-                    sourceSet.getName() == DefaultSourceSet.MAIN_SOURCE_SET_NAME
-                }*.output.classesDir
-                mainClassesOutputDirs
-            }
+            mutableCodePaths = { [project.sourceSets.main.output.classesDir] as Set }
             sourceDirs = { extension.sourceDirs }
 
             reportDir = { extension.reportDir }
