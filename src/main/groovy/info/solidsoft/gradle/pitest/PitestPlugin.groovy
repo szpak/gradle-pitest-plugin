@@ -49,7 +49,7 @@ class PitestPlugin implements Plugin<Project> {
                 description = "Run PIT analysis for java classes"
                 group = PITEST_TASK_GROUP
             }
-            task.dependsOn("cleanTest", "test")
+            task.dependsOn("testClasses")
             configureTaskDefault(task)
         }
     }
