@@ -49,7 +49,6 @@ class PitestPlugin implements Plugin<Project> {
                 description = "Run PIT analysis for java classes"
                 group = PITEST_TASK_GROUP
             }
-            task.dependsOn("testClasses")
             configureTaskDefault(task)
         }
     }
@@ -103,14 +102,8 @@ class PitestPlugin implements Plugin<Project> {
                 combinedTaskClasspath += project.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspath
             }
-            mutableCodePaths = {
-                extension.mainSourceSets*.output.classesDir.flatten() as Set
-            }
-            sourceDirs = {
-                //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
-                task.setSource(extension.mainSourceSets*.allSource)
-                extension.mainSourceSets*.allSource.srcDirs.flatten() as Set
-            }
+            mutableCodePaths = { extension.mainSourceSets*.output.classesDir.flatten() as Set }
+            sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
 
             reportDir = { extension.reportDir }
             targetClasses = { extension.targetClasses }
@@ -141,6 +134,15 @@ class PitestPlugin implements Plugin<Project> {
             defaultFileForHistoryDate = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
             mutationThreshold = { extension.mutationThreshold }
             mutationEngine = { extension.mutationEngine }
+        }
+
+        project.afterEvaluate {
+            //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
+            task.setSource(extension.mainSourceSets*.allSource)
+
+            Set<String> tasksToDependOn = extension.testSourceSets.collect{ it.name + "Classes" }
+            println "tasksToDependOn: " + tasksToDependOn
+            task.dependsOn(tasksToDependOn)
         }
     }
 }
