@@ -164,7 +164,7 @@ class PitestTask extends SourceTask {
     @VisibleForTesting
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
-        map['sourceDirs'] = (getSourceDirs()*.path).join(',')
+        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
         map['reportDir'] = getReportDir()
         map['targetClasses'] = getTargetClasses()?.join(',')
         map['targetTests'] = getTargetTests()?.join(',')
@@ -183,8 +183,8 @@ class PitestTask extends SourceTask {
         map['jvmArgs'] = getJvmArgs()
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()
-        map['classPath'] = getTaskClasspath().asPath.replaceAll(':',',')
-        map['mutableCodePaths'] = (getMutableCodePaths()*.path).join(',')
+        map['classPath'] = getTaskClasspath()?.files?.join(',')
+        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedTestNGGroups'] = getIncludedTestNGGroups()?.join(',')
         map['excludedTestNGGroups'] = getExcludedTestNGGroups()?.join(',')
         map['configFile'] = getConfigFile()?.path
