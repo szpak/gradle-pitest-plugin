@@ -59,9 +59,42 @@ following example).
 
 Check PIT documentation for a [list](http://pitest.org/quickstart/commandline/) of all available command line parameters.
 
-There is one parameter specific for Gradle plugin:
- - enableDefaultIncrementalAnalysis - enable incremental analysis in PIT using the default settings (build/pitHistory.txt
-file for both input and output locations)
+There are a few parameters specific for Gradle plugin:
+ - enableDefaultIncrementalAnalysis - enables incremental analysis in PIT using the default settings (build/pitHistory.txt
+file for both input and output locations) (since 0.29.0)
+ - testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
+to add integration tests located in a different source set) (since 0.30.1)
+ - mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
+
+    pitest {
+        ...
+        enableDefaultIncrementalAnalysis = true
+        testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+        mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
+    }
+
+## Multi-module projects support
+
+gradle-pitest-plugin can be used in multi-module projects. The plugin has to be applied in all subprojects which should be
+processed with PIT. A sample snippet from build.gradle located for the root project:
+
+    subprojects {
+        ...
+        apply plugin: 'pitest'
+
+        pitest {
+            targetClasses = ['our.base.package.*']
+            threads = 4
+
+            if (project.name in ['module-without-any-test'] {
+                failWhenNoMutation = false
+            }
+        }
+    }
+
+Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/detail?id=41) an aggregated report for
+multi-module project. A report for each module has to be browsed separately. Alternatively a
+[PIT plugin for Sonar](https://docs.codehaus.org/display/SONAR/Pitest) can be used to get aggregated results.
 
 ## Versions
 
@@ -92,7 +125,6 @@ gradle-pitest-plugin 0.30.0 was tested with Gradle 1.5 and 1.6 under OpenJDK 7 a
 ## Known issues
 
  - too verbose output from PIT
- - possible incompatibility with Windows platform (test on Windows is needed)
 
 ## Development
 
