@@ -1,3 +1,6 @@
+0.31.0 - TODO
+ - adjust to PIT 0.31
+
 0.30.1 - 2013-08-04
  - fix: task no longer always up-to-date for empty java source directory set - #2
  - add support for additional test source sets - #3
