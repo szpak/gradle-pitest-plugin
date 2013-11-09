@@ -15,7 +15,7 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.30.0'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.30.1'
             classpath "org.pitest:pitest:0.30"
         }
     }
@@ -52,7 +52,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']
-        pitestVersion = "0.30" //not needed when a default PIT version should be used
+        pitestVersion = "0.31" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -65,6 +65,8 @@ file for both input and output locations) (since 0.29.0)
  - testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
 to add integration tests located in a different source set) (since 0.30.1)
  - mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
+
+For example:
 
     pitest {
         ...
@@ -104,7 +106,7 @@ in a pitest configuration closure *and* specifying *the same* version as a build
 
 Note. There could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 0.30.0 uses PIT 0.30, 0.29.0 uses PIT 0.29. etc.
+gradle-pitest-plugin 0.30.x uses PIT 0.30, 0.29.0 uses PIT 0.29. etc.
 
 Note. 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 
