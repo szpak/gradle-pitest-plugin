@@ -148,3 +148,8 @@ The plugin surely has some bugs and missing features. They can be reported using
 However it is often a better idea to send a questions to the [PIT mailing list](http://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
+
+<p align="center">
+  <img src="http://c.statcounter.com/9394072/0/db9b06ab/0/" alt="Stat counter stats" style="border:none;"/>
+</p>
+
