@@ -2,6 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'uploadAuth'
+apply plugin: 'cobertura'
 
 ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
 
@@ -11,10 +12,12 @@ buildscript {
     repositories {
         mavenCentral()
         mavenLocal()
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
         //TODO: MZA: Upgrade to 2.0.x when fixed: https://github.com/sebersole/gradle-maven-publish-auth/issues/7
         classpath 'org.hibernate.build.gradle:gradle-upload-auth-plugin:1.1.1'
+        classpath "net.saliman:gradle-cobertura-plugin:2.2.0-SNAPSHOT"
     }
 }
 
@@ -46,6 +49,11 @@ idea {
     project {
         jdkName = '1.6'
     }
+}
+
+cobertura {
+    //TODO: A workaround for https://github.com/stevesaliman/gradle-cobertura-plugin/issues/35
+    coverageSourceDirs = project.sourceSets.main.groovy.srcDirs
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
