@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>gradle-pitest-plugin by szpak</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/szpak/gradle-pitest-plugin">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/szpak/gradle-pitest-plugin/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/szpak/gradle-pitest-plugin/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>gradle-pitest-plugin</h1>
+          <p>Gradle plugin for PIT Mutation Testing</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/szpak">szpak</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="gradle-plugin-for-pit-mutation-testing" class="anchor" href="#gradle-plugin-for-pit-mutation-testing"><span class="octicon octicon-link"></span></a>Gradle plugin for PIT Mutation Testing</h1>
+
+<p>The plugin provides an ability to perform a <a href="https://en.wikipedia.org/wiki/Mutation_testing">mutation testing</a> and
+calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based project with <a href="http://pitest.org/">PIT</a>.</p>
+
+<h2>
+<a name="quick-start" class="anchor" href="#quick-start"><span class="octicon octicon-link"></span></a>Quick start</h2>
+
+<p>Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in your build.gradle file:</p>
+
+<pre><code>buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        //Needed only for SNAPSHOT versions
+        //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.30.1'
+        classpath "org.pitest:pitest:0.30"
+    }
+}
+</code></pre>
+
+<p>Apply plugin:</p>
+
+<pre><code>apply plugin: "pitest"
+</code></pre>
+
+<p>Add a pitest configuration closure:</p>
+
+<pre><code>pitest {
+    targetClasses = ['our.base.package.*']
+}
+</code></pre>
+
+<p>Call Gradle with pitest task:</p>
+
+<pre><code>gradle pitest
+</code></pre>
+
+<p>After the measurements a report created by PIT will be placed in ${PROJECT_DIR}/build/reports/pitest directory.</p>
+
+<h2>
+<a name="plugin-configuration" class="anchor" href="#plugin-configuration"><span class="octicon octicon-link"></span></a>Plugin configuration</h2>
+
+<p>The Pitest plugin has to be configured. All the <a href="http://pitest.org/quickstart/commandline/">command line options</a> are
+supported. To make life easier taskClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are
+automatically set by a plugin. In addition sourceDirs, reportDir and pitestVersion can be overridden by an user.</p>
+
+<p>There is one mandatory parameter - targetClasses - which points to the classes which should be mutated. In case of using
+not default PIT version the pitestVersion parameter should be used to override it.</p>
+
+<p>The configuration in Gradle is the real Groovy code which makes all assignments very intuitive. All values expected by
+PIT should be passed as a corresponding types. There is only one important difference. For the parameters where PIT expects
+a coma separated list of strings in a Gradle configuration a list of strings should be used (see outputFormats in the 
+following example).</p>
+
+<pre><code>pitest {
+    targetClasses = ['our.base.package.*']
+    pitestVersion = "0.31" //not needed when a default PIT version should be used
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+}
+</code></pre>
+
+<p>Check PIT documentation for a <a href="http://pitest.org/quickstart/commandline/">list</a> of all available command line parameters.</p>
+
+<p>There are a few parameters specific for Gradle plugin:</p>
+
+<ul>
+<li>enableDefaultIncrementalAnalysis - enables incremental analysis in PIT using the default settings (build/pitHistory.txt
+file for both input and output locations) (since 0.29.0)</li>
+<li>testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
+to add integration tests located in a different source set) (since 0.30.1)</li>
+<li>mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)</li>
+</ul><p>For example:</p>
+
+<pre><code>pitest {
+    ...
+    enableDefaultIncrementalAnalysis = true
+    testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+    mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
+}
+</code></pre>
+
+<h2>
+<a name="multi-module-projects-support" class="anchor" href="#multi-module-projects-support"><span class="octicon octicon-link"></span></a>Multi-module projects support</h2>
+
+<p>gradle-pitest-plugin can be used in multi-module projects. The plugin has to be applied in all subprojects which should be
+processed with PIT. A sample snippet from build.gradle located for the root project:</p>
+
+<pre><code>subprojects {
+    ...
+    apply plugin: 'pitest'
+
+    pitest {
+        targetClasses = ['our.base.package.*']
+        threads = 4
+
+        if (project.name in ['module-without-any-test'] {
+            failWhenNoMutation = false
+        }
+    }
+}
+</code></pre>
+
+<p>Currently PIT <a href="https://code.google.com/p/pitestrunner/issues/detail?id=41">does not provide</a> an aggregated report for
+multi-module project. A report for each module has to be browsed separately. Alternatively a
+<a href="https://docs.codehaus.org/display/SONAR/Pitest">PIT plugin for Sonar</a> can be used to get aggregated results.</p>
+
+<h2>
+<a name="versions" class="anchor" href="#versions"><span class="octicon octicon-link"></span></a>Versions</h2>
+
+<p>Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
+of PIT available at the time of releasing a plugin version. It can be overridden by using pitestVersion parameter
+in a pitest configuration closure <em>and</em> specifying <em>the same</em> version as a buildscript dependency.</p>
+
+<p>Note. There could be some issues when using non default PIT versions.</p>
+
+<p>gradle-pitest-plugin 0.30.x uses PIT 0.30, 0.29.0 uses PIT 0.29. etc.</p>
+
+<p>Note. 0.27 is not supported due to <a href="https://code.google.com/p/pitestrunner/issues/detail?id=47">issue 47</a>.</p>
+
+<p>gradle-pitest-plugin 0.30.0 was tested with Gradle 1.5 and 1.6 under OpenJDK 7 and Sun 1.6.</p>
+
+<h2>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
+
+<ol>
+<li>
+<p>Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?</p>
+
+<p>It should be fixed in PIT 0.29.
+As a workaround in older versions add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block</p>
+
+<pre><code>pitest {
+    ...
+    jvmArgs = '-XX:-UseSplitVerifier'
+}
+</code></pre>
+</li>
+</ol><h2>
+<a name="known-issues" class="anchor" href="#known-issues"><span class="octicon octicon-link"></span></a>Known issues</h2>
+
+<ul>
+<li>too verbose output from PIT</li>
+</ul><h2>
+<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h2>
+
+<p>gradle-pitest-plugin cloned from the repository can be built using Gradle command:</p>
+
+<pre><code>./gradlew build
+</code></pre>
+
+<p>The easiest way to make a JAR with local changes visible in another project is to install it into the local Maven repository</p>
+
+<pre><code>./gradlew install
+</code></pre>
+
+<h2>
+<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p><a href="http://gradle-pitest-plugin.solidsoft.info/">gradle-pitest-plugin</a> was written by Marcin Zajączkowski.
+The author can be contacted directly via email: mszpak ATT wp DOTT pl.
+There is also Marcin's blog available: <a href="http://blog.solidsoft.info">Solid Soft</a> - working code is not enough.</p>
+
+<p>The plugin surely has some bugs and missing features. They can be reported using an <a href="https://github.com/szpak/gradle-pitest-plugin/issues">issue tracker</a>.
+However it is often a better idea to send a questions to the <a href="http://groups.google.com/group/pitusers">PIT mailing list</a> first.</p>
+
+<p>The plugin is licensed under the terms of <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">the Apache License, Version 2.0</a>.</p>
+
+<p><img src="http://c.statcounter.com/9394072/0/db9b06ab/0/" alt="Stat Counter stats"></p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-46065645-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
