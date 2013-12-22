@@ -32,7 +32,7 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 
-    compile "org.pitest:pitest:$pitVersion"
+    compile "org.pitest:pitest-command-line:$pitVersion"
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         //groovy 1.8.6 is already provided by Gradle itself

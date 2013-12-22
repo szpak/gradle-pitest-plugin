@@ -1,5 +1,9 @@
-0.31.0 - TODO
- - adjust to PIT 0.31
+0.32.0 - TODO
+ - adjust to PIT 0.32
+ - break compatibility with PIT <0.32 (due to internal refactoring in PIT)
+ - upgrade Gradle Wrapper to 1.10
+
+0.31.0 - SKIPPED
 
 0.30.1 - 2013-08-04
  - fix: task no longer always up-to-date for empty java source directory set - #2

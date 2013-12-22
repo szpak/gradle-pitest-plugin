@@ -27,7 +27,7 @@ import com.google.common.annotations.VisibleForTesting
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    final static DEFAULT_PITEST_VERSION = '0.31'
+    final static DEFAULT_PITEST_VERSION = '0.32'
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
@@ -90,7 +90,7 @@ class PitestPlugin implements Plugin<Project> {
                 if (config.dependencies.empty) {
                     project.dependencies {
                         println "pitestVersion $extension.pitestVersion"
-                        pitest "org.pitest:pitest:$extension.pitestVersion"
+                        pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
                     }
                 }
                 config
@@ -134,6 +134,9 @@ class PitestPlugin implements Plugin<Project> {
             defaultFileForHistoryDate = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
             mutationThreshold = { extension.mutationThreshold }
             mutationEngine = { extension.mutationEngine }
+            coverageThreshold = { extension.coverageThreshold }
+            exportLineCoverage = { extension.exportLineCoverage }
+            jvmPath = { extension.jvmPath }
         }
 
         project.afterEvaluate {

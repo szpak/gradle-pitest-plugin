@@ -55,12 +55,15 @@ class PitestPluginExtension {
     File historyOutputLocation
     Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
     Integer mutationThreshold   //new in PIT 0.30
+    Integer coverageThreshold   //new in PIT 0.32
     String mutationEngine
     Set<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
     Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
+    Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
+    File jvmPath    //new in PIT 0.32
 
-    void setReportDir(String reportDir) {
-        this.reportDir = new File(reportDir)
+    void setReportDir(String reportDirAsString) {
+        this.reportDir = new File(reportDirAsString)
     }
 
     void setSourceDirsAsFiles(Set<File> sourceDirs) {
@@ -87,5 +90,9 @@ class PitestPluginExtension {
 
     void setHistoryOutputLocation(String historyOutputLocationPath) {
         this.historyOutputLocation = new File(historyOutputLocationPath)
+    }
+
+    void setJvmPath(String jvmPathAsString) {
+        this.jvmPath = new File(jvmPathAsString)
     }
 }

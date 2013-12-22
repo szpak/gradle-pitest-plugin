@@ -18,7 +18,7 @@ package info.solidsoft.gradle.pitest;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.*;
 
-import org.pitest.mutationtest.MutationCoverageReport
+import org.pitest.mutationtest.commandline.MutationCoverageReport
 import com.google.common.annotations.VisibleForTesting
 
 /**
@@ -151,7 +151,19 @@ class PitestTask extends SourceTask {
 
     @Input
     @Optional
+    Integer coverageThreshold
+
+    @Input
+    @Optional
     String mutationEngine
+
+    @Input
+    @Optional
+    Boolean exportLineCoverage
+
+    @Input
+    @Optional
+    File jvmPath
 
     @TaskAction
     void run() {
@@ -191,7 +203,10 @@ class PitestTask extends SourceTask {
         map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
         map['mutationThreshold'] = getMutationThreshold()
+        map['coverageThreshold'] = getCoverageThreshold()
         map['mutationEngine'] = getMutationEngine()
+        map['exportLineCoverage'] = getExportLineCoverage()
+        map['jvmPath'] = getJvmPath()
         map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)
