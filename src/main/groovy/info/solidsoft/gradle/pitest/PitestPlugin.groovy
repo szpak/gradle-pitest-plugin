@@ -48,7 +48,7 @@ class PitestPlugin implements Plugin<Project> {
         createConfigurations()
         createExtension(project)
         project.plugins.withType(JavaBasePlugin) {
-            PitestTask task = project.tasks.add(PITEST_TASK_NAME, PitestTask)
+            PitestTask task = project.tasks.create(PITEST_TASK_NAME, PitestTask)
             task.with {
                 description = "Run PIT analysis for java classes"
                 group = PITEST_TASK_GROUP
@@ -66,7 +66,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void createConfigurations() {
-        project.configurations.add(PITEST_CONFIGURATION_NAME).with {
+        project.configurations.create(PITEST_CONFIGURATION_NAME).with {
             visible = false
             transitive = true
             description = "The Pitest libraries to be used for this project."
