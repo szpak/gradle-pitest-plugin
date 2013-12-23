@@ -91,7 +91,7 @@ class PitestPlugin implements Plugin<Project> {
                 def config = project.configurations[PITEST_CONFIGURATION_NAME]
                 if (config.dependencies.empty) {
                     project.dependencies {
-                        println "pitestVersion $extension.pitestVersion"
+                        log.info( "Using PIT: $extension.pitestVersion")
                         pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
                     }
                 }
@@ -155,7 +155,7 @@ class PitestPlugin implements Plugin<Project> {
             task.setSource(extension.mainSourceSets*.allSource)
 
             Set<String> tasksToDependOn = extension.testSourceSets.collect{ it.name + "Classes" }
-            println "tasksToDependOn: " + tasksToDependOn
+            log.debug("pitest tasksToDependOn: $tasksToDependOn")
             task.dependsOn(tasksToDependOn)
         }
     }

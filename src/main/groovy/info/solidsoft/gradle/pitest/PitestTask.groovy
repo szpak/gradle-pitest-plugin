@@ -15,7 +15,9 @@
  */
 package info.solidsoft.gradle.pitest;
 
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileCollection
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.*;
 
 import org.pitest.mutationtest.commandline.MutationCoverageReport
@@ -25,6 +27,8 @@ import com.google.common.annotations.VisibleForTesting
  * Gradle task implementation for Pitest.
  */
 class PitestTask extends SourceTask {
+
+    private final static Logger log =  Logging.getLogger(PitestTask)
 
     @OutputDirectory
     File reportDir
@@ -169,7 +173,7 @@ class PitestTask extends SourceTask {
     void run() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
         String[] arg = createArgumentsArrayFromMap(taskArgumentsMap)
-        println arg   //TODO: MZA: Change to a debug log
+        log.info("Arguments passed to PIT: $arg")
         MutationCoverageReport.main(arg)
     }
 
