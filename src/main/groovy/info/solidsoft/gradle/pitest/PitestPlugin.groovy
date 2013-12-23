@@ -17,6 +17,8 @@ package info.solidsoft.gradle.pitest
 
 import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.UnionFileCollection
@@ -31,6 +33,8 @@ class PitestPlugin implements Plugin<Project> {
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
+
+    private final static Logger log =  Logging.getLogger(PitestPlugin)
 
     @VisibleForTesting
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
@@ -73,8 +77,6 @@ class PitestPlugin implements Plugin<Project> {
     //TODO: MZA: Maybe move it to the constructor of an extension class?
     private void createExtension(Project project) {
         extension = project.extensions.create("pitest", PitestPluginExtension)
-        //TODO: MZA: Set target classed based on project group and name?
-//        extension.targetClasses = ...
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
         extension.pitestVersion = DEFAULT_PITEST_VERSION
         extension.testSourceSets = [project.sourceSets.test] as Set
@@ -106,7 +108,16 @@ class PitestPlugin implements Plugin<Project> {
             sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
 
             reportDir = { extension.reportDir }
-            targetClasses = { extension.targetClasses }
+            targetClasses = {
+                log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
+                if (extension.targetClasses) {
+                    return extension.targetClasses
+                }
+                if (project.getGroup()) {   //Assuming it is always a String class instance
+                    return [project.getGroup() + ".*"] as Set
+                }
+                null
+            }
             targetTests = { extension.targetTests }
             dependencyDistance = { extension.dependencyDistance }
             threads = { extension.threads }

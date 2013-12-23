@@ -1,6 +1,7 @@
 0.32.0 - TODO
  - adjust to PIT 0.32
  - break compatibility with PIT <0.32 (due to internal refactoring in PIT)
+ - make targetClass configuration parameter optional when project group is defined
  - upgrade Gradle Wrapper to 1.10
 
 0.31.0 - SKIPPED
