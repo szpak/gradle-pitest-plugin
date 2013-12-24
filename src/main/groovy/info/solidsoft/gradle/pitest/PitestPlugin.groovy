@@ -85,18 +85,6 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureTaskDefault(PitestTask task) {
         task.conventionMapping.with {
-            //TODO: MZA: Setting pitestClasspath is not needed, but there was a problem with too early resolving
-            // $extension.pitestVersion when not put into closure
-            pitestClasspath = {
-                def config = project.configurations[PITEST_CONFIGURATION_NAME]
-                if (config.dependencies.empty) {
-                    project.dependencies {
-                        log.info( "Using PIT: $extension.pitestVersion")
-                        pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-                    }
-                }
-                config
-            }
             taskClasspath = {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
@@ -153,10 +141,25 @@ class PitestPlugin implements Plugin<Project> {
         project.afterEvaluate {
             //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
             task.setSource(extension.mainSourceSets*.allSource)
+            task.dependsOn(calculateTasksToDependOn())
 
-            Set<String> tasksToDependOn = extension.testSourceSets.collect{ it.name + "Classes" }
-            log.debug("pitest tasksToDependOn: $tasksToDependOn")
-            task.dependsOn(tasksToDependOn)
+            addPitDependencies()
+        }
+    }
+
+    private Set<String> calculateTasksToDependOn() {
+        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" }
+        log.debug("pitest tasksToDependOn: $tasksToDependOn")
+        tasksToDependOn
+    }
+
+    private void addPitDependencies() {
+        def config = project.configurations[PITEST_CONFIGURATION_NAME]
+        if (config.dependencies.empty) {
+            project.dependencies {
+                log.info("Using PIT: $extension.pitestVersion")
+                pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
+            }
         }
     }
 }

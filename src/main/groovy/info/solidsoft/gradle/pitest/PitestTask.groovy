@@ -123,11 +123,6 @@ class PitestTask extends SourceTask {
     @Optional
     Boolean timestampedReports
 
-    //TODO: MZA: Not used but leave due to a problem with resolving pitest version. See a comment in PitestTask.
-    @Deprecated
-    @InputFiles
-    FileCollection pitestClasspath
-
     @Input  //TODO: MZA: Why "Could not determine the dependencies of task ':pitest'" with @InputFiles?
     FileCollection taskClasspath
 
