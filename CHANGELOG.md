@@ -1,7 +1,7 @@
 0.32.0 - TODO
  - adjust to PIT 0.32
  - break compatibility with PIT <0.32 (due to internal refactoring in PIT)
- - make targetClass configuration parameter optional when project group is defined
+ - make targetClass configuration parameter optional when project group is defined - #5
  - remove deprecation warnings - minimal required Gradle version is 1.6
  - less verbose debug logging
  - upgrade Gradle Wrapper to 1.10
