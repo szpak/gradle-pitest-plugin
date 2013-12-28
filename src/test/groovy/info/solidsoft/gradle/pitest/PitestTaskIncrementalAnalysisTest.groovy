@@ -33,8 +33,6 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
     }
 
     def "default analysis mode disabled by default"() {
-        given:
-
         when:
         def createdMap = task.createTaskArgumentMap()
 
@@ -43,8 +41,6 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
     }
 
     def "files for history location not set by default"() {
-        given:
-
         when:
         def createdMap = task.createTaskArgumentMap()
 
