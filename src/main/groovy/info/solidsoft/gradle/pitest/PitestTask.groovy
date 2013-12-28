@@ -205,6 +205,7 @@ class PitestTask extends SourceTask {
         map['coverageThreshold'] = getCoverageThreshold()
         map['mutationEngine'] = getMutationEngine()
         map['exportLineCoverage'] = getExportLineCoverage()
+        map['includeLaunchClasspath'] = false   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()
         map.putAll(prepareMapForIncrementalAnalysis())
 
