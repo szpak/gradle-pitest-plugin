@@ -111,7 +111,7 @@ class PitestTask extends SourceTask {
     @InputFiles
     Set<File> sourceDirs
 
-    @Input
+    @InputFile
     @Optional
     File configFile
 
@@ -123,17 +123,17 @@ class PitestTask extends SourceTask {
     @Optional
     Boolean timestampedReports
 
-    @Input  //TODO: MZA: Why "Could not determine the dependencies of task ':pitest'" with @InputFiles?
+    @InputFiles
     FileCollection taskClasspath
 
-    @Input
+    @InputFiles
     Set<File> mutableCodePaths
 
     @Input
     @Optional
     File historyInputLocation
 
-    @Input
+    @OutputFile
     @Optional
     File historyOutputLocation
 
