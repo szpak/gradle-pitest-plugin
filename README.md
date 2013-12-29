@@ -110,6 +110,8 @@ Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-p
 
 gradle-pitest-plugin 0.32.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.10 under OpenJDK 7 and Sun 1.6.
 
+See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
+
 ## FAQ
 
 1. Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?
