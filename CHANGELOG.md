@@ -1,4 +1,4 @@
-0.32.0 - TODO
+0.32.0 - 2013-12-28
  - adjust to PIT 0.32
  - break compatibility with PIT <0.32 (due to internal refactoring in PIT)
  - make targetClass configuration parameter optional when project group is defined - #5
