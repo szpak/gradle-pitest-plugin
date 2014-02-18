@@ -85,8 +85,8 @@ processed with PIT. A sample snippet from build.gradle located for the root proj
         pitest {
             threads = 4
 
-            if (project.name in ['module-without-any-test'] {
-                failWhenNoMutation = false
+            if (project.name in ['module-without-any-test']) {
+                failWhenNoMutations = false
             }
         }
     }
