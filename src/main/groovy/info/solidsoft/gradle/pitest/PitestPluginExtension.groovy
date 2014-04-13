@@ -43,6 +43,9 @@ class PitestPluginExtension {
     String timeoutFactor    //TODO: MZA: BigDecimal?
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
+    /**
+     * JVM arguments to use when PIT launches child processes
+     */
     String jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
@@ -61,6 +64,12 @@ class PitestPluginExtension {
     Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
     Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
     File jvmPath    //new in PIT 0.32
+    /**
+     * JVM arguments to use when Gradle plugin launches the main PIT process.
+     *
+     * @since 0.33.0 (specific for Gradle plugin)
+     */
+    List<String> mainProcessJvmArgs
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
