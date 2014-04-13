@@ -26,8 +26,6 @@ import com.google.common.annotations.VisibleForTesting
  */
 class PitestTask extends JavaExec {
 
-    private final static Logger log =  Logging.getLogger(PitestTask)
-
     @OutputDirectory
     File reportDir
 
@@ -76,7 +74,7 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    String timeoutFactor
+    BigDecimal timeoutFactor
 
     @Input
     @Optional
@@ -88,7 +86,7 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    String childProcessJvmArgs
+    List<String> childProcessJvmArgs
 
     @Input
     @Optional
@@ -196,7 +194,7 @@ class PitestTask extends JavaExec {
         map['timeoutFactor'] = getTimeoutFactor()
         map['timeoutConst'] = getTimeoutConstInMillis()
         map['maxMutationsPerClass'] = getMaxMutationsPerClass()
-        map['jvmArgs'] = getChildProcessJvmArgs()
+        map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()
         map['classPath'] = getTaskClasspath()?.files?.join(',')

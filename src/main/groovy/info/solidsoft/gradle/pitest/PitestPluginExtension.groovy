@@ -25,6 +25,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
 class PitestPluginExtension {
+
     String pitestVersion
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
@@ -40,13 +41,15 @@ class PitestPluginExtension {
     Set<String> excludedClasses
     Set<String> avoidCallsTo
     Boolean verbose
-    String timeoutFactor    //TODO: MZA: BigDecimal?
+    BigDecimal timeoutFactor
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
+     *
+     * Note. This parameter type was changed from String to List<String> in 0.33.0.
      */
-    String jvmArgs
+    List<String> jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
     Set<String> includedTestNGGroups
@@ -103,5 +106,9 @@ class PitestPluginExtension {
 
     void setJvmPath(String jvmPathAsString) {
         this.jvmPath = new File(jvmPathAsString)
+    }
+
+    void setTimeoutFactor(String timeoutFactor) {
+        this.timeoutFactor = new BigDecimal(timeoutFactor)
     }
 }
