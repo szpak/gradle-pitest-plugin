@@ -18,17 +18,13 @@ package info.solidsoft.gradle.pitest;
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging;
-import org.gradle.api.tasks.*;
-
-import org.pitest.mutationtest.commandline.MutationCoverageReport
+import org.gradle.api.tasks.*
 import com.google.common.annotations.VisibleForTesting
 
 /**
  * Gradle task implementation for Pitest.
  */
-class PitestTask extends SourceTask {
-
-    private final static Logger log =  Logging.getLogger(PitestTask)
+class PitestTask extends JavaExec {
 
     @OutputDirectory
     File reportDir
@@ -78,7 +74,7 @@ class PitestTask extends SourceTask {
 
     @Input
     @Optional
-    String timeoutFactor
+    BigDecimal timeoutFactor
 
     @Input
     @Optional
@@ -90,7 +86,7 @@ class PitestTask extends SourceTask {
 
     @Input
     @Optional
-    String jvmArgs
+    List<String> childProcessJvmArgs
 
     @Input
     @Optional
@@ -164,12 +160,19 @@ class PitestTask extends SourceTask {
     @Optional
     File jvmPath
 
-    @TaskAction
-    void run() {
+    @Input
+    @Optional
+    List<String> mainProcessJvmArgs
+
+    @Override
+    void exec() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        String[] arg = createArgumentsArrayFromMap(taskArgumentsMap)
-        log.info("Arguments passed to PIT: $arg")
-        MutationCoverageReport.main(arg)
+        def argsAsList = createArgumentsListFromMap(taskArgumentsMap)
+        setArgs(argsAsList)
+        setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
+        setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
+        setClasspath(getTaskClasspath())
+        super.exec()
     }
 
     @VisibleForTesting
@@ -191,7 +194,7 @@ class PitestTask extends SourceTask {
         map['timeoutFactor'] = getTimeoutFactor()
         map['timeoutConst'] = getTimeoutConstInMillis()
         map['maxMutationsPerClass'] = getMaxMutationsPerClass()
-        map['jvmArgs'] = getJvmArgs()
+        map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()
         map['classPath'] = getTaskClasspath()?.files?.join(',')
@@ -228,11 +231,11 @@ class PitestTask extends SourceTask {
         map.findAll { it.value != null }
     }
 
-    private String[] createArgumentsArrayFromMap(Map<String, String> taskArgumentsMap) {
+    private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
         List<String> argList = new ArrayList<String>();
         taskArgumentsMap.each { k, v ->
             argList.add("--" + k + "=" + v)
         }
-        argList.toArray(String.class)
+        argList
     }
 }

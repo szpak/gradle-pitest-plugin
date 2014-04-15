@@ -29,7 +29,7 @@ import com.google.common.annotations.VisibleForTesting
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    final static DEFAULT_PITEST_VERSION = '0.32'
+    final static DEFAULT_PITEST_VERSION = '0.33'
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
@@ -119,7 +119,7 @@ class PitestPlugin implements Plugin<Project> {
             timeoutFactor = { extension.timeoutFactor }
             timeoutConstInMillis = { extension.timeoutConstInMillis }
             maxMutationsPerClass = { extension.maxMutationsPerClass }
-            jvmArgs = { extension.jvmArgs }
+            childProcessJvmArgs = { extension.jvmArgs }
             outputFormats = { extension.outputFormats }
             failWhenNoMutations = { extension.failWhenNoMutations }
             includedTestNGGroups = { extension.includedTestNGGroups }
@@ -136,11 +136,12 @@ class PitestPlugin implements Plugin<Project> {
             coverageThreshold = { extension.coverageThreshold }
             exportLineCoverage = { extension.exportLineCoverage }
             jvmPath = { extension.jvmPath }
+            mainProcessJvmArgs = { extension.mainProcessJvmArgs }
         }
 
         project.afterEvaluate {
             //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
-            task.setSource(extension.mainSourceSets*.allSource)
+//            task.setSource(extension.mainSourceSets*.allSource)
             task.dependsOn(calculateTasksToDependOn())
 
             addPitDependencies()
@@ -154,6 +155,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies() {
+        //TODO: Can be moved to buildscript dependencies?
         def config = project.configurations[PITEST_CONFIGURATION_NAME]
         if (config.dependencies.empty) {
             project.dependencies {

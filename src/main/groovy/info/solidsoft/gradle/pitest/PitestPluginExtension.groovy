@@ -25,6 +25,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
 class PitestPluginExtension {
+
     String pitestVersion
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
@@ -40,10 +41,15 @@ class PitestPluginExtension {
     Set<String> excludedClasses
     Set<String> avoidCallsTo
     Boolean verbose
-    String timeoutFactor    //TODO: MZA: BigDecimal?
+    BigDecimal timeoutFactor
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
-    String jvmArgs
+    /**
+     * JVM arguments to use when PIT launches child processes
+     *
+     * Note. This parameter type was changed from String to List<String> in 0.33.0.
+     */
+    List<String> jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
     Set<String> includedTestNGGroups
@@ -61,6 +67,12 @@ class PitestPluginExtension {
     Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
     Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
     File jvmPath    //new in PIT 0.32
+    /**
+     * JVM arguments to use when Gradle plugin launches the main PIT process.
+     *
+     * @since 0.33.0 (specific for Gradle plugin)
+     */
+    List<String> mainProcessJvmArgs
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
@@ -94,5 +106,9 @@ class PitestPluginExtension {
 
     void setJvmPath(String jvmPathAsString) {
         this.jvmPath = new File(jvmPathAsString)
+    }
+
+    void setTimeoutFactor(String timeoutFactor) {
+        this.timeoutFactor = new BigDecimal(timeoutFactor)
     }
 }

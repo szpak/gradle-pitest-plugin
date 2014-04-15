@@ -15,7 +15,7 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.33.0'
         }
     }
 
@@ -48,7 +48,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-        pitestVersion = "0.32" //not needed when a default PIT version should be used
+        pitestVersion = "0.33" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -58,11 +58,15 @@ The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
 
 There are a few parameters specific for Gradle plugin:
+
  - enableDefaultIncrementalAnalysis - enables incremental analysis in PIT using the default settings (build/pitHistory.txt
 file for both input and output locations) (since 0.29.0)
  - testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
 to add integration tests located in a different source set) (since 0.30.1)
  - mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
+ - mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
+another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
+(since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
 
 For example:
 
@@ -71,6 +75,7 @@ For example:
         enableDefaultIncrementalAnalysis = true
         testSourceSets = [sourceSets.test, sourceSets.integrationTest]
         mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
+        jvmArgs = ['-Xmx1024m']
     }
 
 ## Multi-module projects support
@@ -108,7 +113,7 @@ gradle-pitest-plugin 0.32.x uses PIT 0.32, 0.30.x uses PIT 0.30, 0.29.0 uses PIT
 Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 0.32.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.10 under OpenJDK 7 and Sun 1.6.
+gradle-pitest-plugin 0.33.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.11 under OpenJDK 7 and Sun 1.6.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 

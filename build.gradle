@@ -21,18 +21,11 @@ buildscript {
 repositories {
     mavenCentral()
     mavenLocal()
-
-    if (project.pitVersion.endsWith('SNAPSHOT')) {
-        //This repo is Needed only for PIT SNAPSHOT versions
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-    }
 }
 
 dependencies {
     compile gradleApi()
     compile localGroovy()
-
-    compile "org.pitest:pitest-command-line:$pitVersion"
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         //groovy 1.8.6 is already provided by Gradle itself
@@ -139,6 +132,6 @@ uploadArchives {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
+wrapper {
+    gradleVersion '1.11'
 }

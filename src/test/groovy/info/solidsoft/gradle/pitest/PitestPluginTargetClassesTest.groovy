@@ -32,7 +32,7 @@ class PitestPluginTargetClassesTest extends Specification {
         when:
             def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
-            assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)    //TODO: słaby komunikat gdy List
+            assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)
     }
 
     def "set target classes to project group if defined"() {
