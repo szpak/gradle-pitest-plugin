@@ -119,14 +119,29 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
 
 ## FAQ
 
-1. Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?
+1. Why have I got `java.lang.VerifyError: Expecting a stackmap frame...` when using Java 7?
 
     It should be fixed in PIT 0.29.
-    As a workaround in older versions add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block
+    As a workaround in older versions add `jvmArgs = '-XX:-UseSplitVerifier'` to a pitest configuration block
 
         pitest {
             ...
-            jvmArgs = '-XX:-UseSplitVerifier'
+            //jvmArgs = '-XX:-UseSplitVerifier'     //<0.33.0
+            jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
+        }
+
+2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'`
+after upgrade to version 0.33.0?
+
+    To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predicable
+    `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial,
+    but unfortunately I am not aware of the way to keep both parameter types active at the same time.
+
+        pitest {
+            ...
+            //jvmArgs = '-Xmx1024 -Xms512m'     //old format
+            jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+
         }
 
 ## Known issues
