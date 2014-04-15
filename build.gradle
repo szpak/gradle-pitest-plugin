@@ -132,6 +132,6 @@ uploadArchives {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
+wrapper {
+    gradleVersion '1.11'
 }
