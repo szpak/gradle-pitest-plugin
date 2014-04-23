@@ -140,8 +140,6 @@ class PitestPlugin implements Plugin<Project> {
         }
 
         project.afterEvaluate {
-            //This field is internally used by Gradle - https://github.com/szpak/gradle-pitest-plugin/issues/2
-//            task.setSource(extension.mainSourceSets*.allSource)
             task.dependsOn(calculateTasksToDependOn())
 
             addPitDependencies()
