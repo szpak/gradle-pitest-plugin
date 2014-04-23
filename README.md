@@ -15,7 +15,7 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.33.0'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0'
         }
     }
 
@@ -143,6 +143,28 @@ after upgrade to version 0.33.0?
             jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
 
         }
+
+3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
+
+There is an [issue](https://github.com/spring-projects/spring-boot/issues/721) with the way how spring-boot-gradle-plugin handles JavaExec tasks
+(including pitest task which in the version 0.33.0 became JavaExec task to resolve classpath issue with configured non default PIT version - see
+[issue #7](https://github.com/szpak/gradle-pitest-plugin/issues/7)).
+
+Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support) with gradle-pitest-plugin 0.32.0:
+
+    buildscript {
+        (...)
+        dependencies {
+            classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0") {
+              exclude group: "org.pitest"
+            }
+            classpath "org.pitest:pitest-command-line:0.33"
+        }
+    }
+
+    pitest {
+        pitestVersion = "0.33"
+    }
 
 ## Known issues
 
