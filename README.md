@@ -170,6 +170,8 @@ Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support)
 
  - too verbose output from PIT
 
+ - 0.33.0 is not compatible with Spring Boot projects due to a [bug](https://github.com/spring-projects/spring-boot/issues/721) in spring-boot-gradle-plugin - see FAQ for a workaround
+
 ## Development
 
 gradle-pitest-plugin cloned from the repository can be built using Gradle command:
