@@ -1,4 +1,4 @@
-0.33.0 - 2014-04-??
+0.33.0 - 2014-04-25
 
  - fix: broken PIT version override mechanism with configuration parameter - #7
  - PIT is started as separate Java process with its own classpath - new `mainProcessJvmArgs` configuration parameter

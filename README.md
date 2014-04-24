@@ -15,7 +15,7 @@ Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in yo
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.33.0'
         }
     }
 
