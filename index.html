@@ -57,7 +57,7 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
         //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.33.0'
     }
 }
 </code></pre>
@@ -94,7 +94,7 @@ following example).</p>
 
 <pre><code>pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = "0.32" //not needed when a default PIT version should be used
+    pitestVersion = "0.33" //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
 }
@@ -112,6 +112,9 @@ file for both input and output locations) (since 0.29.0)</li>
 <li>testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
 to add integration tests located in a different source set) (since 0.30.1)</li>
 <li>mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)</li>
+<li>mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
+another Java processes for mutation testing execution and usually <code>jvmArgs</code> should be used to for example increase maximum memory size
+(since 0.33.0 - see <a href="https://github.com/szpak/gradle-pitest-plugin/issues/7">#7</a>);</li>
 </ul><p>For example:</p>
 
 <pre><code>pitest {
@@ -119,6 +122,7 @@ to add integration tests located in a different source set) (since 0.30.1)</li>
     enableDefaultIncrementalAnalysis = true
     testSourceSets = [sourceSets.test, sourceSets.integrationTest]
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
+    jvmArgs = ['-Xmx1024m']
 }
 </code></pre>
 
@@ -160,29 +164,71 @@ in a pitest configuration closure.</p>
 <p>Note. PIT 0.27 is not supported due to <a href="https://code.google.com/p/pitestrunner/issues/detail?id=47">issue 47</a>.
 Note. Due to internal refactoring in PIT versions &gt;=0.32 require gradle-pitest-plugin &gt;=0.32.x and PIT versions &lt;=0.31 gradle-pitest-plugin &lt;=0.30.x.</p>
 
-<p>gradle-pitest-plugin 0.32.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.10 under OpenJDK 7 and Sun 1.6.</p>
+<p>gradle-pitest-plugin 0.33.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.11 under OpenJDK 7 and Sun 1.6.</p>
+
+<p>See <a href="https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md">changelog file</a> for more detailed list of changes in the plugin itself.</p>
 
 <h2>
 <a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
 
 <ol>
 <li>
-<p>Why have I got "java.lang.VerifyError: Expecting a stackmap frame..." when using Java 7?</p>
+<p>Why have I got <code>java.lang.VerifyError: Expecting a stackmap frame...</code> when using Java 7?</p>
 
 <p>It should be fixed in PIT 0.29.
-As a workaround in older versions add "jvmArgs = '-XX:-UseSplitVerifier'" to a pitest configuration block</p>
+As a workaround in older versions add <code>jvmArgs = '-XX:-UseSplitVerifier'</code> to a pitest configuration block</p>
 
 <pre><code>pitest {
     ...
-    jvmArgs = '-XX:-UseSplitVerifier'
+    //jvmArgs = '-XX:-UseSplitVerifier'     //&lt;0.33.0
+    jvmArgs = ['-XX:-UseSplitVerifier']     //&gt;=0.33.0
 }
 </code></pre>
 </li>
-</ol><h2>
+<li>
+<p>Why have I got <code>GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'</code>
+after upgrade to version 0.33.0?</p>
+
+<p>To keep consistency with the new <code>mainProcessJvmArgs</code> configuration parameter and make an input format more predicable
+<code>jvmArgs</code> parameter type was changed from <code>String</code> to <code>List&lt;String&gt;</code> in gradle-pitest-plugin 0.33.0. The migration is trivial,
+but unfortunately I am not aware of the way to keep both parameter types active at the same time.</p>
+
+<pre><code>pitest {
+    ...
+    //jvmArgs = '-Xmx1024 -Xms512m'     //old format
+    jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+
+}
+</code></pre>
+</li>
+<li><p>Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?</p></li>
+</ol><p>There is an <a href="https://github.com/spring-projects/spring-boot/issues/721">issue</a> with the way how spring-boot-gradle-plugin handles JavaExec tasks
+(including pitest task which in the version 0.33.0 became JavaExec task to resolve classpath issue with configured non default PIT version - see
+<a href="https://github.com/szpak/gradle-pitest-plugin/issues/7">issue #7</a>).</p>
+
+<p>Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support) with gradle-pitest-plugin 0.32.0:</p>
+
+<pre><code>buildscript {
+    (...)
+    dependencies {
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0") {
+          exclude group: "org.pitest"
+        }
+        classpath "org.pitest:pitest-command-line:0.33"
+    }
+}
+
+pitest {
+    pitestVersion = "0.33"
+}
+</code></pre>
+
+<h2>
 <a name="known-issues" class="anchor" href="#known-issues"><span class="octicon octicon-link"></span></a>Known issues</h2>
 
 <ul>
-<li>too verbose output from PIT</li>
+<li><p>too verbose output from PIT</p></li>
+<li><p>0.33.0 is not compatible with Spring Boot projects due to a <a href="https://github.com/spring-projects/spring-boot/issues/721">bug</a> in spring-boot-gradle-plugin - see FAQ for a workaround</p></li>
 </ul><h2>
 <a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h2>
 
@@ -208,44 +254,21 @@ However it is often a better idea to send a questions to the <a href="http://gro
 
 <p>The plugin is licensed under the terms of <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">the Apache License, Version 2.0</a>.</p>
 
+<p><img src="https://c.statcounter.com/9394072/0/db9b06ab/0/" alt="Stat Counter stats"></p>
       </section>
 
-<div id="statcounter" style="width:100%; text-align:center">
-  <!-- StatCounter -->
-  <script type="text/javascript">
-  var sc_project=9394072; 
-  var sc_invisible=0; 
-  var sc_security="db9b06ab"; 
-  var scJsHost = (("https:" == document.location.protocol) ?
-  "https://secure." : "http://www.");
-  document.write("<sc"+"ript type='text/javascript' src='" +
-  scJsHost+
-  "statcounter.com/counter/counter.js'></"+"script>");
-  </script>
-  <noscript><div class="statcounter"><a title="create counter"
-  href="http://statcounter.com/free-hit-counter/"
-  target="_blank"><img class="statcounter"
-  src="https://c.statcounter.com/9394072/0/db9b06ab/0/"
-  alt="create counter"></a></div></noscript>
-</div>
-
-<div id="cloudbees" style="width:100%; text-align:center">
-  <a href="http://www.cloudbees.com/foss/foss-dev.cb" target="_blank"><img src="images/cloudbees-badge.png"/></a>
-</div>
-
     </div>
-
-<!-- Google Analytics -->
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-46065645-1', 'solidsoft.info');
-  ga('send', 'pageview');
-
-</script>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-46065645-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
 
   </body>
 </html>
