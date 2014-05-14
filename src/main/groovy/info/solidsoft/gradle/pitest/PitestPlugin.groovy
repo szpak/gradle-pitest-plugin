@@ -122,8 +122,8 @@ class PitestPlugin implements Plugin<Project> {
             childProcessJvmArgs = { extension.jvmArgs }
             outputFormats = { extension.outputFormats }
             failWhenNoMutations = { extension.failWhenNoMutations }
-            includedTestNGGroups = { extension.includedTestNGGroups }
-            excludedTestNGGroups = { extension.excludedTestNGGroups }
+            includedGroups = { extension.includedGroups }
+            excludedGroups = { extension.excludedGroups }
             configFile = { extension.configFile }
             detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }

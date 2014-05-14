@@ -52,8 +52,8 @@ class PitestPluginExtension {
     List<String> jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
-    Set<String> includedTestNGGroups
-    Set<String> excludedTestNGGroups
+    Set<String> includedGroups
+    Set<String> excludedGroups
     File configFile
     Boolean detectInlinedCode   //new in PIT 0.28
     Boolean timestampedReports
