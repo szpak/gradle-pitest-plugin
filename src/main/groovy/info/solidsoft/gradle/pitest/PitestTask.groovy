@@ -98,11 +98,11 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    Set<String> includedTestNGGroups
+    Set<String> includedGroups
 
     @Input
     @Optional
-    Set<String> excludedTestNGGroups
+    Set<String> excludedGroups
 
     @InputFiles
     Set<File> sourceDirs
@@ -199,8 +199,8 @@ class PitestTask extends JavaExec {
         map['failWhenNoMutations'] = getFailWhenNoMutations()
         map['classPath'] = getTaskClasspath()?.files?.join(',')
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
-        map['includedTestNGGroups'] = getIncludedTestNGGroups()?.join(',')
-        map['excludedTestNGGroups'] = getExcludedTestNGGroups()?.join(',')
+        map['includedGroups'] = getIncludedGroups()?.join(',')
+        map['excludedGroups'] = getExcludedGroups()?.join(',')
         map['configFile'] = getConfigFile()?.path
         map['detectInlinedCode'] = getDetectInlinedCode()
         map['timestampedReports'] = getTimestampedReports()
