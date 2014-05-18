@@ -1,3 +1,11 @@
+1.0.0 - 2014-05-??
+
+ - follow new PIT version numbering scheme
+ - fix: pitest task fails on dependencies with parent packaged as pom - #15
+ - fix: wrong includedGroups/excludedGroups parameter names - #13 (contributed by @gvsmirnov)
+ - move PIT dependencies from project scope to rootProject.buildscript scope - #12
+ - adjust to PIT 1.0.0
+
 0.33.0 - 2014-04-25
 
  - fix: broken PIT version override mechanism with configuration parameter - #7
