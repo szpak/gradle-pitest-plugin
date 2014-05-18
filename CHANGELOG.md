@@ -5,6 +5,7 @@
  - fix: wrong includedGroups/excludedGroups parameter names - #13 (contributed by @gvsmirnov)
  - move PIT dependencies from project scope to rootProject.buildscript scope - #12
  - adjust to PIT 1.0.0
+ - upgrade Gradle Wrapper to 1.12
 
 0.33.0 - 2014-04-25
 
