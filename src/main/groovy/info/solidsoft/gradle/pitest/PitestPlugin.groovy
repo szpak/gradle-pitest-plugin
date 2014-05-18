@@ -87,8 +87,9 @@ class PitestPlugin implements Plugin<Project> {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
-                combinedTaskClasspath += project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
-                combinedTaskClasspath
+                FileCollection combinedTaskClasspathWithoutPomFiles = combinedTaskClasspath.filter { File file -> !file.name.endsWith(".pom") }
+                combinedTaskClasspathWithoutPomFiles += project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+                combinedTaskClasspathWithoutPomFiles
             }
             mutableCodePaths = { extension.mainSourceSets*.output.classesDir.flatten() as Set }
             sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
