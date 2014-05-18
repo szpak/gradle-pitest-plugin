@@ -66,11 +66,9 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void createConfigurations() {
-        project.configurations.create(PITEST_CONFIGURATION_NAME).with {
+        project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with {
             visible = false
-            transitive = true
             description = "The Pitest libraries to be used for this project."
-            //TODO: MZA:excludes?
         }
     }
 
@@ -89,7 +87,7 @@ class PitestPlugin implements Plugin<Project> {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
-                combinedTaskClasspath += project.configurations[PITEST_CONFIGURATION_NAME]
+                combinedTaskClasspath += project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspath
             }
             mutableCodePaths = { extension.mainSourceSets*.output.classesDir.flatten() as Set }
@@ -153,10 +151,9 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies() {
-        //TODO: Can be moved to buildscript dependencies?
-        def config = project.configurations[PITEST_CONFIGURATION_NAME]
+        def config = project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
         if (config.dependencies.empty) {
-            project.dependencies {
+            project.rootProject.buildscript.dependencies {
                 log.info("Using PIT: $extension.pitestVersion")
                 pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
             }
