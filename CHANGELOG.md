@@ -1,4 +1,4 @@
-1.0.0 - 2014-05-??
+1.0.0 - 2014-05-21
 
  - follow new PIT version numbering scheme
  - fix: pitest task fails on dependencies with parent packaged as pom - #15
