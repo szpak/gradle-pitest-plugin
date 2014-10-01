@@ -132,6 +132,9 @@ uploadArchives {
     }
 }
 
+//Artifacts are not placed directly into JCenter, so for now a 'gradle-plugin' attribute has to be set manually to
+//'info.solidsoft.pitest:info.solidsoft.gradle.pitest:gradle-pitest-plugin' via GUI after sync
+
 wrapper {
     gradleVersion '1.12'
 }

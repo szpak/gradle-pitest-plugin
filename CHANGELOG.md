@@ -1,3 +1,7 @@
+1.1.0 - 2014-10-??
+
+ - change plugin id to 'info.solidsoft.pitest' to be complaint with [Gradle plugin portal](http://plugins.gradle.org/)
+
 1.0.0 - 2014-05-21
 
  - follow new PIT version numbering scheme

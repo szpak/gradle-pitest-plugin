@@ -26,27 +26,23 @@ class PitestPluginTest extends Specification {
 
     def "add pitest task to java project in proper group"() {
         given:
-        Project project = ProjectBuilder.builder().build()
-        project.apply(plugin: "java")   //to add SourceSets
-
+            Project project = ProjectBuilder.builder().build()
+            project.apply(plugin: "java")   //to add SourceSets
         when:
-        project.apply(plugin: "pitest")
-
+            project.apply(plugin: "info.solidsoft.pitest")
         then:
-        project.plugins.hasPlugin(PitestPlugin)
-        assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            project.plugins.hasPlugin(PitestPlugin)
+            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
     def "throw exception when java plugin not already applied on project"() {
         given:
-        Project project = ProjectBuilder.builder().build()
-        //TODO: MZA: assert java is not already applied
-
+            Project project = ProjectBuilder.builder().build()
+            //TODO: MZA: assert java is not already applied
         when:
-        project.apply(plugin: "pitest");
-
+            project.apply(plugin: "info.solidsoft.pitest");
         then:
-        thrown(TaskInstantiationException)
+            thrown(TaskInstantiationException)
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

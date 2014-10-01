@@ -28,66 +28,58 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
     def setup() {
         project = ProjectBuilder.builder().build()
         project.apply(plugin: "java")   //to add SourceSets
-        project.apply(plugin: "pitest")
+        project.apply(plugin: "info.solidsoft.pitest")
         task = project.tasks[PitestPlugin.PITEST_TASK_NAME] as PitestTask
     }
 
     def "default analysis mode disabled by default"() {
         when:
-        def createdMap = task.createTaskArgumentMap()
-
+            def createdMap = task.createTaskArgumentMap()
         then:
-        assert createdMap.get("enableDefaultIncrementalAnalysis") == null
+            createdMap.get("enableDefaultIncrementalAnalysis") == null
     }
 
     def "files for history location not set by default"() {
         when:
-        def createdMap = task.createTaskArgumentMap()
-
+            def createdMap = task.createTaskArgumentMap()
         then:
-        assert createdMap.get('historyInputLocation') == null
-        assert createdMap.get('historyOutputLocation') == null
+            createdMap.get('historyInputLocation') == null
+            createdMap.get('historyOutputLocation') == null
     }
 
     def "set default files for history location in default incremental analysis mode"() {
         given:
-        task.enableDefaultIncrementalAnalysis = true
-
+            task.enableDefaultIncrementalAnalysis = true
         when:
-        def createdMap = task.createTaskArgumentMap()
-
+            def createdMap = task.createTaskArgumentMap()
         then:
-        String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
-        assert createdMap.get('historyInputLocation') == pitHistoryDefaultFile
-        assert createdMap.get('historyOutputLocation') == pitHistoryDefaultFile
+            String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
+            createdMap.get('historyInputLocation') == pitHistoryDefaultFile
+            createdMap.get('historyOutputLocation') == pitHistoryDefaultFile
     }
 
     def "override files for history location when set explicit in configuration also default incremental analysis mode"() {
         given:
-        //TODO: How to set a configuration (e.g. enableDefaultIncrementalAnalysis) in a test project?
-        task.enableDefaultIncrementalAnalysis = true
-        task.historyInputLocation = new File('input')
-        task.historyOutputLocation = new File('output')
-
+            //TODO: How to set a configuration (e.g. enableDefaultIncrementalAnalysis) in a test project?
+            task.enableDefaultIncrementalAnalysis = true
+            task.historyInputLocation = new File('input')
+            task.historyOutputLocation = new File('output')
         when:
-        def createdMap = task.createTaskArgumentMap()
-
+            def createdMap = task.createTaskArgumentMap()
         then:
-        assert createdMap.get('historyInputLocation') == task.historyInputLocation.path
-        assert createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
+            createdMap.get('historyInputLocation') == task.historyInputLocation.path
+            createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
     }
 
     def "given in configuration files for history location are used also not in default incremental analysis mode"() {
         given:
-        task.enableDefaultIncrementalAnalysis = false
-        task.historyInputLocation = new File('input')
-        task.historyOutputLocation = new File('output')
-
+            task.enableDefaultIncrementalAnalysis = false
+            task.historyInputLocation = new File('input')
+            task.historyOutputLocation = new File('output')
         when:
-        def createdMap = task.createTaskArgumentMap()
-
+            def createdMap = task.createTaskArgumentMap()
         then:
-        assert createdMap.get('historyInputLocation') == task.historyInputLocation.path
-        assert createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
+            createdMap.get('historyInputLocation') == task.historyInputLocation.path
+            createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
     }
 }

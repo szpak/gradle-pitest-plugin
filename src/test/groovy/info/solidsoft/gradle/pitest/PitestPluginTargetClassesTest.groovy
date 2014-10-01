@@ -23,11 +23,16 @@ import spock.lang.Specification
 
 class PitestPluginTargetClassesTest extends Specification {
 
+    private Project project
+
+    def setup() {
+        project = ProjectBuilder.builder().build()
+        project.apply(plugin: "java")
+        project.apply(plugin: "info.solidsoft.pitest")
+    }
+
     def "take target classes from pitest configuration closure"() {
         given:
-            Project project = ProjectBuilder.builder().build()
-            project.apply(plugin: "java")
-            project.apply(plugin: "pitest")
             project.pitest.targetClasses = ["foo"]
         when:
             def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
@@ -37,10 +42,7 @@ class PitestPluginTargetClassesTest extends Specification {
 
     def "set target classes to project group if defined"() {
         given:
-            Project project = ProjectBuilder.builder().build()
             project.group = "group"
-            project.apply(plugin: "java")
-            project.apply(plugin: "pitest")
         when:
             def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
@@ -49,10 +51,7 @@ class PitestPluginTargetClassesTest extends Specification {
 
     def "override default target classes from project group if defined by user"() {
         given:
-            Project project = ProjectBuilder.builder().build()
             project.group = "group"
-            project.apply(plugin: "java")
-            project.apply(plugin: "pitest")
             project.pitest.targetClasses = ["target.classes"]
         when:
             def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
@@ -66,10 +65,6 @@ class PitestPluginTargetClassesTest extends Specification {
 
     //Only imitation of testing Gradle validation exception
     def "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
-        given:
-            Project project = ProjectBuilder.builder().build()
-            project.apply(plugin: "java")
-            project.apply(plugin: "pitest")
         when:
             def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:

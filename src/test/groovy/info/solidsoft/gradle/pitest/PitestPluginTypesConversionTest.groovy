@@ -24,10 +24,10 @@ class PitestPluginTypesConversionTest extends Specification {
 
     private Project project
 
-    void setup() {
+    def setup() {
         project = ProjectBuilder.builder().build()
         project.apply(plugin: "java")
-        project.apply(plugin: "pitest")
+        project.apply(plugin: "info.solidsoft.pitest")
     }
 
     def "accept BigDecimal as timeoutFactor configuration parameter"() {
