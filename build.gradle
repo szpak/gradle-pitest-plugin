@@ -33,6 +33,7 @@ dependencies {
     }
     testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
     testCompile 'junit:junit:4.11'
+    testCompile 'com.netflix.nebula:nebula-test:1.12.4'
 }
 
 idea {

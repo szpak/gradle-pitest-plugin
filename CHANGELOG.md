@@ -1,6 +1,7 @@
 1.1.0 - 2014-10-??
 
  - change plugin id to 'info.solidsoft.pitest' to be complaint with [Gradle plugin portal](http://plugins.gradle.org/)
+ - add base automatic functional tests
 
 1.0.0 - 2014-05-21
 
