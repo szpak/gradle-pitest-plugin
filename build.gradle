@@ -86,6 +86,11 @@ task funcTest(type: Test) {
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
 
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn test, funcTest
+}
+
 if (isReleaseVersion) {
     //activate signing only for release versions (it is not needed for 'gradle install')
     apply plugin: 'signing'
