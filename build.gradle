@@ -27,7 +27,7 @@ sourceSets {
     funcTest {
         java.srcDir file('src/funcTest/java')
         groovy.srcDir file('src/funcTest/groovy')
-        resources.srcDir file('src/funcTest/resources')
+        resources.srcDir file('src/funcTest/resources') //Broken in Idea - https://youtrack.jetbrains.com/issue/IDEA-128966
     }
 }
 
@@ -43,6 +43,8 @@ dependencies {
     testCompile 'junit:junit:4.11'
 
     funcTestCompile sourceSets.main.output
+    funcTestCompile sourceSets.test.output  //to make visible funcTest resources moved to test resources as a workaround for Idea bug
+
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
     funcTestCompile 'com.netflix.nebula:nebula-test:1.12.4'
