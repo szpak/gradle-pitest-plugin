@@ -59,10 +59,6 @@ class PitestPluginTargetClassesTest extends Specification {
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["target.classes"] as Set)
     }
 
-    @Ignore("Is it possible to call task validation on a project created with ProjectBuilder?")
-    def "throw Gradle exception if project group not defined and not explicit set targetClasses parameter"() {
-    }
-
     //Only imitation of testing Gradle validation exception
     def "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
         when:
@@ -70,6 +66,9 @@ class PitestPluginTargetClassesTest extends Specification {
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, null)
     }
+
+    //Test case "throw Gradle exception if project group not defined and not explicit set targetClasses parameter" implemented as functional test
+    // in TargetClassesFunctionalSpec
 
     private static assertOnePitestTaskWithGivenTargetClasses(Set<Task> tasks, Set<String> expectedTargetClasses) {
         tasks.size() == 1
