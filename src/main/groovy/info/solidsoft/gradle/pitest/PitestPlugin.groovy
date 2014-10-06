@@ -152,12 +152,9 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies() {
-        def config = project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
-        if (config.dependencies.empty) {
-            project.rootProject.buildscript.dependencies {
-                log.info("Using PIT: $extension.pitestVersion")
-                pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-            }
+        project.rootProject.buildscript.dependencies {
+            log.info("Using PIT: $extension.pitestVersion")
+            pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
         }
     }
 }
