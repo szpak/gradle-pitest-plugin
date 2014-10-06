@@ -2,6 +2,7 @@ language: groovy
 jdk:
   - oraclejdk7
   - openjdk7
+  - oraclejdk8
   - openjdk6
 install: ./gradlew assemble
-script: ./gradlew check --stacktrace --info
+script: ./gradlew funcTest check --stacktrace --info
