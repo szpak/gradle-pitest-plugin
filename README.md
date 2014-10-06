@@ -5,29 +5,45 @@ calculate a mutation coverage of a [Gradle](http://gradle.org/)-based projects w
 
 ## Quick start
 
-Add gradle-pitest-plugin and pitest itself to the buildscript dependencies in your build.gradle file:
+### Generic approach
+
+Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle file:
 
     buildscript {
         repositories {
             mavenCentral()
-            mavenLocal()
             //Needed only for SNAPSHOT versions
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.0.0'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.0'
         }
     }
 
 Apply plugin:
 
-    apply plugin: "pitest"
+    apply plugin: "info.solidsoft.pitest"
 
 Call Gradle with pitest task:
 
     gradle pitest
 
-After the measurements a report created by PIT will be placed in ${PROJECT_DIR}/build/reports/pitest directory.
+After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest` directory.
+
+### Older gradle-pitest-plugin versions (<1.1.0)
+
+For versions <1.1.0 the plugin can be applied with:
+
+    apply plugin: "pitest"
+
+### New plugin mechanism introduced in Gradle 2.1
+
+    plugins {
+      id "info.solidsoft.pitest" version "1.1.0"
+    }
+
+Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
+
 
 ## Plugin configuration
 
@@ -48,7 +64,7 @@ following example).
 
     pitest {
         targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-        pitestVersion = "1.0.0" //not needed when a default PIT version should be used
+        pitestVersion = "1.1.0" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
     }
@@ -78,6 +94,7 @@ For example:
         jvmArgs = ['-Xmx1024m']
     }
 
+
 ## Multi-module projects support
 
 gradle-pitest-plugin can be used in multi-module projects. The plugin has to be applied in all subprojects which should be
@@ -85,7 +102,7 @@ processed with PIT. A sample snippet from build.gradle located for the root proj
 
     subprojects {
         ...
-        apply plugin: 'pitest'
+        apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
 
         pitest {
             threads = 4
@@ -100,6 +117,7 @@ Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/d
 multi-module project. A report for each module has to be browsed separately. Alternatively a
 [PIT plugin for Sonar](https://docs.codehaus.org/display/SONAR/Pitest) can be used to get aggregated results.
 
+
 ## Versions
 
 Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
@@ -108,14 +126,15 @@ in a pitest configuration closure.
 
 Note. There could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 1.0.x uses PIT 1.0.x, 0.32.x uses PIT 0.32, 0.30.x uses PIT 0.30, etc.
+gradle-pitest-plugin 1.1.x user PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.
 
 Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 1.0.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 under OpenJDK 8, OpenJDK 7 and Sun 1.6.
+gradle-pitest-plugin 1.1.0 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.1 under OpenJDK 8, Oracle JDK 8, OpenJDK 7 and Sun 1.6.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
+
 
 ## FAQ
 
@@ -146,7 +165,9 @@ after upgrade to version 0.33.0?
 
 3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
 
-There is an [issue](https://github.com/spring-projects/spring-boot/issues/721) with the way how spring-boot-gradle-plugin handles JavaExec tasks
+**Update**. Spring Boot 1.1.0 is fully compatible with gradle-pitest-plugin.
+
+There ~~is~~ was an [issue](https://github.com/spring-projects/spring-boot/issues/721) with the way how spring-boot-gradle-plugin (<1.1.0) handles JavaExec tasks
 (including pitest task which in the version 0.33.0 became JavaExec task to resolve classpath issue with configured non default PIT version - see
 [issue #7](https://github.com/szpak/gradle-pitest-plugin/issues/7)).
 
@@ -166,11 +187,27 @@ Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support)
         pitestVersion = "0.33"
     }
 
+4. How can I override plugin configuration from command line/system properties?
+
+Gradle does not provide a built-in way to override plugin configuration via command line, but [gradle-override-plugin](https://github.com/nebula-plugins/gradle-override-plugin)
+can be used to do that.
+
+After [applied](https://github.com/nebula-plugins/gradle-override-plugin) gradle-override-plugin in **your** project it is possible to do following:
+
+    ./gradlew pitest -Doverride.pitest.reportDir=build/pitReport -Doverride.pitest.threads=8
+
+Note. The mechanism should work fine for String and numeric properties, but the are limitations with support of
+[Lists/Sets/Maps](https://github.com/nebula-plugins/gradle-override-plugin/issues/3) and [Boolean values](https://github.com/nebula-plugins/gradle-override-plugin/issues/1).
+
+For more information see project [web page](https://github.com/nebula-plugins/gradle-override-plugin).
+
+
 ## Known issues
 
  - too verbose output from PIT
 
- - 0.33.0+ is not compatible with Spring Boot projects due to a [bug](https://github.com/spring-projects/spring-boot/issues/721) in spring-boot-gradle-plugin - see FAQ for a workaround
+ - ~~0.33.0+ is not compatible with Spring Boot projects due to a [bug](https://github.com/spring-projects/spring-boot/issues/721) in spring-boot-gradle-plugin - see FAQ for a workaround~~ - works with Spring Boot 1.1.0+
+
 
 ## Development
 
@@ -178,9 +215,14 @@ gradle-pitest-plugin cloned from the repository can be built using Gradle comman
 
     ./gradlew build
 
-The easiest way to make a JAR with local changes visible in another project is to install it into the local Maven repository
+The easiest way to make a JAR with local changes visible in another project is to install it into the local Maven repository:
 
     ./gradlew install
+
+There are also basic functional tests written using [nebula-test](https://github.com/nebula-plugins/nebula-test/) which can be run with:
+
+    ./gradlew funcTest
+
 
 ## Support
 
@@ -194,4 +236,3 @@ However it is often a better idea to send a questions to the [PIT mailing list](
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ![Stat Counter stats](https://c.statcounter.com/9394072/0/db9b06ab/0/)
-
