@@ -1,7 +1,14 @@
-1.1.0 - 2014-10-??
+1.1.1 - 2014-10-10
 
- - change plugin id to 'info.solidsoft.pitest' to be complaint with [Gradle plugin portal](http://plugins.gradle.org/)
- - add base automatic functional tests
+ - fix incompatibility with the new Gradle plugin mechanism - #21
+
+1.1.0 - 2014-10-08
+
+ - change plugin id to 'info.solidsoft.pitest' to be complaint with [Gradle plugin portal](http://plugins.gradle.org/) [**breaking change**]
+ - make plugin available through [Gradle plugin portal](http://plugins.gradle.org/) - #19
+ - add base automatic functional tests - #22
+ - make it easier to manually override PIT dependencies - #20
+ - PIT 1.1.0 by default
 
 1.0.0 - 2014-05-21
 
