@@ -4,7 +4,7 @@ import nebula.test.IntegrationSpec
 
 class PitestPluginFunctional1Spec extends IntegrationSpec {
 
-    def "should setup and run simple build on pitest infrastructure"() {
+    def "setup and run simple build on pitest infrastructure"() {
         given:
             buildFile << """
                 apply plugin: 'java'
@@ -30,10 +30,9 @@ class PitestPluginFunctional1Spec extends IntegrationSpec {
             result.wasExecuted(':test')
     }
 
-    def "should setup and run pitest task"() {
+    def "setup and run pitest task"() {
         given:
             buildFile << """
-                apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
                 group = 'gradle.pitest.test'
 
