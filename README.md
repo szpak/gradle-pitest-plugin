@@ -129,6 +129,7 @@ Note. There could be some issues when using non default PIT versions.
 gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.
 
 Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
+
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
 gradle-pitest-plugin 1.1.1 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.1 under OpenJDK 8, Oracle JDK 8, OpenJDK 7 and Sun 1.6.
@@ -152,7 +153,7 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'`
 after upgrade to version 0.33.0?
 
-    To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predicable
+    To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable
     `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial,
     but unfortunately I am not aware of the way to keep both parameter types active at the same time.
 
