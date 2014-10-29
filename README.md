@@ -3,6 +3,8 @@
 The plugin provides an ability to perform a [mutation testing](https://en.wikipedia.org/wiki/Mutation_testing) and
 calculate a mutation coverage of a [Gradle](http://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
+
 ## Quick start
 
 ### Generic approach
