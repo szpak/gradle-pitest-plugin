@@ -9,4 +9,4 @@ script: ./gradlew funcTest check --stacktrace --info --continue
 maxtrix:
   include:
     - jdk: oraclejdk8
-    - env: PITEST_REGRESSION_TESTS=quick
+      env: PITEST_REGRESSION_TESTS=quick
