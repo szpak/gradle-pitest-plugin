@@ -3,10 +3,14 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
-install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info --continue
+env:
+  - PITEST_REGRESSION_TESTS=latest
+
 #Regression tests with different Gradle versions only on JDK 8
-maxtrix:
+matrix:
   include:
     - jdk: oraclejdk8
       env: PITEST_REGRESSION_TESTS=quick
+
+install: ./gradlew assemble
+script: ./gradlew funcTest check --stacktrace --info --continue
