@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk7
 env:
-  - PITEST_REGRESSION_TESTS=latest
+  - PITEST_REGRESSION_TESTS=latestOnly
 
 #Regression tests with different Gradle versions only on JDK 8
 matrix:

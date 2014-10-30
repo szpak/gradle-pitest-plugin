@@ -41,7 +41,7 @@ class PitestPluginFunctional2Spec extends IntegrationSpec {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
         log.debug("$REGRESSION_TESTS_ENV_NAME set to '${regressionTestsLevel}'")
         switch (regressionTestsLevel) {
-            case "latest":
+            case "latestOnly":
             case null:
                 GRADLE_LATEST_VERSIONS
                 break
@@ -52,7 +52,7 @@ class PitestPluginFunctional2Spec extends IntegrationSpec {
                 (12..6).collect { "1.$it" } // + (1..0).collect { "2.$it" }
                 break
             default:
-                log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latest', 'quick' or 'full'). " +
+                log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +
                         "Assuming 'latest'.")
                 GRADLE_LATEST_VERSIONS
         }
