@@ -47,7 +47,7 @@ dependencies {
 
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    /*funcT*/testCompile 'com.netflix.nebula:nebula-test:1.12.4' //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
+    /*funcT*/testCompile 'com.netflix.nebula:nebula-test:1.12.5' //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
 }
 
 idea {

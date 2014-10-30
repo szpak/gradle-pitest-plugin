@@ -1,8 +1,12 @@
 language: groovy
 jdk:
+  - oraclejdk8
   - oraclejdk7
   - openjdk7
-  - oraclejdk8
-  - openjdk6
 install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info
+script: ./gradlew funcTest check --stacktrace --info --continue
+#Regression tests with different Gradle versions only on JDK 8
+maxtrix:
+  include:
+    - jdk: oraclejdk8
+    - env: PITEST_REGRESSION_TESTS=quick
