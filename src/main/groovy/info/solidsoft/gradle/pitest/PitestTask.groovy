@@ -164,6 +164,9 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> mainProcessJvmArgs
 
+    @Input
+    FileCollection launchClasspath
+
     @Override
     void exec() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
@@ -171,7 +174,7 @@ class PitestTask extends JavaExec {
         setArgs(argsAsList)
         setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
         setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
-        setClasspath(getTaskClasspath())
+        setClasspath(getLaunchClasspath())
         super.exec()
     }
 

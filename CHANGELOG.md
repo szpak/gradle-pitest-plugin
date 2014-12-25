@@ -1,6 +1,6 @@
-1.1.1 - 2014-10-10
+1.1.2 - 2014-??-??
 
- - fix incompatibility with the new Gradle plugin mechanism - #21
+ - PIT and its runtime dependencies no longer put on additional classPath (with tests and code to mutate)
 
 1.1.0 - 2014-10-08
 
