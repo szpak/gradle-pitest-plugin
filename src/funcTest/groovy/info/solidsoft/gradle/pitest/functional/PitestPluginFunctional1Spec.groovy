@@ -33,7 +33,6 @@ class PitestPluginFunctional1Spec extends IntegrationSpec {
     def "setup and run pitest task"() {
         given:
             buildFile << """
-                apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
                 group = 'gradle.pitest.test'
 
