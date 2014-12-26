@@ -1,6 +1,7 @@
 1.1.2 - 2014-12-26
 
  - better workaround for issue with not applied Java plugin when using new Gradle plugin mechanism - #21
+ - PIT 1.1.3 by default
 
 1.1.1 - 2014-10-10
 

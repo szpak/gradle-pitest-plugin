@@ -29,7 +29,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    final static DEFAULT_PITEST_VERSION = '1.1.0'
+    final static DEFAULT_PITEST_VERSION = '1.1.3'
     final static PITEST_TASK_GROUP = "Report"
     final static PITEST_TASK_NAME = "pitest"
     final static PITEST_CONFIGURATION_NAME = 'pitest'
