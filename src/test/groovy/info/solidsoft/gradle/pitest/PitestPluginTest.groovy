@@ -15,7 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Issue
+import org.gradle.api.tasks.TaskInstantiationException
 import spock.lang.Specification
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -34,17 +34,16 @@ class PitestPluginTest extends Specification {
             assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
-    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
-    def "apply Java plugin itself of not already applied"() {
+    def "throw exception when java plugin not already applied on project"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
             !project.plugins.hasPlugin("java")
+            !project.plugins.hasPlugin("org.gradle.java")
         when:
             project.apply(plugin: "info.solidsoft.pitest");
         then:
-            project.plugins.hasPlugin(PitestPlugin)
-            project.plugins.hasPlugin('java')
+            thrown(TaskInstantiationException)
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

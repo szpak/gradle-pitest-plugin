@@ -1,3 +1,7 @@
+1.1.2 - 2014-12-26
+
+ - better workaround for issue with not applied Java plugin when using new Gradle plugin mechanism - #21
+
 1.1.1 - 2014-10-10
 
  - fix incompatibility with the new Gradle plugin mechanism - #21

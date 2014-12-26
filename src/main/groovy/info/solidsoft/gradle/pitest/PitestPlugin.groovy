@@ -23,6 +23,7 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.UnionFileCollection
 import com.google.common.annotations.VisibleForTesting
+import org.gradle.api.tasks.TaskInstantiationException
 
 /**
  * The main class for Pitest plugin.
@@ -43,7 +44,7 @@ class PitestPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         this.project = project
-        applyRequiredJavaPlugin()
+        verifyThatRequiredPluginsWereAlreadyApplied()
         createConfigurations()
         createExtension(project)
         project.plugins.withType(JavaBasePlugin) {
@@ -56,10 +57,15 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    private void applyRequiredJavaPlugin() {
-        //The new Gradle plugin mechanism requires all mandatory plugins to be applied explicit
-        //See: https://github.com/szpak/gradle-pitest-plugin/issues/21
-        project.apply(plugin: 'java')
+    private void verifyThatRequiredPluginsWereAlreadyApplied() {
+        //MZA: Pitest currently works only with Java project and it is required to applied Java plugin first.
+        //     This clarify the error message (is better than "missing sourceSets property")
+        //Fully qualified name in required with new plugin mechanism:
+        //http://forums.gradle.org/gradle/topics/project-plugins-hasplugin-java-returns-false-when-the-new-plugin-mechanism-is-used#reply_14943890
+        if (!project.plugins.hasPlugin("java") && !project.plugins.hasPlugin("org.gradle.java")) {
+            log.debug("Already applied plugins: {}", project.plugins)
+            throw new TaskInstantiationException("Java plugin has to be applied before Pitest plugin")
+        }
     }
 
     private void createConfigurations() {
