@@ -1,7 +1,6 @@
 package info.solidsoft.gradle.pitest.functional
 
 import groovy.util.logging.Slf4j
-import nebula.test.IntegrationSpec
 import spock.lang.Unroll
 
 /**
@@ -14,7 +13,7 @@ import spock.lang.Unroll
  *  - Allow to test with Gradle 2.x a plugin built with Gradle 1.x - classpath problem - https://github.com/nebula-plugins/nebula-test/issues/13 - ugly hacked locally
  */
 @Slf4j
-class PitestPluginFunctional2Spec extends IntegrationSpec {
+class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     @Unroll
     def "should run mutation analysis with Gradle #requestedGradleVersion"() {
@@ -35,7 +34,7 @@ class PitestPluginFunctional2Spec extends IntegrationSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["1.12"] // + ["2.1"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.2.1"]
 
     private static def resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -46,10 +45,10 @@ class PitestPluginFunctional2Spec extends IntegrationSpec {
                 GRADLE_LATEST_VERSIONS
                 break
             case "quick":
-                GRADLE_LATEST_VERSIONS + ["1.6"]     //+ ["2.0"]
+                GRADLE_LATEST_VERSIONS + ["2.0"]
                 break
             case "full":
-                (12..6).collect { "1.$it" } // + (1..0).collect { "2.$it" }
+                (2..0).collect { "2.$it" } + ["2.2.1"]
                 break
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +

@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileStatic
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
@@ -24,6 +25,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  * Note: taskClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
+@CompileStatic
 class PitestPluginExtension {
 
     String pitestVersion

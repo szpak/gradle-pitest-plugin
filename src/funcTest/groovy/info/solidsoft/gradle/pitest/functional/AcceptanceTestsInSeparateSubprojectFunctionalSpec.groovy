@@ -1,8 +1,6 @@
 package info.solidsoft.gradle.pitest.functional
 
-import nebula.test.IntegrationSpec
-
-class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends IntegrationSpec {
+class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "should mutate production code in another subproject"() {
         given:

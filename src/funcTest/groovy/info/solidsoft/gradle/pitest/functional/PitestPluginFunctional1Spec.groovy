@@ -1,8 +1,6 @@
 package info.solidsoft.gradle.pitest.functional
 
-import nebula.test.IntegrationSpec
-
-class PitestPluginFunctional1Spec extends IntegrationSpec {
+class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
     def "setup and run simple build on pitest infrastructure"() {
         given:

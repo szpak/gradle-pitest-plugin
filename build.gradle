@@ -35,8 +35,8 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 
-    testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
-        //groovy 1.8.6 is already provided by Gradle itself
+    testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
+        //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
@@ -47,7 +47,10 @@ dependencies {
 
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    /*funcT*/testCompile 'com.netflix.nebula:nebula-test:1.12.5' //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
+    //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
+    /*funcT*/testCompile('com.netflix.nebula:nebula-test:2.0.5') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    }
 }
 
 idea {
@@ -168,5 +171,5 @@ uploadArchives.dependsOn funcTest, check
 //'info.solidsoft.pitest:info.solidsoft.gradle.pitest:gradle-pitest-plugin' via GUI after sync
 
 wrapper {
-    gradleVersion '1.12'
+    gradleVersion "2.2.1"
 }

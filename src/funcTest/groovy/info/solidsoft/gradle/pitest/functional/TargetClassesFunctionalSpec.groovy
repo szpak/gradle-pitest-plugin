@@ -1,8 +1,6 @@
 package info.solidsoft.gradle.pitest.functional
 
-import nebula.test.IntegrationSpec
-
-class TargetClassesFunctionalSpec extends IntegrationSpec {
+class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "report error when no project group and no targetClasses parameter are defined"() {
         given:
