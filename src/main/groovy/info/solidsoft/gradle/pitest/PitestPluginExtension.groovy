@@ -67,12 +67,41 @@ class PitestPluginExtension {
     Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
     Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
     File jvmPath    //new in PIT 0.32
+
     /**
      * JVM arguments to use when Gradle plugin launches the main PIT process.
      *
      * @since 0.33.0 (specific for Gradle plugin)
      */
     List<String> mainProcessJvmArgs
+
+    /**
+     * Additional mutableCodePaths (paths with production classes which should be mutated).<p/>
+     *
+     * By default all classes produced by default sourceSets (or defined via mainSourceSets property) are used as production code to mutate.
+     * In some rare cases it is required to pass additional classes, e.g. from JAR produced by another subproject. Issue #25.
+     *
+     * Samples usage ("itest" project depends on "shared" project):
+     * <pre>
+     * configure(project(':itest')) {
+     *     dependencies {
+     *         compile project(':shared')
+     *     }
+     *
+     *     apply plugin: "info.solidsoft.pitest"
+     *     //mutableCodeBase - additional configuration to resolve :shared project JAR as mutable code path for PIT
+     *     configurations { mutableCodeBase { transitive false } }
+     *     dependencies { mutableCodeBase project(':shared') }
+     *     pitest {
+     *         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+     *         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+     *     }
+     * }
+     * </pre>
+     *
+     * @since 1.1.3 (specific for Gradle plugin)
+     */
+    Set<File> additionalMutableCodePaths
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)

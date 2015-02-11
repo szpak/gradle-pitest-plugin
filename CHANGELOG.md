@@ -1,3 +1,7 @@
+1.1.3 - 2015-02-??
+
+ - support for integration tests in separate modules - #25
+
 1.1.2 - 2014-12-26
 
  - better workaround for issue with not applied Java plugin when using new Gradle plugin mechanism - #21

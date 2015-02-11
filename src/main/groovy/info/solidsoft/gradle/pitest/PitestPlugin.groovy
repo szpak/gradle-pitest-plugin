@@ -88,7 +88,7 @@ class PitestPlugin implements Plugin<Project> {
                 combinedTaskClasspathWithoutPomFiles += project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
                 combinedTaskClasspathWithoutPomFiles
             }
-            mutableCodePaths = { extension.mainSourceSets*.output.classesDir.flatten() as Set }
+            mutableCodePaths = { (extension.mainSourceSets*.output.classesDir.flatten() as Set) + (extension.additionalMutableCodePaths ?: []) }
             sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
 
             reportDir = { extension.reportDir }
