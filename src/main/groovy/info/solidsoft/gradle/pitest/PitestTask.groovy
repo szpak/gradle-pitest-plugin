@@ -16,8 +16,6 @@
 package info.solidsoft.gradle.pitest;
 
 import org.gradle.api.file.FileCollection
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.*
 import com.google.common.annotations.VisibleForTesting
 

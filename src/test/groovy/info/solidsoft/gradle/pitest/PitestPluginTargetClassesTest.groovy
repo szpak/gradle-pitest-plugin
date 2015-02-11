@@ -18,7 +18,6 @@ package info.solidsoft.gradle.pitest
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class PitestPluginTargetClassesTest extends Specification {
