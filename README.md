@@ -99,8 +99,20 @@ For example:
 
 ## Multi-module projects support
 
-gradle-pitest-plugin can be used in multi-module projects. The plugin has to be applied in all subprojects which should be
-processed with PIT. A sample snippet from build.gradle located for the root project:
+gradle-pitest-plugin can be used in multi-module projects. The gradle-pitest-plugin dependency should be added to the buildscript configuration in
+the root project while the plugin has to be applied in all subprojects which should be processed with PIT. A sample snippet from build.gradle located
+for the root project:
+
+    //in root project configuration
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
+            (...)
+        }
+    }
 
     subprojects {
         ...
@@ -203,6 +215,16 @@ Note. The mechanism should work fine for String and numeric properties, but the 
 [Lists/Sets/Maps](https://github.com/nebula-plugins/gradle-override-plugin/issues/3) and [Boolean values](https://github.com/nebula-plugins/gradle-override-plugin/issues/1).
 
 For more information see project [web page](https://github.com/nebula-plugins/gradle-override-plugin).
+
+5. Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
+
+    Could not resolve all dependencies for configuration ':pitest'.
+    > Could not find org.pitest:pitest-command-line:1.1.0.
+      Required by:
+          :Gradle-Pitest-Example:unspecified
+
+Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
+The plugin should be applied in all subprojects which should be processed with PIT.
 
 
 ## Known issues
