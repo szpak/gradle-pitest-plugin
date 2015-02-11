@@ -1,6 +1,8 @@
 1.1.3 - 2015-02-??
 
+ - official support for PIT plugins - #17
  - support for integration tests in separate modules - #25
+ - PIT and its runtime dependencies no longer put on additional classPath (with tests and code to mutate)
 
 1.1.2 - 2014-12-26
 

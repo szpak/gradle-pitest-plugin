@@ -15,13 +15,11 @@ class OverridePluginFunctionalSpec extends IntegrationSpec {
                 group = 'gradle.pitest.test'
 
                 buildscript {
-                    repositories {
-                        mavenCentral()
-                    }
-                    dependencies {
-                        classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+'
-                    }
+                    repositories { mavenCentral() }
+                    dependencies { classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+' }
                 }
+                repositories { mavenCentral() }
+                dependencies { testCompile 'junit:junit:4.11' }
             """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')

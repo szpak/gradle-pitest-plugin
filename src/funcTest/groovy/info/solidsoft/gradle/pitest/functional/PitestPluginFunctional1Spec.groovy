@@ -62,4 +62,41 @@ class PitestPluginFunctional1Spec extends IntegrationSpec {
             result.wasExecuted(':pitest')
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
     }
+
+    def "enable PIT plugin when on classpath"() {
+        given:
+            buildFile << """
+                apply plugin: 'info.solidsoft.pitest'
+                group = 'gradle.pitest.test'
+
+                repositories {
+                    mavenCentral()
+                }
+                buildscript {
+                    repositories {
+                        mavenCentral()
+                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
+                    }
+                    configurations.maybeCreate("pitest")
+                    dependencies {
+                        pitest 'org.pitest.plugins:pitest-high-isolation-plugin:0.0.1'
+                    }
+                }
+                dependencies {
+                    testCompile 'junit:junit:4.11'
+                }
+                pitest {
+                    verbose = true
+                }
+            """.stripIndent()
+        and:
+            writeHelloWorld('gradle.pitest.test.hello')
+            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+        when:
+            def result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+            result.getStandardError().contains('Marking all mutations as requiring isolation')
+    }
 }
