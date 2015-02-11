@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.logging.Logger
@@ -28,14 +29,15 @@ import com.google.common.annotations.VisibleForTesting
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    final static DEFAULT_PITEST_VERSION = '1.1.3'
-    final static PITEST_TASK_GROUP = "Report"
-    final static PITEST_TASK_NAME = "pitest"
-    final static PITEST_CONFIGURATION_NAME = 'pitest'
+    public final static DEFAULT_PITEST_VERSION = '1.1.3'
+    public final static PITEST_TASK_GROUP = "Report"
+    public final static PITEST_TASK_NAME = "pitest"
+    public final static PITEST_CONFIGURATION_NAME = 'pitest'
 
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
     @VisibleForTesting
+    @PackageScope
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     Project project
