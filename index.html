@@ -44,6 +44,8 @@
 <p>The plugin provides an ability to perform a <a href="https://en.wikipedia.org/wiki/Mutation_testing">mutation testing</a> and
 calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based projects with <a href="http://pitest.org/">PIT</a>.</p>
 
+<p><a href="https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin"><img src="https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg" alt="Maven Central"></a></p>
+
 <h2>
 <a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick start</h2>
 
@@ -59,7 +61,7 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
         //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.1'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
     }
 }
 </code></pre>
@@ -88,7 +90,7 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
 <a id="new-plugin-mechanism-introduced-in-gradle-21" class="anchor" href="#new-plugin-mechanism-introduced-in-gradle-21" aria-hidden="true"><span class="octicon octicon-link"></span></a>New plugin mechanism introduced in Gradle 2.1</h3>
 
 <pre><code>plugins {
-  id "info.solidsoft.pitest" version "1.1.1"
+  id "info.solidsoft.pitest" version "1.1.4"
 }
 </code></pre>
 
@@ -135,6 +137,8 @@ to add integration tests located in a different source set) (since 0.30.1)</li>
 <li>mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
 another Java processes for mutation testing execution and usually <code>jvmArgs</code> should be used to for example increase maximum memory size
 (since 0.33.0 - see <a href="https://github.com/szpak/gradle-pitest-plugin/issues/7">#7</a>);</li>
+<li>additionalMutableCodePaths - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
+see <a href="https://github.com/szpak/gradle-pitest-plugin/issues/25">#25</a>)</li>
 </ul>
 
 <p>For example:</p>
@@ -151,10 +155,22 @@ another Java processes for mutation testing execution and usually <code>jvmArgs<
 <h2>
 <a id="multi-module-projects-support" class="anchor" href="#multi-module-projects-support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multi-module projects support</h2>
 
-<p>gradle-pitest-plugin can be used in multi-module projects. The plugin has to be applied in all subprojects which should be
-processed with PIT. A sample snippet from build.gradle located for the root project:</p>
+<p>gradle-pitest-plugin can be used in multi-module projects. The gradle-pitest-plugin dependency should be added to the buildscript configuration in
+the root project while the plugin has to be applied in all subprojects which should be processed with PIT. A sample snippet from build.gradle located
+for the root project:</p>
 
-<pre><code>subprojects {
+<pre><code>//in root project configuration
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
+        (...)
+    }
+}
+
+subprojects {
     ...
     apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions &lt;1.1.0
 
@@ -173,6 +189,53 @@ multi-module project. A report for each module has to be browsed separately. Alt
 <a href="https://docs.codehaus.org/display/SONAR/Pitest">PIT plugin for Sonar</a> can be used to get aggregated results.</p>
 
 <h2>
+<a id="integration-tests-in-separate-subproject" class="anchor" href="#integration-tests-in-separate-subproject" aria-hidden="true"><span class="octicon octicon-link"></span></a>Integration tests in separate subproject</h2>
+
+<p>Since gradle-pitest-plugin 1.1.4 it is possible to mutate code located in different subproject. Gradle internally does not rely on
+output directory from other subproject, but builds JAR and uses classes from it. For PIT those are two different sets of class files, so
+to make it work it is required to define both <code>mainSourceSets</code> and <code>additionalMutableCodePaths</code>. For example:</p>
+
+<pre><code>configure(project(':itest')) {
+    apply plugin: "info.solidsoft.pitest"
+    dependencies {
+        compile project(':shared')
+    }
+
+    configurations { mutableCodeBase { transitive false } }
+    dependencies { mutableCodeBase project(':shared') }
+    pitest {
+        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+    }
+}
+</code></pre>
+
+<p>Unfortunately there <a href="http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782">seems</a>
+not to be a simpler way (than artificial configuration) to get a reference to the JAR. Minimal working multi-project build is available in
+<a href="https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject">functional tests suite</a>.</p>
+
+<h2>
+<a id="pit-plugins-support" class="anchor" href="#pit-plugins-support" aria-hidden="true"><span class="octicon octicon-link"></span></a>PIT plugins support</h2>
+
+<p>PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although it was possible to use it since 1.1.0).</p>
+
+<p>To enable PIT plugin it is enough to add it to pitest configuration in buildscript closure. For example:</p>
+
+<pre><code>buildscript {
+   repositories {
+       mavenCentral()
+   }
+   configurations.maybeCreate("pitest")
+   dependencies {
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
+       pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
+   }
+}
+</code></pre>
+
+<p>The minimal working example is available in <a href="https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91">functional tests suite</a>.</p>
+
+<h2>
 <a id="versions" class="anchor" href="#versions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Versions</h2>
 
 <p>Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
@@ -183,10 +246,11 @@ in a pitest configuration closure.</p>
 
 <p>gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.</p>
 
-<p>Note. PIT 0.27 is not supported due to <a href="https://code.google.com/p/pitestrunner/issues/detail?id=47">issue 47</a>.
-Note. Due to internal refactoring in PIT versions &gt;=0.32 require gradle-pitest-plugin &gt;=0.32.x and PIT versions &lt;=0.31 gradle-pitest-plugin &lt;=0.30.x.</p>
+<p>Note. PIT 0.27 is not supported due to <a href="https://code.google.com/p/pitestrunner/issues/detail?id=47">issue 47</a>.</p>
 
-<p>gradle-pitest-plugin 1.1.1 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.1 under OpenJDK 8, Oracle JDK 8, OpenJDK 7 and Sun 1.6.</p>
+<p>Note. Due to internal refactoring in PIT versions &gt;=0.32 require gradle-pitest-plugin &gt;=0.32.x and PIT versions &lt;=0.31 gradle-pitest-plugin &lt;=0.30.x.</p>
+
+<p>gradle-pitest-plugin 1.1.4 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.</p>
 
 <p>See <a href="https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md">changelog file</a> for more detailed list of changes in the plugin itself.</p>
 
@@ -211,7 +275,7 @@ As a workaround in older versions add <code>jvmArgs = '-XX:-UseSplitVerifier'</c
 <p>Why have I got <code>GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'</code>
 after upgrade to version 0.33.0?</p>
 
-<p>To keep consistency with the new <code>mainProcessJvmArgs</code> configuration parameter and make an input format more predicable
+<p>To keep consistency with the new <code>mainProcessJvmArgs</code> configuration parameter and make an input format more predictable
 <code>jvmArgs</code> parameter type was changed from <code>String</code> to <code>List&lt;String&gt;</code> in gradle-pitest-plugin 0.33.0. The migration is trivial,
 but unfortunately I am not aware of the way to keep both parameter types active at the same time.</p>
 
@@ -265,6 +329,23 @@ can be used to do that.</p>
 <a href="https://github.com/nebula-plugins/gradle-override-plugin/issues/3">Lists/Sets/Maps</a> and <a href="https://github.com/nebula-plugins/gradle-override-plugin/issues/1">Boolean values</a>.</p>
 
 <p>For more information see project <a href="https://github.com/nebula-plugins/gradle-override-plugin">web page</a>.</p>
+
+<ol>
+<li>
+<p>Why I see <code>Could not find org.pitest:pitest-command-line:1.1.0</code> error in my multiproject build?</p>
+
+<p>Could not resolve all dependencies for configuration ':pitest'.</p>
+
+<blockquote>
+<p>Could not find org.pitest:pitest-command-line:1.1.0.
+  Required by:
+      :Gradle-Pitest-Example:unspecified</p>
+</blockquote>
+</li>
+</ol>
+
+<p>Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
+The plugin should be applied in all subprojects which should be processed with PIT.</p>
 
 <h2>
 <a id="known-issues" class="anchor" href="#known-issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>Known issues</h2>
