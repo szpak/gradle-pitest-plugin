@@ -18,7 +18,7 @@ Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle fi
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
         }
     }
 
@@ -41,7 +41,7 @@ For versions <1.1.0 the plugin can be applied with:
 ### New plugin mechanism introduced in Gradle 2.1
 
     plugins {
-      id "info.solidsoft.pitest" version "1.1.3"
+      id "info.solidsoft.pitest" version "1.1.4"
     }
 
 Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
@@ -85,7 +85,7 @@ to add integration tests located in a different source set) (since 0.30.1)
  - mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
- - additionalMutableCodePaths - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.3 -
+ - additionalMutableCodePaths - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
 see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
 
 For example:
@@ -111,7 +111,7 @@ for the root project:
             mavenCentral()
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
             (...)
         }
     }
@@ -135,7 +135,7 @@ multi-module project. A report for each module has to be browsed separately. Alt
 
 ## Integration tests in separate subproject
 
-Since gradle-pitest-plugin 1.1.3 it is possible to mutate code located in different subproject. Gradle internally does not rely on
+Since gradle-pitest-plugin 1.1.4 it is possible to mutate code located in different subproject. Gradle internally does not rely on
 output directory from other subproject, but builds JAR and uses classes from it. For PIT those are two different sets of class files, so
 to make it work it is required to define both `mainSourceSets` and `additionalMutableCodePaths`. For example:
 
@@ -159,7 +159,7 @@ not to be a simpler way (than artificial configuration) to get a reference to th
 
 ## PIT plugins support
 
-PIT plugins are officially supported since gradle-pitest-plugin 1.1.3 (although it was possible to use it since 1.1.0).
+PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although it was possible to use it since 1.1.0).
 
 To enable PIT plugin it is enough to add it to pitest configuration in buildscript closure. For example:
 
@@ -169,7 +169,7 @@ To enable PIT plugin it is enough to add it to pitest configuration in buildscri
        }
        configurations.maybeCreate("pitest")
        dependencies {
-           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
+           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
            pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
        }
     }
@@ -190,7 +190,7 @@ Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pite
 
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 1.1.3 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+gradle-pitest-plugin 1.1.4 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
