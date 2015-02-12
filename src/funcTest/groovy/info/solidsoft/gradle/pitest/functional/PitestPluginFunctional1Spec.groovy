@@ -79,6 +79,7 @@ class PitestPluginFunctional1Spec extends IntegrationSpec {
                     }
                     configurations.maybeCreate("pitest")
                     dependencies {
+//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'   //Needed in "normal" project
                         pitest 'org.pitest.plugins:pitest-high-isolation-plugin:0.0.1'
                     }
                 }

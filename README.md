@@ -18,7 +18,7 @@ Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle fi
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.1'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
         }
     }
 
@@ -41,7 +41,7 @@ For versions <1.1.0 the plugin can be applied with:
 ### New plugin mechanism introduced in Gradle 2.1
 
     plugins {
-      id "info.solidsoft.pitest" version "1.1.1"
+      id "info.solidsoft.pitest" version "1.1.3"
     }
 
 Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
@@ -85,6 +85,8 @@ to add integration tests located in a different source set) (since 0.30.1)
  - mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
+ - additionalMutableCodePaths - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.3 -
+see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
 
 For example:
 
@@ -131,6 +133,48 @@ Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/d
 multi-module project. A report for each module has to be browsed separately. Alternatively a
 [PIT plugin for Sonar](https://docs.codehaus.org/display/SONAR/Pitest) can be used to get aggregated results.
 
+## Integration tests in separate subproject
+
+Since gradle-pitest-plugin 1.1.3 it is possible to mutate code located in different subproject. Gradle internally does not rely on
+output directory from other subproject, but builds JAR and uses classes from it. For PIT those are two different sets of class files, so
+to make it work it is required to define both `mainSourceSets` and `additionalMutableCodePaths`. For example:
+
+    configure(project(':itest')) {
+        apply plugin: "info.solidsoft.pitest"
+        dependencies {
+            compile project(':shared')
+        }
+
+        configurations { mutableCodeBase { transitive false } }
+        dependencies { mutableCodeBase project(':shared') }
+        pitest {
+            mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+            additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+        }
+    }
+
+Unfortunately there [seems](http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782)
+not to be a simpler way (than artificial configuration) to get a reference to the JAR. Minimal working multi-project build is available in
+[functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
+
+## PIT plugins support
+
+PIT plugins are officially supported since gradle-pitest-plugin 1.1.3 (although it was possible to use it since 1.1.0).
+
+To enable PIT plugin it is enough to add it to pitest configuration in buildscript closure. For example:
+
+    buildscript {
+       repositories {
+           mavenCentral()
+       }
+       configurations.maybeCreate("pitest")
+       dependencies {
+           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3'
+           pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
+       }
+    }
+
+The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 ## Versions
 
@@ -146,7 +190,7 @@ Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pite
 
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 1.1.1 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.1 under OpenJDK 8, Oracle JDK 8, OpenJDK 7 and Sun 1.6.
+gradle-pitest-plugin 1.1.3 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 

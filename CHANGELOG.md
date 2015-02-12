@@ -1,4 +1,4 @@
-1.1.3 - 2015-02-??
+1.1.4 - 2015-02-12
 
  - official support for PIT plugins - #17
  - support for integration tests in separate modules - #25
