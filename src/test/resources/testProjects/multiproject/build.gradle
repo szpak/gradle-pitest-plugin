@@ -44,5 +44,6 @@ configure(project(':itest')) {
         timestampedReports = false
         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+//        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
     }
 }

@@ -22,7 +22,7 @@ Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle fi
         }
     }
 
-Apply plugin:
+Apply the plugin:
 
     apply plugin: "info.solidsoft.pitest"
 
@@ -153,8 +153,22 @@ to make it work it is required to define both `mainSourceSets` and `additionalMu
         }
     }
 
-Unfortunately there [seems](http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782)
-not to be a simpler way (than artificial configuration) to get a reference to the JAR. Minimal working multi-project build is available in
+The above is the way recommended by the [Gradle team](http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782),
+but in specific cases the simpler solution should also work:
+
+    configure(project(':itest')) {
+        apply plugin: "info.solidsoft.pitest"
+        dependencies {
+            compile project(':shared')
+        }
+
+        pitest {
+            mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+            additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()
+        }
+    }
+
+Minimal working multi-project build is available in
 [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
 
 ## PIT plugins support
@@ -197,7 +211,7 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
 
 ## FAQ
 
-1. Why have I got `java.lang.VerifyError: Expecting a stackmap frame...` when using Java 7?
+### 1. Why have I got `java.lang.VerifyError: Expecting a stackmap frame...` when using Java 7?
 
     It should be fixed in PIT 0.29.
     As a workaround in older versions add `jvmArgs = '-XX:-UseSplitVerifier'` to a pitest configuration block
@@ -208,7 +222,7 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
             jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
         }
 
-2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'`
+### 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'`
 after upgrade to version 0.33.0?
 
     To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable
@@ -222,7 +236,7 @@ after upgrade to version 0.33.0?
 
         }
 
-3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
+### 3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
 
 **Update**. Spring Boot 1.1.0 is fully compatible with gradle-pitest-plugin.
 
@@ -246,7 +260,7 @@ Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support)
         pitestVersion = "0.33"
     }
 
-4. How can I override plugin configuration from command line/system properties?
+### 4. How can I override plugin configuration from command line/system properties?
 
 Gradle does not provide a built-in way to override plugin configuration via command line, but [gradle-override-plugin](https://github.com/nebula-plugins/gradle-override-plugin)
 can be used to do that.
@@ -260,7 +274,7 @@ Note. The mechanism should work fine for String and numeric properties, but the 
 
 For more information see project [web page](https://github.com/nebula-plugins/gradle-override-plugin).
 
-5. Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
+### 5. Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
 
     Could not resolve all dependencies for configuration ':pitest'.
     > Could not find org.pitest:pitest-command-line:1.1.0.
