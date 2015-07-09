@@ -40,8 +40,8 @@ class PitestPlugin implements Plugin<Project> {
     @PackageScope
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
-    Project project
-    PitestPluginExtension extension
+    private Project project
+    private PitestPluginExtension extension
 
     void apply(Project project) {
         this.project = project
