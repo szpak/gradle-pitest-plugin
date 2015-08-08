@@ -1,3 +1,9 @@
+1.1.6 - 2015-08-??
+
+ - remove project file functionality from the plugin - #28
+
+1.1.5 - SKIPPED
+
 1.1.4 - 2015-02-12
 
  - official support for PIT plugins - #17

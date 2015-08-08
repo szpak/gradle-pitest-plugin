@@ -124,7 +124,6 @@ class PitestPlugin implements Plugin<Project> {
             failWhenNoMutations = { extension.failWhenNoMutations }
             includedGroups = { extension.includedGroups }
             excludedGroups = { extension.excludedGroups }
-            configFile = { extension.configFile }
             detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }
             historyInputLocation = { extension.historyInputLocation }

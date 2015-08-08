@@ -107,10 +107,6 @@ class PitestTask extends JavaExec {
     @InputFiles
     Set<File> sourceDirs
 
-    @InputFile
-    @Optional
-    File configFile
-
     @Input
     @Optional
     Boolean detectInlinedCode
@@ -204,7 +200,6 @@ class PitestTask extends JavaExec {
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
-        map['configFile'] = getConfigFile()?.path
         map['detectInlinedCode'] = getDetectInlinedCode()?.toString()
         map['timestampedReports'] = getTimestampedReports()?.toString()
         map['mutationThreshold'] = getMutationThreshold()?.toString()
