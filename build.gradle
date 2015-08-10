@@ -1,11 +1,9 @@
 apply plugin: 'groovy'
-apply plugin: 'idea'
-apply plugin: 'maven'
-apply plugin: 'uploadAuth'
+apply plugin: 'pl.allegro.tech.build.axion-release'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'io.codearte.nexus-staging'
 
-ext.isReleaseVersion = !project.version.endsWith("SNAPSHOT")
-
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
 
 buildscript {
     repositories {
@@ -13,10 +11,22 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        //TODO: MZA: Upgrade to 2.0.x when fixed: https://github.com/sebersole/gradle-maven-publish-auth/issues/7
-        classpath 'org.hibernate.build.gradle:gradle-upload-auth-plugin:1.1.1'
+        classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.3'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
 }
+
+scmVersion {
+    tag {
+        prefix = 'release'
+        versionSeparator = '/'
+    }
+    createReleaseCommit = true
+    releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
+}
+
+project.version = scmVersion.version
 
 repositories {
     mavenCentral()
@@ -53,33 +63,6 @@ dependencies {
     }
 }
 
-idea {
-    project {
-        jdkName = '1.6'
-    }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-task groovydocJar(type: Jar, dependsOn: javadocJar) {
-    classifier = 'groovydoc'
-    from groovydoc.outputs.files
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives groovydocJar
-}
-
 task funcTest(type: Test) {
     testClassesDir = sourceSets.funcTest.output.classesDir
     classpath = sourceSets.funcTest.runtimeClasspath
@@ -96,75 +79,45 @@ task testReport(type: TestReport) {
     reportOn test, funcTest
 }
 
-if (isReleaseVersion) {
-    //activate signing only for release versions (it is not needed for 'gradle install')
-    apply plugin: 'signing'
+nexusStaging {
+    packageGroup = "info.solidsoft"
+    stagingProfileId = "34a3a5beeaa96"
+}
 
-    signing {
-        sign configurations.archives
-    }
+modifyPom {
+    project {
+        name 'Gradle PIT Plugin'
+        description 'Gradle plugin for PIT Mutation Testing'
+        url 'http://gradle-pitest-plugin.solidsoft.info/'
 
-    gradle.taskGraph.whenReady { taskGraph ->
-        if (taskGraph.allTasks.any { it instanceof org.gradle.plugins.signing.Sign }) {
-            if (!project.hasProperty("signing.keyId") || !project.hasProperty("signing.secretKeyRingFile")) {
-                throw new GradleException("signing.keyId and signing.secretKeyRingFile has to be configured (e.g. in ~/.gradle/gradle.properties)")
+        scm {
+            connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
+            developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
+            url 'https://github.com/szpak/gradle-pitest-plugin'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0'
+                distribution 'repo'
             }
-            Console console = System.console()
-            if (console) {
-                def keyPassword = console.readPassword("\nEnter a private key password: ")
-                ext."signing.password" = keyPassword
-            } else {
-                throw new GradleException("Unable to get console. Make sure to not running a signing task in a daemon mode (e.g. use --no-daemon).")
+        }
+
+        developers {
+            developer {
+                id 'szpak'
+                name 'Marcin Zajączkowski'
+                email 'mszpak ATT wp DOTT pl'
+                roles {
+                    role 'despot'
+                    role 'developer'
+                }
             }
         }
     }
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            name = 'Sonatype OSS'
-            repository(id: 'sonatype-nexus-staging', url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2')
-            snapshotRepository(id: 'sonatype-nexus-snapshots', url: 'https://oss.sonatype.org/content/repositories/snapshots')
-
-            beforeDeployment {
-                if (isReleaseVersion) {
-                    signing.signPom it
-                }
-            }
-
-            pom.project {
-                name 'Gradle PIT Plugin'
-                description 'Gradle plugin for PIT Mutation Testing'
-                url 'http://gradle-pitest-plugin.solidsoft.info/'
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0'
-                        distribution 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'szpak'
-                        name 'Marcin Zajączkowski'
-                        email 'mszpak ATT wp DOTT pl'
-                        roles {
-                            role 'founder'
-                            role 'despot'
-                            role 'developer'
-                        }
-                    }
-                }
-                scm {
-                    connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
-                    developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
-                    url 'https://github.com/szpak/gradle-pitest-plugin'
-                }
-            }
-        }
-    }
-}
 uploadArchives.dependsOn funcTest, check
 
 //Artifacts are not placed directly into JCenter, so for now a 'gradle-plugin' attribute has to be set manually to
