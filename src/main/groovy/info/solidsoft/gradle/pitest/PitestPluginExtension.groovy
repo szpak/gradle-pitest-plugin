@@ -105,6 +105,20 @@ class PitestPluginExtension {
      */
     Set<File> additionalMutableCodePaths
 
+    /**
+     * Plugin configuration parameters.
+     *
+     * Should be defined a map:
+     * <pre>
+     * pitest {
+     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     * }
+     * </pre>
+     *
+     * @since 1.1.6
+     */
+    Map<String, String> pluginConfiguration
+
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
     }

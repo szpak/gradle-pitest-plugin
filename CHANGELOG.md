@@ -1,5 +1,6 @@
 1.1.6 - 2015-08-??
 
+ - support for plugin configuration parameters - #29 
  - remove project file functionality from the plugin - #28
 
 1.1.5 - SKIPPED
