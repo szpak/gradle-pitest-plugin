@@ -40,12 +40,8 @@ For versions <1.1.0 the plugin can be applied with:
 
 ### New plugin mechanism introduced in Gradle 2.1
 
-    plugins {
-      id 'info.solidsoft.pitest' version '1.1.4'
-    }
-
-Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
-
+The plugin upload mechanism to Gradle Plugins Repository has changed once again and gradle-pitest-plugin 1.1.6+ artifacts are
+available only from Maven Central.
 
 ## Plugin configuration
 
