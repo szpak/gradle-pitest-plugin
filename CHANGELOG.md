@@ -1,6 +1,8 @@
 1.1.6 - 2015-08-??
 
  - remove project file functionality from the plugin - #28
+ - PIT 1.1.6 by default
+ - simplify internal release process and switch to Gradle 2.x - minimal required Gradle version is 2.0 - #30
 
 1.1.5 - SKIPPED
 

@@ -186,11 +186,10 @@ Note. There could be some issues when using non default PIT versions.
 
 gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.
 
-Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
-
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 1.1.4 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+Starting since version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+ and was tested with Gradle 2.0 to 2.5 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
