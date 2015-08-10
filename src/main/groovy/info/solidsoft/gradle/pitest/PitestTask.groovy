@@ -235,18 +235,16 @@ class PitestTask extends JavaExec {
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        List<String> argList = new ArrayList<String>();
-        taskArgumentsMap.each { k, v ->
-            argList.add("--" + k + "=" + v)
+        taskArgumentsMap.collect { k, v ->
+            "--$k=$v"
         }
-        argList
     }
 
     @VisibleForTesting
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        getPluginConfiguration()?.collect {
-            "${it.key}=${it.value}".toString()
+        getPluginConfiguration()?.collect { k, v ->
+            "$k=$v".toString()
         }?.collect {
             "--pluginConfiguration=$it"
         } ?: []
