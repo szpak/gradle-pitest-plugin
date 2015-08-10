@@ -41,7 +41,7 @@ For versions <1.1.0 the plugin can be applied with:
 ### New plugin mechanism introduced in Gradle 2.1
 
     plugins {
-      id "info.solidsoft.pitest" version "1.1.4"
+      id 'info.solidsoft.pitest' version '1.1.4'
     }
 
 Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
@@ -131,7 +131,7 @@ for the root project:
 
 Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/detail?id=41) an aggregated report for
 multi-module project. A report for each module has to be browsed separately. Alternatively a
-[PIT plugin for Sonar](https://docs.codehaus.org/display/SONAR/Pitest) can be used to get aggregated results.
+[PIT plugin for Sonar](https://github.com/SonarCommunity/sonar-pitest) can be used to get aggregated results.
 
 ## Integration tests in separate subproject
 

@@ -24,7 +24,12 @@ scmVersion {
     }
     createReleaseCommit = true
     releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
-}
+    hooks {
+        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/},
+                           replacement: {v, p -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$v\'"}]
+        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /id\ 'info\.solidsoft\.pitest'\ version\ '.*'/},
+                           replacement: {v, p -> "id 'info.solidsoft.pitest' version '$v'"}]
+    }}
 
 project.version = scmVersion.version
 
