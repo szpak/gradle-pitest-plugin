@@ -120,7 +120,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             def result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
-            result.getStandardError().contains('Starting mutation analysis with the following plugin configuration')
+            result.getStandardError().contains('with the following plugin configuration')
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
     }
