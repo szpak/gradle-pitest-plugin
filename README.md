@@ -51,7 +51,7 @@ automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitest
 
 In the past there was one mandatory parameter - `targetClasses` - which points to the classes which should be mutated.
 Starting from 0.32.0 it is only required if a [group](http://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34)
-for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using pitest.targetClasses parameter).
+for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using `pitest.targetClasses` parameter).
 
 In case of using not default PIT version the `pitestVersion` parameter should be used to override it.
 
