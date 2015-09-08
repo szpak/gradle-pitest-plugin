@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>gradle-pitest-plugin by szpak</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
@@ -44,6 +44,8 @@
 <p>The plugin provides an ability to perform a <a href="https://en.wikipedia.org/wiki/Mutation_testing">mutation testing</a> and
 calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based projects with <a href="http://pitest.org/">PIT</a>.</p>
 
+<p><a href="https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin"><img src="https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg" alt="Maven Central"></a> <a href="https://travis-ci.org/szpak/gradle-pitest-plugin"><img src="https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master" alt="Build Status Travis"></a> <a href="https://solidsoft.ci.cloudbees.com/job/pitest-gradle-plugin/"><img src="https://solidsoft.ci.cloudbees.com/buildStatus/icon?job=pitest-gradle-plugin" alt="Build Status Jenkins"></a></p>
+
 <h2>
 <a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick start</h2>
 
@@ -59,12 +61,12 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
         //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
     }
 }
 </code></pre>
 
-<p>Apply plugin:</p>
+<p>Apply the plugin:</p>
 
 <pre><code>apply plugin: "info.solidsoft.pitest"
 </code></pre>
@@ -87,12 +89,8 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
 <h3>
 <a id="new-plugin-mechanism-introduced-in-gradle-21" class="anchor" href="#new-plugin-mechanism-introduced-in-gradle-21" aria-hidden="true"><span class="octicon octicon-link"></span></a>New plugin mechanism introduced in Gradle 2.1</h3>
 
-<pre><code>plugins {
-  id "info.solidsoft.pitest" version "1.1.4"
-}
-</code></pre>
-
-<p>Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.</p>
+<p>The plugin upload mechanism to Gradle Plugins Repository has changed once again and gradle-pitest-plugin 1.1.6+ artifacts are
+available only from Maven Central.</p>
 
 <h2>
 <a id="plugin-configuration" class="anchor" href="#plugin-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Plugin configuration</h2>
@@ -103,7 +101,7 @@ automatically set by a plugin. In addition <code>sourceDirs</code>, <code>report
 
 <p>In the past there was one mandatory parameter - <code>targetClasses</code> - which points to the classes which should be mutated.
 Starting from 0.32.0 it is only required if a <a href="http://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34">group</a>
-for the project is not set. Otherwise value <code>"${project.group}.*"</code> is set by default (which can be overridden using pitest.targetClasses parameter).</p>
+for the project is not set. Otherwise value <code>"${project.group}.*"</code> is set by default (which can be overridden using <code>pitest.targetClasses</code> parameter).</p>
 
 <p>In case of using not default PIT version the <code>pitestVersion</code> parameter should be used to override it.</p>
 
@@ -163,7 +161,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
         (...)
     }
 }
@@ -184,7 +182,7 @@ subprojects {
 
 <p>Currently PIT <a href="https://code.google.com/p/pitestrunner/issues/detail?id=41">does not provide</a> an aggregated report for
 multi-module project. A report for each module has to be browsed separately. Alternatively a
-<a href="https://docs.codehaus.org/display/SONAR/Pitest">PIT plugin for Sonar</a> can be used to get aggregated results.</p>
+<a href="https://github.com/SonarCommunity/sonar-pitest">PIT plugin for Sonar</a> can be used to get aggregated results.</p>
 
 <h2>
 <a id="integration-tests-in-separate-subproject" class="anchor" href="#integration-tests-in-separate-subproject" aria-hidden="true"><span class="octicon octicon-link"></span></a>Integration tests in separate subproject</h2>
@@ -208,8 +206,23 @@ to make it work it is required to define both <code>mainSourceSets</code> and <c
 }
 </code></pre>
 
-<p>Unfortunately there <a href="http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782">seems</a>
-not to be a simpler way (than artificial configuration) to get a reference to the JAR. Minimal working multi-project build is available in
+<p>The above is the way recommended by the <a href="http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782">Gradle team</a>,
+but in specific cases the simpler solution should also work:</p>
+
+<pre><code>configure(project(':itest')) {
+    apply plugin: "info.solidsoft.pitest"
+    dependencies {
+        compile project(':shared')
+    }
+
+    pitest {
+        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()
+    }
+}
+</code></pre>
+
+<p>Minimal working multi-project build is available in
 <a href="https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject">functional tests suite</a>.</p>
 
 <h2>
@@ -225,7 +238,7 @@ not to be a simpler way (than artificial configuration) to get a reference to th
    }
    configurations.maybeCreate("pitest")
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.4'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
        pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
    }
 }
@@ -244,49 +257,49 @@ in a pitest configuration closure.</p>
 
 <p>gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.</p>
 
-<p>Note. PIT 0.27 is not supported due to <a href="https://code.google.com/p/pitestrunner/issues/detail?id=47">issue 47</a>.</p>
-
 <p>Note. Due to internal refactoring in PIT versions &gt;=0.32 require gradle-pitest-plugin &gt;=0.32.x and PIT versions &lt;=0.31 gradle-pitest-plugin &lt;=0.30.x.</p>
 
-<p>gradle-pitest-plugin 1.1.4 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.</p>
+<p>Starting since version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+ and was tested with Gradle 2.0 to 2.5 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.</p>
 
 <p>See <a href="https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md">changelog file</a> for more detailed list of changes in the plugin itself.</p>
 
 <h2>
 <a id="faq" class="anchor" href="#faq" aria-hidden="true"><span class="octicon octicon-link"></span></a>FAQ</h2>
 
-<ol>
-<li>
-<p>Why have I got <code>java.lang.VerifyError: Expecting a stackmap frame...</code> when using Java 7?</p>
+<h3>
+<a id="1-why-have-i-got-javalangverifyerror-expecting-a-stackmap-frame-when-using-java-7" class="anchor" href="#1-why-have-i-got-javalangverifyerror-expecting-a-stackmap-frame-when-using-java-7" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Why have I got <code>java.lang.VerifyError: Expecting a stackmap frame...</code> when using Java 7?</h3>
 
-<p>It should be fixed in PIT 0.29.
-As a workaround in older versions add <code>jvmArgs = '-XX:-UseSplitVerifier'</code> to a pitest configuration block</p>
+<pre><code>It should be fixed in PIT 0.29.
+As a workaround in older versions add `jvmArgs = '-XX:-UseSplitVerifier'` to a pitest configuration block
 
-<pre><code>pitest {
-    ...
-    //jvmArgs = '-XX:-UseSplitVerifier'     //&lt;0.33.0
-    jvmArgs = ['-XX:-UseSplitVerifier']     //&gt;=0.33.0
-}
+    pitest {
+        ...
+        //jvmArgs = '-XX:-UseSplitVerifier'     //&lt;0.33.0
+        jvmArgs = ['-XX:-UseSplitVerifier']     //&gt;=0.33.0
+    }
 </code></pre>
-</li>
-<li>
-<p>Why have I got <code>GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'</code>
-after upgrade to version 0.33.0?</p>
 
-<p>To keep consistency with the new <code>mainProcessJvmArgs</code> configuration parameter and make an input format more predictable
-<code>jvmArgs</code> parameter type was changed from <code>String</code> to <code>List&lt;String&gt;</code> in gradle-pitest-plugin 0.33.0. The migration is trivial,
-but unfortunately I am not aware of the way to keep both parameter types active at the same time.</p>
+<h3>
+<a id="2-why-have-i-got-groovycastexception-cannot-cast-object--xmx1024--xms512m-with-class-javalangstring-to-class-javautillist" class="anchor" href="#2-why-have-i-got-groovycastexception-cannot-cast-object--xmx1024--xms512m-with-class-javalangstring-to-class-javautillist" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Why have I got <code>GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'</code>
+</h3>
 
-<pre><code>pitest {
-    ...
-    //jvmArgs = '-Xmx1024 -Xms512m'     //old format
-    jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+<p>after upgrade to version 0.33.0?</p>
 
-}
+<pre><code>To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable
+`jvmArgs` parameter type was changed from `String` to `List&lt;String&gt;` in gradle-pitest-plugin 0.33.0. The migration is trivial,
+but unfortunately I am not aware of the way to keep both parameter types active at the same time.
+
+    pitest {
+        ...
+        //jvmArgs = '-Xmx1024 -Xms512m'     //old format
+        jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+
+    }
 </code></pre>
-</li>
-<li><p>Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?</p></li>
-</ol>
+
+<h3>
+<a id="3-why-my-spring-boot-application-doesnt-work-correctly-with-gradle-pitest-plugin-0330-applied" class="anchor" href="#3-why-my-spring-boot-application-doesnt-work-correctly-with-gradle-pitest-plugin-0330-applied" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?</h3>
 
 <p><strong>Update</strong>. Spring Boot 1.1.0 is fully compatible with gradle-pitest-plugin.</p>
 
@@ -311,9 +324,8 @@ pitest {
 }
 </code></pre>
 
-<ol>
-<li>How can I override plugin configuration from command line/system properties?</li>
-</ol>
+<h3>
+<a id="4-how-can-i-override-plugin-configuration-from-command-linesystem-properties" class="anchor" href="#4-how-can-i-override-plugin-configuration-from-command-linesystem-properties" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. How can I override plugin configuration from command line/system properties?</h3>
 
 <p>Gradle does not provide a built-in way to override plugin configuration via command line, but <a href="https://github.com/nebula-plugins/gradle-override-plugin">gradle-override-plugin</a>
 can be used to do that.</p>
@@ -328,19 +340,14 @@ can be used to do that.</p>
 
 <p>For more information see project <a href="https://github.com/nebula-plugins/gradle-override-plugin">web page</a>.</p>
 
-<ol>
-<li>
-<p>Why I see <code>Could not find org.pitest:pitest-command-line:1.1.0</code> error in my multiproject build?</p>
+<h3>
+<a id="5-why-i-see-could-not-find-orgpitestpitest-command-line110-error-in-my-multiproject-build" class="anchor" href="#5-why-i-see-could-not-find-orgpitestpitest-command-line110-error-in-my-multiproject-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Why I see <code>Could not find org.pitest:pitest-command-line:1.1.0</code> error in my multiproject build?</h3>
 
-<p>Could not resolve all dependencies for configuration ':pitest'.</p>
-
-<blockquote>
-<p>Could not find org.pitest:pitest-command-line:1.1.0.
+<pre><code>Could not resolve all dependencies for configuration ':pitest'.
+&gt; Could not find org.pitest:pitest-command-line:1.1.0.
   Required by:
-      :Gradle-Pitest-Example:unspecified</p>
-</blockquote>
-</li>
-</ol>
+      :Gradle-Pitest-Example:unspecified
+</code></pre>
 
 <p>Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
 The plugin should be applied in all subprojects which should be processed with PIT.</p>
@@ -372,7 +379,7 @@ The plugin should be applied in all subprojects which should be processed with P
 </code></pre>
 
 <h2>
-<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
+<a id="support" class="anchor" href="#support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support</h2>
 
 <p><a href="http://gradle-pitest-plugin.solidsoft.info/">gradle-pitest-plugin</a> was written by Marcin Zajączkowski.
 The author can be contacted directly via email: mszpak ATT wp DOTT pl.
@@ -382,43 +389,20 @@ There is also Marcin's blog available: <a href="http://blog.solidsoft.info">Soli
 However it is often a better idea to send a questions to the <a href="http://groups.google.com/group/pitusers">PIT mailing list</a> first.</p>
 
 <p>The plugin is licensed under the terms of <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">the Apache License, Version 2.0</a>.</p>
-
       </section>
 
-<div id="statcounter" style="width:100%; text-align:center">
-<!-- StatCounter -->
-<script type="text/javascript">
-var sc_project=9394072;
-var sc_invisible=0;
-var sc_security="db9b06ab";
-var scJsHost = (("https:" == document.location.protocol) ?
-"https://secure." : "http://www.");
-document.write("<sc"+"ript type='text/javascript' src='" +
-scJsHost+
-"statcounter.com/counter/counter.js'></"+"script>");
-</script>
-<noscript><div class="statcounter"><a title="create counter"
-href="http://statcounter.com/free-hit-counter/"
-target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/9394072/0/db9b06ab/0/"
-alt="create counter"></a></div></noscript>
-</div>
-
-<div id="cloudbees" style="width:100%; text-align:center">
-<a href="http://www.cloudbees.com/foss/foss-dev.cb" target="_blank"><img src="images/cloudbees-badge.png"/></a>
-</div>
-
     </div>
-
-<!-- Google Analytics -->
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-46065645-1', 'solidsoft.info');
-ga('send', 'pageview');
-</script>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-46065645-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
 
   </body>
 </html>
