@@ -1,4 +1,4 @@
-1.1.6 - 2015-08-??
+1.1.6 - 2015-09-08
 
  - support for plugin configuration parameters - #29
  - remove project file configuration functionality from the plugin (already removed upstream) - #28
