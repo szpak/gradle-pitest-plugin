@@ -136,6 +136,7 @@ class PitestPlugin implements Plugin<Project> {
             exportLineCoverage = { extension.exportLineCoverage }
             jvmPath = { extension.jvmPath }
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
+            pluginConfiguration = { extension.pluginConfiguration }
         }
 
         project.afterEvaluate {

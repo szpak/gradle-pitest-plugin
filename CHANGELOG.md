@@ -1,5 +1,6 @@
 1.1.6 - 2015-08-??
 
+ - support for plugin configuration parameters - #29
  - remove project file configuration functionality from the plugin (already removed upstream) - #28
  - PIT 1.1.6 by default
  - simplify internal release process and switch to Gradle 2.x - minimal required Gradle version is 2.0 - #30

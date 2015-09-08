@@ -163,11 +163,16 @@ class PitestTask extends JavaExec {
     @Input
     FileCollection launchClasspath
 
+    @Input
+    @Optional
+    Map<String, String> pluginConfiguration
+
     @Override
     void exec() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        def argsAsList = createArgumentsListFromMap(taskArgumentsMap)
-        setArgs(argsAsList)
+        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
+        setArgs(argsAsList + multiValueArgsAsList)
         setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
         setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
         setClasspath(getLaunchClasspath())
@@ -230,10 +235,18 @@ class PitestTask extends JavaExec {
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        List<String> argList = new ArrayList<String>();
-        taskArgumentsMap.each { k, v ->
-            argList.add("--" + k + "=" + v)
+        taskArgumentsMap.collect { k, v ->
+            "--$k=$v"
         }
-        argList
+    }
+
+    @VisibleForTesting
+    List<String> createMultiValueArgsAsList() {
+        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
+        getPluginConfiguration()?.collect { k, v ->
+            "$k=$v".toString()
+        }?.collect {
+            "--pluginConfiguration=$it"
+        } ?: []
     }
 }
