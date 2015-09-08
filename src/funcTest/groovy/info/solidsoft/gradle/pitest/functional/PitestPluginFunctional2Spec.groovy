@@ -34,7 +34,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.5"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.6"]
     private static final Range<Integer> GRADLE2_MINOR_RANGE = (5..0)
 
     private static final Closure gradle2AdditionalVersionModifications = { List<String> versions ->
