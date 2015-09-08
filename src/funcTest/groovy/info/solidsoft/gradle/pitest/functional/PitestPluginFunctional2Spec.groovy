@@ -37,6 +37,10 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
     private static final List<String> GRADLE_LATEST_VERSIONS = ["2.5"]
     private static final Range<Integer> GRADLE2_MINOR_RANGE = (5..0)
 
+    private static final Closure gradle2AdditionalVersionModifications = { List<String> versions ->
+        versions - ["2.2"] + ["2.2.1"]
+    }
+
     private static def resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
         log.debug("$REGRESSION_TESTS_ENV_NAME set to '${regressionTestsLevel}'")
@@ -49,7 +53,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                 GRADLE_LATEST_VERSIONS + ["2.0"]
                 break
             case "full":
-                GRADLE2_MINOR_RANGE.collect { "2.$it" } - ["2.2"] + ["2.2.1"]
+                gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
                 break
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +
