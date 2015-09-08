@@ -1,3 +1,4 @@
+sudo: false
 language: groovy
 jdk:
   - oraclejdk7

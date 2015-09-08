@@ -40,12 +40,8 @@ For versions <1.1.0 the plugin can be applied with:
 
 ### New plugin mechanism introduced in Gradle 2.1
 
-    plugins {
-      id "info.solidsoft.pitest" version "1.1.4"
-    }
-
-Please note that as of Gradle 2.1 the new mechanism cannot be used in multi project builds.
-
+The plugin upload mechanism to Gradle Plugins Repository has changed once again and gradle-pitest-plugin 1.1.6+ artifacts are
+available only from Maven Central.
 
 ## Plugin configuration
 
@@ -55,7 +51,7 @@ automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitest
 
 In the past there was one mandatory parameter - `targetClasses` - which points to the classes which should be mutated.
 Starting from 0.32.0 it is only required if a [group](http://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34)
-for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using pitest.targetClasses parameter).
+for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using `pitest.targetClasses` parameter).
 
 In case of using not default PIT version the `pitestVersion` parameter should be used to override it.
 
@@ -131,7 +127,7 @@ for the root project:
 
 Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/detail?id=41) an aggregated report for
 multi-module project. A report for each module has to be browsed separately. Alternatively a
-[PIT plugin for Sonar](https://docs.codehaus.org/display/SONAR/Pitest) can be used to get aggregated results.
+[PIT plugin for Sonar](https://github.com/SonarCommunity/sonar-pitest) can be used to get aggregated results.
 
 ## Integration tests in separate subproject
 
@@ -200,11 +196,10 @@ Note. There could be some issues when using non default PIT versions.
 
 gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.
 
-Note. PIT 0.27 is not supported due to [issue 47](https://code.google.com/p/pitestrunner/issues/detail?id=47).
-
 Note. Due to internal refactoring in PIT versions >=0.32 require gradle-pitest-plugin >=0.32.x and PIT versions <=0.31 gradle-pitest-plugin <=0.30.x.
 
-gradle-pitest-plugin 1.1.4 requires Gradle 1.6+ and was tested with Gradle 1.6 to 1.12 and Gradle 2.0 to 2.2.1 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+Starting since version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+ and was tested with Gradle 2.0 to 2.5 under OpenJDK 8, Oracle JDK 8 and OpenJDK 7.
+The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 

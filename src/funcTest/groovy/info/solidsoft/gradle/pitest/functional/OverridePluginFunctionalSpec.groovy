@@ -1,10 +1,8 @@
 package info.solidsoft.gradle.pitest.functional
 
-import nebula.test.IntegrationSpec
-
-//Note: gradle-override-plugin has important limitations in support for collections and not initialized boolean values
+//Note: gradle-override-plugin has important limitations in support for collections
 //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
-class OverridePluginFunctionalSpec extends IntegrationSpec {
+class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "should allow to override String configuration parameter from command line"() {
         given:

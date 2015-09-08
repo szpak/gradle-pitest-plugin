@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileStatic
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
@@ -24,6 +25,7 @@ import org.gradle.api.tasks.TaskInstantiationException
  * Note: taskClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
+@CompileStatic
 class PitestPluginExtension {
 
     String pitestVersion
@@ -52,9 +54,9 @@ class PitestPluginExtension {
     List<String> jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
-    Set<String> includedGroups
-    Set<String> excludedGroups
-    File configFile
+    Set<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    Set<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+//    File configFile           //removed in 1.1.6 to adjust to changes in PIT
     Boolean detectInlinedCode   //new in PIT 0.28
     Boolean timestampedReports
     File historyInputLocation   //new in PIT 0.29
@@ -103,6 +105,20 @@ class PitestPluginExtension {
      */
     Set<File> additionalMutableCodePaths
 
+    /**
+     * Plugin configuration parameters.
+     *
+     * Should be defined a map:
+     * <pre>
+     * pitest {
+     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     * }
+     * </pre>
+     *
+     * @since 1.1.6
+     */
+    Map<String, String> pluginConfiguration
+
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
     }
@@ -119,10 +135,6 @@ class PitestPluginExtension {
         throw new TaskInstantiationException("Manual setting of sourceDirs was removed in version 0.30.1. " +
                 "Use mainSourceSets property to select source sets which would be used to get source directories. " +
                 "Feel free to raise an issue if you need removed feature.")
-    }
-
-    void setConfigFile(String configFile) {
-        this.configFile = new File(configFile)
     }
 
     void setHistoryInputLocation(String historyInputLocationPath) {

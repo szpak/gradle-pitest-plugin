@@ -29,7 +29,7 @@ import com.google.common.annotations.VisibleForTesting
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.1.4'
+    public final static DEFAULT_PITEST_VERSION = '1.1.6'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
@@ -40,8 +40,8 @@ class PitestPlugin implements Plugin<Project> {
     @PackageScope
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
-    Project project
-    PitestPluginExtension extension
+    private Project project
+    private PitestPluginExtension extension
 
     void apply(Project project) {
         this.project = project
@@ -124,7 +124,6 @@ class PitestPlugin implements Plugin<Project> {
             failWhenNoMutations = { extension.failWhenNoMutations }
             includedGroups = { extension.includedGroups }
             excludedGroups = { extension.excludedGroups }
-            configFile = { extension.configFile }
             detectInlinedCode = { extension.detectInlinedCode }
             timestampedReports = { extension.timestampedReports }
             historyInputLocation = { extension.historyInputLocation }
@@ -137,6 +136,7 @@ class PitestPlugin implements Plugin<Project> {
             exportLineCoverage = { extension.exportLineCoverage }
             jvmPath = { extension.jvmPath }
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
+            pluginConfiguration = { extension.pluginConfiguration }
         }
 
         project.afterEvaluate {

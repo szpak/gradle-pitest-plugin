@@ -30,6 +30,7 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
         project.apply(plugin: "java")   //to add SourceSets
         project.apply(plugin: "info.solidsoft.pitest")
         task = project.tasks[PitestPlugin.PITEST_TASK_NAME] as PitestTask
+        task.targetClasses = []
     }
 
     def "default analysis mode disabled by default"() {

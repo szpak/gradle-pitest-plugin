@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest;
+package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileStatic;
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import com.google.common.annotations.VisibleForTesting
@@ -22,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting
 /**
  * Gradle task implementation for Pitest.
  */
+@CompileStatic
 class PitestTask extends JavaExec {
 
     @OutputDirectory
@@ -105,10 +107,6 @@ class PitestTask extends JavaExec {
     @InputFiles
     Set<File> sourceDirs
 
-    @InputFile
-    @Optional
-    File configFile
-
     @Input
     @Optional
     Boolean detectInlinedCode
@@ -165,11 +163,16 @@ class PitestTask extends JavaExec {
     @Input
     FileCollection launchClasspath
 
+    @Input
+    @Optional
+    Map<String, String> pluginConfiguration
+
     @Override
     void exec() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        def argsAsList = createArgumentsListFromMap(taskArgumentsMap)
-        setArgs(argsAsList)
+        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
+        setArgs(argsAsList + multiValueArgsAsList)
         setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
         setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
         setClasspath(getLaunchClasspath())
@@ -180,37 +183,36 @@ class PitestTask extends JavaExec {
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
-        map['reportDir'] = getReportDir()
-        map['targetClasses'] = getTargetClasses()?.join(',')
+        map['reportDir'] = getReportDir().toString()
+        map['targetClasses'] = getTargetClasses().join(',')
         map['targetTests'] = getTargetTests()?.join(',')
-        map['dependencyDistance'] = getDependencyDistance()
-        map['threads'] = getThreads()
-        map['mutateStaticInits'] = getMutateStaticInits()
-        map['includeJarFiles'] = getIncludeJarFiles()
+        map['dependencyDistance'] = getDependencyDistance()?.toString()
+        map['threads'] = getThreads()?.toString()
+        map['mutateStaticInits'] = getMutateStaticInits()?.toString()
+        map['includeJarFiles'] = getIncludeJarFiles()?.toString()
         map["mutators"] = getMutators()?.join(',')
         map['excludedMethods'] = getExcludedMethods()?.join(',')
         map['excludedClasses'] = getExcludedClasses()?.join(',')
         map['avoidCallsTo'] = getAvoidCallsTo()?.join(',')
-        map['verbose'] = getVerbose()
-        map['timeoutFactor'] = getTimeoutFactor()
-        map['timeoutConst'] = getTimeoutConstInMillis()
-        map['maxMutationsPerClass'] = getMaxMutationsPerClass()
+        map['verbose'] = getVerbose()?.toString()
+        map['timeoutFactor'] = getTimeoutFactor()?.toString()
+        map['timeoutConst'] = getTimeoutConstInMillis()?.toString()
+        map['maxMutationsPerClass'] = getMaxMutationsPerClass()?.toString()
         map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
-        map['failWhenNoMutations'] = getFailWhenNoMutations()
+        map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
         map['classPath'] = getTaskClasspath()?.files?.join(',')
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
-        map['configFile'] = getConfigFile()?.path
-        map['detectInlinedCode'] = getDetectInlinedCode()
-        map['timestampedReports'] = getTimestampedReports()
-        map['mutationThreshold'] = getMutationThreshold()
-        map['coverageThreshold'] = getCoverageThreshold()
+        map['detectInlinedCode'] = getDetectInlinedCode()?.toString()
+        map['timestampedReports'] = getTimestampedReports()?.toString()
+        map['mutationThreshold'] = getMutationThreshold()?.toString()
+        map['coverageThreshold'] = getCoverageThreshold()?.toString()
         map['mutationEngine'] = getMutationEngine()
-        map['exportLineCoverage'] = getExportLineCoverage()
-        map['includeLaunchClasspath'] = false   //code to analyse is passed via classPath
-        map['jvmPath'] = getJvmPath()
+        map['exportLineCoverage'] = getExportLineCoverage()?.toString()
+        map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
+        map['jvmPath'] = getJvmPath()?.path
         map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)
@@ -233,10 +235,18 @@ class PitestTask extends JavaExec {
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        List<String> argList = new ArrayList<String>();
-        taskArgumentsMap.each { k, v ->
-            argList.add("--" + k + "=" + v)
+        taskArgumentsMap.collect { k, v ->
+            "--$k=$v"
         }
-        argList
+    }
+
+    @VisibleForTesting
+    List<String> createMultiValueArgsAsList() {
+        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
+        getPluginConfiguration()?.collect { k, v ->
+            "$k=$v".toString()
+        }?.collect {
+            "--pluginConfiguration=$it"
+        } ?: []
     }
 }
