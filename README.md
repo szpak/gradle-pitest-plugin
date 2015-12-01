@@ -279,6 +279,17 @@ For more information see project [web page](https://github.com/nebula-plugins/gr
 Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
 The plugin should be applied in all subprojects which should be processed with PIT.
 
+### 6. How can I change PIT version from default to just released the newest one?
+
+gradle-pitest-plugin by default uses a corresponsing PIT version (with the same number). The plugin is released only if there are internal changes or
+there is a need to adjust to changes in newer PIT version. There is a dedicated mechanism to allow to use the latest PIT version (e.g, a bugfix release)
+or to downgrade PIT in case of detected issues. To override a defalt version it is enough to set `pitestVersion` property in the `pitest` configuration
+closure.
+
+    pitest {
+        pitestVersion = "1.2.9-the.greatest.one"
+    }
+
 
 ## Known issues
 
