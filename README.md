@@ -290,6 +290,7 @@ closure.
         pitestVersion = "1.2.9-the.greatest.one"
     }
 
+In case of errors detected when the latest available version of the plugin is used with newer PIT version please raise an [issue](https://github.com/szpak/gradle-pitest-plugin/issues).
 
 ## Known issues
 
