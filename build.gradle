@@ -25,7 +25,6 @@ scmVersion {
         versionSeparator = '/'
     }
     createReleaseCommit = true
-    ignoreUncommittedChanges = false
     releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
         pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/},
