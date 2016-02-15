@@ -172,7 +172,7 @@ class PitestTask extends JavaExec {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
         List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
         List<String> multiValueArgsAsList = createMultiValueArgsAsList()
-        setArgs(argsAsList + multiValueArgsAsList)
+        setArgs(createAllAgsList(argsAsList, multiValueArgsAsList))
         setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
         setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
         setClasspath(getLaunchClasspath())
@@ -248,5 +248,14 @@ class PitestTask extends JavaExec {
         }?.collect {
             "--pluginConfiguration=$it"
         } ?: []
+    }
+
+    //Workaround to keep compatibility with Gradle <2.8
+    //[] + [] is compiled in Groovy 2.4.x as "List<T> plus(List<T> left, Collection<T> right)" which is unavailable in Groovy 2.3 and fails with Gradle <2.8
+    private List<String> createAllAgsList(List<String> argsAsList, List<String> multiValueArgsAsList) {
+        List<String> allArgs = []
+        allArgs.addAll(argsAsList)
+        allArgs.addAll(multiValueArgsAsList)
+        return allArgs
     }
 }
