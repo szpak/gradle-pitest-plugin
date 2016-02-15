@@ -3,6 +3,8 @@ apply plugin: 'pl.allegro.tech.build.axion-release'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
 
+group = 'info.solidsoft.gradle.pitest'
+
 sourceCompatibility = 1.7
 
 buildscript {
