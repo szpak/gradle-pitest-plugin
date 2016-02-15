@@ -29,7 +29,7 @@ import com.google.common.annotations.VisibleForTesting
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.1.6'
+    public final static DEFAULT_PITEST_VERSION = '1.1.9'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'

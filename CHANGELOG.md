@@ -1,3 +1,7 @@
+1.1.9 - 2016-02-15
+
+ - PIT 1.1.9 by default - fixed process hangs in 1.1.6 - #39
+
 1.1.6 - 2015-09-08
 
  - support for plugin configuration parameters - #29
