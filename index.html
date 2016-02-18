@@ -59,7 +59,7 @@ calculate a mutation coverage of a <a href="http://gradle.org/">Gradle</a>-based
         //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
     }
 }
 </code></pre>
@@ -159,7 +159,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
         (...)
     }
 }
@@ -236,7 +236,7 @@ but in specific cases the simpler solution should also work:</p>
    }
    configurations.maybeCreate("pitest")
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.6'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
        pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
    }
 }
