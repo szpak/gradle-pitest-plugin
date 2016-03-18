@@ -132,5 +132,5 @@ uploadArchives.dependsOn funcTest, check
 //'info.solidsoft.pitest:info.solidsoft.gradle.pitest:gradle-pitest-plugin' via GUI after sync
 
 wrapper {
-    gradleVersion "2.11"
+    gradleVersion "2.12"
 }
