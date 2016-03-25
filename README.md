@@ -32,6 +32,12 @@ Call Gradle with pitest task:
 
 After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest` directory.
 
+Optionally make it depend on build:
+
+    build.dependsOn "pitest"
+
+Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
+
 ### Older gradle-pitest-plugin versions (<1.1.0)
 
 For versions <1.1.0 the plugin can be applied with:
