@@ -223,12 +223,9 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
             jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
         }
 
-### 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'`
-after upgrade to version 0.33.0?
+### 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'` after upgrade to version 0.33.0?
 
-    To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable
-    `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial,
-    but unfortunately I am not aware of the way to keep both parameter types active at the same time.
+To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial, but unfortunately I am not aware of the way to keep both parameter types active at the same time.
 
         pitest {
             ...
