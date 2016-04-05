@@ -45,7 +45,7 @@ sourceSets {
     funcTest {
         java.srcDir file('src/funcTest/java')
         groovy.srcDir file('src/funcTest/groovy')
-        resources.srcDir file('src/funcTest/resources') //Broken in Idea - https://youtrack.jetbrains.com/issue/IDEA-128966
+        resources.srcDir file('src/funcTest/resources')
     }
 }
 
@@ -60,13 +60,10 @@ dependencies {
     testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
-    funcTestCompile sourceSets.main.output
-    funcTestCompile sourceSets.test.output  //to make visible funcTest resources moved to test resources as a workaround for Idea bug
-
+    funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
-    /*funcT*/testCompile('com.netflix.nebula:nebula-test:4.0.0') {
+    funcTestCompile('com.netflix.nebula:nebula-test:4.0.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
