@@ -42,11 +42,11 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.12"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.13"]
     private static final Range<Integer> GRADLE2_MINOR_RANGE = (12..0)
 
     private static final Closure gradle2AdditionalVersionModifications = { List<String> versions ->
-        versions - ["2.2"] + ["2.2.1"]
+        versions - "2.2" + "2.2.1" + "2.14-rc-6" + "3.0-milestone-1"
     }
 
     private static List<String> resolveRequestedGradleVersions() {
@@ -58,7 +58,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                 GRADLE_LATEST_VERSIONS
                 break
             case "quick":
-                GRADLE_LATEST_VERSIONS + ["2.0"]
+                GRADLE_LATEST_VERSIONS + "2.0" + "3.0-milestone-1"
                 break
             case "full":
                 gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
