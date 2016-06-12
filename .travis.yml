@@ -10,7 +10,7 @@ env:
 matrix:
   include:
     - jdk: oraclejdk8
-      env: PITEST_REGRESSION_TESTS=full
+      env: PITEST_REGRESSION_TESTS=quick
 
 install: ./gradlew assemble
 script: ./gradlew funcTest check --stacktrace --info --continue
