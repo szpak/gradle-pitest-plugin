@@ -39,6 +39,7 @@ project.version = scmVersion.version
 repositories {
     mavenCentral()
     mavenLocal()
+    maven { url "https://jitpack.io" }
 }
 
 sourceSets {
@@ -63,7 +64,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:4.0.0') {
+    funcTestCompile('com.github.szpak:nebula-test:ab8e42a') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
