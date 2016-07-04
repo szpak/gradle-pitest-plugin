@@ -15,12 +15,11 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Ignore
-import spock.lang.Issue
-import spock.lang.Specification
+import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.api.Task
+import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Specification
 
 class PitestPluginTest extends Specification {
 
@@ -33,18 +32,18 @@ class PitestPluginTest extends Specification {
             assertThatTasksAreInGroup(project, tasks, PitestPlugin.PITEST_TASK_GROUP)
     }
 
-    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
-    @Ignore("Not applicable with android plugin")
-    def "apply Java plugin itself of not already applied"() {
+    def "apply pitest plugin without android plugin applied"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
-            !project.plugins.hasPlugin("java")
+            !project.plugins.hasPlugin("com.android.application") &&
+            !project.plugins.hasPlugin("com.android.library") &&
+            !project.plugins.hasPlugin("com.android.test")
         when:
             project.apply(plugin: "pl.droidsonroids.pitest");
+            project.evaluate()
         then:
-            project.plugins.hasPlugin(PitestPlugin)
-            project.plugins.hasPlugin('java')
+            thrown(GradleException)
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

@@ -23,9 +23,9 @@ import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.google.common.annotations.VisibleForTesting
 import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.DefaultDomainObjectSet
 import org.gradle.api.internal.file.UnionFileCollection
@@ -55,9 +55,23 @@ public class PitestPlugin implements Plugin<Project> {
         this.project = project
         createConfigurations()
 
-        createExtension(project)
+        extension = project.extensions.create("pitest", PitestPluginExtension)
+        extension.pitestVersion = DEFAULT_PITEST_VERSION
+        extension.androidRuntimeDependency = DEFAULT_ANDROID_RUNTIME_DEPENDENCY
         addPitDependencies()
         project.afterEvaluate {
+            project.pluginManager.with {
+                if (!hasPlugin('com.android.application') &&
+                        !hasPlugin('com.android.library') &&
+                        !hasPlugin('com.android.test'))
+                    throw new GradleException('No recognized android plugins has been applied')
+            }
+            if (extension.mainSourceSets == null) {
+                extension.mainSourceSets = project.android.sourceSets.main as Set<AndroidSourceSet>
+            }
+            if (extension.reportDir == null) {
+                extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
+            }
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
@@ -90,16 +104,6 @@ public class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    //TODO: MZA: Maybe move it to the constructor of an extension class?
-    private void createExtension(Project project) {
-        extension = project.extensions.create("pitest", PitestPluginExtension)
-        extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
-        extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.androidRuntimeDependency = DEFAULT_ANDROID_RUNTIME_DEPENDENCY
-
-        extension.mainSourceSets = project.android.sourceSets.main as Set<AndroidSourceSet>
-    }
-
     private void configureTaskDefault(PitestTask task, BaseVariant variant) {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
         combinedTaskClasspath.add(project.configurations["compile"])
@@ -120,7 +124,9 @@ public class PitestPlugin implements Plugin<Project> {
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
-            sourceDirs = { extension.mainSourceSets*.java.srcDirs.flatten() as Set }
+            sourceDirs = {
+                extension.mainSourceSets*.java.srcDirs.flatten() as Set
+            }
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
                 additionalMutableCodePaths.add(variant.javaCompiler.destinationDir)
