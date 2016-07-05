@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Specification
 import org.gradle.api.Project
@@ -23,25 +24,24 @@ import org.gradle.api.Task
 
 class PitestPluginTest extends Specification {
 
-    def "add pitest task to java project in proper group"() {
-        given:
-            Project project = ProjectBuilder.builder().build()
-            project.apply(plugin: "java")   //to add SourceSets
+    def "add pitest tasks to android library project in proper group"() {
         when:
-            project.apply(plugin: "info.solidsoft.pitest")
+            Project project = AndroidUtils.createSampleLibraryProject()
         then:
             project.plugins.hasPlugin(PitestPlugin)
-            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            def tasks = [AndroidUtils.PITEST_RELEASE_TASK_NAME, "${PitestPlugin.PITEST_TASK_NAME}Debug"]
+            assertThatTasksAreInGroup(project, tasks, PitestPlugin.PITEST_TASK_GROUP)
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
+    @Ignore("Not applicable with android plugin")
     def "apply Java plugin itself of not already applied"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
             !project.plugins.hasPlugin("java")
         when:
-            project.apply(plugin: "info.solidsoft.pitest");
+            project.apply(plugin: "pl.droidsonroids.pitest");
         then:
             project.plugins.hasPlugin(PitestPlugin)
             project.plugins.hasPlugin('java')

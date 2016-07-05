@@ -25,10 +25,8 @@ class PitestTaskPluginConfigurationTest extends Specification {
     private PitestTask task
 
     def setup() {
-        project = ProjectBuilder.builder().build()
-        project.apply(plugin: "java")   //to add SourceSets
-        project.apply(plugin: "info.solidsoft.pitest")
-        task = project.tasks[PitestPlugin.PITEST_TASK_NAME] as PitestTask
+        project = AndroidUtils.createSampleLibraryProject()
+        task = project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME] as PitestTask
         task.targetClasses = []
     }
 

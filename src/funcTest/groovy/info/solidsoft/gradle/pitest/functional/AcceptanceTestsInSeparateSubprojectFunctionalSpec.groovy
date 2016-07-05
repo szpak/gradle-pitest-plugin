@@ -4,11 +4,26 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
 
     def "should mutate production code in another subproject"() {
         given:
+            buildFile << """
+                apply plugin: 'com.android.library'
+                apply plugin: 'pl.droidsonroids.pitest'
+
+                android {
+                    buildToolsVersion '24.0.0'
+                    compileSdkVersion 24
+                    defaultConfig {
+                        minSdkVersion 10
+                        targetSdkVersion 24
+                    }
+                }
+            """
+            writeManifestFile()
             copyResources("testProjects/multiproject", "")
         when:
-            def result = runTasksSuccessfully('pitest')
+            def result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':itest:pitest')
-            result.getStandardOutput().contains('Generated 4 mutations Killed 3 (75%)')
+            result.wasExecuted(':itest:pitestRelease')
+            result.getStandardOutput().contains('Generated 2 mutations Killed 2 (100%)')
+            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
     }
 }

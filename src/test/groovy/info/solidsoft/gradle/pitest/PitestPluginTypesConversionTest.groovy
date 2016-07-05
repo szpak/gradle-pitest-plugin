@@ -23,18 +23,15 @@ import spock.lang.Specification
 class PitestPluginTypesConversionTest extends Specification {
 
     private Project project
-
     def setup() {
-        project = ProjectBuilder.builder().build()
-        project.apply(plugin: "java")
-        project.apply(plugin: "info.solidsoft.pitest")
+        project = AndroidUtils.createSampleLibraryProject()
     }
 
     def "accept BigDecimal as timeoutFactor configuration parameter"() {
         given:
             project.pitest.timeoutFactor = 1.23
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             PitestTask task = assertOnePitestTaskAndReturnIt(tasks)
             task.timeoutFactor == 1.23
@@ -44,7 +41,7 @@ class PitestPluginTypesConversionTest extends Specification {
         given:
             project.pitest.timeoutFactor = "1.23"
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             PitestTask task = assertOnePitestTaskAndReturnIt(tasks)
             task.timeoutFactor == 1.23

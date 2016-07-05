@@ -17,7 +17,6 @@ package info.solidsoft.gradle.pitest
 
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class PitestPluginTargetClassesTest extends Specification {
@@ -25,16 +24,14 @@ class PitestPluginTargetClassesTest extends Specification {
     private Project project
 
     def setup() {
-        project = ProjectBuilder.builder().build()
-        project.apply(plugin: "java")
-        project.apply(plugin: "info.solidsoft.pitest")
+        project = AndroidUtils.createSampleLibraryProject()
     }
 
     def "take target classes from pitest configuration closure"() {
         given:
             project.pitest.targetClasses = ["foo"]
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)
     }
@@ -43,7 +40,7 @@ class PitestPluginTargetClassesTest extends Specification {
         given:
             project.group = "group"
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["group.*"] as Set)
     }
@@ -53,7 +50,7 @@ class PitestPluginTargetClassesTest extends Specification {
             project.group = "group"
             project.pitest.targetClasses = ["target.classes"]
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["target.classes"] as Set)
     }
@@ -61,7 +58,7 @@ class PitestPluginTargetClassesTest extends Specification {
     //Only imitation of testing Gradle validation exception
     def "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, null)
     }

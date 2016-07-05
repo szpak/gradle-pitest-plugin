@@ -15,8 +15,8 @@
  */
 package info.solidsoft.gradle.pitest
 
+import com.android.build.gradle.api.AndroidSourceSet
 import groovy.transform.CompileStatic
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
 /**
@@ -29,6 +29,7 @@ import org.gradle.api.tasks.TaskInstantiationException
 class PitestPluginExtension {
 
     String pitestVersion
+    String androidRuntimeDependency
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
     File reportDir
@@ -65,8 +66,7 @@ class PitestPluginExtension {
     Integer mutationThreshold   //new in PIT 0.30
     Integer coverageThreshold   //new in PIT 0.32
     String mutationEngine
-    Set<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
-    Set<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
+    Set<AndroidSourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
     Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
     File jvmPath    //new in PIT 0.32
 
@@ -85,21 +85,13 @@ class PitestPluginExtension {
      *
      * Samples usage ("itest" project depends on "shared" project):
      * <pre>
-     * configure(project(':itest')) {
-     *     dependencies {
-     *         compile project(':shared')
-     *     }
-     *
-     *     apply plugin: "info.solidsoft.pitest"
+     * configure(project(':itest')) {*     dependencies {*         compile project(':shared')
+     *}*
+     *     apply plugin: "pl.droidsonroids.pitest"
      *     //mutableCodeBase - additional configuration to resolve :shared project JAR as mutable code path for PIT
-     *     configurations { mutableCodeBase { transitive false } }
-     *     dependencies { mutableCodeBase project(':shared') }
-     *     pitest {
-     *         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+     *     configurations { mutableCodeBase { transitive false }}*     dependencies { mutableCodeBase project(':shared') }*     pitest {*         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
      *         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-     *     }
-     * }
-     * </pre>
+     *}*}* </pre>
      *
      * @since 1.1.3 (specific for Gradle plugin)
      */
@@ -110,10 +102,8 @@ class PitestPluginExtension {
      *
      * Should be defined a map:
      * <pre>
-     * pitest {
-     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
-     * }
-     * </pre>
+     * pitest {*     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     *}* </pre>
      *
      * @since 1.1.6
      */

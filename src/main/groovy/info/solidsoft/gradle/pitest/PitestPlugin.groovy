@@ -15,26 +15,34 @@
  */
 package info.solidsoft.gradle.pitest
 
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.TestPlugin
+import com.android.build.gradle.api.AndroidSourceSet
+import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.internal.api.TestedVariant
+import com.google.common.annotations.VisibleForTesting
 import groovy.transform.PackageScope
-import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.DefaultDomainObjectSet
+import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.file.UnionFileCollection
-import com.google.common.annotations.VisibleForTesting
 
 /**
  * The main class for Pitest plugin.
  */
-class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.1.9'
+public class PitestPlugin implements Plugin<Project> {
+    public final static DEFAULT_PITEST_VERSION = '1.1.10'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
+    public final static DEFAULT_ANDROID_RUNTIME_DEPENDENCY = 'org.robolectric:android-all:6.0.0_r1-robolectric-0'
 
-    private final static Logger log =  Logging.getLogger(PitestPlugin)
+    private final static Logger log = Logging.getLogger(PitestPlugin)
 
     @VisibleForTesting
     @PackageScope
@@ -45,23 +53,34 @@ class PitestPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         this.project = project
-        applyRequiredJavaPlugin()
         createConfigurations()
+
         createExtension(project)
-        project.plugins.withType(JavaBasePlugin) {
-            PitestTask task = project.tasks.create(PITEST_TASK_NAME, PitestTask)
-            task.with {
-                description = "Run PIT analysis for java classes"
-                group = PITEST_TASK_GROUP
-            }
-            configureTaskDefault(task)
+        addPitDependencies()
+        project.afterEvaluate {
+            project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
+            project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
+            project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
         }
     }
 
-    private void applyRequiredJavaPlugin() {
-        //The new Gradle plugin mechanism requires all mandatory plugins to be applied explicit
-        //See: https://github.com/szpak/gradle-pitest-plugin/issues/21
-        project.apply(plugin: 'java')
+    private void createPitestTasks(DefaultDomainObjectSet<? extends BaseVariant> variants) {
+        def globalTask = project.tasks.create(PITEST_TASK_NAME)
+        globalTask.with {
+            description = "Run PIT analysis for java classes, for all build variants"
+            group = PITEST_TASK_GROUP
+        }
+        variants.each { BaseVariant variant ->
+            PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
+            configureTaskDefault(variantTask, variant)
+            variantTask.with {
+                description = "Run PIT analysis for java classes, for ${variant.name} build variant"
+                group = PITEST_TASK_GROUP
+            }
+            variantTask.reportDir = new File(variantTask.reportDir, variant.name)
+            variantTask.dependsOn "compile${variant.name.capitalize()}UnitTestJavaWithJavac"
+            globalTask.dependsOn variantTask
+        }
     }
 
     private void createConfigurations() {
@@ -76,24 +95,37 @@ class PitestPlugin implements Plugin<Project> {
         extension = project.extensions.create("pitest", PitestPluginExtension)
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
         extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.testSourceSets = [project.sourceSets.test] as Set
-        extension.mainSourceSets = [project.sourceSets.main] as Set
+        extension.androidRuntimeDependency = DEFAULT_ANDROID_RUNTIME_DEPENDENCY
+
+        extension.mainSourceSets = project.android.sourceSets.main as Set<AndroidSourceSet>
     }
 
-    private void configureTaskDefault(PitestTask task) {
+    private void configureTaskDefault(PitestTask task, BaseVariant variant) {
+        FileCollection combinedTaskClasspath = new UnionFileCollection()
+        combinedTaskClasspath.add(project.configurations["compile"])
+        combinedTaskClasspath.add(project.configurations["testCompile"])
+        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.name}"))
+        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.name}"))
+        if (variant instanceof TestedVariant) {
+            combinedTaskClasspath.add(variant.unitTestVariant.javaCompiler.classpath)
+            combinedTaskClasspath.add(project.files(variant.unitTestVariant.javaCompiler.destinationDir))
+        }
+        combinedTaskClasspath.add(variant.javaCompiler.classpath)
+        combinedTaskClasspath.add(project.files(variant.javaCompiler.destinationDir))
+
         task.conventionMapping.with {
             taskClasspath = {
-                List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
-
-                FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
-                FileCollection combinedTaskClasspathWithoutPomFiles = combinedTaskClasspath.filter { File file -> !file.name.endsWith(".pom") }
-                combinedTaskClasspathWithoutPomFiles
+                combinedTaskClasspath
             }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
-            mutableCodePaths = { (extension.mainSourceSets*.output.classesDir.flatten() as Set) + (extension.additionalMutableCodePaths ?: []) }
-            sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
+            sourceDirs = { extension.mainSourceSets*.java.srcDirs.flatten() as Set }
+            mutableCodePaths = {
+                def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
+                additionalMutableCodePaths.add(variant.javaCompiler.destinationDir)
+                additionalMutableCodePaths
+            }
 
             reportDir = { extension.reportDir }
             targetClasses = {
@@ -138,24 +170,13 @@ class PitestPlugin implements Plugin<Project> {
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
         }
-
-        project.afterEvaluate {
-            task.dependsOn(calculateTasksToDependOn())
-
-            addPitDependencies()
-        }
-    }
-
-    private Set<String> calculateTasksToDependOn() {
-        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" }
-        log.debug("pitest tasksToDependOn: $tasksToDependOn")
-        tasksToDependOn
     }
 
     private void addPitDependencies() {
         project.rootProject.buildscript.dependencies {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
+            pitest extension.androidRuntimeDependency
         }
     }
 }

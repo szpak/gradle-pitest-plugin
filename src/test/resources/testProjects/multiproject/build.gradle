@@ -10,7 +10,17 @@ buildscript {
 }
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'com.android.library'
+    apply plugin: 'pl.droidsonroids.pitest'
+
+    android {
+        buildToolsVersion '24.0.0'
+        compileSdkVersion 24
+        defaultConfig {
+            minSdkVersion 10
+            targetSdkVersion 24
+        }
+    }
 
     repositories {
         mavenCentral()
@@ -32,7 +42,17 @@ configure(project(":shared")) {
 }
 
 configure(project(':itest')) {
-    apply plugin: "info.solidsoft.pitest"
+    apply plugin: 'com.android.library'
+    apply plugin: 'pl.droidsonroids.pitest'
+
+    android {
+        buildToolsVersion '24.0.0'
+        compileSdkVersion 24
+        defaultConfig {
+            minSdkVersion 10
+            targetSdkVersion 24
+        }
+    }
     dependencies {
         compile project(':shared')
     }
@@ -42,7 +62,7 @@ configure(project(':itest')) {
     dependencies { mutableCodeBase project(':shared') }
     pitest {
         timestampedReports = false
-        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        mainSourceSets = [project.android.sourceSets.main, project(':shared').android.sourceSets.main]
         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
 //        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
     }

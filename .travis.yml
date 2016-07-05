@@ -5,12 +5,13 @@ jdk:
   - openjdk7
 env:
   - PITEST_REGRESSION_TESTS=latestOnly
+
 before_install:
   - echo y|android update sdk --all --no-ui --force --filter tools
   - echo y|android update sdk --all --no-ui --force --filter platform-tools
   - echo y|android update sdk --all --no-ui --force --filter build-tools-24.0.0
   - echo y|android update sdk --all --no-ui --force --filter android-24
-  
+
 #Regression tests with different Gradle versions only on JDK 8
 matrix:
   include:
