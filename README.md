@@ -2,6 +2,16 @@
 This is a fork of [gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-plugin)
 which supports Android gradle projects. 
 
+#Applying plugin
+Plugin is available on [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest)
+
+`build.gradle` snippet for gradle 2.1+:
+```groovy
+plugins {
+  id "pl.droidsonroids.pitest" version "0.0.1"
+}
+```
+
 #Usage
 `pitest<variant>` tasks will be created for each build variant 
 (eg. `pitestProDebug` for `pro` product flavor and `debug` build type).

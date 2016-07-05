@@ -15,29 +15,11 @@ plugins {
 }
 
 apply plugin: 'groovy'
-apply plugin: 'pl.allegro.tech.build.axion-release'
-apply plugin: 'com.bmuschko.nexus'
-apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'maven-publish'
 
 group = 'pl.droidsonroids.gradle'
 
 sourceCompatibility = 1.7
-
-scmVersion {
-    tag {
-        prefix = 'release'
-        versionSeparator = '/'
-    }
-    createReleaseCommit = true
-    releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
-    hooks {
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/},
-                           replacement: {v, p -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$v\'"}]
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /id\ 'info\.solidsoft\.pitest'\ version\ '.*'/},
-                           replacement: {v, p -> "id 'pl.droidsonroids.pitest' version '$v'"}]
-    }
-}
 
 project.version = '0.0.1'
 
@@ -93,49 +75,7 @@ task testReport(type: TestReport) {
     reportOn test, funcTest
 }
 
-nexusStaging {
-    packageGroup = "info.solidsoft"
-    stagingProfileId = "34a3a5beeaa96"
-}
-
-modifyPom {
-    project {
-        name 'Gradle PIT Plugin'
-        description 'Gradle plugin for PIT Mutation Testing'
-        url 'http://gradle-pitest-plugin.solidsoft.info/'
-
-        scm {
-            connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
-            developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
-            url 'https://github.com/szpak/gradle-pitest-plugin'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'szpak'
-                name 'Marcin Zajączkowski'
-                email 'mszpak ATT wp DOTT pl'
-                roles {
-                    role 'despot'
-                    role 'developer'
-                }
-            }
-        }
-    }
-}
-
-uploadArchives.dependsOn funcTest, check
-
-//Artifacts are not placed directly into JCenter, so for now a 'gradle-plugin' attribute has to be set manually to
-//'info.solidsoft.pitest:info.solidsoft.gradle.pitest:gradle-pitest-plugin' via GUI after sync
+publishPlugins.dependsOn funcTest, check
 
 wrapper {
     gradleVersion "2.14"
@@ -145,11 +85,12 @@ pluginBundle {
     website = 'https://github.com/koral--/gradle-pitest-plugin'
     vcsUrl = 'https://github.com/koral--/gradle-pitest-plugin.git'
     tags = ['pitest', 'android', 'mutation testing']
+    description = 'Gradle plugin for PIT Mutation Testing in Android projects'
 
     plugins {
         pitestPlugin {
             id = 'pl.droidsonroids.pitest'
-            description = project.description
+            displayName = 'Android pitest plugin'
         }
     }
 }
