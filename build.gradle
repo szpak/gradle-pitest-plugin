@@ -1,15 +1,15 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.9.4'
+    id 'com.bmuschko.nexus' version '2.3.1'
 }
 
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
-group = 'pl.droidsonroids.gradle'
-
 sourceCompatibility = 1.7
 
-project.version = '0.0.2'
+group = GROUP
+version = VERSION
 
 repositories {
     mavenCentral()
@@ -64,21 +64,52 @@ task testReport(type: TestReport) {
 }
 
 publishPlugins.dependsOn funcTest, check
+uploadArchives.dependsOn funcTest, check
 
 wrapper {
     gradleVersion "2.14"
 }
 
+modifyPom {
+    project {
+        name POM_NAME
+        description POM_DESCRIPTION
+        url POM_URL
+
+        scm {
+            connection 'scm:git@github.com:koral--/gradle-pitest-plugin.git'
+            developerConnection 'scm:git@github.com:koral--/gradle-pitest-plugin.git'
+            url POM_SCM_URL
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'koral'
+                name 'Karol Wrótniak'
+                email 'karol.wrotniak@droidsonroids.pl'
+            }
+        }
+    }
+}
+
 pluginBundle {
-    website = 'https://github.com/koral--/gradle-pitest-plugin'
-    vcsUrl = 'https://github.com/koral--/gradle-pitest-plugin.git'
+    website = POM_URL
+    vcsUrl = POM_SCM_URL
     tags = ['pitest', 'android', 'mutation testing']
-    description = 'Gradle plugin for PIT Mutation Testing in Android projects'
+    description = POM_DESCRIPTION
 
     plugins {
         pitestPlugin {
             id = 'pl.droidsonroids.pitest'
-            displayName = 'Android pitest plugin'
+            displayName = POM_NAME
         }
     }
 }
