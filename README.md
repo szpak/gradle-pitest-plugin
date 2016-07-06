@@ -3,13 +3,40 @@ This is a fork of [gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-
 which supports Android gradle projects. 
 
 #Applying plugin
-Plugin is available on [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest)
-
-`build.gradle` snippet for gradle 2.1+:
+`build.gradle`:
 ```groovy
-plugins {
-  id "pl.droidsonroids.pitest" version "0.0.2"
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.2'
+  }
 }
+
+apply plugin: 'com.android.application'
+//or apply plugin: 'com.android.library'
+//or apply plugin: 'com.android.test'
+
+apply plugin: 'pl.droidsonroids.pitest'
+```
+This plugin has to be applied _after_ android plugins.
+
+Plugin is also available on [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest). Note that only classic plugin applying syntax is supported since plugin has to be applied last:
+```groovy
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.2"
+  }
+}
+
+//apply android plugin
+apply plugin: "pl.droidsonroids.pitest"
 ```
 
 #Usage
