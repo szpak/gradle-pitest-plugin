@@ -8,7 +8,7 @@ Plugin is available on [Gradle plugin portal](https://plugins.gradle.org/plugin/
 `build.gradle` snippet for gradle 2.1+:
 ```groovy
 plugins {
-  id "pl.droidsonroids.pitest" version "0.0.1"
+  id "pl.droidsonroids.pitest" version "0.0.2"
 }
 ```
 
