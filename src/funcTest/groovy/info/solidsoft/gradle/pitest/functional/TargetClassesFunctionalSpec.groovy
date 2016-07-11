@@ -18,7 +18,6 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
         when:
             def result = runTasksWithFailure('pitestRelease')

@@ -32,7 +32,6 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 dependencies { testCompile 'junit:junit:4.11' }
             """.stripIndent()
         and:
-            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
         when:
             def result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')

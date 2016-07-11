@@ -24,7 +24,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         when:
-            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
         then:
             fileExists('src/main/java/gradle/pitest/test/hello/HelloWorld.java')
@@ -107,7 +106,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:
@@ -139,7 +137,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:

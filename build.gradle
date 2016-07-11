@@ -47,7 +47,7 @@ dependencies {
     }
 }
 
-task funcTest(type: Test) {
+task funcTest(type: Test, group: "verification") {
     testClassesDir = sourceSets.funcTest.output.classesDir
     classpath = sourceSets.funcTest.runtimeClasspath
 

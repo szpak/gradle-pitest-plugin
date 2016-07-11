@@ -17,7 +17,6 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
                     }
                 }
             """
-            writeManifestFile()
             copyResources("testProjects/multiproject", "")
         when:
             def result = runTasksSuccessfully('pitestRelease')
