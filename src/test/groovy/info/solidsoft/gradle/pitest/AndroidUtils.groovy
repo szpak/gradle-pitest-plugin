@@ -7,9 +7,11 @@ class AndroidUtils {
 
     static def createSampleLibraryProject() {
         def project = ProjectBuilder.builder().build()
+        ClassLoader classLoader = AndroidUtils.class.getClassLoader();
+        def resource = classLoader.getResource('AndroidManifest.xml');
         def manifestFile = project.file('src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
-        manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="com.example.test"/>')
+        manifestFile.write(resource.text)
         project.apply(plugin: "com.android.library")
         project.android.with {
             buildToolsVersion '24.0.0'
