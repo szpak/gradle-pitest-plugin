@@ -33,7 +33,7 @@ dependencies {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
+    testCompile 'cglib:cglib-nodep:3.2.4'   //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output
@@ -42,7 +42,7 @@ dependencies {
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
     //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
-    /*funcT*/testCompile('com.netflix.nebula:nebula-test:4.0.0') {
+    /*funcT*/testCompile('com.netflix.nebula:nebula-test:4.2.2') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }

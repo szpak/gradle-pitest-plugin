@@ -29,7 +29,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     }
                 }
                 repositories { mavenCentral() }
-                dependencies { testCompile 'junit:junit:4.11' }
+                dependencies { testCompile 'junit:junit:4.12' }
             """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')

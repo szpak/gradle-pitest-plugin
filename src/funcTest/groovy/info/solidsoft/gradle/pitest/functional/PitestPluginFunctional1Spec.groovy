@@ -20,7 +20,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     mavenCentral()
                 }
                 dependencies {
-                    testCompile 'junit:junit:4.11'
+                    testCompile 'junit:junit:4.12'
                 }
             """.stripIndent()
         when:
@@ -83,7 +83,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 //                    }
                 }
                 dependencies {
-                    testCompile 'junit:junit:4.11'
+                    testCompile 'junit:junit:4.12'
                 }
         """.stripIndent()
     }
