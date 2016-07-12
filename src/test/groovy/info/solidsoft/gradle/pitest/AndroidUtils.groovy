@@ -12,6 +12,9 @@ class AndroidUtils {
         def manifestFile = project.file('src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
         manifestFile.write(resource.text)
+        project.buildscript.repositories {
+            mavenCentral()
+        }
         project.apply(plugin: "com.android.library")
         project.android.with {
             buildToolsVersion '24.0.0'

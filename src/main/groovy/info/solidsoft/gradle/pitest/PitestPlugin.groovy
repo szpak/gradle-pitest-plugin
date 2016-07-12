@@ -40,6 +40,7 @@ public class PitestPlugin implements Plugin<Project> {
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
+    public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
     public final static DEFAULT_ANDROID_RUNTIME_DEPENDENCY = 'org.robolectric:android-all:6.0.0_r1-robolectric-0'
 
     private final static Logger log = Logging.getLogger(PitestPlugin)
@@ -98,9 +99,11 @@ public class PitestPlugin implements Plugin<Project> {
     }
 
     private void createConfigurations() {
-        project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with {
-            visible = false
-            description = "The Pitest libraries to be used for this project."
+        [PITEST_CONFIGURATION_NAME, PITEST_TEST_COMPILE_CONFIGURATION_NAME].each {
+            project.rootProject.buildscript.configurations.maybeCreate(it).with {
+                visible = false
+                description = "The Pitest libraries to be used for this project."
+            }
         }
     }
 
@@ -116,6 +119,7 @@ public class PitestPlugin implements Plugin<Project> {
         }
         combinedTaskClasspath.add(variant.javaCompiler.classpath)
         combinedTaskClasspath.add(project.files(variant.javaCompiler.destinationDir))
+        combinedTaskClasspath.add(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
 
         task.conventionMapping.with {
             taskClasspath = {
@@ -183,6 +187,7 @@ public class PitestPlugin implements Plugin<Project> {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
             pitest extension.androidRuntimeDependency
+            pitestTestCompile extension.androidRuntimeDependency
         }
     }
 }
