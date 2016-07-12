@@ -10,7 +10,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.2'
+    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.3'
   }
 }
 
