@@ -15,10 +15,15 @@
  */
 package info.solidsoft.gradle.pitest
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.*
-import com.google.common.annotations.VisibleForTesting
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 
 /**
  * Gradle task implementation for Pitest.
@@ -179,7 +184,7 @@ class PitestTask extends JavaExec {
         super.exec()
     }
 
-    @VisibleForTesting
+    @PackageScope   //visible for testing
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
@@ -240,7 +245,7 @@ class PitestTask extends JavaExec {
         }
     }
 
-    @VisibleForTesting
+    @PackageScope   //visible for testing
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
         getPluginConfiguration()?.collect { k, v ->

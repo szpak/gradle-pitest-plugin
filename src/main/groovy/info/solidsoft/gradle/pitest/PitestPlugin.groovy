@@ -16,14 +16,13 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.PackageScope
-import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.file.UnionFileCollection
-import com.google.common.annotations.VisibleForTesting
 
 /**
  * The main class for Pitest plugin.
@@ -36,8 +35,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
-    @VisibleForTesting
-    @PackageScope
+    @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     private Project project
