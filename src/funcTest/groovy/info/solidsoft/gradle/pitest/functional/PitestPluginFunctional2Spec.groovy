@@ -46,7 +46,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
     private static final Range<Integer> GRADLE2_MINOR_RANGE = (14..0)
 
     private static final Closure gradle2AdditionalVersionModifications = { List<String> versions ->
-        versions - "2.2" + "2.2.1" - "2.14" + "2.14.1" + "3.0-milestone-2"
+        versions - "2.2" + "2.2.1" - "2.14" + "2.14.1" + "3.0-rc-2"
     }
 
     private static List<String> resolveRequestedGradleVersions() {
@@ -58,7 +58,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                 GRADLE_LATEST_VERSIONS
                 break
             case "quick":
-                GRADLE_LATEST_VERSIONS + "2.0" + "3.0-milestone-2"
+                GRADLE_LATEST_VERSIONS + "2.0" + "3.0-rc-2"
                 break
             case "full":
                 gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
