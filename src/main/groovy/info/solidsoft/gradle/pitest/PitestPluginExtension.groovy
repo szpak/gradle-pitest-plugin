@@ -154,4 +154,15 @@ class PitestPluginExtension {
     void setTimeoutFactor(String timeoutFactor) {
         this.timeoutFactor = new BigDecimal(timeoutFactor)
     }
+
+    /**
+     * Alias for enableDefaultIncrementalAnalysis.
+     *
+     * To make migration from PIT Maven plugin to PIT Gradle plugin easier.
+     *
+     * @since 1.1.10
+     */
+    void setWithHistory(Boolean withHistory) {
+        this.enableDefaultIncrementalAnalysis = withHistory
+    }
 }
