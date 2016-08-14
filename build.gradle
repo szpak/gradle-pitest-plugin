@@ -64,7 +64,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.github.szpak:nebula-test:ab8e42a') {
+    funcTestCompile('com.github.szpak:nebula-test:ab8e42a') {   //until https://github.com/nebula-plugins/nebula-test/pull/68 is merged upstream
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
