@@ -119,6 +119,8 @@ class PitestPluginExtension {
      */
     Map<String, String> pluginConfiguration
 
+    Integer maxSurviving    //new in PIT 1.1.10
+
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
     }

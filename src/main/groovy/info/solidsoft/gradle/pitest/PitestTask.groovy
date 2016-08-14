@@ -172,6 +172,10 @@ class PitestTask extends JavaExec {
     @Optional
     Map<String, String> pluginConfiguration
 
+    @Input
+    @Optional
+    Integer maxSurviving
+
     @Override
     void exec() {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
@@ -218,6 +222,7 @@ class PitestTask extends JavaExec {
         map['exportLineCoverage'] = getExportLineCoverage()?.toString()
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
+        map['maxSurviving'] = getMaxSurviving()?.toString()
         map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)

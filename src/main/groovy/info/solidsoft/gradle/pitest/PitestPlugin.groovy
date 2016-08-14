@@ -135,6 +135,7 @@ class PitestPlugin implements Plugin<Project> {
             jvmPath = { extension.jvmPath }
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
+            maxSurviving = { extension.maxSurviving }
         }
 
         project.afterEvaluate {
