@@ -35,14 +35,14 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
 
     def "default analysis mode disabled by default"() {
         when:
-            def createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
             createdMap.get("enableDefaultIncrementalAnalysis") == null
     }
 
     def "files for history location not set by default"() {
         when:
-            def createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == null
             createdMap.get('historyOutputLocation') == null
@@ -52,7 +52,7 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
         given:
             task.enableDefaultIncrementalAnalysis = true
         when:
-            def createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
             String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
             createdMap.get('historyInputLocation') == pitHistoryDefaultFile
@@ -66,7 +66,7 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
             task.historyInputLocation = new File('input')
             task.historyOutputLocation = new File('output')
         when:
-            def createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == task.historyInputLocation.path
             createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
@@ -78,7 +78,7 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
             task.historyInputLocation = new File('input')
             task.historyOutputLocation = new File('output')
         when:
-            def createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == task.historyInputLocation.path
             createdMap.get('historyOutputLocation') == task.historyOutputLocation.path

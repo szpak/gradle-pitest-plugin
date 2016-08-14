@@ -34,7 +34,7 @@ class PitestPluginTargetClassesTest extends Specification {
         given:
             project.pitest.targetClasses = ["foo"]
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)
     }
@@ -43,7 +43,7 @@ class PitestPluginTargetClassesTest extends Specification {
         given:
             project.group = "group"
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["group.*"] as Set)
     }
@@ -53,7 +53,7 @@ class PitestPluginTargetClassesTest extends Specification {
             project.group = "group"
             project.pitest.targetClasses = ["target.classes"]
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["target.classes"] as Set)
     }
@@ -61,7 +61,7 @@ class PitestPluginTargetClassesTest extends Specification {
     //Only imitation of testing Gradle validation exception
     def "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
         when:
-            def tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, null)
     }
@@ -71,7 +71,7 @@ class PitestPluginTargetClassesTest extends Specification {
 
     private static assertOnePitestTaskWithGivenTargetClasses(Set<Task> tasks, Set<String> expectedTargetClasses) {
         tasks.size() == 1
-        PitestTask pitestTask = tasks.iterator().next()
+        PitestTask pitestTask = (PitestTask) tasks.first()
         pitestTask.getTargetClasses() == expectedTargetClasses
     }
 }
