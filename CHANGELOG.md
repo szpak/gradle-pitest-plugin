@@ -1,3 +1,11 @@
+1.1.10 - 2016-08-15
+
+ - support for the new `maxSurviving` parameter in PIT 1.1.10 - #45
+ - add `withHistory` alias (new thing in PIT Maven plugin)  for long established `enableDefaultIncrementalAnalysis` parameter in Gradle plugin
+ - PIT 1.1.10 by default - #49
+ - bring full Gradle 2.0 - 2.14.1 range of functional tests back (with custom changes to nebula-test)
+ - upgrade Gradle wrapper to 2.14.1 - #48 
+
 1.1.9 - 2016-02-15
 
  - PIT 1.1.9 by default - fixed process hangs in 1.1.6 - #39
