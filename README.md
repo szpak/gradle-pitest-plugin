@@ -1,7 +1,7 @@
 # Gradle plugin for PIT Mutation Testing
 
 The plugin provides an ability to perform a [mutation testing](https://en.wikipedia.org/wiki/Mutation_testing) and
-calculate a mutation coverage of a [Gradle](http://gradle.org/)-based projects with [PIT](http://pitest.org/).
+calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin) [![Build Status Travis](https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master)](https://travis-ci.org/szpak/gradle-pitest-plugin) [![Build Status Jenkins](https://solidsoft.ci.cloudbees.com/buildStatus/icon?job=pitest-gradle-plugin)](https://solidsoft.ci.cloudbees.com/job/pitest-gradle-plugin/)
 
@@ -15,7 +15,7 @@ Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle fi
         repositories {
             mavenCentral()
             //Needed only for SNAPSHOT versions
-            //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+            //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
             classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.10'
@@ -56,7 +56,7 @@ supported. To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`
 automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by an user.
 
 In the past there was one mandatory parameter - `targetClasses` - which points to the classes which should be mutated.
-Starting from 0.32.0 it is only required if a [group](http://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34)
+Starting from 0.32.0 it is only required if a [group](https://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34)
 for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using `pitest.targetClasses` parameter).
 
 In case of using not default PIT version the `pitestVersion` parameter should be used to override it.
@@ -324,7 +324,7 @@ The author can be contacted directly via email: mszpak ATT wp DOTT pl.
 There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
-However it is often a better idea to send a questions to the [PIT mailing list](http://groups.google.com/group/pitusers) first.
+However it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
