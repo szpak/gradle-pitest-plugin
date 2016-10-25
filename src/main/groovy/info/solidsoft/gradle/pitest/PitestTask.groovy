@@ -236,7 +236,7 @@ class PitestTask extends JavaExec {
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
         taskArgumentsMap.collect { k, v ->
-            "--$k=$v"
+            "--$k=$v".toString()
         }
     }
 
@@ -246,8 +246,8 @@ class PitestTask extends JavaExec {
         getPluginConfiguration()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
-            "--pluginConfiguration=$it"
-        } ?: []
+            "--pluginConfiguration=$it".toString()
+        } ?: [] as List<String>
     }
 
     //Workaround to keep compatibility with Gradle <2.8

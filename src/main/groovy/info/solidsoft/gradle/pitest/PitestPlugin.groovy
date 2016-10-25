@@ -31,6 +31,7 @@ import org.gradle.api.internal.DefaultDomainObjectSet
 import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.plugins.BasePlugin
 
 /**
  * The main class for Pitest plugin.
@@ -60,13 +61,8 @@ public class PitestPlugin implements Plugin<Project> {
         extension.pitestVersion = DEFAULT_PITEST_VERSION
         extension.androidRuntimeDependency = DEFAULT_ANDROID_RUNTIME_DEPENDENCY
         addPitDependencies()
+        project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
-            project.pluginManager.with {
-                if (!hasPlugin('com.android.application') &&
-                        !hasPlugin('com.android.library') &&
-                        !hasPlugin('com.android.test'))
-                    throw new GradleException('No recognized android plugins has been applied')
-            }
             if (extension.mainSourceSets == null) {
                 extension.mainSourceSets = project.android.sourceSets.main as Set<AndroidSourceSet>
             }
@@ -85,7 +81,7 @@ public class PitestPlugin implements Plugin<Project> {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
         }
-        variants.each { BaseVariant variant ->
+        variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
             configureTaskDefault(variantTask, variant)
             variantTask.with {

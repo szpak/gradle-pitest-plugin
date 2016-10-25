@@ -4,12 +4,15 @@ jdk:
   - oraclejdk8
 env:
   - PITEST_REGRESSION_TESTS=latestOnly
+licenses:
+  - 'android-sdk-license-.+'
+  - 'google-gdk-license-.+'
 
 before_install:
   - echo y|android update sdk --all --no-ui --force --filter tools
   - echo y|android update sdk --all --no-ui --force --filter platform-tools
-  - echo y|android update sdk --all --no-ui --force --filter build-tools-24.0.0
-  - echo y|android update sdk --all --no-ui --force --filter android-24
+  - echo y|android update sdk --all --no-ui --force --filter build-tools-25.0.0
+  - echo y|android update sdk --all --no-ui --force --filter android-25
 
 install: ./gradlew assemble
 script: ./gradlew funcTest check --stacktrace --info --continue
