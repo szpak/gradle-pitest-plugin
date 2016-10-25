@@ -5,14 +5,23 @@ jdk:
 env:
   - PITEST_REGRESSION_TESTS=latestOnly
 licenses:
+  - 'android-sdk-preview-license-52d11cd2'
   - 'android-sdk-license-.+'
   - 'google-gdk-license-.+'
 
 before_install:
   - echo y|android update sdk --all --no-ui --force --filter tools
   - echo y|android update sdk --all --no-ui --force --filter platform-tools
+  - echo y|android update sdk --all --no-ui --force --filter tools
   - echo y|android update sdk --all --no-ui --force --filter build-tools-25.0.0
   - echo y|android update sdk --all --no-ui --force --filter android-25
 
 install: ./gradlew assemble
 script: ./gradlew funcTest check --stacktrace --info --continue
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/ó
+    - $HOME/.gradle/wrapper/
