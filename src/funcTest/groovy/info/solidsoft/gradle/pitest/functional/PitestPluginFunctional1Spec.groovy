@@ -24,6 +24,8 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     testCompile 'junit:junit:4.12'
                 }
             """.stripIndent()
+        and:
+            writeManifestFile()
         when:
             writeHelloWorld('gradle.pitest.test.hello')
         then:
@@ -43,9 +45,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         given:
             buildFile << getBasicGradlePitestConfig()
         and:
-            def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
-            manifestFile.parentFile.mkdirs()
-            manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="com.example.test"/>')
+            writeManifestFile()
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:
@@ -53,6 +53,12 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted(':pitestRelease')
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+    }
+
+    def writeManifestFile(){
+        def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
+        manifestFile.parentFile.mkdirs()
+        manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }
 
     private static String getBasicGradlePitestConfig() {
