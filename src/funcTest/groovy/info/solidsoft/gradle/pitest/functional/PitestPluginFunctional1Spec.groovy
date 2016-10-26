@@ -5,19 +5,20 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
     def "setup and run simple build on pitest infrastructure"() {
         given:
             buildFile << """
-                apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
+                apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '24.0.0'
-                    compileSdkVersion 24
+                    buildToolsVersion '25.0.0'
+                    compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 24
+                        targetSdkVersion 25
                     }
                 }
                 repositories {
                     mavenCentral()
+                    jcenter()
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
@@ -56,25 +57,27 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
     private static String getBasicGradlePitestConfig() {
         return """
-                apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
+                apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '24.0.0'
-                    compileSdkVersion 24
+                    buildToolsVersion '25.0.0'
+                    compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 24
+                        targetSdkVersion 25
                     }
                 }
                 group = 'gradle.pitest.test'
 
                 repositories {
                     mavenCentral()
+                    jcenter()
                 }
                 buildscript {
                     repositories {
                         mavenCentral()
+                        jcenter()
                     }
 //                    //Local/current version of the plugin should be put on a classpath anyway
 //                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
