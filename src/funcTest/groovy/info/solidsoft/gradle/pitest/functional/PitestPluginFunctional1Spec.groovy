@@ -15,6 +15,10 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                         minSdkVersion 10
                         targetSdkVersion 25
                     }
+                    lintOptions {
+                        //ignore missing lint database
+                        abortOnError false
+                    }
                 }
                 repositories {
                     mavenCentral()
