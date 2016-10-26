@@ -26,5 +26,8 @@ before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
-    - $HOME/.gradle/caches/ó
+    - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+after_failure:
+  - cat build/test/info.solidsoft.gradle.pitest.functional.PitestPluginFunctional1Spec/setup-and-run-simple-build-on-pitest-infrastructure/build/outputs/lint-results-debug.xml
