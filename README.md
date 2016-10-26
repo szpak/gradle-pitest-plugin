@@ -10,7 +10,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.3'
+    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.4'
   }
 }
 
@@ -20,24 +20,8 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'pl.droidsonroids.pitest'
 ```
-This plugin has to be applied _after_ android plugins.
 
 Plugin is also available on [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest). Note that only classic plugin applying syntax is supported since plugin has to be applied last:
-```groovy
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "gradle.plugin.pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.2"
-  }
-}
-
-//apply android plugin
-apply plugin: "pl.droidsonroids.pitest"
-```
 
 #Usage
 `pitest<variant>` tasks will be created for each build variant 
