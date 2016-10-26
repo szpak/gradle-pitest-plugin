@@ -15,6 +15,9 @@ before_install:
   - echo y|android update sdk --all --no-ui --force --filter tools
   - echo y|android update sdk --all --no-ui --force --filter build-tools-25.0.0
   - echo y|android update sdk --all --no-ui --force --filter android-25
+  - export ANDROID_HOME=$PWD/android-sdk-linux
+  - mkdir -p $ANDROID_HOME/licenses/
+  - echo 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license
 
 install: ./gradlew assemble
 script: ./gradlew funcTest check --stacktrace --info --continue
