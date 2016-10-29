@@ -42,11 +42,12 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.14.1", "3.0"]
+    private static final List<String> GRADLE3_VERSIONS = ["3.2-rc-1", "3.1", "3.0"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["2.14.1", GRADLE3_VERSIONS[0]]
     private static final Range<Integer> GRADLE2_MINOR_RANGE = (14..0)
 
     private static final Closure gradle2AdditionalVersionModifications = { List<String> versions ->
-        versions - "2.2" + "2.2.1" - "2.14" + "2.14.1" + "3.0"
+        versions - "2.2" + "2.2.1" - "2.14" + "2.14.1"
     }
 
     private static List<String> resolveRequestedGradleVersions() {
@@ -55,18 +56,15 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
         switch (regressionTestsLevel) {
             case "latestOnly":
             case null:
-                GRADLE_LATEST_VERSIONS
-                break
+                return GRADLE_LATEST_VERSIONS
             case "quick":
-                GRADLE_LATEST_VERSIONS + "2.0"
-                break
+                return GRADLE_LATEST_VERSIONS + "2.0" + "3.0"
             case "full":
-                gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
-                break
+                return GRADLE3_VERSIONS + gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +
-                        "Assuming 'latest'.")
-                GRADLE_LATEST_VERSIONS
+                        "Assuming 'latestOnly'.")
+                return GRADLE_LATEST_VERSIONS
         }
     }
 }
