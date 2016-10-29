@@ -41,7 +41,7 @@ class PitestTaskPluginConfigurationTest extends Specification {
 
     def "should split parameters into separate pluginConfiguration arguments"() {
         given:
-            task.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": 2]
+            task.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": "2"]
         when:
             List<String> multiValueArgList = task.createMultiValueArgsAsList()
         then:

@@ -15,13 +15,14 @@ repositories {
     mavenCentral()
     mavenLocal()
     jcenter()
+    maven { url "https://jitpack.io" }
 }
 
 sourceSets {
     funcTest {
         java.srcDir file('src/funcTest/java')
         groovy.srcDir file('src/funcTest/groovy')
-        resources.srcDir file('src/funcTest/resources') //Broken in Idea - https://youtrack.jetbrains.com/issue/IDEA-128966
+        resources.srcDir file('src/funcTest/resources')
     }
 }
 
@@ -37,13 +38,10 @@ dependencies {
     testCompile 'cglib:cglib-nodep:3.2.4'   //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
-    funcTestCompile sourceSets.main.output
-    funcTestCompile sourceSets.test.output  //to make visible funcTest resources moved to test resources as a workaround for Idea bug
-
+    funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    //dependencies from non default configurations are ignored in Idea - https://youtrack.jetbrains.com/issue/IDEA-121728
-    /*funcT*/testCompile('com.netflix.nebula:nebula-test:4.2.2') {
+    funcTestCompile('com.github.szpak:nebula-test:ab8e42a') {   //until https://github.com/nebula-plugins/nebula-test/pull/68 is merged upstream
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }

@@ -31,7 +31,7 @@ class PitestPluginTypesConversionTest extends Specification {
         given:
             project.pitest.timeoutFactor = 1.23
         when:
-            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             PitestTask task = assertOnePitestTaskAndReturnIt(tasks)
             task.timeoutFactor == 1.23
@@ -41,7 +41,7 @@ class PitestPluginTypesConversionTest extends Specification {
         given:
             project.pitest.timeoutFactor = "1.23"
         when:
-            def tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(AndroidUtils.PITEST_RELEASE_TASK_NAME, false)
         then:
             PitestTask task = assertOnePitestTaskAndReturnIt(tasks)
             task.timeoutFactor == 1.23
@@ -49,6 +49,6 @@ class PitestPluginTypesConversionTest extends Specification {
 
     private static PitestTask assertOnePitestTaskAndReturnIt(Set<Task> tasks) {
         assert tasks.size() == 1
-        tasks.iterator().next()
+        return (PitestTask) tasks.first()
     }
 }

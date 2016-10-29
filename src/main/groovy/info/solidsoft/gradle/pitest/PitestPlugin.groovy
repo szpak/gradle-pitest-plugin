@@ -36,7 +36,7 @@ import org.gradle.api.plugins.BasePlugin
 /**
  * The main class for Pitest plugin.
  */
-public class PitestPlugin implements Plugin<Project> {
+class PitestPlugin implements Plugin<Project> {
     public final static DEFAULT_PITEST_VERSION = '1.1.10'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
@@ -46,8 +46,7 @@ public class PitestPlugin implements Plugin<Project> {
 
     private final static Logger log = Logging.getLogger(PitestPlugin)
 
-    @VisibleForTesting
-    @PackageScope
+    @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     private Project project
@@ -175,6 +174,7 @@ public class PitestPlugin implements Plugin<Project> {
             jvmPath = { extension.jvmPath }
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
+            maxSurviving = { extension.maxSurviving }
         }
     }
 

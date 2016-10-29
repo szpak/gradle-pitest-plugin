@@ -10,7 +10,7 @@ import spock.lang.Unroll
  * TODO: Possible extensions:
  *  - Move functional tests to a separate sourceSet and not run them in every build - DONE
  *  - Add nice gradle.build builder
- *  - Add Connector clean up in tear down in IntegrationSpec
+ *  - Add Connector clean up in tear down in IntegrationSpec - DONE
  *  - Add testing against latest nightly Gradle version?
  */
 @Slf4j
@@ -55,8 +55,8 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                 break
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +
-                        "Assuming 'latest'.")
-                GRADLE_LATEST_VERSIONS
+                        "Assuming 'latestOnly'.")
+                return GRADLE_LATEST_VERSIONS
         }
     }
 }

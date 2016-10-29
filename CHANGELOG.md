@@ -6,6 +6,8 @@
  - Robolectric annotation format error fixed
 0.0.4 - 2016-10-26
  - Dependencies updated
- - Removed limitation that Android pitest plugin has to be applied after Android Gradle plugin  
+ - Removed limitation that Android pitest plugin has to be applied after Android Gradle plugin
+0.0.5 - SNAPSHOT
+ - merged upstream changes 0a75c234c72db1021ef5cef7b71b7849cd9dfc31
  
 [Changelog of source project](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md)
