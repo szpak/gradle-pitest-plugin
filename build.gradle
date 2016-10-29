@@ -13,7 +13,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'pl.allegro.tech.build:axion-release-plugin:1.3.2'
+        classpath 'pl.allegro.tech.build:axion-release-plugin:1.4.1'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
@@ -24,13 +24,12 @@ scmVersion {
         prefix = 'release'
         versionSeparator = '/'
     }
-    createReleaseCommit = true
-    releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/},
-                           replacement: {v, p -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$v\'"}]
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /id\ 'info\.solidsoft\.pitest'\ version\ '.*'/},
-                           replacement: {v, p -> "id 'info.solidsoft.pitest' version '$v'"}]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/ },
+                           replacement: { v, p -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$v\'" }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /id\ 'info\.solidsoft\.pitest'\ version\ '.*'/ },
+                           replacement: { v, p -> "id 'info.solidsoft.pitest' version '$v'" }]
+        pre 'commit', { v, p -> "Release version: ${v}\n\n[ci skip]" }
     }
 }
 
