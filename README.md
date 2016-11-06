@@ -2,8 +2,16 @@
 This is a fork of [gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-plugin)
 which supports Android gradle projects. 
 
-#Applying plugin
-`build.gradle`:
+# Applying plugin in `build.gradle`
+## With [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest)
+
+```groovy
+plugins {
+  id "pl.droidsonroids.pitest" version "0.0.4"
+}
+```
+
+## With Maven central repository
 ```groovy
 buildscript {
   repositories {
@@ -20,8 +28,6 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'pl.droidsonroids.pitest'
 ```
-
-Plugin is also available on [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest). Note that only classic plugin applying syntax is supported since plugin has to be applied last:
 
 #Usage
 `pitest<variant>` tasks will be created for each build variant 
