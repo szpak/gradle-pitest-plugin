@@ -1,3 +1,10 @@
+1.1.11 - 2017-01-25
+
+ - support for new `classPathFile` parameter in PIT 1.1.11 - #50
+ - PIT 1.1.11 by default
+ - downgrade Gradle wrapper to 2.13 due to performance [regression](https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956)
+   in tests with ProjectBuilder
+
 1.1.10 - 2016-08-15
 
  - support for the new `maxSurviving` parameter in PIT 1.1.10 - #45
