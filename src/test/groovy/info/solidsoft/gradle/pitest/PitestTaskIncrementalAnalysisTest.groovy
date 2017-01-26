@@ -15,23 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Specification
-
-import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.api.Project
-
-class PitestTaskIncrementalAnalysisTest extends Specification {
-
-    private Project project
-    private PitestTask task
-
-    def setup() {
-        project = ProjectBuilder.builder().build()
-        project.apply(plugin: "java")   //to add SourceSets
-        project.apply(plugin: "info.solidsoft.pitest")
-        task = project.tasks[PitestPlugin.PITEST_TASK_NAME] as PitestTask
-        task.targetClasses = []
-    }
+class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
     def "default analysis mode disabled by default"() {
         when:
@@ -48,23 +32,27 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
             createdMap.get('historyOutputLocation') == null
     }
 
-    def "set default files for history location in default incremental analysis mode"() {
+    def "set default files for history location in default incremental analysis mode ('#propertyName')"() {
         given:
-            task.enableDefaultIncrementalAnalysis = true
+            project.pitest."$propertyName" = true
+        and:
+            String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
         when:
             Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
-            String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
             createdMap.get('historyInputLocation') == pitHistoryDefaultFile
             createdMap.get('historyOutputLocation') == pitHistoryDefaultFile
+        where:
+            propertyName << ['enableDefaultIncrementalAnalysis', 'withHistory']
     }
 
     def "override files for history location when set explicit in configuration also default incremental analysis mode"() {
         given:
-            //TODO: How to set a configuration (e.g. enableDefaultIncrementalAnalysis) in a test project?
-            task.enableDefaultIncrementalAnalysis = true
-            task.historyInputLocation = new File('input')
-            task.historyOutputLocation = new File('output')
+            project.pitest  {
+                enableDefaultIncrementalAnalysis = true
+                historyInputLocation = new File('input')
+                historyOutputLocation = new File('output')
+            }
         when:
             Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
@@ -74,9 +62,13 @@ class PitestTaskIncrementalAnalysisTest extends Specification {
 
     def "given in configuration files for history location are used also not in default incremental analysis mode"() {
         given:
-            task.enableDefaultIncrementalAnalysis = false
-            task.historyInputLocation = new File('input')
-            task.historyOutputLocation = new File('output')
+            project.pitest {
+                enableDefaultIncrementalAnalysis = false
+                historyInputLocation = new File('input')
+                historyOutputLocation = new File('output')
+            }
+        and:
+            task = getJustOnePitestTaskOrFail()
         when:
             Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
