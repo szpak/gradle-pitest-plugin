@@ -79,8 +79,6 @@ The expected parameter format in a plugin configuration can be taken from
 
 There are a few parameters specific for Gradle plugin:
 
- - enableDefaultIncrementalAnalysis - enables incremental analysis in PIT using the default settings (build/pitHistory.txt
-file for both input and output locations) (since 0.29.0)
  - testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
 to add integration tests located in a different source set) (since 0.30.1)
  - mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
@@ -94,10 +92,10 @@ For example:
 
     pitest {
         ...
-        enableDefaultIncrementalAnalysis = true
         testSourceSets = [sourceSets.test, sourceSets.integrationTest]
         mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
         jvmArgs = ['-Xmx1024m']
+        timestampedReports = false
     }
 
 
