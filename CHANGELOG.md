@@ -1,6 +1,7 @@
 1.1.11 - 2017-01-25
 
  - support for new `classPathFile` parameter in PIT 1.1.11 - #50
+ - filter dynamic libraries - #52
  - PIT 1.1.11 by default
  - downgrade Gradle wrapper to 2.13 due to performance [regression](https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956)
    in tests with ProjectBuilder

@@ -33,6 +33,9 @@ class PitestPlugin implements Plugin<Project> {
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
 
+    private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
+    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
+
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
     @PackageScope   //visible for testing
@@ -84,8 +87,11 @@ class PitestPlugin implements Plugin<Project> {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
-                FileCollection combinedTaskClasspathWithoutPomFiles = combinedTaskClasspath.filter { File file -> !file.name.endsWith(".pom") }
-                combinedTaskClasspathWithoutPomFiles
+                FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
+                    !FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH.find { file.name.endsWith(".$it") }
+                }
+
+                return filteredCombinedTaskClasspath
             }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
@@ -102,7 +108,7 @@ class PitestPlugin implements Plugin<Project> {
                 if (project.getGroup()) {   //Assuming it is always a String class instance
                     return [project.getGroup() + ".*"] as Set
                 }
-                null
+                return null
             }
             targetTests = { extension.targetTests }
             dependencyDistance = { extension.dependencyDistance }
@@ -149,7 +155,7 @@ class PitestPlugin implements Plugin<Project> {
     private Set<String> calculateTasksToDependOn() {
         Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" }
         log.debug("pitest tasksToDependOn: $tasksToDependOn")
-        tasksToDependOn
+        return tasksToDependOn
     }
 
     private void addPitDependencies() {

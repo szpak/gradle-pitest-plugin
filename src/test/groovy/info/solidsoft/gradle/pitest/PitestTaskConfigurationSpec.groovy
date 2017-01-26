@@ -16,7 +16,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec {
             task.createTaskArgumentMap()['classPathFile'] == testClassPathFileAsString
     }
 
-    def "should not pass to PIT parameters not set by default if not set explicitly"() {
+    def "should not pass to PIT parameter '#paramName' not set by default if not set explicitly"() {
         given:
             task = getJustOnePitestTaskOrFail()
         expect:
