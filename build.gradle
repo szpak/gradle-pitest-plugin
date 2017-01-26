@@ -79,6 +79,8 @@ task funcTest(type: Test) {
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
+check.dependsOn funcTestClasses
+uploadArchives.dependsOn funcTest, check
 
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
@@ -123,8 +125,6 @@ modifyPom {
         }
     }
 }
-
-uploadArchives.dependsOn funcTest, check
 
 //Artifacts are not placed directly into JCenter, so for now a 'gradle-plugin' attribute has to be set manually to
 //'info.solidsoft.pitest:info.solidsoft.gradle.pitest:gradle-pitest-plugin' via GUI after sync
