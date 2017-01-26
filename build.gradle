@@ -2,6 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'pl.allegro.tech.build.axion-release'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'ru.vyarus.animalsniffer'
 
 group = 'info.solidsoft.gradle.pitest'
 
@@ -16,6 +17,7 @@ buildscript {
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.4.1'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.0.1'
     }
 }
 
@@ -67,6 +69,7 @@ dependencies {
     funcTestCompile('com.netflix.nebula:nebula-test:4.4.3') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+    signature 'org.codehaus.mojo.signature:java17:1.0@signature'
 }
 
 task funcTest(type: Test) {
@@ -88,6 +91,15 @@ uploadArchives.dependsOn funcTest, check
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
     reportOn test, funcTest
+}
+
+animalsniffer {
+    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
+                                            //https://github.com/mojohaus/animal-sniffer/issues/27
+}
+
+tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
+    onlyIf { project.hasProperty('compatibility') }
 }
 
 nexusStaging {

@@ -13,4 +13,4 @@ matrix:
       env: PITEST_REGRESSION_TESTS=quick
 
 install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info --continue
+script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
