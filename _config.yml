@@ -1,0 +1,8 @@
+title: gradle-pitest-plugin
+description: Gradle plugin for PIT Mutation Testing
+google_analytics: UA-46065645-1
+show_downloads: true
+theme: jekyll-theme-midnight
+
+gems:
+  - jekyll-mentions
