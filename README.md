@@ -18,7 +18,7 @@ Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle fi
             //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.10'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
         }
     }
 
@@ -111,7 +111,7 @@ for the root project:
             mavenCentral()
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.10'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
             (...)
         }
     }
@@ -183,7 +183,7 @@ To enable PIT plugin it is enough to add it to pitest configuration in buildscri
        }
        configurations.maybeCreate("pitest")
        dependencies {
-           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.10'
+           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
            pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
        }
     }
