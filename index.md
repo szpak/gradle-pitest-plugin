@@ -328,4 +328,36 @@ However it is often a better idea to send a questions to the [PIT mailing list](
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
-![Stat Counter stats](https://c.statcounter.com/9394072/0/db9b06ab/0/)
+<div id="statcounter" style="width:100%; text-align:center">
+<!-- StatCounter -->
+<script type="text/javascript">
+var sc_project=9394072;
+var sc_invisible=0;
+var sc_security="db9b06ab";
+var scJsHost = (("https:" == document.location.protocol) ?
+"https://secure." : "http://www.");
+document.write("<sc"+"ript type='text/javascript' src='" +
+scJsHost+
+"statcounter.com/counter/counter.js'></"+"script>");
+</script>
+<noscript><div class="statcounter"><a title="create counter"
+href="http://statcounter.com/free-hit-counter/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/9394072/0/db9b06ab/0/"
+alt="create counter"></a></div></noscript>
+</div>
+<br />
+
+<div id="cloudbees" style="width:100%; text-align:center">
+<a href="http://www.cloudbees.com/foss/foss-dev.cb" target="_blank"><img src="images/cloudbees-badge.png"/></a>
+</div>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-46065645-1', 'solidsoft.info');
+ga('send', 'pageview');
+</script>
