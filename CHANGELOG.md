@@ -1,4 +1,4 @@
-1.1.11 - 2017-01-25
+1.1.11 - 2017-01-30
 
  - support for new `classPathFile` parameter in PIT 1.1.11 - #50
  - filter dynamic libraries - #52
