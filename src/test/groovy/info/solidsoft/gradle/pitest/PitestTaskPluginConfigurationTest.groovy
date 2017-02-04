@@ -16,7 +16,6 @@
 package info.solidsoft.gradle.pitest
 
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class PitestTaskPluginConfigurationTest extends Specification {
@@ -26,13 +25,14 @@ class PitestTaskPluginConfigurationTest extends Specification {
 
     def setup() {
         project = AndroidUtils.createSampleLibraryProject()
+        project.evaluate()
         task = project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME] as PitestTask
         task.targetClasses = []
     }
 
     def "should not create pluginConfiguration command line argument when no parameters"() {
         given:
-            task.pluginConfiguration = null
+            project.pitest.pluginConfiguration = null
         when:
             List<String> multiValueArgList = task.createMultiValueArgsAsList()
         then:
@@ -41,7 +41,7 @@ class PitestTaskPluginConfigurationTest extends Specification {
 
     def "should split parameters into separate pluginConfiguration arguments"() {
         given:
-            task.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": "2"]
+            project.pitest.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": "2"]
         when:
             List<String> multiValueArgList = task.createMultiValueArgsAsList()
         then:

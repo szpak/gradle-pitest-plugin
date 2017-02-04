@@ -37,6 +37,6 @@ Additionally `pitest` task will run tasks for all variants.
 After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest/<variant>` directory.
 
 `pitest` configuration extension contains additionally `androidRuntimeDependency` property 
-which defaults to `org.robolectric:android-all:6.0.0_r1-robolectric-0` but may be overridden.   
+which defaults to `org.robolectric:android-all:7.1.0_r7-robolectric-0` but may be overridden.   
 
 For more information see [README of source project](https://github.com/szpak/gradle-pitest-plugin/blob/master/README.md)

@@ -111,6 +111,8 @@ class PitestPluginExtension {
 
     Integer maxSurviving    //new in PIT 1.1.10
 
+    File classPathFile  //new in PIT 1.1.11
+
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
     }

@@ -26,6 +26,7 @@ class PitestPluginTest extends Specification {
     def "add pitest tasks to android library project in proper group"() {
         when:
             Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
         then:
             project.plugins.hasPlugin(PitestPlugin)
             def tasks = [AndroidUtils.PITEST_RELEASE_TASK_NAME, "${PitestPlugin.PITEST_TASK_NAME}Debug"]

@@ -21,9 +21,7 @@ import com.android.build.gradle.TestPlugin
 import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
-import com.google.common.annotations.VisibleForTesting
 import groovy.transform.PackageScope
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -37,14 +35,17 @@ import org.gradle.api.plugins.BasePlugin
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.1.10'
+    public final static DEFAULT_PITEST_VERSION = '1.1.11'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
     public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
-    public final static DEFAULT_ANDROID_RUNTIME_DEPENDENCY = 'org.robolectric:android-all:6.0.0_r1-robolectric-0'
+    public final static DEFAULT_ANDROID_RUNTIME_DEPENDENCY = 'org.robolectric:android-all:7.1.0_r7-robolectric-0'
 
-    private final static Logger log = Logging.getLogger(PitestPlugin)
+    private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
+    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
+
+    private final static Logger log =  Logging.getLogger(PitestPlugin)
 
     @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
@@ -118,7 +119,11 @@ class PitestPlugin implements Plugin<Project> {
 
         task.conventionMapping.with {
             taskClasspath = {
-                combinedTaskClasspath
+                FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
+                    !FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH.find { file.name.endsWith(".$it") }
+                }
+
+                return filteredCombinedTaskClasspath
             }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
@@ -141,7 +146,7 @@ class PitestPlugin implements Plugin<Project> {
                 if (project.getGroup()) {   //Assuming it is always a String class instance
                     return [project.getGroup() + ".*"] as Set
                 }
-                null
+                return null
             }
             targetTests = { extension.targetTests }
             dependencyDistance = { extension.dependencyDistance }
@@ -175,6 +180,7 @@ class PitestPlugin implements Plugin<Project> {
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
             maxSurviving = { extension.maxSurviving }
+            classPathFile = { extension.classPathFile }
         }
     }
 

@@ -12,7 +12,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    buildToolsVersion '25.0.0'
+                    buildToolsVersion '25.0.2'
                     compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10
@@ -25,7 +25,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     repositories { jcenter() }
                     dependencies {
                         classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+'
-                        classpath 'com.android.tools.build:gradle:2.2.2'
+                        classpath 'com.android.tools.build:gradle:2.2.3'
                     }
                 }
                 repositories { mavenCentral() }

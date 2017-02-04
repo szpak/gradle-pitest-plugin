@@ -9,18 +9,16 @@ licenses:
   - 'android-sdk-license-.+'
   - 'google-gdk-license-.+'
 
-before_install:
-  - echo y|android update sdk --all --no-ui --force --filter tools
-  - echo y|android update sdk --all --no-ui --force --filter platform-tools
-  - echo y|android update sdk --all --no-ui --force --filter tools
-  - echo y|android update sdk --all --no-ui --force --filter build-tools-25.0.0
-  - echo y|android update sdk --all --no-ui --force --filter android-25
-  - export ANDROID_HOME=$PWD/android-sdk-linux
-  - mkdir -p $ANDROID_HOME/licenses/
-  - echo 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license
+android:
+  components:
+    - tools # to get the new `repository-11.xml`
+    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+    - platform-tools
+    - build-tools-25.0.2
+    - android-25
 
 install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info --continue
+script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

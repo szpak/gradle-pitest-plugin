@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
@@ -176,16 +177,24 @@ class PitestTask extends JavaExec {
     @Optional
     Integer maxSurviving
 
+    @InputFile
+    @Optional
+    File classPathFile
+
     @Override
     void exec() {
-        Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
-        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
-        setArgs(createAllAgsList(argsAsList, multiValueArgsAsList))
+        setArgs(createListOfAllArgumentsForPit())
         setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
         setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
         setClasspath(getLaunchClasspath())
         super.exec()
+    }
+
+    private List<String> createListOfAllArgumentsForPit() {
+        Map<String, String> taskArgumentsMap = createTaskArgumentMap()
+        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
+        return concatenateTwoLists(argsAsList, multiValueArgsAsList)
     }
 
     @PackageScope   //visible for testing
@@ -223,6 +232,7 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
+        map['classPathFile'] = getClassPathFile()?.path
         map.putAll(prepareMapForIncrementalAnalysis())
 
         return removeEntriesWithNullValue(map)
@@ -262,7 +272,7 @@ class PitestTask extends JavaExec {
 
     //Workaround to keep compatibility with Gradle <2.8
     //[] + [] is compiled in Groovy 2.4.x as "List<T> plus(List<T> left, Collection<T> right)" which is unavailable in Groovy 2.3 and fails with Gradle <2.8
-    private List<String> createAllAgsList(List<String> argsAsList, List<String> multiValueArgsAsList) {
+    private List<String> concatenateTwoLists(List<String> argsAsList, List<String> multiValueArgsAsList) {
         List<String> allArgs = []
         allArgs.addAll(argsAsList)
         allArgs.addAll(multiValueArgsAsList)

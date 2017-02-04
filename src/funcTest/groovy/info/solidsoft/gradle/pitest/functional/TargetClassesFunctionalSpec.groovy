@@ -9,7 +9,7 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    buildToolsVersion '25.0.0'
+                    buildToolsVersion '25.0.2'
                     compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10

@@ -1,6 +1,7 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.9.6'
     id 'com.bmuschko.nexus' version '2.3.1'
+    id 'ru.vyarus.animalsniffer' version '1.2.0'
 }
 
 apply plugin: 'groovy'
@@ -29,24 +30,28 @@ sourceSets {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:2.2.2'
+    compile 'com.android.tools.build:gradle:2.2.3'
 
     testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    testCompile 'cglib:cglib-nodep:3.2.4'   //for Spying in Spock
+    testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
+    testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.github.szpak:nebula-test:ab8e42a') {   //until https://github.com/nebula-plugins/nebula-test/pull/68 is merged upstream
+    funcTestCompile('com.netflix.nebula:nebula-test:4.4.3') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
 
-task funcTest(type: Test, group: "verification") {
+task funcTest(type: Test) {
+    description = 'Run the functional tests.'
+    group = 'Verification'
+
     testClassesDir = sourceSets.funcTest.output.classesDir
     classpath = sourceSets.funcTest.runtimeClasspath
 
@@ -56,10 +61,16 @@ task funcTest(type: Test, group: "verification") {
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
+check.dependsOn funcTestClasses
 
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
     reportOn test, funcTest
+}
+
+animalsniffer {
+    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
+    //https://github.com/mojohaus/animal-sniffer/issues/27
 }
 
 publishPlugins.dependsOn funcTest, check
@@ -91,10 +102,22 @@ modifyPom {
 
         developers {
             developer {
-                id 'koral'
-                name 'Karol Wrótniak'
-                email 'karol.wrotniak@droidsonroids.pl'
+                id 'szpak'
+                name 'Marcin Zajączkowski'
+                email 'mszpak ATT wp DOTT pl'
+                roles {
+                    role 'despot'
+                    role 'developer'
+                }
             }
+	        developer {
+		        id 'koral'
+		        name 'Karol Wrótniak'
+		        email 'karol.wrotniak@droidsonroids.pl'
+                roles {
+                    role 'developer'
+                }
+	        }
         }
     }
 }
