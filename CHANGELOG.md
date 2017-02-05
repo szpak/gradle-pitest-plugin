@@ -1,4 +1,4 @@
-#0.0.5 - SNAPSHOT
+#0.0.5
  - Robolectric dependency updated to 
  - merged upstream changes 14cf634c98590a9a9719a2284b52c7abef8f8f8f
 #0.0.4 - 2016-10-26
