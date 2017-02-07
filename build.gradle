@@ -25,22 +25,6 @@ buildscript {
     }
 }
 
-apply plugin: 'com.gradle.plugin-publish'
-
-pluginBundle {
-    website = 'http://gradle-pitest-plugin.solidsoft.info/'
-    vcsUrl = 'https://github.com/szpak/gradle-pitest-plugin'
-
-    plugins {
-        plugin {
-            id = 'info.solidsoft.pitest'
-            displayName = 'Gradle plugin for PIT mutation testing'
-            description = 'Just what it says on the tin.'
-            tags = ['test', 'pit', 'mutation-testing']
-        }
-    }
-}
-
 scmVersion {
     tag {
         prefix = 'release'
@@ -157,6 +141,30 @@ modifyPom {
                     role 'developer'
                 }
             }
+        }
+    }
+}
+
+if (hasProperty('pluginPortal')) {
+
+    apply plugin: 'com.gradle.plugin-publish'
+
+    pluginBundle {
+        website = 'https://github.com/szpak/gradle-pitest-plugin'
+        vcsUrl = 'https://github.com/szpak/gradle-pitest-plugin'
+
+        plugins {
+            plugin {
+                id = 'info.solidsoft.pitest'
+                displayName = 'gradle-pitest-plugin'
+                description = 'Gradle plugin for PIT mutation testing'
+                tags = ['test', 'pit', 'mutation-testing']
+            }
+        }
+
+        mavenCoordinates {
+            groupId = project.group
+            artifactId = project.name
         }
     }
 }
