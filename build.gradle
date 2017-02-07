@@ -12,12 +12,32 @@ buildscript {
     repositories {
         mavenCentral()
         mavenLocal()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
     dependencies {
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.4.1'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.0.1'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+    }
+}
+
+apply plugin: 'com.gradle.plugin-publish'
+
+pluginBundle {
+    website = 'http://gradle-pitest-plugin.solidsoft.info/'
+    vcsUrl = 'https://github.com/szpak/gradle-pitest-plugin'
+
+    plugins {
+        plugin {
+            id = 'info.solidsoft.pitest'
+            displayName = 'Gradle plugin for PIT mutation testing'
+            description = 'Just what it says on the tin.'
+            tags = ['test', 'pit', 'mutation-testing']
+        }
     }
 }
 
