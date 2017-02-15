@@ -7,9 +7,31 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 
 ## Quick start
 
+### The simplest way
+
+Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` file:
+
+    plugins {
+        id "info.solidsoft.pitest" version "1.1.11"
+    }
+
+Call Gradle with pitest task:
+
+    gradle pitest
+
+After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest` directory.
+
+Optionally make it depend on build:
+
+    build.dependsOn "pitest"
+
+Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
+
+Please take into account that only versions starting with 1.1.11 are available via the [Plugin Portal](https://plugins.gradle.org/plugin/info.solidsoft.pitest).
+
 ### Generic approach
 
-Add gradle-pitest-plugin to the buildscript dependencies in your build.gradle file:
+"The `plugins` way" has some limitations. As the primary repository for the plugin is the [Central Repository](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22info.solidsoft.gradle.pitest%22%20AND%20a%3A%22gradle-pitest-plugin%22) (aka Maven Central) it is also possible to add the plugin to your project using "the generic way":
 
     buildscript {
         repositories {
@@ -26,28 +48,11 @@ Apply the plugin:
 
     apply plugin: "info.solidsoft.pitest"
 
-Call Gradle with pitest task:
-
-    gradle pitest
-
-After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest` directory.
-
-Optionally make it depend on build:
-
-    build.dependsOn "pitest"
-
-Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
-
 ### Older gradle-pitest-plugin versions (<1.1.0)
 
 For versions <1.1.0 the plugin can be applied with:
 
     apply plugin: "pitest"
-
-### New plugin mechanism introduced in Gradle 2.1
-
-The plugin upload mechanism to Gradle Plugins Repository has changed once again and gradle-pitest-plugin 1.1.6+ artifacts are
-available only from Maven Central.
 
 ## Plugin configuration
 
@@ -71,6 +76,7 @@ following example).
         pitestVersion = "1.1.0" //not needed when a default PIT version should be used
         threads = 4
         outputFormats = ['XML', 'HTML']
+        timestampedReports = false
     }
 
 Check PIT documentation for a [list](http://pitest.org/quickstart/commandline/) of all available command line parameters.
@@ -95,7 +101,6 @@ For example:
         testSourceSets = [sourceSets.test, sourceSets.integrationTest]
         mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
         jvmArgs = ['-Xmx1024m']
-        timestampedReports = false
     }
 
 
