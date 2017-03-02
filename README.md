@@ -298,6 +298,14 @@ closure.
 
 In case of errors detected when the latest available version of the plugin is used with newer PIT version please raise an [issue](https://github.com/szpak/gradle-pitest-plugin/issues).
 
+### 7. How to disable placing PIT reports in time-based subfolders?
+
+Placing PIT reports directly in `${PROJECT_DIR}/build/reports/pitest` can be enabled with `timestampedReports` configuration property:
+
+    pitest {
+        timestampedReports = false
+    }
+
 ## Known issues
 
  - too verbose output from PIT
