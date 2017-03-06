@@ -7,15 +7,15 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << """
                 apply plugin: 'pl.droidsonroids.pitest'
                 apply plugin: 'com.android.library'
-                //apply plugin: 'kotlin-android'
+                apply plugin: 'kotlin-android'
 
                 buildscript {
                     repositories {
                         jcenter()
                     }
                     dependencies {
-                        //It passes without this line
                         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.0"
+                        classpath 'com.android.tools.build:gradle:2.2.3'
                     }
                 }
 
@@ -37,7 +37,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
-                    //compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.0"
+                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.0"
                 }
             """.stripIndent()
         and:
