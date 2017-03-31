@@ -44,7 +44,6 @@ project.version = scmVersion.version
 repositories {
     mavenCentral()
     mavenLocal()
-    maven { url "https://jitpack.io" }
 }
 
 sourceSets {
