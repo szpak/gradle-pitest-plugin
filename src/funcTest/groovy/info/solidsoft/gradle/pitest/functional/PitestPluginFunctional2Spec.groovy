@@ -4,6 +4,7 @@ import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import groovy.util.logging.Slf4j
 import nebula.test.functional.GradleRunner
+import org.gradle.util.GradleVersion
 import spock.lang.Unroll
 
 /**
@@ -42,7 +43,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["3.1"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["3.3", "3.4", GradleVersion.current().version]
 
     private static List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
