@@ -1,5 +1,8 @@
 package info.solidsoft.gradle.pitest.functional
 
+import info.solidsoft.gradle.pitest.PitestPlugin
+import nebula.test.functional.ExecutionResult
+
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
     def "setup and run simple build on pitest infrastructure"() {
@@ -22,23 +25,31 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('src/test/java/gradle/pitest/test/hello/HelloWorldTest.java')
         when:
-            def result = runTasksSuccessfully('build')
+            ExecutionResult result = runTasksSuccessfully('build')
         then:
             fileExists('build/classes/main/gradle/pitest/test/hello/HelloWorld.class')
             result.wasExecuted(':test')
     }
 
-    def "setup and run pitest task"() {
+    def "setup and run pitest task with PIT #pitVersion"() {
         given:
             buildFile << getBasicGradlePitestConfig()
+        and:
+            buildFile << """
+                pitest {
+                    pitestVersion = '$pitVersion'
+                }
+            """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:
-            def result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+        where:
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.0"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     private static String getBasicGradlePitestConfig() {
@@ -86,7 +97,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:
-            def result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
@@ -117,7 +128,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             writeHelloWorld('gradle.pitest.test.hello')
             writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
         when:
-            def result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
             result.getStandardError().contains('with the following plugin configuration')
