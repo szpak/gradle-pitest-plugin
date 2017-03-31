@@ -28,7 +28,7 @@ import org.gradle.api.plugins.JavaBasePlugin
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.1.11'
+    public final static DEFAULT_PITEST_VERSION = '1.2.0'
     public final static PITEST_TASK_GROUP = "Report"
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
