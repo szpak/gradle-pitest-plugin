@@ -25,7 +25,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     repositories { jcenter() }
                     dependencies {
                         classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+'
-                        classpath 'com.android.tools.build:gradle:2.2.3'
+                        classpath 'com.android.tools.build:gradle:2.3.0'
                     }
                 }
                 repositories { mavenCentral() }
