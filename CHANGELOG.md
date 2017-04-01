@@ -1,5 +1,10 @@
+#0.0.6
+ - merged upstream changes d71835784d5ad55b1dbd8eef61cadbd72ec75465
+ - Android Gradle plugin updated to 2.3.0
+ - Gradle update to 3.4.1
+
 #0.0.5
- - Robolectric dependency updated to 
+ - Robolectric dependency updated to 7.1.0_r7
  - merged upstream changes 14cf634c98590a9a9719a2284b52c7abef8f8f8f
 #0.0.4 - 2016-10-26
  - Dependencies updated
