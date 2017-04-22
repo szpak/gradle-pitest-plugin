@@ -75,6 +75,7 @@ following example).
         targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
         pitestVersion = "1.1.0" //not needed when a default PIT version should be used
         threads = 4
+        timestampedReports = false
         outputFormats = ['XML', 'HTML']
         timestampedReports = false
     }
