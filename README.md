@@ -306,6 +306,20 @@ Placing PIT reports directly in `${PROJECT_DIR}/build/reports/pitest` can be ena
         timestampedReports = false
     }
 
+### 8. How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
+
+Ocasionally, it may be useful to debug a gradle-pitest-plugin execution or a PIT execution itself (e.g. [NPE in PIT](https://github.com/hcoles/pitest/issues/345)) to provide sensible error report.
+
+The gradle-pitest-plugin execution can be remotely debugged with adding `-Dorg.gradle.debug=true` to the command line.
+
+However, as PIT is started as a separate process to debug its execution the following arguments need to be added to the plugin configuration:
+
+```
+pitest {
+    mainProcessJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"]
+}
+```
+
 ## Known issues
 
  - too verbose output from PIT
