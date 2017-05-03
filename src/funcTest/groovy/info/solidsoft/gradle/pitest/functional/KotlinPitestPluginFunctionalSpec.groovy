@@ -20,7 +20,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
 
                 android {
-                    buildToolsVersion '25.0.2'
+                    buildToolsVersion '25.0.3'
                     compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10

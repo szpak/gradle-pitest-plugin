@@ -2,8 +2,11 @@ sudo: false
 language: android
 jdk:
   - oraclejdk8
-env:
-  - PITEST_REGRESSION_TESTS=latestOnly
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
 licenses:
   - 'android-sdk-preview-license-52d11cd2'
   - 'android-sdk-license-.+'
@@ -14,7 +17,7 @@ android:
     - tools # to get the new `repository-11.xml`
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
     - platform-tools
-    - build-tools-25.0.2
+    - build-tools-25.0.3
     - android-25
 
 install: ./gradlew assemble

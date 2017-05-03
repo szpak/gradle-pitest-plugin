@@ -12,7 +12,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    buildToolsVersion '25.0.2'
+                    buildToolsVersion '25.0.3'
                     compileSdkVersion 25
                     defaultConfig {
                         minSdkVersion 10

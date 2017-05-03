@@ -21,7 +21,7 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            buildToolsVersion '25.0.2'
+            buildToolsVersion '25.0.3'
             compileSdkVersion 25
             defaultConfig {
                 minSdkVersion 10

@@ -189,8 +189,11 @@ class PitestPlugin implements Plugin<Project> {
         project.rootProject.buildscript.dependencies {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-            def mockableAndroidJar = project.tasks.getByName("mockableAndroidJar").outputFile
-            pitestTestCompile project.files(mockableAndroidJar)
+            project.gradle.taskGraph.afterTask {
+                if (it.name == "mockableAndroidJar") {
+                    pitestTestCompile project.files(it.outputFile)
+                }
+            }
         }
     }
 }
