@@ -40,14 +40,14 @@ class PitestPlugin implements Plugin<Project> {
     public final static PITEST_TASK_NAME = "pitest"
     public final static PITEST_CONFIGURATION_NAME = 'pitest'
     public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
-    public final static DEFAULT_ANDROID_RUNTIME_DEPENDENCY = 'org.robolectric:android-all:7.1.0_r7-robolectric-0'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
-    private final static Logger log =  Logging.getLogger(PitestPlugin)
+    private final static Logger log = Logging.getLogger(PitestPlugin)
 
-    @PackageScope   //visible for testing
+    @PackageScope
+    //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     private Project project
@@ -59,8 +59,6 @@ class PitestPlugin implements Plugin<Project> {
 
         extension = project.extensions.create("pitest", PitestPluginExtension)
         extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.androidRuntimeDependency = DEFAULT_ANDROID_RUNTIME_DEPENDENCY
-        addPitDependencies()
         project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
             if (extension.mainSourceSets == null) {
@@ -69,6 +67,8 @@ class PitestPlugin implements Plugin<Project> {
             if (extension.reportDir == null) {
                 extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
             }
+
+            addPitDependencies()
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
@@ -83,6 +83,7 @@ class PitestPlugin implements Plugin<Project> {
         }
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
+            variantTask.dependsOn project.tasks.getByName("mockableAndroidJar")
             configureTaskDefault(variantTask, variant)
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
@@ -188,8 +189,8 @@ class PitestPlugin implements Plugin<Project> {
         project.rootProject.buildscript.dependencies {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-            pitest extension.androidRuntimeDependency
-            pitestTestCompile extension.androidRuntimeDependency
+            def mockableAndroidJar = project.tasks.getByName("mockableAndroidJar").outputFile
+            pitestTestCompile project.files(mockableAndroidJar)
         }
     }
 }

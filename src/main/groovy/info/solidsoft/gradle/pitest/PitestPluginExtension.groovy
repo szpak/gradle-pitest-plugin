@@ -29,7 +29,6 @@ import org.gradle.api.tasks.TaskInstantiationException
 class PitestPluginExtension {
 
     String pitestVersion
-    String androidRuntimeDependency
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
     File reportDir
