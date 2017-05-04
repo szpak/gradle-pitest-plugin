@@ -16,11 +16,14 @@
 package info.solidsoft.gradle.pitest
 
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.TestPlugin
 import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
+import com.android.builder.model.AndroidProject
+import com.google.common.base.CharMatcher
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -68,7 +71,7 @@ class PitestPlugin implements Plugin<Project> {
                 extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
             }
 
-            addPitDependencies()
+            addPitDependencies(getMockableAndroidJarPath(project.android))
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
@@ -185,20 +188,25 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    private void addPitDependencies() {
+    private void addPitDependencies(File mockableAndroidJar) {
         project.rootProject.buildscript.dependencies {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-            def mockableAndroidJarTask = project.tasks.findByName('mockableAndroidJar')
-            if (mockableAndroidJarTask?.outputFile != null) {
-                pitestTestCompile project.files(mockableAndroidJarTask.outputFile)
-            } else {
-                project.gradle.taskGraph.afterTask {
-                    if (it.name == 'mockableAndroidJar') {
-                        pitestTestCompile project.files(it.outputFile)
-                    }
-                }
-            }
+            pitestTestCompile project.files(mockableAndroidJar)
         }
+    }
+
+    private File getMockableAndroidJarPath(BaseExtension android) {
+        String fileExt
+        if (android.testOptions.unitTests.returnDefaultValues) {
+            fileExt = ".default-values.jar"
+        } else {
+            fileExt = ".jar"
+        }
+        File outDir = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
+
+        CharMatcher safeCharacters = CharMatcher.JAVA_LETTER_OR_DIGIT | CharMatcher.anyOf('-.')
+        String sdkName = safeCharacters.negate().replaceFrom(android.compileSdkVersion, '-' as char)
+        return new File(outDir, "mockable-" + sdkName + fileExt)
     }
 }
