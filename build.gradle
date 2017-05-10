@@ -109,14 +109,14 @@ modifyPom {
                     role 'developer'
                 }
             }
-	        developer {
-		        id 'koral'
-		        name 'Karol Wrótniak'
-		        email 'karol.wrotniak@droidsonroids.pl'
+            developer {
+                id 'koral'
+                name 'Karol Wrótniak'
+                email 'karol.wrotniak@droidsonroids.pl'
                 roles {
                     role 'developer'
                 }
-	        }
+            }
         }
     }
 }

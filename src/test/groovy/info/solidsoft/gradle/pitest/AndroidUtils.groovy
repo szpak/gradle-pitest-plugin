@@ -7,7 +7,7 @@ class AndroidUtils {
 
     static createSampleLibraryProject(File... rootDir) {
         def builder = ProjectBuilder.builder()
-        if (rootDir.length>0){
+        if (rootDir.length > 0) {
             builder.withProjectDir(rootDir[0])
         }
         def project = builder.build()
@@ -34,7 +34,7 @@ class AndroidUtils {
 
     static createSampleApplicationProject(File... rootDir) {
         def builder = ProjectBuilder.builder()
-        if (rootDir.length>0){
+        if (rootDir.length > 0) {
             builder.withProjectDir(rootDir[0])
         }
         def project = builder.build()
