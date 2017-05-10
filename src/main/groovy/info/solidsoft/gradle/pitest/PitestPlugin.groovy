@@ -111,8 +111,8 @@ class PitestPlugin implements Plugin<Project> {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
         combinedTaskClasspath.add(project.configurations["compile"])
         combinedTaskClasspath.add(project.configurations["testCompile"])
-        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.name}"))
-        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.name}"))
+        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
+        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
             combinedTaskClasspath.add(variant.unitTestVariant.javaCompiler.classpath)
             combinedTaskClasspath.add(project.files(variant.unitTestVariant.javaCompiler.destinationDir))
