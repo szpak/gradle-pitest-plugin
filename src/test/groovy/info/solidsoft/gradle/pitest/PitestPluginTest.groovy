@@ -56,6 +56,24 @@ class PitestPluginTest extends Specification {
             assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Debug"].getDependsOn().find {it == 'compileDebugUnitTestSources'}
     }
 
+    def "depend on the Android application task that copies resources to the build directory (for robolectric, etc)"() {
+        when:
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
+        then:
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Variant1Release"].getDependsOn().find {it == 'compileVariant1ReleaseUnitTestSources'}
+    }
+
+    def "combined task classpath contains correct variant paths for flavored application projects"() {
+        when:
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
+        then:
+            def classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}Variant1Release"].taskClasspath.files
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/variant1/release')}
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/variant1/release')}
+    }
+
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {
         taskNames.each { String taskName ->
             Task task = project.tasks[taskName]
