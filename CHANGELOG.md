@@ -1,3 +1,7 @@
+# 0.0.8 - 2017-05-11
+ - Compatibility with Robolectric improved - [#5](https://github.com/koral--/gradle-pitest-plugin/pull/5)
+ - Added flavoured app projects support - [#7](https://github.com/koral--/gradle-pitest-plugin/pull/7)
+
 # 0.0.7 - 2017-05-04
  - Android Gradle plugin updated to 2.3.1
  - Robolectric dependency replaced with mockable Android JAR, fixes [#4](https://github.com/koral--/gradle-pitest-plugin/issues/4)
