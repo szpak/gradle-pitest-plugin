@@ -93,7 +93,7 @@ class PitestPlugin implements Plugin<Project> {
                 group = PITEST_TASK_GROUP
             }
             variantTask.reportDir = new File(variantTask.reportDir, variant.name)
-            variantTask.dependsOn "compile${variant.name.capitalize()}UnitTestJavaWithJavac"
+            variantTask.dependsOn "compile${variant.name.capitalize()}UnitTestSources"
             globalTask.dependsOn variantTask
         }
     }
