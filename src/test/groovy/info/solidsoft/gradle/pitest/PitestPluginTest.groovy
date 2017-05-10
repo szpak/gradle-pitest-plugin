@@ -47,6 +47,15 @@ class PitestPluginTest extends Specification {
             thrown(GradleException)
     }
 
+    def "depend on the Android task that copies resources to the build directory (for robolectric, etc)"() {
+        when:
+            Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
+        then:
+            assert project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME].getDependsOn().find {it == 'compileReleaseUnitTestSources'}
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Debug"].getDependsOn().find {it == 'compileDebugUnitTestSources'}
+    }
+
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {
         taskNames.each { String taskName ->
             Task task = project.tasks[taskName]
