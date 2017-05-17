@@ -61,7 +61,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
             case null:
                 return GRADLE_LATEST_VERSIONS
             case "quick":
-                return GRADLE_LATEST_VERSIONS + "2.0" + "3.0"
+                return GRADLE_LATEST_VERSIONS + "2.0" + "3.0" + "4.0-milestone-2"
             case "full":
                 return GRADLE3_VERSIONS + gradle2AdditionalVersionModifications(GRADLE2_MINOR_RANGE.collect { "2.$it" })
             default:
