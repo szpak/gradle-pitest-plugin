@@ -21,11 +21,11 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            buildToolsVersion '25.0.3'
-            compileSdkVersion 25
+            buildToolsVersion '26.0.0'
+            compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 25
+                targetSdkVersion 26
             }
         }
         project.apply(plugin: "pl.droidsonroids.pitest")
@@ -48,11 +48,11 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.application")
         project.android.with {
-            buildToolsVersion '25.0.3'
-            compileSdkVersion 25
+            buildToolsVersion '26.0.0'
+            compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 25
+                targetSdkVersion 26
             }
             buildTypes {
                 release { }

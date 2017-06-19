@@ -9,11 +9,11 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    buildToolsVersion '25.0.3'
-                    compileSdkVersion 25
+                    buildToolsVersion '26.0.0'
+                    compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 25
+                        targetSdkVersion 26
                     }
                 }
                 buildscript {
