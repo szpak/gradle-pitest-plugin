@@ -1,7 +1,7 @@
 language: groovy
 
-install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
+install: ./gradlew assemble -s
+script: ./gradlew funcTest check -s -i --continue -Pcompatibility
 
 jdk:
   - oraclejdk7
