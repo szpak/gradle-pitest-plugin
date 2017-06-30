@@ -1,5 +1,8 @@
-sudo: false
 language: groovy
+
+install: ./gradlew assemble
+script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
+
 jdk:
   - oraclejdk7
   - openjdk7
@@ -11,9 +14,6 @@ matrix:
   include:
     - jdk: oraclejdk8
       env: PITEST_REGRESSION_TESTS=quick
-
-install: ./gradlew assemble
-script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
