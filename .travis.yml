@@ -3,7 +3,7 @@ group: trusty
 
 language: groovy
 
-install: ./gradlew assemble -s
+install: true
 script: ./gradlew funcTest check -s -i --continue -Pcompatibility
 
 jdk:
