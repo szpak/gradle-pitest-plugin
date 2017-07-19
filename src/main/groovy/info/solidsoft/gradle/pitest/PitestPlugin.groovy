@@ -23,7 +23,6 @@ import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
-import com.google.common.base.CharMatcher
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -205,8 +204,11 @@ class PitestPlugin implements Plugin<Project> {
         }
         File outDir = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
 
-        CharMatcher safeCharacters = CharMatcher.JAVA_LETTER_OR_DIGIT | CharMatcher.anyOf('-.')
-        String sdkName = safeCharacters.negate().replaceFrom(android.compileSdkVersion, '-' as char)
+        String sdkName = sanitizeSdkVersion(android.compileSdkVersion)
         return new File(outDir, "mockable-" + sdkName + fileExt)
+    }
+
+    static def sanitizeSdkVersion(def version) {
+        return version.replaceAll('[^\\p{Alnum}.-]', '-')
     }
 }
