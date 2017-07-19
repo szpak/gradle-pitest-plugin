@@ -74,6 +74,13 @@ class PitestPluginTest extends Specification {
             assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/variant1/release')}
     }
 
+    def "strange sdk versions get properly sanitized"() {
+        when:
+            def version = PitestPlugin.sanitizeSdkVersion('strange version (0)')
+        then:
+            assert version == 'strange-version--0-'
+    }
+
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {
         taskNames.each { String taskName ->
             Task task = project.tasks[taskName]
