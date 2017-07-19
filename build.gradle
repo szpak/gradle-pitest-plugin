@@ -86,9 +86,9 @@ modifyPom {
         url POM_URL
 
         scm {
-            connection 'scm:git@github.com:koral--/gradle-pitest-plugin.git'
-            developerConnection 'scm:git@github.com:koral--/gradle-pitest-plugin.git'
-            url POM_SCM_URL
+            connection POM_SCM_CONNECTION_URL
+            developerConnection POM_SCM_CONNECTION_URL
+            url POM_URL
         }
 
         licenses {
@@ -123,7 +123,7 @@ modifyPom {
 
 pluginBundle {
     website = POM_URL
-    vcsUrl = POM_SCM_URL
+    vcsUrl = POM_SCM_CONNECTION_URL
     tags = ['pitest', 'android', 'mutation testing']
     description = POM_DESCRIPTION
 

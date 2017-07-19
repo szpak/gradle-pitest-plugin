@@ -1,3 +1,6 @@
+# 0.0.9 - 2017-07-20
+ - `CharMatcher` replaced with regular expression to be compatible with Android Gradle Plugin 3.0.0 - [#9](https://github.com/koral--/gradle-pitest-plugin/pull/9)
+
 # 0.0.8 - 2017-05-11
  - Compatibility with Robolectric improved - [#5](https://github.com/koral--/gradle-pitest-plugin/pull/5)
  - Added flavoured app projects support - [#7](https://github.com/koral--/gradle-pitest-plugin/pull/7)
