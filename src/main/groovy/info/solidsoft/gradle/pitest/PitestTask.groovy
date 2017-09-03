@@ -183,10 +183,10 @@ class PitestTask extends JavaExec {
 
     @Override
     void exec() {
-        setArgs(createListOfAllArgumentsForPit())
-        setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
-        setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
-        setClasspath(getLaunchClasspath())
+        args = createListOfAllArgumentsForPit()
+        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+        jvmArgs = getMainProcessJvmArgs() ?: getJvmArgs()
+        classpath = getLaunchClasspath()
         super.exec()
     }
 
