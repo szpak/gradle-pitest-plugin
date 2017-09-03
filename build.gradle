@@ -1,3 +1,5 @@
+import static org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
+
 plugins {
     id 'com.gradle.plugin-publish' version '0.9.7'
     id 'com.bmuschko.nexus' version '2.3.1'
@@ -51,8 +53,8 @@ task funcTest(type: Test) {
     description = 'Run the functional tests.'
     group = 'Verification'
 
-    testClassesDir = sourceSets.funcTest.output.classesDir
-    classpath = sourceSets.funcTest.runtimeClasspath
+    setTestClassesDirs sourceSets.funcTest.output.classesDirs
+    setClasspath  sourceSets.funcTest.runtimeClasspath
 
     reports.html {
         destination = file("${reporting.baseDir}/funcTests")
@@ -76,7 +78,8 @@ publishPlugins.dependsOn funcTest, check
 uploadArchives.dependsOn funcTest, check
 
 wrapper {
-    gradleVersion "4.0"
+    gradleVersion "4.1"
+    distributionType ALL
 }
 
 modifyPom {

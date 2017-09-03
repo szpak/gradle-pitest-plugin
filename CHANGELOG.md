@@ -1,3 +1,6 @@
+# 0.0.10 - 2017-09-03
+- Fixed `NoSuchMethodError` on Gradle < 4.0 - [#11](https://github.com/koral--/gradle-pitest-plugin/issues/11)
+
 # 0.0.9 - 2017-07-20
  - `CharMatcher` replaced with regular expression to be compatible with Android Gradle Plugin 3.0.0 - [#9](https://github.com/koral--/gradle-pitest-plugin/pull/9)
 
