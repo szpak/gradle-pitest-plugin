@@ -146,7 +146,7 @@ class PitestTask extends JavaExec {
     Boolean enableDefaultIncrementalAnalysis
 
     @Input
-    File defaultFileForHistoryDate
+    File defaultFileForHistoryData
 
     @Input
     @Optional
@@ -263,8 +263,8 @@ class PitestTask extends JavaExec {
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (getEnableDefaultIncrementalAnalysis()) {
-            return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path,
-                    historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryDate().path]
+            return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryData().path,
+                    historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryData().path]
         } else {
             return [historyInputLocation: getHistoryInputLocation()?.path,
                     historyOutputLocation: getHistoryOutputLocation()?.path]

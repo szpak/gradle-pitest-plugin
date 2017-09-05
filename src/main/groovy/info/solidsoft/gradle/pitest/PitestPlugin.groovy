@@ -136,7 +136,7 @@ class PitestPlugin implements Plugin<Project> {
             historyInputLocation = { extension.historyInputLocation }
             historyOutputLocation = { extension.historyOutputLocation }
             enableDefaultIncrementalAnalysis = { extension.enableDefaultIncrementalAnalysis }
-            defaultFileForHistoryDate = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
+            defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
             mutationThreshold = { extension.mutationThreshold }
             mutationEngine = { extension.mutationEngine }
             coverageThreshold = { extension.coverageThreshold }
