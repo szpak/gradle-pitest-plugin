@@ -5,32 +5,6 @@ import nebula.test.functional.ExecutionResult
 
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
-    def "setup and run simple build on pitest infrastructure"() {
-        given:
-            buildFile << """
-                apply plugin: 'java'
-                repositories {
-                    mavenCentral()
-                }
-                dependencies {
-                    testCompile 'junit:junit:4.11'
-                }
-            """.stripIndent()
-        when:
-            writeHelloWorld('gradle.pitest.test.hello')
-        then:
-            fileExists('src/main/java/gradle/pitest/test/hello/HelloWorld.java')
-        when:
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
-        then:
-            fileExists('src/test/java/gradle/pitest/test/hello/HelloWorldTest.java')
-        when:
-            ExecutionResult result = runTasksSuccessfully('build')
-        then:
-            fileExists('build/classes/main/gradle/pitest/test/hello/HelloWorld.class')
-            result.wasExecuted(':test')
-    }
-
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
             buildFile << getBasicGradlePitestConfig()
@@ -41,39 +15,17 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+        and:
+            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
+            result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
             pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
-    }
-
-    private static String getBasicGradlePitestConfig() {
-        return """
-                apply plugin: 'info.solidsoft.pitest'
-                group = 'gradle.pitest.test'
-
-                repositories {
-                    mavenCentral()
-                }
-                buildscript {
-                    repositories {
-                        mavenCentral()
-                    }
-//                    //Local/current version of the plugin should be put on a classpath anyway
-//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
-//                    dependencies {
-//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-//                    }
-                }
-                dependencies {
-                    testCompile 'junit:junit:4.11'
-                }
-        """.stripIndent()
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
@@ -98,8 +50,8 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
@@ -112,7 +64,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         and: 'built-in features passed'
             result.getStandardError().contains("-FANN")
             result.getStandardError().contains("+FINFIT")
-        //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
+            //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
     def "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
@@ -124,8 +76,8 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
@@ -133,5 +85,58 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             result.getStandardOutput().contains('--classPathFile=')
             //TODO: Verify file name with regex
             !result.getStandardOutput().find("--classPath=")
+    }
+
+    private static String getBasicGradlePitestConfig() {
+        return """
+                apply plugin: 'info.solidsoft.pitest'
+                group = 'gradle.pitest.test'
+
+                repositories {
+                    mavenCentral()
+                }
+                buildscript {
+                    repositories {
+                        mavenCentral()
+                    }
+//                    //Local/current version of the plugin should be put on a classpath anyway
+//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
+//                    dependencies {
+//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
+//                    }
+                }
+                dependencies {
+                    testCompile 'junit:junit:4.12'
+                }
+        """.stripIndent()
+    }
+
+    private void writeHelloPitClass(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
+        def path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
+        def javaFile = createFile(path, baseDir)
+        javaFile << """package ${packageDotted};
+
+            public class HelloPit {
+                public int returnInputNumber(int inputNumber) {
+                    System.out.println("Mutation to survive");
+                    return inputNumber;
+                }
+            }
+        """.stripIndent()
+    }
+
+    private void writeHelloPitTest(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
+        def path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
+        def javaFile = createFile(path, baseDir)
+        javaFile << """package ${packageDotted};
+            import org.junit.Test;
+            import static org.junit.Assert.assertEquals;
+
+            public class HelloPitTest {
+                @Test public void shouldReturnInputNumber() {
+                    assertEquals(5, new HelloPit().returnInputNumber(5)); 
+                }
+            }
+        """.stripIndent()
     }
 }

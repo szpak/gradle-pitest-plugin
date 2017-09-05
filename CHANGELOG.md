@@ -1,8 +1,13 @@
-1.1.12 - Unreleased
+1.2.2 - Unreleased
 
  - classPathFile should not use exposed in configuration - #56
  - support for PIT features configuration - #65
- - make contribution from developers using Windows easier - AppVeyor CI Windows build - #58 
+ - make contribution from developers using Windows easier - AppVeyor CI Windows build - #58
+ - improve functional tests reliability
+
+1.2.1 - Skipped
+
+1.2.0 - Skipped
 
 1.1.11 - 2017-01-30
 
