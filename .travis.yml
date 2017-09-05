@@ -6,6 +6,10 @@ install: true
 script: ./gradlew funcTest check -s -i --continue -Pcompatibility
 
 #Regression tests with different Gradle versions only on JDK 8
+env:
+  global:
+    - GRADLE_OPTS='-Dorg.gradle.jvmargs="-Xmx2048m"'
+
 matrix:
   include:
     - jdk: oraclejdk8
