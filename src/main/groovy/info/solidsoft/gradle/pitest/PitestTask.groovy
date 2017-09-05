@@ -183,6 +183,10 @@ class PitestTask extends JavaExec {
     @Optional
     Integer maxSurviving
 
+    @Input
+    @Optional
+    List<String> features
+
     @Override
     void exec() {
         setArgs(createListOfAllArgumentsForPit())
@@ -233,6 +237,7 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
+        map['features'] = getFeatures()?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 

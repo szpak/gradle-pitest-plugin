@@ -16,6 +16,7 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Incubating
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
@@ -129,7 +130,18 @@ class PitestPluginExtension {
      *
      * @since 1.2.0
      */
+    @Incubating
     boolean useClasspathFile = false
+
+    /**
+     * Turned on/off features in PIT itself and its plugins.
+     *
+     * Some details: https://github.com/hcoles/pitest/releases/tag/pitest-parent-1.2.1
+     *
+     * @since 1.2.1
+     */
+    @Incubating
+    List<String> features
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)

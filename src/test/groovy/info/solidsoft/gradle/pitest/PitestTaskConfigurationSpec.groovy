@@ -27,10 +27,17 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             !task.createTaskArgumentMap()['classPath']
     }
 
+    def "should pass features configuration to PIT"() {
+        given:
+            project.pitest.features = ["-FOO", "+BAR(a[1] a[2])"]
+        expect:
+            task.createTaskArgumentMap()['features'] == "-FOO,+BAR(a[1] a[2])"
+    }
+
     def "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
         expect:
             !task.createTaskArgumentMap().containsKey(paramName)
         where:
-            paramName << ['classPathFile']
+            paramName << ['classPathFile', 'features']
     }
 }

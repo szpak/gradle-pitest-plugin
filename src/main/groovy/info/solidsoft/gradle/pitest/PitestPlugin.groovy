@@ -145,6 +145,7 @@ class PitestPlugin implements Plugin<Project> {
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
             maxSurviving = { extension.maxSurviving }
+            features = { extension.features }
         }
 
         project.afterEvaluate {

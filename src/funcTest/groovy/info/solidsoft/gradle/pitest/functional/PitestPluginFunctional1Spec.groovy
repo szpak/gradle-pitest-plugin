@@ -76,35 +76,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         """.stripIndent()
     }
 
-    def "enable PIT plugin when on classpath"() {
-        given:
-            buildFile << getBasicGradlePitestConfig()
-            buildFile << """
-                buildscript {
-                    repositories {
-                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
-                    }
-                    configurations.maybeCreate("pitest")
-                    dependencies {
-                        pitest 'org.pitest.plugins:pitest-high-isolation-plugin:0.0.2'
-                    }
-                }
-                pitest {
-                    verbose = true
-                }
-            """.stripIndent()
-        and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
-        when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
-        then:
-            result.wasExecuted(':pitest')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
-            result.getStandardError().contains('Marking all mutations as requiring isolation')
-    }
-
-    def "enable pass plugin configuration to PIT"() {
+    def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
@@ -121,6 +93,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     verbose = true
                     pluginConfiguration = ['pitest-plugin-configuration-reporter-plugin.key1': 'value1',
                                            'pitest-plugin-configuration-reporter-plugin.key2': 'value2']
+                    features = ["-FANN", "+FINFIT(a[1] a[2])"]
                     outputFormats = ['pluginConfigurationReporter']
                 }
             """.stripIndent()
@@ -131,9 +104,15 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
+        and: 'plugin enabled'
             result.getStandardError().contains('with the following plugin configuration')
+        and: 'plugin parameters passed'
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+        and: 'built-in features passed'
+            result.getStandardError().contains("-FANN")
+            result.getStandardError().contains("+FINFIT")
+        //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
     def "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
