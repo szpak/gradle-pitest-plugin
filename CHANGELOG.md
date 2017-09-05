@@ -2,8 +2,11 @@
 
  - classPathFile should not use exposed in configuration - #56
  - support for PIT features configuration - #65
- - make contribution from developers using Windows easier - AppVeyor CI Windows build - #58
+ - PIT 1.1.12 by default
  - improve functional tests reliability
+ - switch build to Gradle 4.1 (should be still compatible with 2.0+)
+ - remove ugly deprecation warning in Gradle 4.0+
+ - make contribution for developers using Windows easier - AppVeyor CI build - #58
 
 1.2.1 - Skipped
 

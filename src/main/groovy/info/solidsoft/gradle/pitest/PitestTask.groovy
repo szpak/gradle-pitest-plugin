@@ -189,10 +189,11 @@ class PitestTask extends JavaExec {
 
     @Override
     void exec() {
-        setArgs(createListOfAllArgumentsForPit())
-        setMain("org.pitest.mutationtest.commandline.MutationCoverageReport")
-        setJvmArgs(getMainProcessJvmArgs() ?: getJvmArgs())
-        setClasspath(getLaunchClasspath())
+        //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
+        args = createListOfAllArgumentsForPit()
+        jvmArgs = (getMainProcessJvmArgs() ?: getJvmArgs())
+        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+        classpath = getLaunchClasspath()
         super.exec()
     }
 
@@ -277,7 +278,7 @@ class PitestTask extends JavaExec {
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
         return taskArgumentsMap.collect { k, v ->
-            "--$k=$v"
+            "--$k=$v".toString()
         }
     }
 
@@ -287,8 +288,8 @@ class PitestTask extends JavaExec {
         return getPluginConfiguration()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
-            "--pluginConfiguration=$it"
-        } ?: []
+            "--pluginConfiguration=$it".toString()
+        } ?: [] as List<String>
     }
 
     //Workaround to keep compatibility with Gradle <2.8

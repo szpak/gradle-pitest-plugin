@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -28,10 +29,10 @@ import org.gradle.api.plugins.JavaBasePlugin
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static DEFAULT_PITEST_VERSION = '1.2.2'
-    public final static PITEST_TASK_GROUP = "Report"
-    public final static PITEST_TASK_NAME = "pitest"
-    public final static PITEST_CONFIGURATION_NAME = 'pitest'
+    public final static String DEFAULT_PITEST_VERSION = '1.2.2'
+    public final static String PITEST_TASK_GROUP = "Report"
+    public final static String PITEST_TASK_NAME = "pitest"
+    public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
@@ -99,7 +100,7 @@ class PitestPlugin implements Plugin<Project> {
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
-            mutableCodePaths = { (extension.mainSourceSets*.output.classesDir.flatten() as Set) + (extension.additionalMutableCodePaths ?: []) }
+            mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
             sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
 
             reportDir = { extension.reportDir }
@@ -155,12 +156,29 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
+    @CompileStatic
+    private Set<File> calculateBaseMutableCodePaths() {
+        if (isGradleBefore4()) {
+            log.warn("WARNING. Support for Gradle <4.0 in gradle-pitest-plugin is deprecated (due to incompatible changes in Gradle itself).")
+            return extension.mainSourceSets*.output.classesDir.flatten() as Set<File>
+        } else {
+            return extension.mainSourceSets*.output.classesDirs.files.flatten() as Set<File>
+        }
+    }
+
+    @CompileStatic
+    private boolean isGradleBefore4() {
+        return project.gradle.gradleVersion.startsWith("2.") || project.gradle.gradleVersion.startsWith("3.")
+    }
+
+    @CompileStatic
     private Set<String> calculateTasksToDependOn() {
-        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" }
+        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
         log.debug("pitest tasksToDependOn: $tasksToDependOn")
         return tasksToDependOn
     }
 
+    @CompileStatic
     private void addPitDependencies() {
         log.info("Using PIT: $extension.pitestVersion")
         project.rootProject.buildscript.dependencies.add(PITEST_CONFIGURATION_NAME, "org.pitest:pitest-command-line:$extension.pitestVersion")
