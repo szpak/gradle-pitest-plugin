@@ -1,3 +1,8 @@
+1.1.12 - Unreleased
+
+ - classPathFile should not use exposed in configuration - #56
+ - Make contribution from developers using Windows easier - AppVeyor CI Windows build - #58 
+
 1.1.11 - 2017-01-30
 
  - support for new `classPathFile` parameter in PIT 1.1.11 - #50

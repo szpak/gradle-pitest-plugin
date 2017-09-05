@@ -40,6 +40,7 @@ class PitestPlugin implements Plugin<Project> {
 
     @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
+    private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
 
     private Project project
     private PitestPluginExtension extension
@@ -83,6 +84,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureTaskDefault(PitestTask task) {
         task.conventionMapping.with {
+            //TODO: Rename to additionalClasspath
             taskClasspath = {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
@@ -93,6 +95,8 @@ class PitestPlugin implements Plugin<Project> {
 
                 return filteredCombinedTaskClasspath
             }
+            useAdditionalClasspathFile = { extension.useClasspathFile }
+            additionalClasspathFile = { new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME) }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
@@ -142,7 +146,6 @@ class PitestPlugin implements Plugin<Project> {
             mainProcessJvmArgs = { extension.mainProcessJvmArgs }
             pluginConfiguration = { extension.pluginConfiguration }
             maxSurviving = { extension.maxSurviving }
-            classPathFile = { extension.classPathFile }
         }
 
         project.afterEvaluate {

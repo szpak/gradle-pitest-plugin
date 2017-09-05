@@ -135,4 +135,24 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
             result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
     }
+
+    def "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    useClasspathFile = true
+                }
+            """.stripIndent()
+        and:
+            writeHelloWorld('gradle.pitest.test.hello')
+            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().contains('--classPathFile=')
+            //TODO: Verify file name with regex
+            !result.getStandardOutput().find("--classPath=")
+    }
 }

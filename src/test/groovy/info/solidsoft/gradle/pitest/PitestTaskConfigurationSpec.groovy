@@ -17,17 +17,17 @@ package info.solidsoft.gradle.pitest
 
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
-    def "should pass classPathFile parameter to PIT execution"() {
+    def "should pass additional classpath to PIT using classPathFile parameter instead of classPath if configured"() {
         given:
-            File testClassPathFile = tmpProjectDir.newFile('classPathFile')
-            String testClassPathFileAsString = testClassPathFile.path
+            project.pitest.useClasspathFile = true
         and:
-            pitestConfig.classPathFile = testClassPathFile
+            new File(project.buildDir.absolutePath).mkdir() //in ProjectBuilder "build" directory is not created by default
         expect:
-            task.createTaskArgumentMap()['classPathFile'] == testClassPathFileAsString
+            task.createTaskArgumentMap()['classPathFile'] == new File(project.buildDir, "pitClasspath").absolutePath
+            !task.createTaskArgumentMap()['classPath']
     }
 
-    def "should not pass to PIT parameter '#paramName' not set by default if not set explicitly"() {
+    def "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
         expect:
             !task.createTaskArgumentMap().containsKey(paramName)
         where:

@@ -19,7 +19,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
@@ -122,7 +121,14 @@ class PitestTask extends JavaExec {
     Boolean timestampedReports
 
     @InputFiles
-    FileCollection taskClasspath
+    FileCollection taskClasspath    //"classpath" is already defined internally in ExecTask
+
+    @Input
+    Boolean useAdditionalClasspathFile
+
+    @Input
+    @OutputFile
+    File additionalClasspathFile
 
     @InputFiles
     Set<File> mutableCodePaths
@@ -177,10 +183,6 @@ class PitestTask extends JavaExec {
     @Optional
     Integer maxSurviving
 
-    @InputFile
-    @Optional
-    File classPathFile
-
     @Override
     void exec() {
         setArgs(createListOfAllArgumentsForPit())
@@ -219,7 +221,6 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
-        map['classPath'] = getTaskClasspath()?.files?.join(',')
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
@@ -232,13 +233,30 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
-        map['classPathFile'] = getClassPathFile()?.path
-        map.putAll(prepareMapForIncrementalAnalysis())
+        map.putAll(prepareMapWithClasspathConfiguration())
+        map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
         return removeEntriesWithNullValue(map)
     }
 
-    private Map<String, String> prepareMapForIncrementalAnalysis() {
+    private Map<String, String> prepareMapWithClasspathConfiguration() {
+        if (getUseAdditionalClasspathFile()) {
+            fillAdditionalClasspathFileWithClasspathElements()
+            return [classPathFile: getAdditionalClasspathFile().absolutePath]
+        } else {
+            return [classPath: getTaskClasspath().files.join(',')]
+        }
+    }
+
+    private void fillAdditionalClasspathFileWithClasspathElements() {
+        String classpathElementsAsFileContent = getTaskClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
+        //"withWriter" as "file << content" works in append mode (instead of overwrite one)
+        getAdditionalClasspathFile().withWriter() {
+            it << classpathElementsAsFileContent
+        }
+    }
+
+    private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         Map<String, String> map = [:]
         if (getEnableDefaultIncrementalAnalysis()) {
             map['historyInputLocation'] = getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path

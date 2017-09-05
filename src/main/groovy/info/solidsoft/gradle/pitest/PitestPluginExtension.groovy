@@ -121,7 +121,15 @@ class PitestPluginExtension {
 
     Integer maxSurviving    //new in PIT 1.1.10
 
-    File classPathFile  //new in PIT 1.1.11
+    /**
+     * Use classpath file instead of passing classpath in a command line
+     *
+     * Useful with very long classpath and Windows - see https://github.com/hcoles/pitest/issues/276
+     * Disabled by default.
+     *
+     * @since 1.2.0
+     */
+    boolean useClasspathFile = false
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
@@ -166,5 +174,17 @@ class PitestPluginExtension {
      */
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis = withHistory
+    }
+
+    /**
+     * The first (broken) implementation of using a file to pass additional classpath to PIT.
+     * Use "useClasspathFile" property instead.
+     *
+     * @since 1.1.11
+     */
+    @Deprecated //as of 1.2.0
+    void setClassPathFile(File classPathFile) {
+        throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
+            "property to enable passing classpath to PIT as file. ")
     }
 }
