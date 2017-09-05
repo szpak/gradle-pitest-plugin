@@ -49,7 +49,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':pitest')
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
         where:
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.0"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     private static String getBasicGradlePitestConfig() {
