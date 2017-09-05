@@ -22,7 +22,7 @@ import org.gradle.api.tasks.TaskInstantiationException
 /**
  * Extension class with configurable parameters for Pitest plugin.
  *
- * Note: taskClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
+ * Note: additionalClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
 @CompileStatic

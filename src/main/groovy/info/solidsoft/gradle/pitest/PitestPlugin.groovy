@@ -84,8 +84,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureTaskDefault(PitestTask task) {
         task.conventionMapping.with {
-            //TODO: Rename to additionalClasspath
-            taskClasspath = {
+            additionalClasspath = {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)

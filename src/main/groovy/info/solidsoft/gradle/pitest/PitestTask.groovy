@@ -121,7 +121,7 @@ class PitestTask extends JavaExec {
     Boolean timestampedReports
 
     @InputFiles
-    FileCollection taskClasspath    //"classpath" is already defined internally in ExecTask
+    FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
 
     @Input
     Boolean useAdditionalClasspathFile
@@ -244,12 +244,12 @@ class PitestTask extends JavaExec {
             fillAdditionalClasspathFileWithClasspathElements()
             return [classPathFile: getAdditionalClasspathFile().absolutePath]
         } else {
-            return [classPath: getTaskClasspath().files.join(',')]
+            return [classPath: getAdditionalClasspath().files.join(',')]
         }
     }
 
     private void fillAdditionalClasspathFileWithClasspathElements() {
-        String classpathElementsAsFileContent = getTaskClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
+        String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
         //"withWriter" as "file << content" works in append mode (instead of overwrite one)
         getAdditionalClasspathFile().withWriter() {
             it << classpathElementsAsFileContent
