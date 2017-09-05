@@ -3,7 +3,7 @@ sudo: false
 language: groovy
 
 install: true
-script: ./gradlew funcTest check -s -i --continue -Pcompatibility
+script: ./gradlew funcTest check -s -i --continue -Pcompatibility --no-daemon
 
 #Regression tests with different Gradle versions only on JDK 8
 env:
