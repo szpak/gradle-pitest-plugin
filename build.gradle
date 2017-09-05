@@ -80,6 +80,7 @@ task funcTest(type: Test) {
     group = 'Verification'
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
+    jvmArgs '-Xmx1g'
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
