@@ -158,17 +158,20 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileStatic
     private Set<File> calculateBaseMutableCodePaths() {
-        if (isGradleBefore4()) {
+        if (isGradleVersionBefore4()) {
             log.warn("WARNING. Support for Gradle <4.0 in gradle-pitest-plugin is deprecated (due to incompatible changes in Gradle itself).")
-            return extension.mainSourceSets*.output.classesDir.flatten() as Set<File>
+            //Casting to Iterable to eliminate "NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.flatten(Ljava/util/List;)Ljava/util/List;"
+            //while compiling code with Groovy 2.4.11 (Gradle 4.1) and running with Groovy 2.3.2 (Gradle 2.0)
+            return ((Iterable<File>)extension.mainSourceSets*.output.classesDir).flatten() as Set<File>
         } else {
             return extension.mainSourceSets*.output.classesDirs.files.flatten() as Set<File>
         }
     }
 
     @CompileStatic
-    private boolean isGradleBefore4() {
-        return project.gradle.gradleVersion.startsWith("2.") || project.gradle.gradleVersion.startsWith("3.")
+    private boolean isGradleVersionBefore4() {
+        String gradleVersionAsString = project.gradle.gradleVersion
+        return gradleVersionAsString.startsWith("2.") || gradleVersionAsString.startsWith("3.")
     }
 
     @CompileStatic
