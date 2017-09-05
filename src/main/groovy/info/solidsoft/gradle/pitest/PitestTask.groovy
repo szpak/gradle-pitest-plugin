@@ -257,23 +257,21 @@ class PitestTask extends JavaExec {
     }
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
-        Map<String, String> map = [:]
         if (getEnableDefaultIncrementalAnalysis()) {
-            map['historyInputLocation'] = getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path
-            map['historyOutputLocation'] = getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryDate().path
+            return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path,
+                    historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryDate().path]
         } else {
-            map['historyInputLocation'] = getHistoryInputLocation()?.path
-            map['historyOutputLocation'] = getHistoryOutputLocation()?.path
+            return [historyInputLocation: getHistoryInputLocation()?.path,
+                    historyOutputLocation: getHistoryOutputLocation()?.path]
         }
-        map
     }
 
     private Map removeEntriesWithNullValue(Map map) {
-        map.findAll { it.value != null }
+        return map.findAll { it.value != null }
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        taskArgumentsMap.collect { k, v ->
+        return taskArgumentsMap.collect { k, v ->
             "--$k=$v"
         }
     }
@@ -281,7 +279,7 @@ class PitestTask extends JavaExec {
     @PackageScope   //visible for testing
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        getPluginConfiguration()?.collect { k, v ->
+        return getPluginConfiguration()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
             "--pluginConfiguration=$it"
