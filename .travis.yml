@@ -1,16 +1,9 @@
 sudo: false
-group: trusty
 
 language: groovy
 
 install: true
 script: ./gradlew funcTest check -s -i --continue -Pcompatibility
-
-jdk:
-  - oraclejdk7
-  - openjdk7
-env:
-  - PITEST_REGRESSION_TESTS=latestOnly
 
 #Regression tests with different Gradle versions only on JDK 8
 matrix:
@@ -29,4 +22,3 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-
