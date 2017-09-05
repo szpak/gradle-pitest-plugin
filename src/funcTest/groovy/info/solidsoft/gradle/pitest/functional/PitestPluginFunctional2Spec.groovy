@@ -19,6 +19,10 @@ import java.util.regex.Pattern
 @Slf4j
 class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
+    void setup() {
+        daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
+    }
+
     @Unroll
     def "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
