@@ -1,12 +1,8 @@
 apply plugin: 'groovy'
-apply plugin: 'pl.allegro.tech.build.axion-release'
-apply plugin: 'com.bmuschko.nexus'
-apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'info.solidsoft.cdeliveryboy'
 apply plugin: 'ru.vyarus.animalsniffer'
 
 group = 'info.solidsoft.gradle.pitest'
-
-sourceCompatibility = 1.7
 
 buildscript {
     repositories {
@@ -17,29 +13,35 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'pl.allegro.tech.build:axion-release-plugin:1.4.1'
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'info.solidsoft.gradle:cdeliveryboy:0.6.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.2'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
     }
 }
 
-scmVersion {
-    tag {
-        prefix = 'release'
-        versionSeparator = '/'
+cDeliveryBoy {
+    tasks {
+        promoteRepositoryTask = "releaseRepository"
     }
+    nexus {
+        autoPromote = false
+    }
+}
+
+scmVersion {
     hooks {
-        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:.*'/ },
-                           replacement: { v, p -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$v\'" }]
-        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /id\ 'info\.solidsoft\.pitest'\ version\ '.*'/ },
-                           replacement: { v, p -> "id 'info.solidsoft.pitest' version '$v'" }]
-        pre 'commit', { v, p -> "Release version: ${v}\n\n[ci skip]" }
+        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /classpath\ 'info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:$previousVersion'/ },
+                           replacement: { currentVersion, context -> "classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$currentVersion\'" }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ 'info\.solidsoft\.pitest'\ version\ '$previousVersion'/ },
+                           replacement: { currentVersion, context -> "id 'info.solidsoft.pitest' version '$currentVersion'" }]
+        pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
+                           replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
     }
 }
 
 project.version = scmVersion.version
+
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
@@ -162,4 +164,27 @@ if (hasProperty('pluginPortal')) {
             artifactId = project.name
         }
     }
+
+    publishPlugins {
+        onlyIf { ciBuild.isInReleaseMode }
+        mustRunAfter releaseRepository
+    }
+    ciBuild.dependsOn publishPlugins
+}
+
+if (hasProperty('changelogSync')) {
+
+    task syncChangelog(type: Exec) {
+        doFirst { logger.info("Synchronizing changelog with GitHub for version ${project.version}") }
+        commandLine 'chandler', 'push', "release/${project.version}", '--tag-prefix=release/'
+    }
+
+    syncChangelog {
+        onlyIf { ciBuild.isInReleaseMode }
+        mustRunAfter releaseRepository
+        if (project.tasks.findByName("publishPlugins")) {
+            mustRunAfter publishPlugins
+        }
+    }
+    ciBuild.dependsOn syncChangelog
 }
