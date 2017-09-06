@@ -43,7 +43,7 @@ Please take into account that only versions starting with 1.1.11 are available v
             //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
         }
     }
 
@@ -119,7 +119,7 @@ for the root project:
             mavenCentral()
         }
         dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
+            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
             (...)
         }
     }
@@ -191,7 +191,7 @@ To enable PIT plugin it is enough to add it to pitest configuration in buildscri
        }
        configurations.maybeCreate("pitest")
        dependencies {
-           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.11'
+           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
            pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
        }
     }

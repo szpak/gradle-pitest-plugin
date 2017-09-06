@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.2.2 - Unreleased
+## 1.2.2 - 2017-09-06
 
  - ClassPathFile should not use exposed in configuration - [#56](https://github.com/szpak/CDeliveryBoy/issues/#56)
  - Support for PIT features configuration - [#65](https://github.com/szpak/CDeliveryBoy/issues/#65)
