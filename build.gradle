@@ -24,7 +24,7 @@ cDeliveryBoy {
         promoteRepositoryTask = "releaseRepository"
     }
     nexus {
-        autoPromote = false
+        autoPromote = true
     }
 }
 
