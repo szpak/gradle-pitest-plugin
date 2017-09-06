@@ -88,14 +88,15 @@ The expected parameter format in a plugin configuration can be taken from
 
 There are a few parameters specific for Gradle plugin:
 
- - testSourceSets - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
+ - `testSourceSets` - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
 to add integration tests located in a different source set) (since 0.30.1)
- - mainSourceSets - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
- - mainProcessJvmArgs - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
+ - `mainSourceSets` - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
+ - `mainProcessJvmArgs` - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
- - additionalMutableCodePaths - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
+ - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
 see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
+ - `useClasspathFile` - enable passing additional classpath as a file content - useful for Windows users with lots of classpath elements (disabled by default) - since 1.2.2
 
 For example:
 
