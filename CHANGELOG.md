@@ -2,15 +2,15 @@
 
 ## 1.2.2 - 2017-09-06
 
- - ClassPathFile should not use exposed in configuration - [#56](https://github.com/szpak/CDeliveryBoy/issues/#56)
- - Support for PIT features configuration - [#65](https://github.com/szpak/CDeliveryBoy/issues/#65)
+ - ClassPathFile should not use exposed in configuration - [#56](https://github.com/szpak/gradle-pitest-plugin/issues/56)
+ - Support for PIT features configuration - [#65](https://github.com/szpak/gradle-pitest-plugin/issues/65)
  - PIT 1.1.12 by default
- - Switch releasing to Continuous Delivery with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy) - [#66](https://github.com/szpak/CDeliveryBoy/issues/#66)
- - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#61](https://github.com/szpak/CDeliveryBoy/issues/#61)
+ - Switch releasing to Continuous Delivery with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy) - [#66](https://github.com/szpak/gradle-pitest-plugin/issues/66)
+ - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#61](https://github.com/szpak/gradle-pitest-plugin/issues/61)
  - Improve functional tests reliability
- - Switch build to Gradle 4.1 (should be still compatible with 2.0+) - [#64](https://github.com/szpak/CDeliveryBoy/issues/#64)
+ - Switch build to Gradle 4.1 (should be still compatible with 2.0+) - [#64](https://github.com/szpak/gradle-pitest-plugin/issues/64)
  - Remove ugly deprecation warning in Gradle 4.0+
- - Make contribution for developers using Windows easier - AppVeyor CI build - [#58](https://github.com/szpak/CDeliveryBoy/issues/#58)
+ - Make contribution for developers using Windows easier - AppVeyor CI build - [#58](https://github.com/szpak/gradle-pitest-plugin/issues/58)
 
 ## 1.2.1 - Skipped
 
