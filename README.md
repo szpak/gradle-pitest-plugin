@@ -96,7 +96,7 @@ another Java processes for mutation testing execution and usually `jvmArgs` shou
 (since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
  - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
 see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
- - `useClasspathFile` - enable passing additional classpath as a file content - useful for Windows users with lots of classpath elements (disabled by default) - since 1.2.2
+ - `useClasspathFile` - enable passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default - since 1.2.2)
 
 For example:
 
