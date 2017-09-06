@@ -1,18 +1,22 @@
-1.2.2 - Unreleased
+# gradle-pitest-plugin changelog
 
- - classPathFile should not use exposed in configuration - #56
- - support for PIT features configuration - #65
+## 1.2.2 - Unreleased
+
+ - ClassPathFile should not use exposed in configuration - [#56](https://github.com/szpak/CDeliveryBoy/issues/#56)
+ - Support for PIT features configuration - [#65](https://github.com/szpak/CDeliveryBoy/issues/#65)
  - PIT 1.1.12 by default
- - improve functional tests reliability
- - switch build to Gradle 4.1 (should be still compatible with 2.0+)
- - remove ugly deprecation warning in Gradle 4.0+
- - make contribution for developers using Windows easier - AppVeyor CI build - #58
+ - Switch releasing to Continuous Delivery with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy) - [#66](https://github.com/szpak/CDeliveryBoy/issues/#66)
+ - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#61](https://github.com/szpak/CDeliveryBoy/issues/#61)
+ - Improve functional tests reliability
+ - Switch build to Gradle 4.1 (should be still compatible with 2.0+) - [#64](https://github.com/szpak/CDeliveryBoy/issues/#64)
+ - Remove ugly deprecation warning in Gradle 4.0+
+ - Make contribution for developers using Windows easier - AppVeyor CI build - [#58](https://github.com/szpak/CDeliveryBoy/issues/#58)
 
-1.2.1 - Skipped
+## 1.2.1 - Skipped
 
-1.2.0 - Skipped
+## 1.2.0 - Skipped
 
-1.1.11 - 2017-01-30
+## 1.1.11 - 2017-01-30
 
  - support for new `classPathFile` parameter in PIT 1.1.11 - #50
  - filter dynamic libraries - #52
@@ -20,7 +24,7 @@
  - downgrade Gradle wrapper to 2.13 due to performance [regression](https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956)
    in tests with ProjectBuilder
 
-1.1.10 - 2016-08-15
+## 1.1.10 - 2016-08-15
 
  - support for the new `maxSurviving` parameter in PIT 1.1.10 - #45
  - add `withHistory` alias (new thing in PIT Maven plugin)  for long established `enableDefaultIncrementalAnalysis` parameter in Gradle plugin
@@ -28,36 +32,36 @@
  - bring full Gradle 2.0 - 2.14.1 range of functional tests back (with custom changes to nebula-test)
  - upgrade Gradle wrapper to 2.14.1 - #48 
 
-1.1.9 - 2016-02-15
+## 1.1.9 - 2016-02-15
 
  - PIT 1.1.9 by default - fixed process hangs in 1.1.6 - #39
 
-1.1.6 - 2015-09-08
+## 1.1.6 - 2015-09-08
 
  - support for plugin configuration parameters - #29
  - remove project file configuration functionality from the plugin (already removed upstream) - #28
  - PIT 1.1.6 by default
  - simplify internal release process and switch to Gradle 2.x - minimal required Gradle version is 2.0 - #30
 
-1.1.5 - SKIPPED
+## 1.1.5 - SKIPPED
 
-1.1.4 - 2015-02-12
+## 1.1.4 - 2015-02-12
 
  - official support for PIT plugins - #17
  - support for integration tests in separate modules - #25
  - PIT and its runtime dependencies no longer put on additional classPath (with tests and code to mutate)
  - PIT 1.1.4 by default
 
-1.1.2 - 2014-12-26
+## 1.1.2 - 2014-12-26
 
  - better workaround for issue with not applied Java plugin when using new Gradle plugin mechanism - #21
  - PIT 1.1.3 by default
 
-1.1.1 - 2014-10-10
+## 1.1.1 - 2014-10-10
 
  - fix incompatibility with the new Gradle plugin mechanism - #21
 
-1.1.0 - 2014-10-08
+## 1.1.0 - 2014-10-08
 
  - change plugin id to 'info.solidsoft.pitest' to be complaint with [Gradle plugin portal](http://plugins.gradle.org/) [**breaking change**]
  - make plugin available through [Gradle plugin portal](http://plugins.gradle.org/) - #19
@@ -65,7 +69,7 @@
  - make it easier to manually override PIT dependencies - #20
  - PIT 1.1.0 by default
 
-1.0.0 - 2014-05-21
+## 1.0.0 - 2014-05-21
 
  - follow new PIT version numbering scheme
  - fix: pitest task fails on dependencies with parent packaged as pom - #15
@@ -74,7 +78,7 @@
  - adjust to PIT 1.0.0
  - upgrade Gradle Wrapper to 1.12
 
-0.33.0 - 2014-04-25
+## 0.33.0 - 2014-04-25
 
  - fix: broken PIT version override mechanism with configuration parameter - #7
  - PIT is started as separate Java process with its own classpath - new `mainProcessJvmArgs` configuration parameter
@@ -82,7 +86,7 @@
  - change `jvmArgs` configuration parameter type from `String` to `List<String>` [potential breaking change]
  - upgrade Gradle Wrapper to 1.11
 
-0.32.0 - 2013-12-28
+## 0.32.0 - 2013-12-28
 
  - adjust to PIT 0.32
  - break compatibility with PIT <0.32 (due to internal refactoring in PIT)
@@ -91,9 +95,9 @@
  - less verbose debug logging
  - upgrade Gradle Wrapper to 1.10
 
-0.31.0 - SKIPPED
+## 0.31.0 - SKIPPED
 
-0.30.1 - 2013-08-04
+## 0.30.1 - 2013-08-04
 
  - fix: task no longer always up-to-date for empty java source directory set - #2
  - add support for additional test source sets - #3
@@ -103,17 +107,17 @@
  - better interoperability with Windows
  - upgrade Gradle Wrapper version to 1.6
 
-0.30.0 - 2013-05-10
+## 0.30.0 - 2013-05-10
 
  - adjust to PIT 0.30
  - artifacts availability in Maven Central Repository
 
-0.29.0 - 2012-11-15
+## 0.29.0 - 2012-11-15
 
  - adjust to PIT 0.29
  - add default mode for incrementalAnalysis
  - add Gradle Wrapper
 
-0.28.0 - 2012-08-14
+## 0.28.0 - 2012-08-14
 
  - initial release
