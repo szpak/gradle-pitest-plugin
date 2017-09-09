@@ -122,7 +122,14 @@ class PitestTask extends JavaExec {
     Boolean timestampedReports
 
     @InputFiles
-    FileCollection taskClasspath
+    FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
+
+    @Input
+    Boolean useAdditionalClasspathFile
+
+    @Input
+    @OutputFile
+    File additionalClasspathFile
 
     @InputFiles
     Set<File> mutableCodePaths
@@ -140,7 +147,7 @@ class PitestTask extends JavaExec {
     Boolean enableDefaultIncrementalAnalysis
 
     @Input
-    File defaultFileForHistoryDate
+    File defaultFileForHistoryData
 
     @Input
     @Optional
@@ -177,15 +184,16 @@ class PitestTask extends JavaExec {
     @Optional
     Integer maxSurviving
 
-    @InputFile
+    @Input
     @Optional
-    File classPathFile
+    List<String> features
 
     @Override
     void exec() {
+        //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = createListOfAllArgumentsForPit()
+        jvmArgs = (getMainProcessJvmArgs() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
-        jvmArgs = getMainProcessJvmArgs() ?: getJvmArgs()
         classpath = getLaunchClasspath()
         super.exec()
     }
@@ -219,7 +227,6 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
-        map['classPath'] = getTaskClasspath()?.files?.join(',')
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
@@ -232,30 +239,46 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
-        map['classPathFile'] = getClassPathFile()?.path
-        map.putAll(prepareMapForIncrementalAnalysis())
+        map['features'] = getFeatures()?.join(',')
+        map.putAll(prepareMapWithClasspathConfiguration())
+        map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
         return removeEntriesWithNullValue(map)
     }
 
-    private Map<String, String> prepareMapForIncrementalAnalysis() {
-        Map<String, String> map = [:]
-        if (getEnableDefaultIncrementalAnalysis()) {
-            map['historyInputLocation'] = getHistoryInputLocation()?.path ?: getDefaultFileForHistoryDate().path
-            map['historyOutputLocation'] = getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryDate().path
+    private Map<String, String> prepareMapWithClasspathConfiguration() {
+        if (getUseAdditionalClasspathFile()) {
+            fillAdditionalClasspathFileWithClasspathElements()
+            return [classPathFile: getAdditionalClasspathFile().absolutePath]
         } else {
-            map['historyInputLocation'] = getHistoryInputLocation()?.path
-            map['historyOutputLocation'] = getHistoryOutputLocation()?.path
+            return [classPath: getAdditionalClasspath().files.join(',')]
         }
-        map
+    }
+
+    private void fillAdditionalClasspathFileWithClasspathElements() {
+        String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
+        //"withWriter" as "file << content" works in append mode (instead of overwrite one)
+        getAdditionalClasspathFile().withWriter() {
+            it << classpathElementsAsFileContent
+        }
+    }
+
+    private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
+        if (getEnableDefaultIncrementalAnalysis()) {
+            return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryData().path,
+                    historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryData().path]
+        } else {
+            return [historyInputLocation: getHistoryInputLocation()?.path,
+                    historyOutputLocation: getHistoryOutputLocation()?.path]
+        }
     }
 
     private Map removeEntriesWithNullValue(Map map) {
-        map.findAll { it.value != null }
+        return map.findAll { it.value != null }
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        taskArgumentsMap.collect { k, v ->
+        return taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
     }
@@ -263,7 +286,7 @@ class PitestTask extends JavaExec {
     @PackageScope   //visible for testing
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        getPluginConfiguration()?.collect { k, v ->
+        return getPluginConfiguration()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
             "--pluginConfiguration=$it".toString()
