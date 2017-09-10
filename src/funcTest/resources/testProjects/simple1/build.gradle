@@ -1,5 +1,14 @@
-apply plugin: 'java'
-apply plugin: 'info.solidsoft.pitest'
+apply plugin: 'pl.droidsonroids.pitest'
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion '26.0.1'
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 26
+    }
+}
 
 buildscript {
     repositories {
@@ -19,5 +28,5 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testCompile 'junit:junit:4.11'
+    testCompile 'junit:junit:4.12'
 }

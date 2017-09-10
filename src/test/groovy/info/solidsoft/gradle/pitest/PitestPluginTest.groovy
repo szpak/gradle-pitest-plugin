@@ -15,36 +15,70 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Issue
-import spock.lang.Specification
+import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.api.Task
+import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Specification
 
 class PitestPluginTest extends Specification {
 
-    def "add pitest task to java project in proper group"() {
-        given:
-            Project project = ProjectBuilder.builder().build()
-            project.apply(plugin: "java")   //to add SourceSets
+    def "add pitest tasks to android library project in proper group"() {
         when:
-            project.apply(plugin: "info.solidsoft.pitest")
+            Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
         then:
             project.plugins.hasPlugin(PitestPlugin)
-            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            def tasks = [AndroidUtils.PITEST_RELEASE_TASK_NAME, "${PitestPlugin.PITEST_TASK_NAME}Debug"]
+            assertThatTasksAreInGroup(project, tasks, PitestPlugin.PITEST_TASK_GROUP)
     }
 
-    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
-    def "apply Java plugin itself of not already applied"() {
+    def "apply pitest plugin without android plugin applied"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
-            !project.plugins.hasPlugin("java")
+            !project.plugins.hasPlugin("com.android.application") &&
+            !project.plugins.hasPlugin("com.android.library") &&
+            !project.plugins.hasPlugin("com.android.test")
         when:
-            project.apply(plugin: "info.solidsoft.pitest");
+            project.apply(plugin: "pl.droidsonroids.pitest");
+            project.evaluate()
         then:
-            project.plugins.hasPlugin(PitestPlugin)
-            project.plugins.hasPlugin('java')
+            thrown(GradleException)
+    }
+
+    def "depend on the Android task that copies resources to the build directory (for robolectric, etc)"() {
+        when:
+            Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
+        then:
+            assert project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME].getDependsOn().find {it == 'compileReleaseUnitTestSources'}
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Debug"].getDependsOn().find {it == 'compileDebugUnitTestSources'}
+    }
+
+    def "depend on the Android application task that copies resources to the build directory (for robolectric, etc)"() {
+        when:
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
+        then:
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeRelease"].getDependsOn().find {it == 'compileFreeReleaseUnitTestSources'}
+    }
+
+    def "combined task classpath contains correct variant paths for flavored application projects"() {
+        when:
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
+        then:
+            def classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeRelease"].additionalClasspath.files
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/free/release')}
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/free/release')}
+    }
+
+    def "strange sdk versions get properly sanitized"() {
+        when:
+            def version = PitestPlugin.sanitizeSdkVersion('strange version (0)')
+        then:
+            assert version == 'strange-version--0-'
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

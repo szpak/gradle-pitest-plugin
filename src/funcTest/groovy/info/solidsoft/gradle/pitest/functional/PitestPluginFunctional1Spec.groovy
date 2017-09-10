@@ -5,6 +5,49 @@ import nebula.test.functional.ExecutionResult
 
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
+    def "setup and run simple build on pitest infrastructure"() {
+        given:
+            buildFile << """
+                apply plugin: 'pl.droidsonroids.pitest'
+                apply plugin: 'com.android.library'
+
+                android {
+                    buildToolsVersion '26.0.1'
+                    compileSdkVersion 26
+                    defaultConfig {
+                        minSdkVersion 10
+                        targetSdkVersion 26
+                    }
+                    lintOptions {
+                        //ignore missing lint database
+                        abortOnError false
+                    }
+                }
+                repositories {
+                    mavenCentral()
+                    jcenter()
+                }
+                dependencies {
+                    testCompile 'junit:junit:4.12'
+                }
+            """.stripIndent()
+        and:
+            writeManifestFile()
+        when:
+            writeHelloWorld('gradle.pitest.test.hello')
+        then:
+            fileExists('src/main/java/gradle/pitest/test/hello/HelloWorld.java')
+        when:
+            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+        then:
+            fileExists('src/test/java/gradle/pitest/test/hello/HelloWorldTest.java')
+        when:
+            ExecutionResult result = runTasksSuccessfully('build')
+        then:
+            fileExists('build/intermediates/classes/release/gradle/pitest/test/hello/HelloWorld.class')
+            result.wasExecuted(':test')
+    }
+
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
             buildFile << getBasicGradlePitestConfig()
@@ -15,17 +58,23 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
+            writeManifestFile()
             writeHelloPitClass()
             writeHelloPitTest()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            def result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':pitest')
-        and:
-            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
+            result.wasExecuted(':pitestRelease')
+	        result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
             result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
             pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
+    }
+
+    def writeManifestFile(){
+        def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
+        manifestFile.parentFile.mkdirs()
+        manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
@@ -53,9 +102,9 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             writeHelloPitClass()
             writeHelloPitTest()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':pitest')
+            result.wasExecuted(':pitestRelease')
         and: 'plugin enabled'
             result.getStandardError().contains('with the following plugin configuration')
         and: 'plugin parameters passed'
@@ -79,9 +128,9 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             writeHelloPitClass()
             writeHelloPitTest()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':pitest')
+            result.wasExecuted(':pitestRelease')
             result.getStandardOutput().contains('--classPathFile=')
             //TODO: Verify file name with regex
             !result.getStandardOutput().find("--classPath=")
@@ -89,21 +138,28 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
     private static String getBasicGradlePitestConfig() {
         return """
-                apply plugin: 'info.solidsoft.pitest'
+                apply plugin: 'pl.droidsonroids.pitest'
+                apply plugin: 'com.android.library'
+
+                android {
+                    buildToolsVersion '26.0.1'
+                    compileSdkVersion 26
+                    defaultConfig {
+                        minSdkVersion 10
+                        targetSdkVersion 26
+                    }
+                }
                 group = 'gradle.pitest.test'
 
                 repositories {
                     mavenCentral()
+                    jcenter()
                 }
                 buildscript {
                     repositories {
                         mavenCentral()
+                        jcenter()
                     }
-//                    //Local/current version of the plugin should be put on a classpath anyway
-//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
-//                    dependencies {
-//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-//                    }
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'

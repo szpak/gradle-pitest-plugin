@@ -15,7 +15,20 @@
  */
 package info.solidsoft.gradle.pitest
 
-class PitestTaskPluginConfigurationTest extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
+import org.gradle.api.Project
+import spock.lang.Specification
+
+class PitestTaskPluginConfigurationTest extends Specification {
+
+    private Project project
+    private PitestTask task
+
+    def setup() {
+        project = AndroidUtils.createSampleLibraryProject()
+        project.evaluate()
+        task = project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME] as PitestTask
+        task.targetClasses = []
+    }
 
     def "should not create pluginConfiguration command line argument when no parameters"() {
         given:

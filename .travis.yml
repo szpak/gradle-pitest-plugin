@@ -1,47 +1,31 @@
-language: groovy
+sudo: false
+language: android
+jdk:
+  - oraclejdk8
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 
-before_install:
-  # Secrets (including encrypted PGP key) are not available in PR - skip release configuration to do not fail build
-  - |
-    if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
-      # There is problem with aborting build on command in if failure - http://steven.casagrande.io/articles/travis-ci-and-if-statements/
-      openssl aes-256-cbc -K $encrypted_5393bb1c9f2d_key -iv $encrypted_5393bb1c9f2d_iv -in gradle/gpg-key.asc.enc -d | gpg --fast-import || travis_terminate 1
-      export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'
-    fi;
-  - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
-  - git config user.email "szpak-ci@users.noreply.github.com"
-  - git config user.name "Szpak CI Bot"
-  # Chandler for release notes synchronization
-  - ruby --version
-  - rvm install 2.4.1
-  - ruby --version
-  - gem install --no-ri --no-rdoc chandler
+licenses:
+  - 'android-sdk-preview-license-52d11cd2'
+  - 'android-sdk-license-.+'
+  - 'google-gdk-license-.+'
 
-install: true
-script:
-  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
+android:
+  components:
+    - tools # to get the new `repository-11.xml`
+    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+    - platform-tools
+    - build-tools-26.0.1
+    - android-26
+
+install: ./gradlew assemble
+script: ./gradlew funcTest check --stacktrace --info --continue -Pcompatibility
 
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-  - rm -fr $HOME/.gradle/caches/*/scripts/
-  - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
-  - rm -fr $HOME/.gradle/caches/*/fileHashes/
-  - rm -fr $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
-
-env:
-  global:
-  - secure: HfMYoa5jyF43g33PZZYOqPDu53z5//MdKRBy3C7EVxK8akje833YFJUARPJtfi0VR6Moa+JhUGkkDLFxQc2f4kL+q0NO39ULfkFLgOcPYHETNw8u2N8SGvksv0qUSNDnOImHqUkUZ8I8PlHzP3u/pclU4d4gfs/m3aoOm1pYeEc=
-  - secure: bszdL2Ib7xbHHNuCPKq0sj4mxH2GDPcyFKSKfyGGqpupcaZfsYQtuuxDtVFhkW1Uh+BcEJ8XhS/iXHJrgLwirz0/tgbDm2cz2nUxR5fkcmTm50Rep3QfoDeYMMq9mkuCw6B9Vz/M4eEamSBfgxpqPGA96yhtBG8KklFLWc/6++o=
-  - secure: VqF/aEXsmRj2d8azHFEAop5J8U57RP3B8w3p3LfDhdbXz/xOhXVBbm4CVZqeddKUAi7QFNjUi8ry+k8MbuFbzG0of0Pwg/fqWpRqpr+QdhUWiiVnlH42G2jqzgRxQRqyN7vjjPaEBA84PM0L8rlVUqx57s8ePCIuEAhvZ4urtFQ=
-  - secure: Oco34JI8O6pDISUjogUuqGFYRmrI6m3wZkrzMbj3dwjQ3gna1q7S5FmZWVbQelkufJ5jP1V7Ny7QjeqGX4yDsaj+gt1QF/nbZvWRnOXu3gastspEfZrPEziOngfIH4//urUaFqikdPdqmvXqLvCvtW7TaWDvN3NDb1Rx1w8kiYg=
-  - secure: cyJye89u5k+Ct13HC95LME72pdsXmtmWJIR3x4MxQfvFG/Q1Uz3FtnSj7oJH5xJ9oH3bzHd0k5sB38u1g2LTIov/Em+dSVBIGgcs49nMSlbVye0Ilt7A1x0c/7LidxKT/DiWu4jgFcf8VyEdd9LVQXBaO12sLsk6nk6RjTUKnU8=
-  - secure: FZfezOymfoKWQf+DHb6OU2Vk1cY8Cz0ic3+ZtPKoWRrp8bijkSIA8jjfzwKNbJ1qyRthTY7tv/k83dbrOl3xDBeT6yzXslceraWLww/cp/+FGM6M3XG6dLqZlSaKH8bbPL94p7NiPCn+7mSuirur1H9Lf4lD6VeAOmxtstowPic=
-matrix:
-  include:
-    - jdk: oraclejdk8
-      env: PITEST_REGRESSION_TESTS=quick

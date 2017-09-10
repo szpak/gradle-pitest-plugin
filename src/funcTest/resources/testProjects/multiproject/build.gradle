@@ -10,14 +10,24 @@ buildscript {
 }
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'pl.droidsonroids.pitest'
+    apply plugin: 'com.android.library'
+
+    android {
+        buildToolsVersion '26.0.1'
+        compileSdkVersion 26
+        defaultConfig {
+            minSdkVersion 10
+            targetSdkVersion 26
+        }
+    }
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        testCompile 'junit:junit:4.11'
+        testCompile 'junit:junit:4.12'
     }
 
     version = '1.0'
@@ -26,13 +36,23 @@ subprojects {
 
 configure(project(":shared")) {
     dependencies {
-        compile 'org.slf4j:slf4j-api:1.7.10'
-        compile 'org.slf4j:slf4j-nop:1.7.10'
+        compile 'org.slf4j:slf4j-api:1.7.21'
+        compile 'org.slf4j:slf4j-nop:1.7.21'
     }
 }
 
 configure(project(':itest')) {
-    apply plugin: "info.solidsoft.pitest"
+    apply plugin: 'pl.droidsonroids.pitest'
+    apply plugin: 'com.android.library'
+
+    android {
+        buildToolsVersion '26.0.1'
+        compileSdkVersion 26
+        defaultConfig {
+            minSdkVersion 10
+            targetSdkVersion 26
+        }
+    }
     dependencies {
         compile project(':shared')
     }
@@ -42,7 +62,7 @@ configure(project(':itest')) {
     dependencies { mutableCodeBase project(':shared') }
     pitest {
         timestampedReports = false
-        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        mainSourceSets = [project.android.sourceSets.main, project(':shared').android.sourceSets.main]
         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
 //        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
     }
