@@ -14,7 +14,7 @@ subprojects {
     apply plugin: 'com.android.library'
 
     android {
-        buildToolsVersion '26.0.0'
+        buildToolsVersion '26.0.1'
         compileSdkVersion 26
         defaultConfig {
             minSdkVersion 10
@@ -46,7 +46,7 @@ configure(project(':itest')) {
     apply plugin: 'com.android.library'
 
     android {
-        buildToolsVersion '26.0.0'
+        buildToolsVersion '26.0.1'
         compileSdkVersion 26
         defaultConfig {
             minSdkVersion 10

@@ -21,7 +21,7 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            buildToolsVersion '26.0.0'
+            buildToolsVersion '26.0.1'
             compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
@@ -48,7 +48,7 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.application")
         project.android.with {
-            buildToolsVersion '26.0.0'
+            buildToolsVersion '26.0.1'
             compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
@@ -59,8 +59,11 @@ class AndroidUtils {
                 debug { }
             }
             productFlavors {
-                variant1 { }
-                variant2 { }
+                free { }
+                pro { }
+            }
+            testOptions {
+                unitTests.returnDefaultValues = true
             }
         }
         project.apply(plugin: "pl.droidsonroids.pitest")

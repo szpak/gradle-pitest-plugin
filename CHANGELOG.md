@@ -1,3 +1,7 @@
+# 0.0.11 - not released yet
+- Merged upstream changes 491bf25072ee7ed6a8f10c0618e464586e5ee32a
+- Fixed compatibility with Android Gradle Plugin 3+ - [#13](https://github.com/koral--/gradle-pitest-plugin/pull/13)
+
 # 0.0.10 - 2017-09-03
 - Fixed `NoSuchMethodError` on Gradle < 4.0 - [#11](https://github.com/koral--/gradle-pitest-plugin/issues/11)
 

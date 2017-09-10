@@ -12,7 +12,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.0'
+                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -77,42 +77,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }
 
-    private static String getBasicGradlePitestConfig() {
-        return """
-                apply plugin: 'pl.droidsonroids.pitest'
-                apply plugin: 'com.android.library'
-
-                android {
-                    buildToolsVersion '26.0.0'
-                    compileSdkVersion 26
-                    defaultConfig {
-                        minSdkVersion 10
-                        targetSdkVersion 26
-                    }
-                }
-                group = 'gradle.pitest.test'
-
-                repositories {
-                    mavenCentral()
-                    jcenter()
-                }
-                buildscript {
-                    repositories {
-                        mavenCentral()
-                        jcenter()
-                    }
-//                    //Local/current version of the plugin should be put on a classpath anyway
-//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
-//                    dependencies {
-//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-//                    }
-                }
-                dependencies {
-                    testCompile 'junit:junit:4.12'
-                }
-        """.stripIndent()
-    }
-
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
             buildFile << getBasicGradlePitestConfig()
@@ -166,7 +130,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':pitest')
+            result.wasExecuted(':pitestRelease')
             result.getStandardOutput().contains('--classPathFile=')
             //TODO: Verify file name with regex
             !result.getStandardOutput().find("--classPath=")
@@ -174,21 +138,28 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
     private static String getBasicGradlePitestConfig() {
         return """
-                apply plugin: 'info.solidsoft.pitest'
+                apply plugin: 'pl.droidsonroids.pitest'
+                apply plugin: 'com.android.library'
+
+                android {
+                    buildToolsVersion '26.0.1'
+                    compileSdkVersion 26
+                    defaultConfig {
+                        minSdkVersion 10
+                        targetSdkVersion 26
+                    }
+                }
                 group = 'gradle.pitest.test'
 
                 repositories {
                     mavenCentral()
+                    jcenter()
                 }
                 buildscript {
                     repositories {
                         mavenCentral()
+                        jcenter()
                     }
-//                    //Local/current version of the plugin should be put on a classpath anyway
-//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
-//                    dependencies {
-//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-//                    }
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'

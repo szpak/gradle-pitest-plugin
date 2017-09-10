@@ -33,6 +33,8 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.BasePlugin
 
+import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+
 /**
  * The main class for Pitest plugin.
  */
@@ -109,7 +111,6 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureTaskDefault(PitestTask task, BaseVariant variant) {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
-        List<FileCollection> testRuntimeClasspath = extension.testSourceSets*.runtimeClasspath
         combinedTaskClasspath.add(project.configurations["compile"])
         combinedTaskClasspath.add(project.configurations["testCompile"])
         combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
@@ -121,10 +122,9 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.add(variant.javaCompiler.classpath)
         combinedTaskClasspath.add(project.files(variant.javaCompiler.destinationDir))
         combinedTaskClasspath.add(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
-        combinedTaskClasspath.add(testRuntimeClasspath)
 
         task.conventionMapping.with {
-            taskClasspath = {
+            additionalClasspath = {
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
                     !FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH.find { file.name.endsWith(".$it") }
                 }
@@ -201,16 +201,20 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private File getMockableAndroidJarPath(BaseExtension android) {
-        String fileExt
+        String mockableAndroidJarFilename = "mockable-"
+        mockableAndroidJarFilename += sanitizeSdkVersion(android.compileSdkVersion)
         if (android.testOptions.unitTests.returnDefaultValues) {
-            fileExt = ".default-values.jar"
-        } else {
-            fileExt = ".jar"
+            mockableAndroidJarFilename += '.default-values'
         }
+        /*
+         * The Android Gradle Plugin 3.0.0+ creates the mockable JAR in a different path.
+         */
+        if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
+            mockableAndroidJarFilename += '.v3'
+        }
+        mockableAndroidJarFilename += '.jar'
         File outDir = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
-
-        String sdkName = sanitizeSdkVersion(android.compileSdkVersion)
-        return new File(outDir, "mockable-" + sdkName + fileExt)
+        return new File(outDir, mockableAndroidJarFilename)
     }
 
     static def sanitizeSdkVersion(def version) {

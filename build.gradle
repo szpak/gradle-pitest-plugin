@@ -55,6 +55,7 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
+    systemProperty 'ignoreDeprecations', 'true'
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
