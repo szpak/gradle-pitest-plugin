@@ -1,4 +1,4 @@
-# 0.0.11 - not released yet
+# 0.0.11 - 2007-09-11
 - Merged upstream changes 491bf25072ee7ed6a8f10c0618e464586e5ee32a
 - Fixed compatibility with Android Gradle Plugin 3+ - [#13](https://github.com/koral--/gradle-pitest-plugin/pull/13)
 

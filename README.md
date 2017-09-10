@@ -7,7 +7,7 @@ which supports Android gradle projects.
 
 ```groovy
 plugins {
-  id "pl.droidsonroids.pitest" version "0.0.9"
+  id "pl.droidsonroids.pitest" version "0.0.11"
 }
 ```
 
@@ -18,7 +18,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.9'
+    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.0.11'
   }
 }
 
