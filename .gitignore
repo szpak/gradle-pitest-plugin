@@ -1,9 +1,7 @@
-*.un~
-*.iml
-*.ipr
-*.iws
-build/
 .gradle
-.idea
+build/
+
+.idea/
+*.iml
 out/
 local.properties

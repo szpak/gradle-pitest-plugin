@@ -12,7 +12,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.0'
+                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -59,15 +59,16 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             """.stripIndent()
         and:
             writeManifestFile()
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
             def result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+	        result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
+            result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.0"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     def writeManifestFile(){
@@ -76,13 +77,72 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }
 
+    def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                buildscript {
+                    repositories {
+                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
+                    }
+                    configurations.maybeCreate("pitest")
+                    dependencies {
+                        pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
+                    }
+                }
+                pitest {
+                    verbose = true
+                    pluginConfiguration = ['pitest-plugin-configuration-reporter-plugin.key1': 'value1',
+                                           'pitest-plugin-configuration-reporter-plugin.key2': 'value2']
+                    features = ["-FANN", "+FINFIT(a[1] a[2])"]
+                    outputFormats = ['pluginConfigurationReporter']
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
+        then:
+            result.wasExecuted(':pitestRelease')
+        and: 'plugin enabled'
+            result.getStandardError().contains('with the following plugin configuration')
+        and: 'plugin parameters passed'
+            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
+            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+        and: 'built-in features passed'
+            result.getStandardError().contains("-FANN")
+            result.getStandardError().contains("+FINFIT")
+            //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
+    }
+
+    def "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    useClasspathFile = true
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
+        then:
+            result.wasExecuted(':pitestRelease')
+            result.getStandardOutput().contains('--classPathFile=')
+            //TODO: Verify file name with regex
+            !result.getStandardOutput().find("--classPath=")
+    }
+
     private static String getBasicGradlePitestConfig() {
         return """
                 apply plugin: 'pl.droidsonroids.pitest'
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.0'
+                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -100,11 +160,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                         mavenCentral()
                         jcenter()
                     }
-//                    //Local/current version of the plugin should be put on a classpath anyway
-//                    //That cannot be also used to override the plugin version as the current version is earlier on a classpath
-//                    dependencies {
-//                        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-//                    }
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
@@ -112,63 +167,32 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         """.stripIndent()
     }
 
-    def "enable PIT plugin when on classpath"() {
-        given:
-            buildFile << getBasicGradlePitestConfig()
-            buildFile << """
-                buildscript {
-                    repositories {
-                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
-                    }
-                    configurations.maybeCreate("pitest")
-                    dependencies {
-                        pitest 'org.pitest.plugins:pitest-high-isolation-plugin:0.0.2'
-                    }
+    private void writeHelloPitClass(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
+        def path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
+        def javaFile = createFile(path, baseDir)
+        javaFile << """package ${packageDotted};
+
+            public class HelloPit {
+                public int returnInputNumber(int inputNumber) {
+                    System.out.println("Mutation to survive");
+                    return inputNumber;
                 }
-                pitest {
-                    verbose = true
-                }
-            """.stripIndent()
-        and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
-        when:
-            ExecutionResult result = runTasksSuccessfully('pitestRelease')
-        then:
-            result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
-            result.getStandardError().contains('Marking all mutations as requiring isolation')
+            }
+        """.stripIndent()
     }
 
-    def "enable pass plugin configuration to PIT"() {
-        given:
-            buildFile << getBasicGradlePitestConfig()
-            buildFile << """
-                buildscript {
-                    repositories {
-                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
-                    }
-                    configurations.maybeCreate("pitest")
-                    dependencies {
-                        pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
-                    }
+    private void writeHelloPitTest(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
+        def path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
+        def javaFile = createFile(path, baseDir)
+        javaFile << """package ${packageDotted};
+            import org.junit.Test;
+            import static org.junit.Assert.assertEquals;
+
+            public class HelloPitTest {
+                @Test public void shouldReturnInputNumber() {
+                    assertEquals(5, new HelloPit().returnInputNumber(5)); 
                 }
-                pitest {
-                    verbose = true
-                    pluginConfiguration = ['pitest-plugin-configuration-reporter-plugin.key1': 'value1',
-                                           'pitest-plugin-configuration-reporter-plugin.key2': 'value2']
-                    outputFormats = ['pluginConfigurationReporter']
-                }
-            """.stripIndent()
-        and:
-            writeHelloWorld('gradle.pitest.test.hello')
-            writeTest('src/test/java/', 'gradle.pitest.test.hello', false)
-        when:
-            ExecutionResult result = runTasksSuccessfully('pitestRelease')
-        then:
-            result.wasExecuted(':pitestRelease')
-            result.getStandardError().contains('with the following plugin configuration')
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+            }
+        """.stripIndent()
     }
 }

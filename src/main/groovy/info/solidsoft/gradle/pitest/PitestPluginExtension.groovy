@@ -17,12 +17,14 @@ package info.solidsoft.gradle.pitest
 
 import com.android.build.gradle.api.AndroidSourceSet
 import groovy.transform.CompileStatic
+import org.gradle.api.Incubating
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
 /**
  * Extension class with configurable parameters for Pitest plugin.
  *
- * Note: taskClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
+ * Note: additionalClasspath, mutableCodePaths, sourceDirs, reportDir and pitestVersion are automatically set using project
  *   configuration. sourceDirs, reportDir and pitestVersion can be overridden by an user.
  */
 @CompileStatic
@@ -101,8 +103,10 @@ class PitestPluginExtension {
      *
      * Should be defined a map:
      * <pre>
-     * pitest {*     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
-     *}* </pre>
+     * pitest {
+     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     * }
+     * </pre>
      *
      * @since 1.1.6
      */
@@ -110,7 +114,26 @@ class PitestPluginExtension {
 
     Integer maxSurviving    //new in PIT 1.1.10
 
-    File classPathFile  //new in PIT 1.1.11
+    /**
+     * Use classpath file instead of passing classpath in a command line
+     *
+     * Useful with very long classpath and Windows - see https://github.com/hcoles/pitest/issues/276
+     * Disabled by default.
+     *
+     * @since 1.2.0
+     */
+    @Incubating
+    boolean useClasspathFile = false
+
+    /**
+     * Turned on/off features in PIT itself and its plugins.
+     *
+     * Some details: https://github.com/hcoles/pitest/releases/tag/pitest-parent-1.2.1
+     *
+     * @since 1.2.1
+     */
+    @Incubating
+    List<String> features
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
@@ -155,5 +178,17 @@ class PitestPluginExtension {
      */
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis = withHistory
+    }
+
+    /**
+     * The first (broken) implementation of using a file to pass additional classpath to PIT.
+     * Use "useClasspathFile" property instead.
+     *
+     * @since 1.1.11
+     */
+    @Deprecated //as of 1.2.0
+    void setClassPathFile(File classPathFile) {
+        throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
+            "property to enable passing classpath to PIT as file. ")
     }
 }
