@@ -25,7 +25,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
             result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.0.0", "1.2.0", "1.2.3"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
