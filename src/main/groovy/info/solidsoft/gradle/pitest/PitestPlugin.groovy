@@ -142,6 +142,10 @@ class PitestPlugin implements Plugin<Project> {
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
                 additionalMutableCodePaths.add(variant.javaCompiler.destinationDir)
+                def kotlinCompileTask = project.tasks.findByName("compile${variant.name}Kotlin")
+                if (kotlinCompileTask != null) {
+                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
+                }
                 additionalMutableCodePaths
             }
 

@@ -57,6 +57,18 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':test')
     }
 
+    def "should run mutation analysis with Android Gradle plugin beta 3"() {
+        when:
+        copyResources("testProjects/simpleKotlin", "")
+        then:
+        fileExists('build.gradle')
+        when:
+        def result = runTasksSuccessfully('pitestRelease')
+        then:
+        result.wasExecuted(':pitestRelease')
+        result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+    }
+
     def writeManifestFile(){
         def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
