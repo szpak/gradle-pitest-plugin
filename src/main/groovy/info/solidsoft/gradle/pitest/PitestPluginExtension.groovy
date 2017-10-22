@@ -17,7 +17,12 @@ package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Incubating
+import org.gradle.api.Project
+import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.ProjectReportsPluginConvention
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskInstantiationException
 
 /**
@@ -142,6 +147,26 @@ class PitestPluginExtension {
      */
     @Incubating
     List<String> features
+
+    PitestPluginExtension(Project project) {
+        this.reportDir = new File("${getReportingPathFromProject(project)}/pitest")
+        this.pitestVersion = PitestPlugin.DEFAULT_PITEST_VERSION
+        this.testSourceSets = getSourceSetsFromProject(project, SourceSet.TEST_SOURCE_SET_NAME)
+        this.mainSourceSets = getSourceSetsFromProject(project, SourceSet.MAIN_SOURCE_SET_NAME)
+    }
+
+    private Set<SourceSet> getSourceSetsFromProject(Project project, String category) {
+        JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention)
+        if (convention) {
+            return convention.sourceSets.findAll {SourceSet sourceSet -> sourceSet.name == category}
+        }
+        return Collections.emptySet()
+    }
+
+    private String getReportingPathFromProject(Project project) {
+        JavaPluginConvention convention = project.convention.getPlugin(JavaPluginConvention)
+        return convention.testReportDir.path
+    }
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)

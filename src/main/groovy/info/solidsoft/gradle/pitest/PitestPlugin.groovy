@@ -76,11 +76,7 @@ class PitestPlugin implements Plugin<Project> {
 
     //TODO: MZA: Maybe move it to the constructor of an extension class?
     private void createExtension(Project project) {
-        extension = project.extensions.create("pitest", PitestPluginExtension)
-        extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
-        extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.testSourceSets = [project.sourceSets.test] as Set
-        extension.mainSourceSets = [project.sourceSets.main] as Set
+        extension = project.extensions.create("pitest", PitestPluginExtension, project)
     }
 
     private void configureTaskDefault(PitestTask task) {

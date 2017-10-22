@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'info.solidsoft.cdeliveryboy'
 apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'maven-publish'
 
 group = 'info.solidsoft.gradle.pitest'
 
