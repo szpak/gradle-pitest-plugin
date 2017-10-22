@@ -1,15 +1,9 @@
-package info.solidsoft.gradle.pitest;
+package info.solidsoft.gradle.pitest
 
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.*;
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.*
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-public class AbstractPitestTask extends JavaExec {
+abstract class AbstractPitestTask extends JavaExec {
     @OutputDirectory
     File reportDir
 
