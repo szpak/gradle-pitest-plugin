@@ -18,11 +18,8 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import org.gradle.api.Incubating
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
-import org.gradle.api.plugins.ProjectReportsPluginConvention
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskInstantiationException
 
 /**
@@ -34,11 +31,9 @@ import org.gradle.api.tasks.TaskInstantiationException
 @CompileStatic
 class PitestPluginExtension {
 
-    public static final String NAME = "pitest"
+    private static final String NAME = "pitest"
 
     String pitestVersion
-//    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
-
     File reportDir
     Set<String> targetClasses
     Set<String> targetTests
@@ -225,5 +220,10 @@ class PitestPluginExtension {
     void setClassPathFile(File classPathFile) {
         throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
             "property to enable passing classpath to PIT as file. ")
+    }
+
+    @CompileStatic
+    static String getName() {
+        return NAME
     }
 }

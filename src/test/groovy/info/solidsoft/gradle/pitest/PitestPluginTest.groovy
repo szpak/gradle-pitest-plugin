@@ -23,6 +23,18 @@ import org.gradle.api.Task
 
 class PitestPluginTest extends Specification {
 
+    def "should contain '#extensionName' extension" () {
+        given:
+            Project project = ProjectBuilder.builder().build()
+            project.apply(plugin: 'java')
+        when:
+            project.apply(plugin: 'info.solidsoft.pitest')
+        then:
+            project.extensions.getByName(extensionName) != null
+        where:
+            extensionName << [PitestPluginExtension.getName(), ScmPitestPluginExtension.getName()]
+    }
+
     def "add pitest task to java project in proper group"() {
         given:
             Project project = ProjectBuilder.builder().build()
