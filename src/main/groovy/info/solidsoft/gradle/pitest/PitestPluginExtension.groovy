@@ -34,6 +34,8 @@ import org.gradle.api.tasks.TaskInstantiationException
 @CompileStatic
 class PitestPluginExtension {
 
+    public static final String NAME = "pitest"
+
     String pitestVersion
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 

@@ -50,7 +50,7 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         applyRequiredJavaPlugin()
         createConfigurations()
-        createExtension(project)
+        extension = project.extensions.create(PitestPluginExtension.NAME, PitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
             PitestTask task = project.tasks.create(PITEST_TASK_NAME, PitestTask)
             task.with {
@@ -72,11 +72,6 @@ class PitestPlugin implements Plugin<Project> {
             visible = false
             description = "The Pitest libraries to be used for this project."
         }
-    }
-
-    //TODO: MZA: Maybe move it to the constructor of an extension class?
-    private void createExtension(Project project) {
-        extension = project.extensions.create("pitest", PitestPluginExtension, project)
     }
 
     private void configureTaskDefault(PitestTask task) {
