@@ -12,15 +12,15 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 buildscript {
                     repositories {
                         jcenter()
+                        google()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.4-3"
-                        classpath 'com.android.tools.build:gradle:2.3.3'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51"
+                        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
                     }
                 }
 
                 android {
-                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -37,7 +37,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
-                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.4-3"
+                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.51"
                 }
             """.stripIndent()
         and:
@@ -57,7 +57,19 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':test')
     }
 
-    def "should run mutation analysis with Android Gradle plugin beta 3"() {
+    def "should run mutation analysis with Android Gradle plugin 3"() {
+        when:
+        copyResources("testProjects/simpleKotlin", "")
+        then:
+        fileExists('build.gradle')
+        when:
+        def result = runTasksSuccessfully('pitestRelease')
+        then:
+        result.wasExecuted(':pitestRelease')
+        result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+    }
+
+    def "should run mutation analysis with Android Gradle plugin 2"() {
         when:
         copyResources("testProjects/simpleKotlin", "")
         then:
