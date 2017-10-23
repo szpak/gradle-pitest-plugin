@@ -8,6 +8,7 @@ class ScmPitestPluginExtension extends PitestPluginExtension {
 
     private static final NAME = "scmPitest"
 
+    File scmRoot
     ScmConnection scm
     String connectionType
     Set<String> includes
@@ -41,5 +42,13 @@ class ScmPitestPluginExtension extends PitestPluginExtension {
 
     void setGoal(String type) {
         this.goal = type
+    }
+
+    void setScmRoot(String scmRoot) {
+        this.scmRoot = new File(scmRoot)
+    }
+
+    void setScmRoot(File value) {
+        this.scmRoot = value
     }
 }

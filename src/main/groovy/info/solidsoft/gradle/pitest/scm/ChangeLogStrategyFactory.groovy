@@ -10,7 +10,7 @@ class ChangeLogStrategyFactory {
             case 'custom':
                 return new CustomChangeLogStrategy()
             default:
-                throw new Exception()
+                throw new InvalidChangeLogStrategyException("Invalid goal, received: $typeName, possible goals are [lastCommit, localChanges, custom]")
         }
     }
 }

@@ -10,4 +10,5 @@ class ScmPitestTask extends AbstractPitestTask {
     ScmConnection scm
     String connectionType
     ChangeLogStrategy goal
+    File scmRoot
 }

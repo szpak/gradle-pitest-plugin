@@ -2,6 +2,7 @@ package info.solidsoft.gradle.pitest
 
 import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
 import info.solidsoft.gradle.pitest.scm.CustomChangeLogStrategy
+import info.solidsoft.gradle.pitest.scm.InvalidChangeLogStrategyException
 import info.solidsoft.gradle.pitest.scm.LastCommitStrategy
 import info.solidsoft.gradle.pitest.scm.LocalChangesStrategy
 import org.apache.maven.scm.manager.ScmManager
@@ -32,5 +33,21 @@ class ScmPitestTaskGoalTest extends BasicProjectBuilderSpec implements WithScmPi
             map << [custom:CustomChangeLogStrategy.class
                    , lastCommit: LastCommitStrategy.class
                    , localChanges: LocalChangesStrategy.class]
+    }
+
+    def "should throw exception when invalid type supplied" () {
+        given:
+            project.scmPitest.goal = "notSupported"
+        when:
+            scmPitestTask.getGoal()
+        then:
+            thrown InvalidChangeLogStrategyException
+    }
+
+    def "should throw exception with invalid argument type" () {
+        when:
+            project.scmPitest.goal = 123
+        then:
+            thrown MissingPropertyException
     }
 }

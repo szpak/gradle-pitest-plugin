@@ -100,6 +100,7 @@ class PitestPlugin implements Plugin<Project> {
                 }
                 return ChangeLogStrategyFactory.fromType(extension.goal)
             }
+            scmRoot = {extension.scmRoot}
         }
         project.afterEvaluate {
             task.dependsOn(calculateTasksToDependOn())
