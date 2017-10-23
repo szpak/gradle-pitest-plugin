@@ -21,7 +21,6 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            buildToolsVersion '26.0.1'
             compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
@@ -48,7 +47,6 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.application")
         project.android.with {
-            buildToolsVersion '26.0.1'
             compileSdkVersion 26
             defaultConfig {
                 minSdkVersion 10
@@ -59,8 +57,19 @@ class AndroidUtils {
                 debug { }
             }
             productFlavors {
-                free { }
-                pro { }
+                flavorDimensions 'tier', 'color'
+                free {
+                    dimension 'tier'
+                }
+                pro {
+                    dimension 'tier'
+                }
+                blue {
+                    dimension 'color'
+                }
+                red {
+                    dimension 'color'
+                }
             }
             testOptions {
                 unitTests.returnDefaultValues = true

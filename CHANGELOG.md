@@ -1,4 +1,8 @@
-# 0.0.11 - 2007-09-11
+# 0.1.2 - 2017-10-23
+- Fixed compatibility with Android Gradle Plugin 3-rc1
+- Fixed compatibility with Kotlin - [#15](https://github.com/koral--/gradle-pitest-plugin/issue/15)
+
+# 0.0.11 - 2017-09-11
 - Merged upstream changes 491bf25072ee7ed6a8f10c0618e464586e5ee32a
 - Fixed compatibility with Android Gradle Plugin 3+ - [#13](https://github.com/koral--/gradle-pitest-plugin/pull/13)
 

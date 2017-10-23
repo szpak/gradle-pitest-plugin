@@ -111,8 +111,13 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureTaskDefault(PitestTask task, BaseVariant variant) {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
-        combinedTaskClasspath.add(project.configurations["compile"])
-        combinedTaskClasspath.add(project.configurations["testCompile"])
+        if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
+            combinedTaskClasspath.add(project.configurations["${variant.name}CompileClasspath"])
+            combinedTaskClasspath.add(project.configurations["${variant.name}UnitTestCompileClasspath"])
+        } else {
+            combinedTaskClasspath.add(project.configurations["compile"])
+            combinedTaskClasspath.add(project.configurations["testCompile"])
+        }
         combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
         combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
@@ -142,6 +147,10 @@ class PitestPlugin implements Plugin<Project> {
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
                 additionalMutableCodePaths.add(variant.javaCompiler.destinationDir)
+                def kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
+                if (kotlinCompileTask != null) {
+                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
+                }
                 additionalMutableCodePaths
             }
 

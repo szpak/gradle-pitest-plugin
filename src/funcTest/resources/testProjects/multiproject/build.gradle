@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        google()
     }
     dependencies {
         //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
@@ -14,7 +15,6 @@ subprojects {
     apply plugin: 'com.android.library'
 
     android {
-        buildToolsVersion '26.0.1'
         compileSdkVersion 26
         defaultConfig {
             minSdkVersion 10
@@ -27,7 +27,7 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.12'
+        testImplementation 'junit:junit:4.12'
     }
 
     version = '1.0'
@@ -36,7 +36,7 @@ subprojects {
 
 configure(project(":shared")) {
     dependencies {
-        compile 'org.slf4j:slf4j-api:1.7.21'
+        implementation 'org.slf4j:slf4j-api:1.7.21'
         compile 'org.slf4j:slf4j-nop:1.7.21'
     }
 }
@@ -46,7 +46,6 @@ configure(project(':itest')) {
     apply plugin: 'com.android.library'
 
     android {
-        buildToolsVersion '26.0.1'
         compileSdkVersion 26
         defaultConfig {
             minSdkVersion 10
@@ -54,7 +53,7 @@ configure(project(':itest')) {
         }
     }
     dependencies {
-        compile project(':shared')
+        implementation project(':shared')
     }
 
     //Additional configuration to resolve :shared project JAR as mutable code path for PIT

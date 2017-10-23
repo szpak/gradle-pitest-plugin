@@ -61,7 +61,7 @@ class PitestPluginTest extends Specification {
             Project project = AndroidUtils.createSampleApplicationProject()
             project.evaluate()
         then:
-            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeRelease"].getDependsOn().find {it == 'compileFreeReleaseUnitTestSources'}
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].getDependsOn().find {it == 'compileFreeBlueReleaseUnitTestSources'}
     }
 
     def "combined task classpath contains correct variant paths for flavored application projects"() {
@@ -69,9 +69,9 @@ class PitestPluginTest extends Specification {
             Project project = AndroidUtils.createSampleApplicationProject()
             project.evaluate()
         then:
-            def classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeRelease"].additionalClasspath.files
-            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/free/release')}
-            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/free/release')}
+            def classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].additionalClasspath.files
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/freeBlue/release')}
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/freeBlue/release')}
     }
 
     def "strange sdk versions get properly sanitized"() {

@@ -2,7 +2,6 @@ apply plugin: 'pl.droidsonroids.pitest'
 apply plugin: 'com.android.application'
 
 android {
-    buildToolsVersion '26.0.1'
     compileSdkVersion 26
     defaultConfig {
         minSdkVersion 10
@@ -14,6 +13,7 @@ buildscript {
     repositories {
         mavenCentral()
         mavenLocal()
+        google()
     }
     dependencies {
         //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
@@ -28,5 +28,5 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }

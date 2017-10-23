@@ -25,7 +25,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     def "should filter dynamic library '#libFileName'"() {
         given:
             File libFile = new File(tmpProjectDir.root, libFileName)
-            project.dependencies.add('compile', project.files(libFile))
+            project.dependencies.add('implementation', project.files(libFile))
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
@@ -37,7 +37,8 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     def "should filter .pom file"() {
         given:
             File pomFile = new File(tmpProjectDir.root, 'foo.pom')
-            project.dependencies.add('compile', project.files(pomFile))
+            pomFile.createNewFile()
+            project.dependencies.add('implementation', project.files(pomFile))
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
@@ -47,7 +48,8 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     def "should not filer regular dependency '#depFileName'"() {
         given:
             File depFile = new File(tmpProjectDir.root, depFileName)
-            project.dependencies.add('compile', project.files(depFile))
+            depFile.createNewFile()
+            project.dependencies.add('implementation', project.files(depFile))
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
@@ -68,10 +70,11 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     def "should filter excluded dependencies remaining regular ones"() {
         given:
             File depFile = new File(tmpProjectDir.root, 'foo.jar')
-            project.dependencies.add('compile', project.files(depFile))
+            depFile.createNewFile()
+            project.dependencies.add('implementation', project.files(depFile))
         and:
             File libDepFile = new File(tmpProjectDir.root, 'bar.so')
-            project.dependencies.add('compile', project.files(libDepFile))
+            project.dependencies.add('implementation', project.files(libDepFile))
         and:
             task = getJustOnePitestTaskOrFail()
         expect:

@@ -1,0 +1,39 @@
+apply plugin: 'pl.droidsonroids.pitest'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51"
+        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
+    }
+}
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 26
+    }
+    lintOptions {
+        //ignore missing lint database
+        abortOnError false
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.51"
+}
+
+group = "pitest.test"
