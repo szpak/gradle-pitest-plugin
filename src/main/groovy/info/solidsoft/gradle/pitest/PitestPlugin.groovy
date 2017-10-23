@@ -17,6 +17,13 @@ package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
+import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
+import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
+import info.solidsoft.gradle.pitest.scm.ChangeLogStrategyFactory
+import info.solidsoft.gradle.pitest.task.AbstractPitestTask
+import info.solidsoft.gradle.pitest.task.PitestTask
+import info.solidsoft.gradle.pitest.task.ScmPitestTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -54,12 +61,18 @@ class PitestPlugin implements Plugin<Project> {
         pitestExtension = project.extensions.create(PitestPluginExtension.getName(), PitestPluginExtension, project)
         scmPitestExtension = project.extensions.create(ScmPitestPluginExtension.getName(), ScmPitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
-            PitestTask task = project.tasks.create(PITEST_TASK_NAME, PitestTask)
-            task.with {
+            PitestTask pitestTask = project.tasks.create(PitestTask.NAME, PitestTask)
+            pitestTask.with {
                 description = "Run PIT analysis for java classes"
                 group = PITEST_TASK_GROUP
             }
-            configureTaskDefault(task)
+            ScmPitestTask scmPitestTask = project.tasks.create(ScmPitestTask.NAME, ScmPitestTask)
+            scmPitestTask.with {
+                description = "Run PIT analysis for java classes"
+                group = PITEST_TASK_GROUP
+            }
+            configurePitestTaskFromExtension(pitestTask, pitestExtension)
+            configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
         }
     }
 
@@ -76,7 +89,26 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    private void configureTaskDefault(PitestTask task) {
+    private void configureScmTaskFromExtension(ScmPitestTask task, ScmPitestPluginExtension extension) {
+        configurePitestTaskFromExtension(task, extension)
+        task.conventionMapping.with {
+            scm = {extension.scm}
+            connectionType = { extension.connectionType }
+            goal = {
+                if (extension.goal instanceof ChangeLogStrategy) {
+                    return extension.goal
+                }
+                return ChangeLogStrategyFactory.fromType(extension.goal)
+            }
+        }
+        project.afterEvaluate {
+            task.dependsOn(calculateTasksToDependOn())
+
+            addPitDependencies()
+        }
+    }
+
+    private void configurePitestTaskFromExtension(AbstractPitestTask task, PitestPluginExtension pitestExtension) {
         task.conventionMapping.with {
             additionalClasspath = {
                 List<FileCollection> testRuntimeClasspath = pitestExtension.testSourceSets*.runtimeClasspath

@@ -16,6 +16,10 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.PackageScope
+import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
+import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
+import info.solidsoft.gradle.pitest.task.PitestTask
+import info.solidsoft.gradle.pitest.task.ScmPitestTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -36,6 +40,7 @@ abstract class BasicProjectBuilderSpec extends Specification {
 
     protected Project project
     protected PitestPluginExtension pitestConfig
+    protected ScmPitestPluginExtension scmPitestConfig
 
     //TODO: There is a regression in 2.14.1 with API jar regeneration for every test - https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956
     //https://github.com/gradle/gradle/commit/3216f07b3acb4cbbb8241d8a1d50b8db9940f37e
@@ -45,14 +50,21 @@ abstract class BasicProjectBuilderSpec extends Specification {
         project.apply(plugin: "info.solidsoft.pitest")
 
         pitestConfig = project.getExtensions().getByType(PitestPluginExtension)
-
+        scmPitestConfig = project.extensions.getByType(ScmPitestPluginExtension)
         project.group = 'test.group'
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
-        Set<Task> tasks = project.getTasksByName(PITEST_TASK_NAME, false) //forces "afterEvaluate"
-        assert tasks?.size() == 1 : "Expected tasks: '$PITEST_TASK_NAME', All tasks: ${project.tasks}"
+        Set<Task> tasks = project.getTasksByName(PitestTask.NAME, false) //forces "afterEvaluate"
+        assert tasks?.size() == 1 : "Expected tasks: '$PitestTask.NAME', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
         return (PitestTask)tasks[0]
+    }
+
+    protected ScmPitestTask getJustOneScmPitestTaskOrFail() {
+        Set<Task> tasks = project.getTasksByName(ScmPitestTask.NAME, false)
+        assert tasks?.size() == 1 : "Expected tasks: '$ScmPitestTask.NAME', All tasks: ${project.tasks}"
+        assert tasks[0] instanceof ScmPitestTask
+        return (ScmPitestTask)tasks[0]
     }
 }

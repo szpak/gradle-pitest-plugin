@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import info.solidsoft.gradle.pitest.task.PitestTask
 import spock.lang.Issue
 
 class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.task
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
@@ -22,6 +22,8 @@ import groovy.transform.PackageScope
  */
 @CompileStatic
 class PitestTask extends AbstractPitestTask {
+
+    public static final String NAME = "pitest"
 
     @Override
     void exec() {

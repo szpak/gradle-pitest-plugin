@@ -15,6 +15,8 @@
  */
 package info.solidsoft.gradle.pitest
 
+import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
+import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import spock.lang.Issue
 import spock.lang.Specification
 import org.gradle.api.Project
@@ -43,7 +45,7 @@ class PitestPluginTest extends Specification {
             project.apply(plugin: "info.solidsoft.pitest")
         then:
             project.plugins.hasPlugin(PitestPlugin)
-            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME,"scmPitest"], PitestPlugin.PITEST_TASK_GROUP)
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")

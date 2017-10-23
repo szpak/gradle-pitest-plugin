@@ -1,5 +1,6 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.task
 
+import groovy.transform.CompileStatic
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 

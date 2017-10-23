@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.extension
 
 import groovy.transform.CompileStatic
+import info.solidsoft.gradle.pitest.PitestPlugin
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginConvention
