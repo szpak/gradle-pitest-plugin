@@ -32,7 +32,7 @@ import org.gradle.api.tasks.TaskInstantiationException
 @CompileStatic
 class PitestPluginExtension {
 
-    private static final String NAME = "pitest"
+    public static final String EXTENSION_NAME = "pitest"
 
     String pitestVersion
     File reportDir
@@ -221,10 +221,5 @@ class PitestPluginExtension {
     void setClassPathFile(File classPathFile) {
         throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
             "property to enable passing classpath to PIT as file. ")
-    }
-
-    @CompileStatic
-    static String getName() {
-        return NAME
     }
 }

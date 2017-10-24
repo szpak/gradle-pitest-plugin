@@ -3,25 +3,26 @@ package info.solidsoft.gradle.pitest.extension
 import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
 import info.solidsoft.gradle.pitest.scm.ScmConnection
 import org.gradle.api.Project
+import org.gradle.api.tasks.Nested
+import org.gradle.util.ConfigureUtil
 
 class ScmPitestPluginExtension extends PitestPluginExtension {
 
-    private static final NAME = "scmPitest"
+    public static final EXTENSION_NAME = "scmPitest"
 
     File scmRoot
     ScmConnection scm
     String connectionType
     Set<String> includes
+    String startVersionType
+    String startVersion
+    String endVersionType
+    String endVersion
     def goal
 
     ScmPitestPluginExtension(Project project) {
         super(project)
         scm = new ScmConnection()
-    }
-
-    @Override
-    static String getName() {
-        return NAME
     }
 
     void setScm(ScmConnection value) {
@@ -50,5 +51,9 @@ class ScmPitestPluginExtension extends PitestPluginExtension {
 
     void setScmRoot(File value) {
         this.scmRoot = value
+    }
+
+    def scm(Closure closure) {
+        ConfigureUtil.configure(closure, scm)
     }
 }

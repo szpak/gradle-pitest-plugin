@@ -17,6 +17,8 @@ package info.solidsoft.gradle.pitest.task
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import info.solidsoft.gradle.pitest.PitestPlugin
+
 /**
  * Gradle task implementation for Pitest.
  */
@@ -24,6 +26,11 @@ import groovy.transform.PackageScope
 class PitestTask extends AbstractPitestTask {
 
     public static final String NAME = "pitest"
+
+    PitestTask() {
+        description = "Run PIT analysis for java classes"
+        group = PitestPlugin.PITEST_TASK_GROUP
+    }
 
     @Override
     void exec() {

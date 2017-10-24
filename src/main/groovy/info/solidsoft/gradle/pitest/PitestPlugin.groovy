@@ -58,19 +58,11 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         applyRequiredJavaPlugin()
         createConfigurations()
-        pitestExtension = project.extensions.create(PitestPluginExtension.getName(), PitestPluginExtension, project)
-        scmPitestExtension = project.extensions.create(ScmPitestPluginExtension.getName(), ScmPitestPluginExtension, project)
+        pitestExtension = project.extensions.create(PitestPluginExtension.EXTENSION_NAME, PitestPluginExtension, project)
+        scmPitestExtension = project.extensions.create(ScmPitestPluginExtension.EXTENSION_NAME, ScmPitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
             PitestTask pitestTask = project.tasks.create(PitestTask.NAME, PitestTask)
-            pitestTask.with {
-                description = "Run PIT analysis for java classes"
-                group = PITEST_TASK_GROUP
-            }
             ScmPitestTask scmPitestTask = project.tasks.create(ScmPitestTask.NAME, ScmPitestTask)
-            scmPitestTask.with {
-                description = "Run PIT analysis for java classes"
-                group = PITEST_TASK_GROUP
-            }
             configurePitestTaskFromExtension(pitestTask, pitestExtension)
             configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
         }
@@ -101,10 +93,13 @@ class PitestPlugin implements Plugin<Project> {
                 return ChangeLogStrategyFactory.fromType(extension.goal)
             }
             scmRoot = {extension.scmRoot}
+            startVersion = {extension.startVersion}
+            startVersionType = {extension.startVersionType}
+            endVersion = {extension.endVersion}
+            endVersionType = {extension.endVersionType}
         }
         project.afterEvaluate {
             task.dependsOn(calculateTasksToDependOn())
-
             addPitDependencies()
         }
     }
