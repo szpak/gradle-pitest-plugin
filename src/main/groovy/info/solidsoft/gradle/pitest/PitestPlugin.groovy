@@ -44,9 +44,10 @@ class PitestPlugin implements Plugin<Project> {
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
-    private final static Logger log =  Logging.getLogger(PitestPlugin)
+    private final static Logger log = Logging.getLogger(PitestPlugin)
 
-    @PackageScope   //visible for testing
+    @PackageScope
+    //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
     private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
 
@@ -54,17 +55,26 @@ class PitestPlugin implements Plugin<Project> {
     private PitestPluginExtension pitestExtension
     private ScmPitestPluginExtension scmPitestExtension
 
+    private PitestTask pitestTask
+    private ScmPitestTask scmPitestTask
+
     void apply(Project project) {
+        log.info("Configuring")
         this.project = project
         applyRequiredJavaPlugin()
         createConfigurations()
         pitestExtension = project.extensions.create(PitestPluginExtension.EXTENSION_NAME, PitestPluginExtension, project)
         scmPitestExtension = project.extensions.create(ScmPitestPluginExtension.EXTENSION_NAME, ScmPitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
-            PitestTask pitestTask = project.tasks.create(PitestTask.NAME, PitestTask)
-            ScmPitestTask scmPitestTask = project.tasks.create(ScmPitestTask.NAME, ScmPitestTask)
+            pitestTask = project.tasks.create(PitestTask.NAME, PitestTask)
+            scmPitestTask = project.tasks.create(ScmPitestTask.NAME, ScmPitestTask)
             configurePitestTaskFromExtension(pitestTask, pitestExtension)
             configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
+        }
+        project.afterEvaluate {
+            pitestTask.dependsOn(calculateTasksToDependOn())
+            scmPitestTask.dependsOn(calculateTasksToDependOn())
+            addPitDependencies()
         }
     }
 
@@ -79,12 +89,21 @@ class PitestPlugin implements Plugin<Project> {
             visible = false
             description = "The Pitest libraries to be used for this project."
         }
+        project.rootProject.buildscript.configurations.maybeCreate(ScmPitestPluginExtension.EXTENSION_NAME).with {
+            visible = false
+            description = "The Pitest libraries to be used for this project."
+        }
     }
 
     private void configureScmTaskFromExtension(ScmPitestTask task, ScmPitestPluginExtension extension) {
         configurePitestTaskFromExtension(task, extension)
         task.conventionMapping.with {
-            scm = {extension.scm}
+            scm = {
+                if (project.extensions.findByName("scm") != null) {
+                    project.scm
+                }
+                extension.scm
+            }
             connectionType = { extension.connectionType }
             goal = {
                 if (extension.goal instanceof ChangeLogStrategy) {
@@ -92,15 +111,12 @@ class PitestPlugin implements Plugin<Project> {
                 }
                 return ChangeLogStrategyFactory.fromType(extension.goal)
             }
-            scmRoot = {extension.scmRoot}
-            startVersion = {extension.startVersion}
-            startVersionType = {extension.startVersionType}
-            endVersion = {extension.endVersion}
-            endVersionType = {extension.endVersionType}
-        }
-        project.afterEvaluate {
-            task.dependsOn(calculateTasksToDependOn())
-            addPitDependencies()
+            scmRoot = { extension.scmRoot }
+            startVersion = { extension.startVersion }
+            startVersionType = { extension.startVersionType }
+            endVersion = { extension.endVersion }
+            endVersionType = { extension.endVersionType }
+            includes = {extension.includes}
         }
     }
 
@@ -169,12 +185,6 @@ class PitestPlugin implements Plugin<Project> {
             maxSurviving = { pitestExtension.maxSurviving }
             features = { pitestExtension.features }
         }
-
-        project.afterEvaluate {
-            task.dependsOn(calculateTasksToDependOn())
-
-            addPitDependencies()
-        }
     }
 
     @CompileStatic
@@ -183,7 +193,7 @@ class PitestPlugin implements Plugin<Project> {
             log.warn("WARNING. Support for Gradle <4.0 in gradle-pitest-plugin is deprecated (due to incompatible changes in Gradle itself).")
             //Casting to Iterable to eliminate "NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.flatten(Ljava/util/List;)Ljava/util/List;"
             //while compiling code with Groovy 2.4.11 (Gradle 4.1) and running with Groovy 2.3.2 (Gradle 2.0)
-            return ((Iterable<File>)pitestExtension.mainSourceSets*.output.classesDir).flatten() as Set<File>
+            return ((Iterable<File>) pitestExtension.mainSourceSets*.output.classesDir).flatten() as Set<File>
         } else {
             return pitestExtension.mainSourceSets*.output.classesDirs.files.flatten() as Set<File>
         }

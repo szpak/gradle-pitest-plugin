@@ -5,7 +5,7 @@ import org.apache.maven.scm.command.status.StatusScmResult
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
 
-class LocalChangesStrategy implements ChangeLogStrategy {
+class LocalChangesStrategy implements ChangeLogStrategy, Serializable {
 
     ScmFileSet fileSet
 

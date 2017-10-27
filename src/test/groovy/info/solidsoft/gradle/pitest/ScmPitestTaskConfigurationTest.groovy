@@ -51,19 +51,19 @@ class ScmPitestTaskConfigurationTest extends BasicProjectBuilderSpec implements 
 
     def "should set endVersion correctly ('#version')" () {
         given:
-        project.scmPitest.endVersion = version
+            project.scmPitest.endVersion = version
         expect:
-        scmPitestTask.endVersion == version
+            scmPitestTask.endVersion == version
         where:
-        version << ['1.0.0.Final','releases/1.2.2','smoke-tests']
+            version << ['1.0.0.Final','releases/1.2.2','smoke-tests']
     }
 
     def "should map connectionType '#connectionType' correctly" () {
         given:
-        project.scmPitest.connectionType = connectionType
+            project.scmPitest.connectionType = connectionType
         expect:
-        scmPitestTask.connectionType == connectionType
+            scmPitestTask.connectionType == connectionType
         where:
-        connectionType << ["connection","developerConnection"]
+            connectionType << ["connection","developerConnection"]
     }
 }

@@ -1,6 +1,6 @@
 package info.solidsoft.gradle.pitest.scm
 
-class ScmConnection {
+class ScmConnection implements Serializable {
     String connection
     String developerConnection
     String url

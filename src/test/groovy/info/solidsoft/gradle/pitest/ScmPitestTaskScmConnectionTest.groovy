@@ -40,4 +40,14 @@ class ScmPitestTaskScmConnectionTest extends BasicProjectBuilderSpec implements 
             scmPitestTask.scm.url == "url"
             scmPitestTask.scm.tag == "tag"
     }
+
+    def "should configure scm from project property if already defined" () {
+        given:
+            project.scm = {
+
+            }
+        expect:
+            scmPitestTask.scm.url == "url"
+            scmPitestTask.scm.connection == "connection"
+    }
 }
