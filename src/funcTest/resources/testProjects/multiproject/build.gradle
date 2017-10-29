@@ -12,7 +12,6 @@ buildscript {
 
 subprojects {
     apply plugin: 'pl.droidsonroids.pitest'
-    apply plugin: 'com.android.library'
 
     android {
         compileSdkVersion 26
@@ -35,6 +34,7 @@ subprojects {
 }
 
 configure(project(":shared")) {
+    apply plugin: 'com.android.library'
     dependencies {
         implementation 'org.slf4j:slf4j-api:1.7.21'
         compile 'org.slf4j:slf4j-nop:1.7.21'
@@ -42,8 +42,7 @@ configure(project(":shared")) {
 }
 
 configure(project(':itest')) {
-    apply plugin: 'pl.droidsonroids.pitest'
-    apply plugin: 'com.android.library'
+    apply plugin: 'com.android.application'
 
     android {
         compileSdkVersion 26

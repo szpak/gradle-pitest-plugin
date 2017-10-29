@@ -1,3 +1,7 @@
+# 0.1.3 - 2017-10-29
+- Android Gradle Plugin dependency updated to 3.0.0
+- Added workaround for `project` dependency resolution
+
 # 0.1.2 - 2017-10-23
 - Fixed compatibility with Android Gradle Plugin 3-rc1
 - Fixed compatibility with Kotlin - [#15](https://github.com/koral--/gradle-pitest-plugin/issue/15)
