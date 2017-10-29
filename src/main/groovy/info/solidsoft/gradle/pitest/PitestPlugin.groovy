@@ -112,8 +112,12 @@ class PitestPlugin implements Plugin<Project> {
     private void configureTaskDefault(PitestTask task, BaseVariant variant) {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
         if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
-            combinedTaskClasspath.add(project.configurations["${variant.name}CompileClasspath"])
-            combinedTaskClasspath.add(project.configurations["${variant.name}UnitTestCompileClasspath"])
+            combinedTaskClasspath.add(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
+                it.properties.dependencyProject == null
+            })
+            combinedTaskClasspath.add(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
+                it.properties.dependencyProject == null
+            })
         } else {
             combinedTaskClasspath.add(project.configurations["compile"])
             combinedTaskClasspath.add(project.configurations["testCompile"])
