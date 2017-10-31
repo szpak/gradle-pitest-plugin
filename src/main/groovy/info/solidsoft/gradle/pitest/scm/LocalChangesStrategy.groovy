@@ -9,12 +9,8 @@ class LocalChangesStrategy implements ChangeLogStrategy, Serializable {
 
     ScmFileSet fileSet
 
-    LocalChangesStrategy() {
-
-    }
-
-    LocalChangesStrategy(String fileSetPath) {
-        this.fileSet = new ScmFileSet(new File(fileSetPath))
+    LocalChangesStrategy(File fileSetPath) {
+        this.fileSet = new ScmFileSet(fileSetPath)
     }
 
     @Override

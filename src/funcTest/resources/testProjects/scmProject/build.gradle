@@ -28,12 +28,15 @@ dependencies {
 
 scmPitest {
     scm {
-        url = new ChangeLogStrategy() {
-
-        }
+        connection = "scm:git:git@github.com/sample"
     }
+    scmRoot = "."
     connectionType = "connection"
     includes = ["hello","world"]
-    goal = 'localChanges'
+    goal = 'custom'
+    startVersion = "hello"
+    startVersionType = "hello"
+    endVersion = "hello"
+    endVersionType = "hello"
 }
 

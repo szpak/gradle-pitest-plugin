@@ -69,6 +69,7 @@ dependencies {
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testCompile 'net.bytebuddy:byte-buddy:1.7.5' //for Spying in Spock
     testCompile 'junit:junit:4.12'
+    testCompile 'com.netflix.nebula:nebula-test:6.1.2'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile

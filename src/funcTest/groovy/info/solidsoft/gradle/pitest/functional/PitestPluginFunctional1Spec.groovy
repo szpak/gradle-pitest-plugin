@@ -1,6 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
 import info.solidsoft.gradle.pitest.PitestPlugin
+import info.solidsoft.gradle.pitest.PluginConstants
 import nebula.test.functional.ExecutionResult
 
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
@@ -38,9 +39,9 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     repositories {
                         maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
                     }
-                    configurations.maybeCreate("pitest")
+                    configurations.maybeCreate("$PluginConstants.PITEST_CONFIGURATION_NAME")
                     dependencies {
-                        pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
+                        $PluginConstants.PITEST_CONFIGURATION_NAME 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
                     }
                 }
                 pitest {

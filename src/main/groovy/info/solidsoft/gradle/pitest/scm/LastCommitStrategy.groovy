@@ -11,12 +11,8 @@ class LastCommitStrategy implements ChangeLogStrategy {
 
     ScmFileSet fileSet
 
-    LastCommitStrategy() {
-
-    }
-
-    LastCommitStrategy(String filesetPath) {
-        this.fileSet = new ScmFileSet(new File(filesetPath))
+    LastCommitStrategy(File root) {
+        this.fileSet = new ScmFileSet(root)
     }
 
     @Override

@@ -1,19 +1,33 @@
 package info.solidsoft.gradle.pitest.functional
 
-import nebula.test.functional.ExecutionResult
+import org.gradle.api.GradleException
 
 class ScmPitestFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "should execute scmPitest task" () {
+    def "should throw exception if no '#missingProperty' is specified" () {
+        given:
+            buildFile << """
+                apply plugin: 'info.solidsoft.pitest'
+                group = 'gradle.pitest.test'
+
+                repositories {
+                    mavenCentral()
+                }
+                buildscript {
+                    repositories {
+                        mavenCentral()
+                    }
+                }
+                dependencies {
+                    testCompile 'junit:junit:4.12'
+                }
+        """.stripIndent()
         when:
-            copyResources("testProjects/scmProject","")
+            runTasksSuccessfully("scmPitest")
         then:
-            fileExists("build.gradle")
-        when:
-            ExecutionResult result = runTasksSuccessfully("scmPitest")
-        then:
-            result.wasExecuted("scmProject:pitest")
-            result.standardOutput
+            thrown(GradleException)
+        where:
+            missingProperty << ['scmRoot','goal','scm','connectionType']
     }
 
 }

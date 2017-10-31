@@ -55,15 +55,15 @@ abstract class BasicProjectBuilderSpec extends Specification {
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
-        Set<Task> tasks = project.getTasksByName(PitestTask.NAME, false) //forces "afterEvaluate"
-        assert tasks?.size() == 1 : "Expected tasks: '$PitestTask.NAME', All tasks: ${project.tasks}"
+        Set<Task> tasks = project.getTasksByName(PluginConstants.PITEST_TASK_NAME, false) //forces "afterEvaluate"
+        assert tasks?.size() == 1 : "Expected tasks: '$PluginConstants.PITEST_TASK_NAME', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
         return (PitestTask)tasks[0]
     }
 
     protected ScmPitestTask getJustOneScmPitestTaskOrFail() {
-        Set<Task> tasks = project.getTasksByName(ScmPitestTask.NAME, false)
-        assert tasks?.size() == 1 : "Expected tasks: '$ScmPitestTask.NAME', All tasks: ${project.tasks}"
+        Set<Task> tasks = project.getTasksByName(PluginConstants.SCM_PITEST_TASK_NAME, false)
+        assert tasks?.size() == 1 : "Expected tasks: '$PluginConstants.SCM_PITEST_TASK_NAME', All tasks: ${project.tasks}"
         assert tasks[0] instanceof ScmPitestTask
         return (ScmPitestTask)tasks[0]
     }

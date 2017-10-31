@@ -19,8 +19,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
 import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
-import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
-import info.solidsoft.gradle.pitest.scm.ChangeLogStrategyFactory
 import info.solidsoft.gradle.pitest.task.AbstractPitestTask
 import info.solidsoft.gradle.pitest.task.PitestTask
 import info.solidsoft.gradle.pitest.task.ScmPitestTask
@@ -59,22 +57,21 @@ class PitestPlugin implements Plugin<Project> {
     private ScmPitestTask scmPitestTask
 
     void apply(Project project) {
-        log.info("Configuring")
         this.project = project
         applyRequiredJavaPlugin()
-        createConfigurations()
-        pitestExtension = project.extensions.create(PitestPluginExtension.EXTENSION_NAME, PitestPluginExtension, project)
-        scmPitestExtension = project.extensions.create(ScmPitestPluginExtension.EXTENSION_NAME, ScmPitestPluginExtension, project)
+        createPitestConfiguration()
+        pitestExtension = project.extensions.create(PluginConstants.PITEST_EXTENSION_NAME, PitestPluginExtension, project)
+        scmPitestExtension = project.extensions.create(PluginConstants.SCM_PITEST_EXTENSION_NAME, ScmPitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
-            pitestTask = project.tasks.create(PitestTask.NAME, PitestTask)
-            scmPitestTask = project.tasks.create(ScmPitestTask.NAME, ScmPitestTask)
+            pitestTask = project.tasks.create(PluginConstants.PITEST_TASK_NAME, PitestTask)
+            scmPitestTask = project.tasks.create(PluginConstants.SCM_PITEST_TASK_NAME, ScmPitestTask)
             configurePitestTaskFromExtension(pitestTask, pitestExtension)
             configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
         }
         project.afterEvaluate {
             pitestTask.dependsOn(calculateTasksToDependOn())
             scmPitestTask.dependsOn(calculateTasksToDependOn())
-            addPitDependencies()
+            addPitestCommandLineToConfiguration()
         }
     }
 
@@ -84,12 +81,8 @@ class PitestPlugin implements Plugin<Project> {
         project.apply(plugin: 'java')
     }
 
-    private void createConfigurations() {
-        project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with {
-            visible = false
-            description = "The Pitest libraries to be used for this project."
-        }
-        project.rootProject.buildscript.configurations.maybeCreate(ScmPitestPluginExtension.EXTENSION_NAME).with {
+    private void createPitestConfiguration() {
+        project.rootProject.buildscript.configurations.maybeCreate(PluginConstants.PITEST_CONFIGURATION_NAME).with {
             visible = false
             description = "The Pitest libraries to be used for this project."
         }
@@ -98,19 +91,9 @@ class PitestPlugin implements Plugin<Project> {
     private void configureScmTaskFromExtension(ScmPitestTask task, ScmPitestPluginExtension extension) {
         configurePitestTaskFromExtension(task, extension)
         task.conventionMapping.with {
-            scm = {
-                if (project.extensions.findByName("scm") != null) {
-                    project.scm
-                }
-                extension.scm
-            }
+            scm = { extension.scm }
             connectionType = { extension.connectionType }
-            goal = {
-                if (extension.goal instanceof ChangeLogStrategy) {
-                    return extension.goal
-                }
-                return ChangeLogStrategyFactory.fromType(extension.goal)
-            }
+            goal = {extension.goal}
             scmRoot = { extension.scmRoot }
             startVersion = { extension.startVersion }
             startVersionType = { extension.startVersionType }
@@ -132,10 +115,11 @@ class PitestPlugin implements Plugin<Project> {
 
                 return filteredCombinedTaskClasspath
             }
+            pitestVersion = {pitestExtension.pitestVersion}
             useAdditionalClasspathFile = { pitestExtension.useClasspathFile }
             additionalClasspathFile = { new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME) }
             launchClasspath = {
-                project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+                project.rootProject.buildscript.configurations[PluginConstants.PITEST_CONFIGURATION_NAME]
             }
             mutableCodePaths = { calculateBaseMutableCodePaths() + (pitestExtension.additionalMutableCodePaths ?: []) }
             sourceDirs = { pitestExtension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
@@ -213,8 +197,8 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     @CompileStatic
-    private void addPitDependencies() {
+    private void addPitestCommandLineToConfiguration() {
         log.info("Using PIT: $pitestExtension.pitestVersion")
-        project.rootProject.buildscript.dependencies.add(PITEST_CONFIGURATION_NAME, "org.pitest:pitest-command-line:$pitestExtension.pitestVersion")
+        project.rootProject.buildscript.dependencies.add(PluginConstants.PITEST_CONFIGURATION_NAME, "org.pitest:pitest-command-line:$pitestExtension.pitestVersion")
     }
 }

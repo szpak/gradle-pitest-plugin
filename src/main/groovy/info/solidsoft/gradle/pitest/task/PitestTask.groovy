@@ -27,11 +27,7 @@ import java.util.logging.Logger
 @CompileStatic
 class PitestTask extends AbstractPitestTask {
 
-    static final Logger LOG = Logger.getLogger(PitestTask.class.typeName)
-    public static final String NAME = "pitest"
-
     PitestTask() {
-        LOG.info("Pitest task registered")
         description = "Run PIT analysis for java classes"
         group = PitestPlugin.PITEST_TASK_GROUP
     }

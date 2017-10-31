@@ -23,8 +23,6 @@ import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskInstantiationException
 
-import java.util.logging.Logger
-
 /**
  * Extension class with configurable parameters for Pitest plugin.
  *
@@ -34,7 +32,6 @@ import java.util.logging.Logger
 @CompileStatic
 class PitestPluginExtension {
 
-    static final Logger LOG = Logger.getLogger(PitestPluginExtension.class.typeName)
     public static final String EXTENSION_NAME = "pitest"
 
     String pitestVersion
@@ -150,7 +147,6 @@ class PitestPluginExtension {
     List<String> features
 
     PitestPluginExtension(Project project) {
-        LOG.info("Pitest extension configured")
         this.reportDir = new File("${getReportingPathFromProject(project)}/pitest")
         this.pitestVersion = PitestPlugin.DEFAULT_PITEST_VERSION
         this.testSourceSets = getSourceSetsFromProject(project, SourceSet.TEST_SOURCE_SET_NAME)

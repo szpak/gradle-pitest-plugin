@@ -1,11 +1,14 @@
 package info.solidsoft.gradle.pitest.task
 
-import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 
 abstract class AbstractPitestTask extends JavaExec {
+
+    @Input
+    String pitestVersion
+
     @OutputDirectory
     File reportDir
 
