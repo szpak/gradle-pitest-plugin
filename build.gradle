@@ -1,7 +1,8 @@
+import ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer
+
 apply plugin: 'groovy'
 apply plugin: 'info.solidsoft.cdeliveryboy'
 apply plugin: 'ru.vyarus.animalsniffer'
-apply plugin: 'maven-publish'
 
 group = 'info.solidsoft.gradle.pitest'
 
@@ -17,6 +18,45 @@ buildscript {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.6.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.2'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+}
+
+subprojects { subproject ->
+    apply plugin: 'base'
+    apply plugin: 'java'
+
+    dependencies {
+        compile gradleApi()
+        compile localGroovy()
+
+        testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+            //groovy 2.3.x is already provided by Gradle itself
+            exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        }
+        testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
+        testCompile 'net.bytebuddy:byte-buddy:1.7.5' //for Spying in Spock
+        testCompile 'junit:junit:4.12'
+
+        /*funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+        funcTestCompile configurations.testCompile
+        funcTestRuntime configurations.testRuntime
+        */
+        //signature 'org.codehaus.mojo.signature:java17:1.0@signature'
+    }
+
+    animalsniffer {
+        sourceSets = [subproject.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
+        //https://github.com/mojohaus/animal-sniffer/issues/27
     }
 }
 
@@ -44,65 +84,12 @@ project.version = scmVersion.version
 
 sourceCompatibility = 1.7
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-sourceSets {
-    funcTest {
-        java.srcDir file('src/funcTest/java')
-        groovy.srcDir file('src/funcTest/groovy')
-        resources.srcDir file('src/funcTest/resources')
-    }
-}
-
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile 'org.apache.maven.scm:maven-scm-api:1.9.5'
-    compile 'org.apache.maven.scm:maven-scm-provider-gitexe:1.9.5'
-    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
-        //groovy 2.3.x is already provided by Gradle itself
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
-    testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.7.5' //for Spying in Spock
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.netflix.nebula:nebula-test:6.1.2'
-
-    funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
-    funcTestCompile configurations.testCompile
-    funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.1.2') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
-    signature 'org.codehaus.mojo.signature:java17:1.0@signature'
-}
-
-task funcTest(type: Test) {
-    description = 'Run the functional tests.'
-    group = 'Verification'
-    testClassesDirs = sourceSets.funcTest.output.classesDirs
-    classpath = sourceSets.funcTest.runtimeClasspath
-    jvmArgs '-Xmx1g'
-}
-funcTest.shouldRunAfter test
-check.shouldRunAfter funcTest
-check.dependsOn funcTestClasses
-uploadArchives.dependsOn funcTest, check
-
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
-    reportOn test, funcTest
+    reportOn test, 'functional-tests:funcTest'
 }
 
-animalsniffer {
-    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
-                                            //https://github.com/mojohaus/animal-sniffer/issues/27
-}
-
-tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
+tasks.withType(AnimalSniffer) {
     onlyIf { project.hasProperty('compatibility') }
 }
 
@@ -110,6 +97,11 @@ nexusStaging {
     packageGroup = "info.solidsoft"
     stagingProfileId = "34a3a5beeaa96"
 }
+
+task("functional-tests:test").shouldRunAfter('test')
+check.shouldRunAfter('functional-tests:test')
+check.dependsOn ('functional-tests:classes')
+uploadArchives.dependsOn('functional-tests:test', 'check')
 
 modifyPom {
     project {
@@ -191,3 +183,4 @@ if (hasProperty('changelogSync')) {
     }
     ciBuild.dependsOn syncChangelog
 }
+

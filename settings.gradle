@@ -1,1 +1,11 @@
-rootProject.name = 'gradle-pitest-plugin'
+include 'integration-tests'
+include 'functional-tests'
+include 'plugin'
+
+rootProject.children.each {
+    project ->
+        project.buildFileName = "${project.name}.gradle"
+        assert project.projectDir.isDirectory()
+        assert project.buildFile.exists()
+        assert project.buildFile.isFile()
+}
