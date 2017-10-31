@@ -1,0 +1,26 @@
+apply plugin: 'groovy'
+
+dependencies {
+    compile 'org.apache.maven.scm:maven-scm-api:1.9.5'
+    compile 'org.apache.maven.scm:maven-scm-provider-gitexe:1.9.5'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+
+    test {
+        groovy {
+            srcDirs = ['src/test/groovy']
+        }
+    }
+}
+
+
