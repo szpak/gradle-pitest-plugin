@@ -224,7 +224,6 @@ abstract class AbstractPitestTask extends JavaExec {
 
     protected void fillAdditionalClasspathFileWithClasspathElements() {
         String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
-        //"withWriter" as "file << content" works in append mode (instead of overwrite one)
         getAdditionalClasspathFile().withWriter() {
             it << classpathElementsAsFileContent
         }

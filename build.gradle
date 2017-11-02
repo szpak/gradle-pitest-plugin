@@ -1,10 +1,7 @@
 import ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer
 
-apply plugin: 'groovy'
+//apply plugin: 'groovy'
 apply plugin: 'info.solidsoft.cdeliveryboy'
-apply plugin: 'ru.vyarus.animalsniffer'
-
-group = 'info.solidsoft.gradle.pitest'
 
 buildscript {
     repositories {
@@ -32,9 +29,15 @@ allprojects {
 }
 
 subprojects { subproject ->
-    apply plugin: 'base'
-    apply plugin: 'java'
 
+    apply plugin: 'java'
+    apply plugin: 'ru.vyarus.animalsniffer'
+    group = 'info.solidsoft.gradle.pitest'
+    sourceCompatibility = 1.7
+    task testReport(type: TestReport) {
+        destinationDir = file("$buildDir/reports/allTests")
+        reportOn test, 'functional-tests:funcTest'
+    }
     dependencies {
         compile gradleApi()
         compile localGroovy()
@@ -81,13 +84,6 @@ scmVersion {
 }
 
 project.version = scmVersion.version
-
-sourceCompatibility = 1.7
-
-task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/allTests")
-    reportOn test, 'functional-tests:funcTest'
-}
 
 tasks.withType(AnimalSniffer) {
     onlyIf { project.hasProperty('compatibility') }

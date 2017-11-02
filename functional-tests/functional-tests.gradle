@@ -7,21 +7,6 @@ dependencies{
     }
 }
 
-sourceSets {
-    test {
-        java {
-            srcDirs = ['src/test/java']
-        }
-        groovy {
-            srcDirs = ['src/test/groovy']
-        }
-
-        resources {
-            srcDirs = ['src/test/resources']
-        }
-    }
-}
-
 task funcTest(type: Test) {
     description = 'Run the functional tests.'
     group = 'Verification'
