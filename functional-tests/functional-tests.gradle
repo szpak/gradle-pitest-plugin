@@ -7,10 +7,19 @@ dependencies{
     }
 }
 
-task funcTest(type: Test) {
+/*task funcTest(type: Test) {
     description = 'Run the functional tests.'
     group = 'Verification'
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     jvmArgs '-Xmx1g'
+}*/
+
+test.with {
+    description = "Run the functional tests"
+    group = "Verification"
+    shouldRunAfter(":plugin:test")
+    classpath = sourceSets.test.runtimeClasspath
+    jvmArgs '-Xmx1g'
 }
+

@@ -1,8 +1,41 @@
 apply plugin: 'groovy'
+apply plugin: 'maven'
 
 dependencies {
     compile 'org.apache.maven.scm:maven-scm-api:1.9.5'
     compile 'org.apache.maven.scm:maven-scm-provider-gitexe:1.9.5'
 }
 
+modifyPom {
+    project {
+        name 'Gradle PIT Plugin'
+        description 'Gradle plugin for PIT Mutation Testing'
+        url 'http://gradle-pitest-plugin.solidsoft.info/'
 
+        scm {
+            connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
+            developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
+            url 'https://github.com/szpak/gradle-pitest-plugin'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'szpak'
+                name 'Marcin Zajączkowski'
+                email 'mszpak ATT wp DOTT pl'
+                roles {
+                    role 'despot'
+                    role 'developer'
+                }
+            }
+        }
+    }
+}

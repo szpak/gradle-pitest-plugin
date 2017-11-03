@@ -26,6 +26,19 @@ allprojects {
             url 'https://plugins.gradle.org/m2/'
         }
     }
+
+    scmVersion {
+        hooks {
+            pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /classpath\ "info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:$previousVersion"/ },
+                               replacement: { currentVersion, context -> "classpath \"info.solidsoft.gradle.pitest:gradle-pitest-plugin:$currentVersion\"" }]
+            pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ "info\.solidsoft\.pitest"\ version\ "$previousVersion"/ },
+                               replacement: { currentVersion, context -> "id \"info.solidsoft.pitest\" version \"$currentVersion\"" }]
+            pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
+                               replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
+        }
+    }
+
+    project.version = scmVersion.version
 }
 
 subprojects { subproject ->
@@ -50,11 +63,7 @@ subprojects { subproject ->
         testCompile 'net.bytebuddy:byte-buddy:1.7.5' //for Spying in Spock
         testCompile 'junit:junit:4.12'
 
-        /*funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
-        funcTestCompile configurations.testCompile
-        funcTestRuntime configurations.testRuntime
-        */
-        //signature 'org.codehaus.mojo.signature:java17:1.0@signature'
+        signature 'org.codehaus.mojo.signature:java17:1.0@signature'
     }
 
     animalsniffer {
@@ -72,19 +81,6 @@ cDeliveryBoy {
     }
 }
 
-scmVersion {
-    hooks {
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /classpath\ "info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:$previousVersion"/ },
-                           replacement: { currentVersion, context -> "classpath \"info.solidsoft.gradle.pitest:gradle-pitest-plugin:$currentVersion\"" }]
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ "info\.solidsoft\.pitest"\ version\ "$previousVersion"/ },
-                           replacement: { currentVersion, context -> "id \"info.solidsoft.pitest\" version \"$currentVersion\"" }]
-        pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
-                           replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
-    }
-}
-
-project.version = scmVersion.version
-
 tasks.withType(AnimalSniffer) {
     onlyIf { project.hasProperty('compatibility') }
 }
@@ -94,44 +90,9 @@ nexusStaging {
     stagingProfileId = "34a3a5beeaa96"
 }
 
-task("functional-tests:test").shouldRunAfter('test')
 check.shouldRunAfter('functional-tests:test')
 check.dependsOn ('functional-tests:classes')
 uploadArchives.dependsOn('functional-tests:test', 'check')
-
-modifyPom {
-    project {
-        name 'Gradle PIT Plugin'
-        description 'Gradle plugin for PIT Mutation Testing'
-        url 'http://gradle-pitest-plugin.solidsoft.info/'
-
-        scm {
-            connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
-            developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
-            url 'https://github.com/szpak/gradle-pitest-plugin'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'szpak'
-                name 'Marcin Zajączkowski'
-                email 'mszpak ATT wp DOTT pl'
-                roles {
-                    role 'despot'
-                    role 'developer'
-                }
-            }
-        }
-    }
-}
 
 if (hasProperty('pluginPortal')) {
 

@@ -27,8 +27,6 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-import static info.solidsoft.gradle.pitest.PitestPlugin.PITEST_TASK_NAME
-
 /**
  * @see WithPitestTaskInitialization
  */

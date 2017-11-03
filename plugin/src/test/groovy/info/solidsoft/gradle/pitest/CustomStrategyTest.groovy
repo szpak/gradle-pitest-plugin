@@ -5,7 +5,6 @@ import info.solidsoft.gradle.pitest.scm.CustomChangeLogStrategy
 import org.apache.commons.lang.RandomStringUtils
 import org.apache.maven.scm.ChangeFile
 import org.apache.maven.scm.ChangeSet
-import org.apache.maven.scm.ScmFileSet
 import org.apache.maven.scm.ScmFileStatus
 import org.apache.maven.scm.ScmResult
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
