@@ -60,9 +60,6 @@ class ScmPitestTask extends AbstractPitestTask {
     ScmPitestTask() {
         description = "Run PIT analysis against SCM for java classes"
         group = PitestPlugin.PITEST_TASK_GROUP
-        addValidator(new GoalValidator(this))
-        addValidator(new CustomStrategyValidator(this))
-        addValidator(new ConnectionTypeValidator(this))
     }
 
     @Override
@@ -71,12 +68,11 @@ class ScmPitestTask extends AbstractPitestTask {
         ChangeLogStrategy strategy = new ChangeLogStrategyFactory(getScmRoot()).fromType(getGoal())
         String url = getConnectionUrl()
         def modifiedFilePaths = strategy.getModifiedFilenames(manager, getIncludes(), url)
-        logger.info("FILES: $modifiedFilePaths")
-        targetClasses = new PathToClassNameConverter(sourceDirs.collect {
+        def classNames = new PathToClassNameConverter(sourceDirs.collect {
             it.absolutePath
         }).convertPathNamesToClassName(modifiedFilePaths)
+        targetClasses = classNames
         args = createListOfAllArgumentsForPit()
-        logger.info("$args")
         jvmArgs = (getMainProcessJvmArgs() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()

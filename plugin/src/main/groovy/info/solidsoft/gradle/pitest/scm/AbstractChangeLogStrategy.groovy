@@ -10,12 +10,10 @@ abstract class AbstractChangeLogStrategy implements ChangeLogStrategy {
 
     protected ScmFileSet fileSet
 
-    protected ScmRepository getRepository(ScmManager manager, String url) {
-        try {
-            ScmRepository repository = manager.makeScmRepository(url)
-            return repository
-        } catch (ScmRepositoryException | NoSuchScmProviderException e) {
-            throw new ChangeLogException("An error occurred with repository configuration", e)
+    protected void validateUrl(ScmManager manager, String url) {
+        def errorMessages = manager.validateScmRepository(url)
+        if (!errorMessages.isEmpty()) {
+            throw new ChangeLogException("Error when validating url: $url, $errorMessages")
         }
     }
 

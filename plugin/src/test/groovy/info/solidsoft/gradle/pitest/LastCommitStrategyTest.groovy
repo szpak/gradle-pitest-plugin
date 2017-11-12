@@ -22,6 +22,8 @@ class LastCommitStrategyTest extends Specification {
     def "should throw exception when failure" () {
         given:
             LastCommitStrategy strategy = new LastCommitStrategy(path)
+            managerMock.validateScmRepository(_) >> Collections.emptyList()
+            managerMock.makeScmRepository(_) >> null
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createFailingChangeLog()
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -32,17 +34,7 @@ class LastCommitStrategyTest extends Specification {
     def "should throw exception with invalid url" () {
         given:
             LastCommitStrategy strategy = new LastCommitStrategy(path)
-            managerMock.makeScmRepository(_) >> {throw new ScmRepositoryException("invalid url")}
-        when:
-            strategy.getModifiedFilenames(managerMock, null, null)
-        then:
-            thrown ChangeLogException
-    }
-
-    def "should throw exception with invalid provider" () {
-        given:
-            LastCommitStrategy strategy = new LastCommitStrategy(path)
-            managerMock.makeScmRepository(_) >> {throw new NoSuchScmProviderException("invalid provider")}
+            managerMock.validateScmRepository(_) >> ["Invalid url"]
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
         then:
@@ -51,6 +43,7 @@ class LastCommitStrategyTest extends Specification {
 
     def "should return empty collection when no last commit present" () {
         given:
+            managerMock.validateScmRepository(_) >> Collections.emptyList()
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createChangeLogResult(Collections.emptyList())
             LastCommitStrategy strategy = new LastCommitStrategy(path)
         when:
@@ -62,6 +55,7 @@ class LastCommitStrategyTest extends Specification {
     def "should return last commit files with prefix" () {
         given:
             LastCommitStrategy strategy = new LastCommitStrategy(path)
+            managerMock.validateScmRepository(_) >> Collections.emptyList()
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createChangeLogResult(
                 Arrays.asList(createChangeSet(Arrays.asList(createChangeFile("custom",ScmFileStatus.ADDED))),
                 createChangeSet(Arrays.asList(createChangeFile("precedingCommit", ScmFileStatus.ADDED)))))

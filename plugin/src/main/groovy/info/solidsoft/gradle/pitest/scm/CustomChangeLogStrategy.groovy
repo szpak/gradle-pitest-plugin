@@ -7,10 +7,8 @@ import org.apache.maven.scm.ScmTag
 import org.apache.maven.scm.ScmVersion
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
 import org.apache.maven.scm.command.changelog.ChangeLogScmResult
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.repository.ScmRepositoryException
 
 class CustomChangeLogStrategy extends AbstractChangeLogStrategy {
 
@@ -67,7 +65,8 @@ class CustomChangeLogStrategy extends AbstractChangeLogStrategy {
 
     @Override
     List<String> getModifiedFilenames(ScmManager manager, Set<String> includes, String url) {
-        ScmRepository repository = getRepository(manager, url)
+        validateUrl(manager, url)
+        ScmRepository repository = manager.makeScmRepository(url)
         ScmVersion startVersion = getScmVersion(this.startVersionType, this.startVersion)
         ScmVersion endVersion = getScmVersion(this.endVersionType, this.endVersion)
         ChangeLogScmRequest request = new ChangeLogScmRequest(repository, fileSet)

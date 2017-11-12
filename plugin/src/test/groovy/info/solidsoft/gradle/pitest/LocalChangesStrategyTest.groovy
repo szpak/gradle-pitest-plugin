@@ -18,27 +18,8 @@ class LocalChangesStrategyTest extends Specification {
     def "should throw exception when failure" () {
         given:
             def strategy = new LocalChangesStrategy(path)
+            managerMock.validateScmRepository(_) >> ['Error occured']
             managerMock.status(_,_) >> createFailingChangeLog()
-        when:
-            strategy.getModifiedFilenames(managerMock, null, null)
-        then:
-            thrown ChangeLogException
-    }
-
-    def "should throw exception with invalid url" () {
-        given:
-            def strategy = new LocalChangesStrategy(path)
-            managerMock.makeScmRepository(_) >> {throw new ScmRepositoryException("invalid url")}
-        when:
-            strategy.getModifiedFilenames(managerMock, null, null)
-        then:
-            thrown ChangeLogException
-    }
-
-    def "should throw exception with invalid provider" () {
-        given:
-            def strategy = new LocalChangesStrategy(path)
-            managerMock.makeScmRepository(_) >> { throw new NoSuchScmProviderException("invalid provider") }
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
         then:
@@ -48,6 +29,7 @@ class LocalChangesStrategyTest extends Specification {
     def "should return local changes files" () {
         given:
             def strategy = new LocalChangesStrategy(path)
+            managerMock.validateScmRepository(_) >> Collections.emptyList()
             managerMock.makeScmRepository(_) >> null
             managerMock.status(_,_) >> createScmResult(Arrays.asList(
                 new ScmFile("custom",ScmFileStatus.ADDED)

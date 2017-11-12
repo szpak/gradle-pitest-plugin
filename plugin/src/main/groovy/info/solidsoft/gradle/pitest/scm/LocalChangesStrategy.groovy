@@ -2,10 +2,8 @@ package info.solidsoft.gradle.pitest.scm
 
 import org.apache.maven.scm.ScmFileSet
 import org.apache.maven.scm.command.status.StatusScmResult
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.repository.ScmRepositoryException
 
 class LocalChangesStrategy extends AbstractChangeLogStrategy implements Serializable {
 
@@ -19,7 +17,8 @@ class LocalChangesStrategy extends AbstractChangeLogStrategy implements Serializ
 
     @Override
     List<String> getModifiedFilenames(ScmManager manager, Set<String> includes, String url) {
-        ScmRepository repository = getRepository(manager, url)
+        validateUrl(manager, url)
+        ScmRepository repository = manager.makeScmRepository(url)
         StatusScmResult result = manager.status(repository, fileSet)
         if (!result.isSuccess()) {
             throw new ChangeLogException("Error when executing changelog")

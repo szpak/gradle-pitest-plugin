@@ -10,7 +10,6 @@ class PathToClassNameConverter {
     }
 
     List<String> convertPathNamesToClassName(List<String> pathNames) {
-        Logger.getLogger(PathToClassNameConverter.class.getName()).info("#####SOURCE_ROOT: $sourceSets$pathNames")
         def result = []
         pathNames.each {
             pathName ->
@@ -19,6 +18,8 @@ class PathToClassNameConverter {
                     result.add(transformToCanonicalName(sourceRoot, pathName))
                 }
         }
+        Logger.getLogger(PathToClassNameConverter.getClass().getName()).info("@@@@@@@@RESULT: $result")
+        Logger.getLogger("$pathNames")
         return result
     }
 

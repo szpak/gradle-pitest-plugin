@@ -1,14 +1,11 @@
 package info.solidsoft.gradle.pitest.scm
 
-import org.apache.log4j.Logger
 import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileSet
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
 import org.apache.maven.scm.command.changelog.ChangeLogScmResult
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.repository.ScmRepositoryException
 
 class LastCommitStrategy extends AbstractChangeLogStrategy {
 
@@ -22,7 +19,8 @@ class LastCommitStrategy extends AbstractChangeLogStrategy {
 
     @Override
     List<String> getModifiedFilenames(ScmManager manager, Set<String> includes, String url) {
-        ScmRepository repository = getRepository(manager, url)
+        validateUrl(manager, url)
+        ScmRepository repository = manager.makeScmRepository(url)
         ChangeLogScmRequest request = new ChangeLogScmRequest(repository, fileSet)
         request.setLimit(1)
         ChangeLogScmResult result = manager.changeLog(request)

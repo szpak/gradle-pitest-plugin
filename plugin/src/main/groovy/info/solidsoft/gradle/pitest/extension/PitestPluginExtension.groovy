@@ -210,16 +210,4 @@ class PitestPluginExtension {
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis = withHistory
     }
-
-    /**
-     * The first (broken) implementation of using a file to pass additional classpath to PIT.
-     * Use "useClasspathFile" property instead.
-     *
-     * @since 1.1.11
-     */
-    @Deprecated //as of 1.2.0
-    void setClassPathFile(File classPathFile) {
-        throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
-            "property to enable passing classpath to PIT as file. ")
-    }
 }

@@ -65,6 +65,9 @@ class PitestPlugin implements Plugin<Project> {
             pitestTask = project.tasks.create(PluginConstants.PITEST_TASK_NAME, PitestTask)
             scmPitestTask = project.tasks.create(PluginConstants.SCM_PITEST_TASK_NAME, ScmPitestTask)
             configurePitestTaskFromExtension(pitestTask, pitestExtension)
+            scmPitestTask.addValidator(new GoalValidator(scmPitestTask))
+            scmPitestTask.addValidator(new ConnectionTypeValidator(scmPitestTask))
+            scmPitestTask.addValidator(new CustomStrategyValidator(scmPitestTask))
             configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
         }
         project.afterEvaluate {
