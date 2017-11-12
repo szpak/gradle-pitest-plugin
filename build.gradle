@@ -97,11 +97,6 @@ check.shouldRunAfter('functional-tests:funcTest')
 check.dependsOn ('functional-tests:classes')
 uploadArchives.dependsOn('functional-tests:funcTest', 'check')
 */
-
-project(':integration-tests') {
-    evaluationDependsOn(':plugin')
-}
-
 if (hasProperty('pluginPortal')) {
 
     apply plugin: 'com.gradle.plugin-publish'

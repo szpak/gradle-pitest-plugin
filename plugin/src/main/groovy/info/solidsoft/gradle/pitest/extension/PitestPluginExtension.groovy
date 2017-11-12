@@ -32,8 +32,6 @@ import org.gradle.api.tasks.TaskInstantiationException
 @CompileStatic
 class PitestPluginExtension {
 
-    public static final String EXTENSION_NAME = "pitest"
-
     String pitestVersion
     File reportDir
     Set<String> targetClasses
@@ -50,17 +48,11 @@ class PitestPluginExtension {
     BigDecimal timeoutFactor
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
-    /**
-     * JVM arguments to use when PIT launches child processes
-     *
-     * Note. This parameter type was changed from String to List<String> in 0.33.0.
-     */
     List<String> jvmArgs
     Set<String> outputFormats
     Boolean failWhenNoMutations
     Set<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     Set<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-//    File configFile           //removed in 1.1.6 to adjust to changes in PIT
     Boolean detectInlinedCode   //new in PIT 0.28
     Boolean timestampedReports
     File historyInputLocation   //new in PIT 0.29
@@ -151,6 +143,7 @@ class PitestPluginExtension {
         this.pitestVersion = PitestPlugin.DEFAULT_PITEST_VERSION
         this.testSourceSets = getSourceSetsFromProject(project, SourceSet.TEST_SOURCE_SET_NAME)
         this.mainSourceSets = getSourceSetsFromProject(project, SourceSet.MAIN_SOURCE_SET_NAME)
+
     }
 
     private Set<SourceSet> getSourceSetsFromProject(Project project, String category) {
@@ -168,20 +161,6 @@ class PitestPluginExtension {
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
-    }
-
-    void setSourceDirsAsFiles(Set<File> sourceDirs) {
-        throwExceptionAboutRemovedManualSettingOfSourceDirs()
-    }
-
-    void setSourceDirs(Set<String> sourceDirs) {
-        throwExceptionAboutRemovedManualSettingOfSourceDirs()
-    }
-
-    private throwExceptionAboutRemovedManualSettingOfSourceDirs() {
-        throw new TaskInstantiationException("Manual setting of sourceDirs was removed in version 0.30.1. " +
-                "Use mainSourceSets property to select source sets which would be used to get source directories. " +
-                "Feel free to raise an issue if you need removed feature.")
     }
 
     void setHistoryInputLocation(String historyInputLocationPath) {

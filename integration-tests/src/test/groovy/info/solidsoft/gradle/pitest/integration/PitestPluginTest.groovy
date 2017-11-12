@@ -36,7 +36,7 @@ class PitestPluginTest extends Specification {
         then:
             project.extensions.getByName(extensionName) != null
         where:
-            extensionName << [PitestPluginExtension.EXTENSION_NAME, ScmPitestPluginExtension.EXTENSION_NAME]
+            extensionName << [PluginConstants.PITEST_EXTENSION_NAME, PluginConstants.SCM_PITEST_EXTENSION_NAME]
     }
 
     def "add pitest task to java project in proper group"() {
