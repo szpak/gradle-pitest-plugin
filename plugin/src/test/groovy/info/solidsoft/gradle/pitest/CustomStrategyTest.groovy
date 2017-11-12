@@ -13,15 +13,19 @@ import org.apache.maven.scm.command.changelog.ChangeLogSet
 import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepositoryException
+import spock.lang.Shared
 import spock.lang.Specification
 
 class CustomStrategyTest extends Specification {
 
     def managerMock = Mock(ScmManager)
+    @Shared
+    def path = System.getProperty("user.dir")
+    def basicCustomStrategyBuilder = new CustomChangeLogStrategy.Builder().fileSet(path)
 
     def "should throw exception with invalid repository" () {
         given:
-            CustomChangeLogStrategy strategy = new CustomChangeLogStrategy()
+            CustomChangeLogStrategy strategy = basicCustomStrategyBuilder.build()
             def message = 'Invalid url'
             managerMock.makeScmRepository(_) >> { throw new ScmRepositoryException(message) }
         when:
@@ -32,7 +36,7 @@ class CustomStrategyTest extends Specification {
 
     def "should throw exception with invalid manager provider" () {
         given:
-            CustomChangeLogStrategy strategy = new CustomChangeLogStrategy()
+            CustomChangeLogStrategy strategy = basicCustomStrategyBuilder.build()
             managerMock.makeScmRepository(_) >> {throw new NoSuchScmProviderException()}
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -65,7 +69,7 @@ class CustomStrategyTest extends Specification {
 
     def "should throw exception on failure" () {
         given:
-            CustomChangeLogStrategy strategy = new CustomChangeLogStrategy()
+            CustomChangeLogStrategy strategy = basicCustomStrategyBuilder.build()
             managerMock.makeScmRepository(_) >> null
             managerMock.changeLog(_) >> createFailingChangeLog()
         when:
@@ -77,7 +81,7 @@ class CustomStrategyTest extends Specification {
     def "should behave correctly on non matching include" () {
         given:
             CustomChangeLogStrategy strategy = new CustomChangeLogStrategy.Builder()
-                .fileSet(".")
+                .fileSet(path)
                 .startVersionType("tag")
                 .startVersion("Hello")
                 .endVersionType("branch")
@@ -93,21 +97,23 @@ class CustomStrategyTest extends Specification {
             files                                                           | includes  | expectedFiles
             Arrays.asList(
                 createChangeFile("custom",ScmFileStatus.ADDED),
-                createChangeFile("local", ScmFileStatus.ADDED))       | ['added'] | ['custom','local']
+                createChangeFile("local", ScmFileStatus.ADDED))       | ['added'] | ["$path/custom","$path/local"]
             Arrays.asList(
                 createChangeFile("first"
                     , ScmFileStatus.ADDED),
                 createChangeFile("second"
                     ,ScmFileStatus.MODIFIED),
                 createChangeFile("third"
-                    , ScmFileStatus.DELETED))                                | ['added','deleted','modified'] | ['first','second','third']
+                    , ScmFileStatus.DELETED))                                | ['added','deleted','modified'] | ["$path/first",
+                                                                                                                 "$path/second",
+                                                                                                                 "$path/third"]
 
     }
 
     def "should return correctly" () {
         given:
             CustomChangeLogStrategy strategy = new CustomChangeLogStrategy.Builder()
-                .fileSet(".")
+                .fileSet(path)
                 .startVersionType("tag")
                 .startVersion("Hello")
                 .endVersionType("branch")
@@ -124,7 +130,7 @@ class CustomStrategyTest extends Specification {
             managerMock.changeLog(_ as ChangeLogScmRequest) >> changelog
             def result = strategy.getModifiedFilenames(managerMock, include as Set, null)
         then:
-            result.get(0) == "custom"
+            result == ["$path/custom"]
     }
 
     private static ChangeFile createChangeFile(String name, ScmFileStatus status) {

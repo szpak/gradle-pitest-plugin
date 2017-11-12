@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
+
+import info.solidsoft.gradle.pitest.PitestPlugin
 
 class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 

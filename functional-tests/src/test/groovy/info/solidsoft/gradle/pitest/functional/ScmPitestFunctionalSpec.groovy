@@ -21,6 +21,15 @@ class ScmPitestFunctionalSpec extends AbstractPitestFunctionalSpec {
                 dependencies {
                     testCompile 'junit:junit:4.12'
                 }
+                
+                scmPitest {
+                    scmRoot = "."
+                    goal = "localChanges"
+                    scm {
+                        connection = "scm:git:git@github.com/spriadka/gradle-pitest-plugin"
+                    }
+                    connectionType = "connection"
+                }
         """.stripIndent()
         when:
             runTasksSuccessfully("scmPitest")

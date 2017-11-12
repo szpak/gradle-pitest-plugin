@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
+import info.solidsoft.gradle.pitest.PluginConstants
 import info.solidsoft.gradle.pitest.task.PitestTask
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -35,7 +36,7 @@ class PitestPluginTargetClassesTest extends Specification {
         given:
             project.pitest.targetClasses = ["foo"]
         when:
-            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PluginConstants.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)
     }
@@ -44,7 +45,7 @@ class PitestPluginTargetClassesTest extends Specification {
         given:
             project.group = "group"
         when:
-            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PluginConstants.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["group.*"] as Set)
     }
@@ -54,7 +55,7 @@ class PitestPluginTargetClassesTest extends Specification {
             project.group = "group"
             project.pitest.targetClasses = ["target.classes"]
         when:
-            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PluginConstants.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, ["target.classes"] as Set)
     }
@@ -62,7 +63,7 @@ class PitestPluginTargetClassesTest extends Specification {
     //Only imitation of testing Gradle validation exception
     def "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
         when:
-            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
+            Set<Task> tasks = project.getTasksByName(PluginConstants.PITEST_TASK_NAME, false)
         then:
             assertOnePitestTaskWithGivenTargetClasses(tasks, null)
     }

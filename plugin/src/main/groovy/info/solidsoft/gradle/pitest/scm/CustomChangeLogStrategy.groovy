@@ -12,17 +12,12 @@ import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.repository.ScmRepositoryException
 
-class CustomChangeLogStrategy implements ChangeLogStrategy {
+class CustomChangeLogStrategy extends AbstractChangeLogStrategy {
 
-    ScmFileSet scmFileSet
     String startVersionType
     String startVersion
     String endVersionType
     String endVersion
-
-    CustomChangeLogStrategy() {
-
-    }
 
     static class Builder {
         ScmFileSet scmFileSet
@@ -63,7 +58,7 @@ class CustomChangeLogStrategy implements ChangeLogStrategy {
     }
 
     private CustomChangeLogStrategy(Builder builder) {
-        this.scmFileSet = builder.scmFileSet
+        this.fileSet = builder.scmFileSet
         this.startVersion = builder.startVersion
         this.startVersionType = builder.startVersionType
         this.endVersion = builder.endVersion
@@ -75,7 +70,7 @@ class CustomChangeLogStrategy implements ChangeLogStrategy {
         ScmRepository repository = getRepository(manager, url)
         ScmVersion startVersion = getScmVersion(this.startVersionType, this.startVersion)
         ScmVersion endVersion = getScmVersion(this.endVersionType, this.endVersion)
-        ChangeLogScmRequest request = new ChangeLogScmRequest(repository, scmFileSet)
+        ChangeLogScmRequest request = new ChangeLogScmRequest(repository, fileSet)
         request.setStartRevision(startVersion)
         request.setEndRevision(endVersion)
         ChangeLogScmResult changeLogResult = manager.changeLog(request)
@@ -88,21 +83,12 @@ class CustomChangeLogStrategy implements ChangeLogStrategy {
                 change.files.each {
                     file ->
                         if (containsIgnoreCase(includes, file.action.toString())) {
-                            fileNames.add(file.name)
+                            def filePathWithScmRoot = "$fileSet.basedir.absolutePath/$file.name"
+                            fileNames.add(filePathWithScmRoot)
                         }
                 }
         }
-        return fileNames.each {
-            fileName ->
-                fileName.replace(scmFileSet.basedir.path,"")
-                fileName.replaceAll("/",".")
-        }.collect()
-    }
-
-    private boolean containsIgnoreCase(Collection<String> elements, String item) {
-        return elements.any {
-            element -> element.equalsIgnoreCase(item)
-        }
+        return fileNames
     }
 
     private static ScmVersion getScmVersion(String versionType, String version) {
@@ -122,15 +108,6 @@ class CustomChangeLogStrategy implements ChangeLogStrategy {
             default:
                 def supportedVersionTypes = ['branch','revision','tag']
                 throw new ChangeLogException("Invalid version type, expected one of $supportedVersionTypes, got $versionType")
-        }
-    }
-
-    private ScmRepository getRepository(ScmManager manager, String url) {
-        try {
-            ScmRepository repository = manager.makeScmRepository(url)
-            return repository
-        } catch (ScmRepositoryException | NoSuchScmProviderException e) {
-            throw new ChangeLogException("An error occurred with repository configuration", e)
         }
     }
 }

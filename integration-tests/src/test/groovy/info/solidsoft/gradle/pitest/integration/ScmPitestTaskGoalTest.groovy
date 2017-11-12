@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
 class ScmPitestTaskGoalTest extends BasicProjectBuilderSpec implements WithScmPitestTaskInitialization {
 

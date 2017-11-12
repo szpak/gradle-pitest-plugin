@@ -2,5 +2,22 @@ apply plugin: 'groovy'
 
 dependencies {
     testCompile project(':plugin')
-    testCompile 'cglib:cglib-nodep:2.2'
+    testCompile gradleTestKit()
 }
+
+sourceSets {
+    integrationTest {
+        groovy {
+            srcDir 'src/test'
+        }
+
+        compileClasspath = project(':plugin').sourceSets.main.output + project(":plugin").configurations.testRuntime
+        runtimeClasspath = output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.getOutput().classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+test.enabled = false

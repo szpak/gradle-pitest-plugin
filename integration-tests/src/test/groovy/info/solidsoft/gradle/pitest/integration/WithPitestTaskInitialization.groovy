@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
 import groovy.transform.SelfType
 import info.solidsoft.gradle.pitest.task.PitestTask

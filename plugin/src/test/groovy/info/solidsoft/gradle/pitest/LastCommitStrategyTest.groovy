@@ -17,10 +17,11 @@ import spock.lang.Specification
 class LastCommitStrategyTest extends Specification {
 
     def managerMock = Mock(ScmManager)
+    def path = System.getProperty("user.dir")
 
     def "should throw exception when failure" () {
         given:
-            LastCommitStrategy strategy = new LastCommitStrategy()
+            LastCommitStrategy strategy = new LastCommitStrategy(path)
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createFailingChangeLog()
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -30,7 +31,7 @@ class LastCommitStrategyTest extends Specification {
 
     def "should throw exception with invalid url" () {
         given:
-            LastCommitStrategy strategy = new LastCommitStrategy()
+            LastCommitStrategy strategy = new LastCommitStrategy(path)
             managerMock.makeScmRepository(_) >> {throw new ScmRepositoryException("invalid url")}
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -40,7 +41,7 @@ class LastCommitStrategyTest extends Specification {
 
     def "should throw exception with invalid provider" () {
         given:
-            LastCommitStrategy strategy = new LastCommitStrategy()
+            LastCommitStrategy strategy = new LastCommitStrategy(path)
             managerMock.makeScmRepository(_) >> {throw new NoSuchScmProviderException("invalid provider")}
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -51,23 +52,23 @@ class LastCommitStrategyTest extends Specification {
     def "should return empty collection when no last commit present" () {
         given:
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createChangeLogResult(Collections.emptyList())
-            LastCommitStrategy strategy = new LastCommitStrategy()
+            LastCommitStrategy strategy = new LastCommitStrategy(path)
         when:
             def result = strategy.getModifiedFilenames(managerMock, ['added'] as Set, null)
         then:
             result.isEmpty()
     }
 
-    def "should return last commit files" () {
+    def "should return last commit files with prefix" () {
         given:
-            LastCommitStrategy strategy = new LastCommitStrategy()
+            LastCommitStrategy strategy = new LastCommitStrategy(path)
             managerMock.changeLog(_ as ChangeLogScmRequest) >> createChangeLogResult(
                 Arrays.asList(createChangeSet(Arrays.asList(createChangeFile("custom",ScmFileStatus.ADDED))),
                 createChangeSet(Arrays.asList(createChangeFile("precedingCommit", ScmFileStatus.ADDED)))))
         when:
             def result = strategy.getModifiedFilenames(managerMock, ['added'] as Set, null)
         then:
-            result == ['custom']
+            result == ["$path/custom"]
     }
 
     private ChangeLogScmResult createChangeLogResult(List<ChangeSet> changeSets) {

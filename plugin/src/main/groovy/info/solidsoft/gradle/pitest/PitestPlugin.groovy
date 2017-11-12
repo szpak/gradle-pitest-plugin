@@ -37,7 +37,6 @@ class PitestPlugin implements Plugin<Project> {
     public final static String DEFAULT_PITEST_VERSION = '1.2.2'
     public final static String PITEST_TASK_GROUP = "Report"
     public final static String PITEST_TASK_NAME = "pitest"
-    public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
@@ -100,6 +99,7 @@ class PitestPlugin implements Plugin<Project> {
             endVersion = { extension.endVersion }
             endVersionType = { extension.endVersionType }
             includes = {extension.includes}
+            managerClasspath = { extension.managerClasspath }
         }
     }
 

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
+import info.solidsoft.gradle.pitest.PitestPlugin
+import info.solidsoft.gradle.pitest.PluginConstants
 import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
 import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import org.gradle.api.Project
@@ -45,7 +47,8 @@ class PitestPluginTest extends Specification {
             project.apply(plugin: "info.solidsoft.pitest")
         then:
             project.plugins.hasPlugin(PitestPlugin)
-            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME,"scmPitest"], PitestPlugin.PITEST_TASK_GROUP)
+            assertThatTasksAreInGroup(project, [PluginConstants.PITEST_TASK_NAME, PluginConstants.SCM_PITEST_TASK_NAME],
+                PitestPlugin.PITEST_TASK_GROUP)
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
@@ -55,7 +58,7 @@ class PitestPluginTest extends Specification {
         expect:
             !project.plugins.hasPlugin("java")
         when:
-            project.apply(plugin: "info.solidsoft.pitest");
+            project.apply(plugin: "info.solidsoft.pitest")
         then:
             project.plugins.hasPlugin(PitestPlugin)
             project.plugins.hasPlugin('java')

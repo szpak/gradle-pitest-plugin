@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
 import groovy.transform.PackageScope
+import info.solidsoft.gradle.pitest.PluginConstants
 import info.solidsoft.gradle.pitest.extension.PitestPluginExtension
 import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import info.solidsoft.gradle.pitest.task.PitestTask

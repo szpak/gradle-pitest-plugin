@@ -1,17 +1,18 @@
-package info.solidsoft.gradle.pitest.scm;
+package info.solidsoft.gradle.pitest.scm
 
-class ChangeLogStrategyFactory {
+class ChangeLogStrategyFactory implements AbstractChangeLogStrategyFactory{
 
     private File rootFileSet
 
     ChangeLogStrategyFactory (String filePath) {
-        rootFileSet = new File(filePath)
+        this(new File(filePath))
     }
 
     ChangeLogStrategyFactory (File file) {
         rootFileSet = file
     }
 
+    @Override
     ChangeLogStrategy fromType(String typeName) {
         switch (typeName) {
             case 'lastCommit':

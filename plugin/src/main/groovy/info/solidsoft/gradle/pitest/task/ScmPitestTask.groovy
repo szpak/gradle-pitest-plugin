@@ -4,14 +4,18 @@ import info.solidsoft.gradle.pitest.ConnectionTypeValidator
 import info.solidsoft.gradle.pitest.CustomStrategyValidator
 import info.solidsoft.gradle.pitest.GoalValidator
 import info.solidsoft.gradle.pitest.PitestPlugin
-
+import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
 import info.solidsoft.gradle.pitest.scm.ChangeLogStrategyFactory
+import info.solidsoft.gradle.pitest.scm.ManagerService
+import info.solidsoft.gradle.pitest.scm.PathToClassNameConverter
 import info.solidsoft.gradle.pitest.scm.ScmConnection
 import org.apache.maven.scm.manager.BasicScmManager
 import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 
 
@@ -49,8 +53,9 @@ class ScmPitestTask extends AbstractPitestTask {
     @Optional
     String endVersion
 
-    ScmManager manager
-    ChangeLogStrategy strategy
+    @InputFiles
+    @Optional
+    FileCollection managerClasspath
 
     ScmPitestTask() {
         description = "Run PIT analysis against SCM for java classes"
@@ -62,28 +67,30 @@ class ScmPitestTask extends AbstractPitestTask {
 
     @Override
     void exec() {
-        setManagerToDefaultIfNoneProvided()
-        setStrategyFromGoalIfNoneProvided()
+        ScmManager manager = getManager()
+        ChangeLogStrategy strategy = new ChangeLogStrategyFactory(getScmRoot()).fromType(getGoal())
         String url = getConnectionUrl()
-        targetClasses = strategy.getModifiedFilenames(manager, getIncludes(), url)
+        def modifiedFilePaths = strategy.getModifiedFilenames(manager, getIncludes(), url)
+        logger.info("FILES: $modifiedFilePaths")
+        targetClasses = new PathToClassNameConverter(sourceDirs.collect {
+            it.absolutePath
+        }).convertPathNamesToClassName(modifiedFilePaths)
         args = createListOfAllArgumentsForPit()
+        logger.info("$args")
         jvmArgs = (getMainProcessJvmArgs() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
     }
 
-    private void setStrategyFromGoalIfNoneProvided() {
-        if (strategy == null) {
-            strategy = new ChangeLogStrategyFactory(getScmRoot()).fromType(getGoal())
+    private ScmManager getManager() {
+        def currentClassloader = this.class.classLoader
+        if (getManagerClasspath()) {
+            def urls = getManagerClasspath().files.collect { it.toURI().toURL() } as URL[]
+            def classloader = new URLClassLoader(urls, currentClassloader)
+            return ManagerService.getInstance(classloader).getManager()
         }
-    }
-
-    private void setManagerToDefaultIfNoneProvided() {
-        if (manager == null) {
-            manager = new BasicScmManager()
-            manager.setScmProvider("git", new GitExeScmProvider())
-        }
+        return ManagerService.getInstance(currentClassloader).getManager()
     }
 
     private String getConnectionUrl() {

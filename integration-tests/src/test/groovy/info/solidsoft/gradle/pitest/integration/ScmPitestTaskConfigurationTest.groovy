@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
 class ScmPitestTaskConfigurationTest extends BasicProjectBuilderSpec implements WithScmPitestTaskInitialization {
     def "should configure scmRoot from string" () {

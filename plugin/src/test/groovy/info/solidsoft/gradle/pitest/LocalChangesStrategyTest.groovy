@@ -13,10 +13,11 @@ import spock.lang.Specification
 class LocalChangesStrategyTest extends Specification {
 
     def managerMock = Mock(ScmManager)
+    def path = System.getProperty("user.dir")
 
     def "should throw exception when failure" () {
         given:
-            def strategy = new LocalChangesStrategy()
+            def strategy = new LocalChangesStrategy(path)
             managerMock.status(_,_) >> createFailingChangeLog()
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -26,7 +27,7 @@ class LocalChangesStrategyTest extends Specification {
 
     def "should throw exception with invalid url" () {
         given:
-            def strategy = new LocalChangesStrategy()
+            def strategy = new LocalChangesStrategy(path)
             managerMock.makeScmRepository(_) >> {throw new ScmRepositoryException("invalid url")}
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -36,7 +37,7 @@ class LocalChangesStrategyTest extends Specification {
 
     def "should throw exception with invalid provider" () {
         given:
-            def strategy = new LocalChangesStrategy()
+            def strategy = new LocalChangesStrategy(path)
             managerMock.makeScmRepository(_) >> { throw new NoSuchScmProviderException("invalid provider") }
         when:
             strategy.getModifiedFilenames(managerMock, null, null)
@@ -46,7 +47,7 @@ class LocalChangesStrategyTest extends Specification {
 
     def "should return local changes files" () {
         given:
-            def strategy = new LocalChangesStrategy()
+            def strategy = new LocalChangesStrategy(path)
             managerMock.makeScmRepository(_) >> null
             managerMock.status(_,_) >> createScmResult(Arrays.asList(
                 new ScmFile("custom",ScmFileStatus.ADDED)
@@ -54,7 +55,7 @@ class LocalChangesStrategyTest extends Specification {
         when:
             def result = strategy.getModifiedFilenames(managerMock,['added'] as Set, null)
         then:
-            result == ['custom']
+            result == ["$path/custom"]
     }
 
     private static StatusScmResult createFailingChangeLog() {

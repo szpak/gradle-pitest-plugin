@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.integration
 
 class ScmPitestTaskScmConnectionTest extends BasicProjectBuilderSpec implements WithScmPitestTaskInitialization {
     def "should configure scm correctly" () {

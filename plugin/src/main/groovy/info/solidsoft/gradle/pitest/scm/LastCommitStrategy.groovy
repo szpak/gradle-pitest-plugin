@@ -1,5 +1,6 @@
 package info.solidsoft.gradle.pitest.scm
 
+import org.apache.log4j.Logger
 import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileSet
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
@@ -9,16 +10,14 @@ import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.repository.ScmRepositoryException
 
-class LastCommitStrategy implements ChangeLogStrategy {
-
-    ScmFileSet fileSet
-
-    LastCommitStrategy() {
-
-    }
+class LastCommitStrategy extends AbstractChangeLogStrategy {
 
     LastCommitStrategy(File root) {
         this.fileSet = new ScmFileSet(root)
+    }
+
+    LastCommitStrategy(String path) {
+        this(new File(path))
     }
 
     @Override
@@ -37,19 +36,11 @@ class LastCommitStrategy implements ChangeLogStrategy {
         }
         changeSets.get(0).files.each { changeFile ->
             String status = changeFile.action.toString()
-            if (includes.contains(status)) {
-                modifiedFilenames.add(changeFile.name)
+            if (containsIgnoreCase(includes, status)) {
+                def fileNameWithScmRoot = "$fileSet.basedir.absolutePath/$changeFile.name"
+                modifiedFilenames.add(fileNameWithScmRoot)
             }
         }
         return modifiedFilenames
-    }
-
-    private ScmRepository getRepository(ScmManager manager, String url) {
-        try {
-            ScmRepository repository = manager.makeScmRepository(url)
-            return repository
-        } catch (ScmRepositoryException | NoSuchScmProviderException e) {
-            throw new ChangeLogException("An error occurred with repository configuration", e)
-        }
     }
 }

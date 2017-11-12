@@ -1,7 +1,7 @@
 package pitest.test.scm;
 
 public class SampleClass {
-    boolean alwaysTrue() {
+    public boolean alwaysTrue() {
         return true;
     }
 }

@@ -7,16 +7,14 @@ import org.apache.maven.scm.manager.ScmManager
 import org.apache.maven.scm.repository.ScmRepository
 import org.apache.maven.scm.repository.ScmRepositoryException
 
-class LocalChangesStrategy implements ChangeLogStrategy, Serializable {
-
-    ScmFileSet fileSet
-
-    LocalChangesStrategy() {
-
-    }
+class LocalChangesStrategy extends AbstractChangeLogStrategy implements Serializable {
 
     LocalChangesStrategy(File fileSetPath) {
         this.fileSet = new ScmFileSet(fileSetPath)
+    }
+
+    LocalChangesStrategy(String path) {
+        this(new File(path))
     }
 
     @Override
@@ -28,19 +26,11 @@ class LocalChangesStrategy implements ChangeLogStrategy, Serializable {
         }
         List<String> modifiedFiles = new ArrayList<>()
         result.changedFiles.each { changedFile ->
-            if (includes.contains(changedFile.status.toString())) {
-                modifiedFiles.add(changedFile.path)
+            if (containsIgnoreCase(includes, changedFile.status.toString())) {
+                def fileNameWithScmRoot = "$fileSet.basedir.absolutePath/$changedFile.path"
+                modifiedFiles.add(fileNameWithScmRoot)
             }
         }
         return modifiedFiles
-    }
-
-    private static ScmRepository getRepository(ScmManager manager, String url) {
-        try {
-            ScmRepository repository = manager.makeScmRepository(url)
-            return repository
-        } catch (ScmRepositoryException | NoSuchScmProviderException e) {
-            throw new ChangeLogException("An error occurred with repository configuration", e)
-        }
     }
 }
