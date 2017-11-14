@@ -1,14 +1,13 @@
 apply plugin: 'groovy'
-apply plugin: 'info.solidsoft.cdeliveryboy'
 apply plugin: 'ru.vyarus.animalsniffer'
-
-group = 'info.solidsoft.gradle.pitest'
+apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 
 buildscript {
     repositories {
         mavenCentral()
         mavenLocal()
         maven {
+            //for Plugin Publish plugin
             url 'https://plugins.gradle.org/m2/'
         }
     }
@@ -18,28 +17,6 @@ buildscript {
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
     }
 }
-
-cDeliveryBoy {
-    tasks {
-        promoteRepositoryTask = "releaseRepository"
-    }
-    nexus {
-        autoPromote = true
-    }
-}
-
-scmVersion {
-    hooks {
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /classpath\ "info\.solidsoft\.gradle\.pitest:gradle-pitest-plugin:$previousVersion"/ },
-                           replacement: { currentVersion, context -> "classpath \"info.solidsoft.gradle.pitest:gradle-pitest-plugin:$currentVersion\"" }]
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ "info\.solidsoft\.pitest"\ version\ "$previousVersion"/ },
-                           replacement: { currentVersion, context -> "id \"info.solidsoft.pitest\" version \"$currentVersion\"" }]
-        pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
-                           replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
-    }
-}
-
-project.version = scmVersion.version
 
 sourceCompatibility = 1.7
 
@@ -101,90 +78,4 @@ animalsniffer {
 
 tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
     onlyIf { project.hasProperty('compatibility') }
-}
-
-nexusStaging {
-    packageGroup = "info.solidsoft"
-    stagingProfileId = "34a3a5beeaa96"
-}
-
-modifyPom {
-    project {
-        name 'Gradle PIT Plugin'
-        description 'Gradle plugin for PIT Mutation Testing'
-        url 'http://gradle-pitest-plugin.solidsoft.info/'
-
-        scm {
-            connection 'scm:git:git://github.com/szpak/gradle-pitest-plugin.git'
-            developerConnection 'scm:git:git@github.com:szpak/gradle-pitest-plugin.git'
-            url 'https://github.com/szpak/gradle-pitest-plugin'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'szpak'
-                name 'Marcin Zajączkowski'
-                email 'mszpak ATT wp DOTT pl'
-                roles {
-                    role 'despot'
-                    role 'developer'
-                }
-            }
-        }
-    }
-}
-
-if (hasProperty('pluginPortal')) {
-
-    apply plugin: 'com.gradle.plugin-publish'
-
-    pluginBundle {
-        website = 'https://github.com/szpak/gradle-pitest-plugin'
-        vcsUrl = 'https://github.com/szpak/gradle-pitest-plugin'
-
-        plugins {
-            plugin {
-                id = 'info.solidsoft.pitest'
-                displayName = 'gradle-pitest-plugin'
-                description = 'Gradle plugin for PIT mutation testing'
-                tags = ['test', 'pit', 'mutation-testing']
-            }
-        }
-
-        mavenCoordinates {
-            groupId = project.group
-            artifactId = project.name
-        }
-    }
-
-    publishPlugins {
-        onlyIf { ciBuild.isInReleaseMode }
-        mustRunAfter releaseRepository
-    }
-    ciBuild.dependsOn publishPlugins
-}
-
-if (hasProperty('changelogSync')) {
-
-    task syncChangelog(type: Exec) {
-        doFirst { logger.info("Synchronizing changelog with GitHub for version ${project.version}") }
-        commandLine 'chandler', 'push', "release/${project.version}", '--tag-prefix=release/'
-    }
-
-    syncChangelog {
-        onlyIf { ciBuild.isInReleaseMode }
-        mustRunAfter releaseRepository
-        if (project.tasks.findByName("publishPlugins")) {
-            mustRunAfter publishPlugins
-        }
-    }
-    ciBuild.dependsOn syncChangelog
 }
