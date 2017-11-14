@@ -63,7 +63,7 @@ task funcTest(type: Test) {
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
-check.dependsOn funcTestClasses
+check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
 uploadArchives.dependsOn funcTest, check
 
 task testReport(type: TestReport) {
