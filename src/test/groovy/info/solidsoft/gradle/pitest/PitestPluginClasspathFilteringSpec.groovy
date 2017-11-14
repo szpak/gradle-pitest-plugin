@@ -25,19 +25,17 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     def "should filter dynamic library '#libFileName'"() {
         given:
             File libFile = new File(tmpProjectDir.root, libFileName)
-            project.dependencies.add('compile', project.files(libFile))
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
-            !task.createTaskArgumentMap()['classPath'].contains(libFileName)
+            !task.createTaskArgumentMap()['classPath'].contains(libFile.path)
         where:
             libFileName << ['lib.so', 'win.dll', 'dyn.dylib', "my.xml", "strange.orbit"]   //TODO: Add test with more than one element
     }
 
     def "should filter .pom file"() {
         given:
-            File pomFile = new File(tmpProjectDir.root, 'foo.pom')
-            project.dependencies.add('compile', project.files(pomFile))
+            File pomFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.pom')
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
@@ -46,8 +44,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should not filer regular dependency '#depFileName'"() {
         given:
-            File depFile = new File(tmpProjectDir.root, depFileName)
-            project.dependencies.add('compile', project.files(depFile))
+            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile(depFileName)
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
@@ -67,15 +64,19 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should filter excluded dependencies remaining regular ones"() {
         given:
-            File depFile = new File(tmpProjectDir.root, 'foo.jar')
-            project.dependencies.add('compile', project.files(depFile))
+            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.jar')
         and:
-            File libDepFile = new File(tmpProjectDir.root, 'bar.so')
-            project.dependencies.add('compile', project.files(libDepFile))
+            File libDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('bar.so')
         and:
             task = getJustOnePitestTaskOrFail()
         expect:
             task.createTaskArgumentMap()['classPath'].contains(depFile.path)
             !task.createTaskArgumentMap()['classPath'].contains(libDepFile.path)
+    }
+
+    private File addFileWithFileNameAsCompileDependencyAndReturnAsFile(String depFileName) {
+        File depFile = new File(tmpProjectDir.root, depFileName)
+        project.dependencies.add('compile', project.files(depFile))
+        return depFile
     }
 }
