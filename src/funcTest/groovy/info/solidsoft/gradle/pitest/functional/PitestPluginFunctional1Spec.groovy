@@ -27,7 +27,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         where:
             //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
             //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", "1.2.3"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {

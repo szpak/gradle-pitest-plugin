@@ -1,10 +1,16 @@
 # gradle-pitest-plugin changelog
 
+## 1.2.4 - Unreleased
+
+ - PIT 1.2.4 by default
+
+## 1.2.3 - Skipped
+
 ## 1.2.2 - 2017-09-06
 
  - ClassPathFile should not use exposed in configuration - [#56](https://github.com/szpak/gradle-pitest-plugin/issues/56)
  - Support for PIT features configuration - [#65](https://github.com/szpak/gradle-pitest-plugin/issues/65)
- - PIT 1.1.12 by default
+ - PIT 1.2.2 by default
  - Switch releasing to Continuous Delivery with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy) - [#66](https://github.com/szpak/gradle-pitest-plugin/issues/66)
  - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#61](https://github.com/szpak/gradle-pitest-plugin/issues/61)
  - Improve functional tests reliability
