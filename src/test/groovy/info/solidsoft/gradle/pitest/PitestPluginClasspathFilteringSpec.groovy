@@ -31,7 +31,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
         expect:
             !task.createTaskArgumentMap()['classPath'].contains(libFileName)
         where:
-            libFileName << ['lib.so', 'win.dll', 'dyn.dylib']   //TODO: Add test with more than one element
+            libFileName << ['lib.so', 'win.dll', 'dyn.dylib', "my.xml", "strange.orbit"]   //TODO: Add test with more than one element
     }
 
     def "should filter .pom file"() {

@@ -35,7 +35,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
-    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
+    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom', 'xml', 'orbit'] + DYNAMIC_LIBRARY_EXTENSIONS
 
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
