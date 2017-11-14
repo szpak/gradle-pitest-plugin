@@ -3,6 +3,7 @@
 ## 1.2.4 - Unreleased
 
  - PIT 1.2.4 by default
+ - Switch build to Gradle 4.3.1 - nicer executed tasks displayng with `--console=verbose`
 
 ## 1.2.3 - Skipped
 
