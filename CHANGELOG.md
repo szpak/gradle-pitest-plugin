@@ -4,7 +4,7 @@
 
  - Make dependency exclusion on classpath configurable - [#53]
  - PIT 1.2.4 by default
- - Switch build to Gradle 4.3.1 - nicer executed tasks displayng with `--console=verbose`
+ - Switch build to Gradle 4.3.1 - nicer executed tasks displaying with `--console=verbose`
 
 ## 1.2.3 - Skipped
 
