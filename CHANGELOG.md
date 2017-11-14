@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.2.4 - Unreleased
+## 1.2.4 - 2017-11-14
 
  - Make dependency exclusion on classpath configurable - [#53]
  - PIT 1.2.4 by default

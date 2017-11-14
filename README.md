@@ -15,7 +15,7 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` file:
 
     plugins {
-        id "info.solidsoft.pitest" version "1.2.2"
+        id "info.solidsoft.pitest" version "1.2.4"
     }
 
 Call Gradle with pitest task:
@@ -43,7 +43,7 @@ Please take into account that only versions starting with 1.1.11 are available v
             //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2"
+            classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4"
         }
     }
 
