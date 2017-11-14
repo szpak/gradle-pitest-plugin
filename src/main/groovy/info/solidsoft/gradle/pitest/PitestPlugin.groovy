@@ -35,7 +35,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
-    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom', 'xml', 'orbit'] + DYNAMIC_LIBRARY_EXTENSIONS
+    private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
@@ -81,6 +81,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.pitestVersion = DEFAULT_PITEST_VERSION
         extension.testSourceSets = [project.sourceSets.test] as Set
         extension.mainSourceSets = [project.sourceSets.main] as Set
+        extension.fileExtensionsToFilter = DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH
     }
 
     private void configureTaskDefault(PitestTask task) {
@@ -90,7 +91,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH.find { file.name.endsWith(".$it") }
+                    !extension.fileExtensionsToFilter.find { file.name.endsWith(".$it") }
                 }
 
                 return filteredCombinedTaskClasspath

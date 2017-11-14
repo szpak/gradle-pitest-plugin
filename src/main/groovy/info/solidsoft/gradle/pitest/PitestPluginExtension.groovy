@@ -143,6 +143,26 @@ class PitestPluginExtension {
     @Incubating
     List<String> features
 
+    /**
+     * File extensions which should be filtered from a classpath.
+     *
+     * PIT fails on not Java specific file passed on a classpath (e.g. native libraries). Native libraries ('*.so', '*.dll', '*.dylib')
+     * and '*.pom' files are filtered by default, but a developer can add extra extensions to the list:
+     * <pre>
+     * pitest {
+     *     fileExtensionsToFilter += ['xml', 'orbit']
+     * }
+     * </pre>
+     *
+     * Rationale: https://github.com/szpak/gradle-pitest-plugin/issues/53
+     *
+     * This feature is specific to the Gradle plugin.
+     *
+     * @since 1.2.4
+     */
+    @Incubating
+    List<String> fileExtensionsToFilter
+
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
     }
