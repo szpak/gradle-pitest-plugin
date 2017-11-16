@@ -1,7 +1,7 @@
 package info.solidsoft.gradle.pitest
 
-import info.solidsoft.gradle.pitest.scm.ChangeLogException
-import info.solidsoft.gradle.pitest.scm.CustomChangeLogStrategy
+import info.solidsoft.gradle.pitest.exception.ChangeLogException
+import info.solidsoft.gradle.pitest.scm.strategy.CustomChangeLogStrategy
 import org.apache.maven.scm.ChangeFile
 import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileStatus

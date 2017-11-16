@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest.scm
+package info.solidsoft.gradle.pitest.exception
 
 class ChangeLogException extends Exception {
     ChangeLogException(String var1) {

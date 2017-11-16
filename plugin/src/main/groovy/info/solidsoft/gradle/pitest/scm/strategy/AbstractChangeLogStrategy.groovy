@@ -1,10 +1,8 @@
-package info.solidsoft.gradle.pitest.scm
+package info.solidsoft.gradle.pitest.scm.strategy
 
+import info.solidsoft.gradle.pitest.exception.ChangeLogException
 import org.apache.maven.scm.ScmFileSet
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
-import org.apache.maven.scm.repository.ScmRepository
-import org.apache.maven.scm.repository.ScmRepositoryException
 
 abstract class AbstractChangeLogStrategy implements ChangeLogStrategy {
 

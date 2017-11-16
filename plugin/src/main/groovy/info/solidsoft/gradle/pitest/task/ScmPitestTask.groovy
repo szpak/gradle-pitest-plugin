@@ -1,23 +1,15 @@
 package info.solidsoft.gradle.pitest.task
 
-import info.solidsoft.gradle.pitest.ConnectionTypeValidator
-import info.solidsoft.gradle.pitest.CustomStrategyValidator
-import info.solidsoft.gradle.pitest.GoalValidator
 import info.solidsoft.gradle.pitest.PitestPlugin
-import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
-import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
-import info.solidsoft.gradle.pitest.scm.ChangeLogStrategyFactory
-import info.solidsoft.gradle.pitest.scm.ManagerService
-import info.solidsoft.gradle.pitest.scm.PathToClassNameConverter
-import info.solidsoft.gradle.pitest.scm.ScmConnection
-import org.apache.maven.scm.manager.BasicScmManager
+import info.solidsoft.gradle.pitest.scm.*
+import info.solidsoft.gradle.pitest.scm.strategy.ChangeLogStrategy
+import info.solidsoft.gradle.pitest.scm.strategy.factory.ChangeLogStrategyFactory
+import info.solidsoft.gradle.pitest.validation.ScmPitestTaskValidator
 import org.apache.maven.scm.manager.ScmManager
-import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
-
 
 class ScmPitestTask extends AbstractPitestTask {
 
@@ -64,8 +56,10 @@ class ScmPitestTask extends AbstractPitestTask {
 
     @Override
     void exec() {
+        validateTaskConfiguration()
         ScmManager manager = getManager()
-        ChangeLogStrategy strategy = new ChangeLogStrategyFactory(getScmRoot()).fromType(getGoal())
+        ScmContext scmContext = createScmContext()
+        ChangeLogStrategy strategy = new ChangeLogStrategyFactory(scmContext).fromType(getGoal())
         String url = getConnectionUrl()
         def modifiedFilePaths = strategy.getModifiedFilenames(manager, getIncludes(), url)
         def classNames = new PathToClassNameConverter(sourceDirs.collect {
@@ -77,6 +71,20 @@ class ScmPitestTask extends AbstractPitestTask {
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
+    }
+
+    void validateTaskConfiguration() {
+        new ScmPitestTaskValidator().validate(this)
+    }
+
+    private ScmContext createScmContext() {
+        new ScmContext.Builder()
+            .scmRoot(getScmRoot())
+            .startVersionType(getStartVersionType())
+            .startVersion(getStartVersion())
+            .endVersionType(getEndVersionType())
+            .endVersion(getEndVersion())
+            .build()
     }
 
     private ScmManager getManager() {

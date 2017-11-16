@@ -1,7 +1,7 @@
 package info.solidsoft.gradle.pitest
 
-import info.solidsoft.gradle.pitest.scm.ChangeLogException
-import info.solidsoft.gradle.pitest.scm.LastCommitStrategy
+import info.solidsoft.gradle.pitest.exception.ChangeLogException
+import info.solidsoft.gradle.pitest.scm.strategy.LastCommitStrategy
 import org.apache.maven.scm.ChangeFile
 import org.apache.maven.scm.ChangeSet
 import org.apache.maven.scm.ScmFileStatus
@@ -9,9 +9,7 @@ import org.apache.maven.scm.ScmResult
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
 import org.apache.maven.scm.command.changelog.ChangeLogScmResult
 import org.apache.maven.scm.command.changelog.ChangeLogSet
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
-import org.apache.maven.scm.repository.ScmRepositoryException
 import spock.lang.Specification
 
 class LastCommitStrategyTest extends Specification {

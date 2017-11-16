@@ -16,10 +16,7 @@
 package info.solidsoft.gradle.pitest.task
 
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.PitestPlugin
-
-import java.util.logging.Logger
 
 /**
  * Gradle task implementation for Pitest.

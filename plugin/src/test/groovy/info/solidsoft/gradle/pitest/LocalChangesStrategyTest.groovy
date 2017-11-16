@@ -1,13 +1,11 @@
 package info.solidsoft.gradle.pitest
 
-import info.solidsoft.gradle.pitest.scm.ChangeLogException
-import info.solidsoft.gradle.pitest.scm.LocalChangesStrategy
+import info.solidsoft.gradle.pitest.exception.ChangeLogException
+import info.solidsoft.gradle.pitest.scm.strategy.LocalChangesStrategy
 import org.apache.maven.scm.ScmFile
 import org.apache.maven.scm.ScmFileStatus
 import org.apache.maven.scm.command.status.StatusScmResult
-import org.apache.maven.scm.manager.NoSuchScmProviderException
 import org.apache.maven.scm.manager.ScmManager
-import org.apache.maven.scm.repository.ScmRepositoryException
 import spock.lang.Specification
 
 class LocalChangesStrategyTest extends Specification {

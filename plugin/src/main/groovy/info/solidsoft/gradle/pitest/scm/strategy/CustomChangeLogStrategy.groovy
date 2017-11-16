@@ -1,10 +1,7 @@
-package info.solidsoft.gradle.pitest.scm
+package info.solidsoft.gradle.pitest.scm.strategy
 
-import org.apache.maven.scm.ScmBranch
-import org.apache.maven.scm.ScmFileSet
-import org.apache.maven.scm.ScmRevision
-import org.apache.maven.scm.ScmTag
-import org.apache.maven.scm.ScmVersion
+import info.solidsoft.gradle.pitest.exception.ChangeLogException
+import org.apache.maven.scm.*
 import org.apache.maven.scm.command.changelog.ChangeLogScmRequest
 import org.apache.maven.scm.command.changelog.ChangeLogScmResult
 import org.apache.maven.scm.manager.ScmManager
@@ -23,6 +20,11 @@ class CustomChangeLogStrategy extends AbstractChangeLogStrategy {
         String startVersion
         String endVersionType
         String endVersion
+
+        Builder fileSet(File fileSet) {
+            this.scmFileSet = new ScmFileSet(fileSet)
+            return this
+        }
 
         Builder fileSet(String path) {
             this.scmFileSet = new ScmFileSet(new File(path))

@@ -22,6 +22,7 @@ import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import info.solidsoft.gradle.pitest.task.AbstractPitestTask
 import info.solidsoft.gradle.pitest.task.PitestTask
 import info.solidsoft.gradle.pitest.task.ScmPitestTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -65,9 +66,6 @@ class PitestPlugin implements Plugin<Project> {
             pitestTask = project.tasks.create(PluginConstants.PITEST_TASK_NAME, PitestTask)
             scmPitestTask = project.tasks.create(PluginConstants.SCM_PITEST_TASK_NAME, ScmPitestTask)
             configurePitestTaskFromExtension(pitestTask, pitestExtension)
-            scmPitestTask.addValidator(new GoalValidator(scmPitestTask))
-            scmPitestTask.addValidator(new ConnectionTypeValidator(scmPitestTask))
-            scmPitestTask.addValidator(new CustomStrategyValidator(scmPitestTask))
             configureScmTaskFromExtension(scmPitestTask, scmPitestExtension)
         }
         project.afterEvaluate {

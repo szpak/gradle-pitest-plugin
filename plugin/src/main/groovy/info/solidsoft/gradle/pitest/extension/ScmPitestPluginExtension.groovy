@@ -1,6 +1,5 @@
 package info.solidsoft.gradle.pitest.extension
 
-import info.solidsoft.gradle.pitest.scm.ChangeLogStrategy
 import info.solidsoft.gradle.pitest.scm.ScmConnection
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection

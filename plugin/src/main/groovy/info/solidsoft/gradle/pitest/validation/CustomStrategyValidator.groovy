@@ -1,36 +1,33 @@
-package info.solidsoft.gradle.pitest
+package info.solidsoft.gradle.pitest.validation
 
 import info.solidsoft.gradle.pitest.task.ScmPitestTask
-import org.gradle.api.internal.TaskInternal
-import org.gradle.api.internal.tasks.execution.TaskValidator
 
-class CustomStrategyValidator implements TaskValidator {
+class CustomStrategyValidator implements TaskPropertyValidator<ScmPitestTask> {
 
-    ScmPitestTask scmPitestTask
-
-    CustomStrategyValidator(ScmPitestTask scmPitestTask) {
-        this.scmPitestTask = scmPitestTask
-    }
+    private final List<String> supportedVersionTypes = ['tag', 'revision', 'branch']
 
     @Override
-    void validate(TaskInternal task, Collection<String> messages) {
-        if (scmPitestTask.getGoal() == 'custom') {
-            validatePresence(messages)
-            validateTypes(messages)
+    void validateProperty(ScmPitestTask task, List<String> messages) {
+        if (task.getGoal() == 'custom') {
+            validateVersionPresence(task, messages)
+            validateTypes(task, messages)
         }
     }
 
-    void validateTypes(Collection<String> messages) {
-        def supportedVersionTypes = ['tag','revision','branch']
-        if (!supportedVersionTypes.contains(scmPitestTask.getStartVersionType())) {
+    void validateTypes(ScmPitestTask scmPitestTask, List<String> messages) {
+        if (!isSupportedVersionType(scmPitestTask.getStartVersionType())) {
             messages.add("Invalid start version type, expected one of $supportedVersionTypes, got ${scmPitestTask.getStartVersionType()}".toString())
         }
-        if (!supportedVersionTypes.contains(scmPitestTask.getEndVersionType())) {
+        if (!isSupportedVersionType(scmPitestTask.getEndVersionType())) {
             messages.add("Invalid end version type, expected one of $supportedVersionTypes, got ${scmPitestTask.getEndVersionType()}".toString())
         }
     }
 
-    private void validatePresence(Collection<String> messages) {
+    private boolean isSupportedVersionType(String versionType) {
+        return supportedVersionTypes.contains(versionType)
+    }
+
+    private void validateVersionPresence(ScmPitestTask scmPitestTask, Collection<String> messages) {
         if (scmPitestTask.getStartVersion() == null) {
             messages.add("Start version for 'custom' goal must be specified")
         }

@@ -21,7 +21,6 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.TaskInstantiationException
 
 /**
  * Extension class with configurable parameters for Pitest plugin.

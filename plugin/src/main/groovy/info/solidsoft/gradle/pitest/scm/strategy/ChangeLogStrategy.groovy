@@ -1,4 +1,4 @@
-package info.solidsoft.gradle.pitest.scm
+package info.solidsoft.gradle.pitest.scm.strategy
 
 import org.apache.maven.scm.manager.ScmManager
 
