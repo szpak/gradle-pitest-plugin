@@ -39,7 +39,7 @@ import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.2.2'
+    public final static String DEFAULT_PITEST_VERSION = '1.2.4'
     public final static String PITEST_TASK_GROUP = "Report"
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
@@ -219,15 +219,15 @@ class PitestPlugin implements Plugin<Project> {
         if (android.testOptions.unitTests.returnDefaultValues) {
             mockableAndroidJarFilename += '.default-values'
         }
-        /*
-         * The Android Gradle Plugin 3.0.0+ creates the mockable JAR in a different path.
-         */
+
+        File mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
         if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
             mockableAndroidJarFilename += '.v3'
+            mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
         }
         mockableAndroidJarFilename += '.jar'
-        File outDir = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
-        return new File(outDir, mockableAndroidJarFilename)
+
+        return new File(mockableJarDirectory, mockableAndroidJarFilename)
     }
 
     static def sanitizeSdkVersion(def version) {

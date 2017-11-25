@@ -12,7 +12,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -68,7 +67,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 	        result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
             result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.2"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.4"].unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     def writeManifestFile(){
@@ -142,7 +141,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10

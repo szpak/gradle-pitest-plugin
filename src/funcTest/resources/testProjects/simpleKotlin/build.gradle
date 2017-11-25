@@ -8,8 +8,8 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51"
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.60"
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
@@ -33,7 +33,7 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.8.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.51"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.60"
 }
 
 group = "pitest.test"

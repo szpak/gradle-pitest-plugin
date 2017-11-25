@@ -1,0 +1,35 @@
+apply plugin: 'pl.droidsonroids.pitest'
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 26
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        google()
+    }
+    dependencies {
+        //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.7-SNAPSHOT'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "pitest.test"
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+}
