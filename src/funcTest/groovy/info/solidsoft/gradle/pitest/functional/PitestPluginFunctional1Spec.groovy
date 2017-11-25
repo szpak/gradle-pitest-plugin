@@ -12,7 +12,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10
@@ -142,7 +141,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    buildToolsVersion '26.0.1'
                     compileSdkVersion 26
                     defaultConfig {
                         minSdkVersion 10

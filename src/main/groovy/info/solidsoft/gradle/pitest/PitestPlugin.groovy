@@ -219,15 +219,15 @@ class PitestPlugin implements Plugin<Project> {
         if (android.testOptions.unitTests.returnDefaultValues) {
             mockableAndroidJarFilename += '.default-values'
         }
-        /*
-         * The Android Gradle Plugin 3.0.0+ creates the mockable JAR in a different path.
-         */
+
+        File mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
         if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
             mockableAndroidJarFilename += '.v3'
+            mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
         }
         mockableAndroidJarFilename += '.jar'
-        File outDir = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
-        return new File(outDir, mockableAndroidJarFilename)
+
+        return new File(mockableJarDirectory, mockableAndroidJarFilename)
     }
 
     static def sanitizeSdkVersion(def version) {
