@@ -39,7 +39,7 @@ import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.2.2'
+    public final static String DEFAULT_PITEST_VERSION = '1.2.4'
     public final static String PITEST_TASK_GROUP = "Report"
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'

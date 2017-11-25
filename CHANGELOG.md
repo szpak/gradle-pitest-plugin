@@ -1,3 +1,9 @@
+# 0.1.4 - Not released yet
+- Android Gradle Plugin dependency updated to 3.0.1
+- Pitest dependency updated to 1.2.4
+- Kotlin dependency updated to 1.1.60
+- Gradle updated to 4.3.1
+
 # 0.1.3 - 2017-10-29
 - Android Gradle Plugin dependency updated to 3.0.0
 - Added workaround for `project` dependency resolution
@@ -27,7 +33,7 @@
 # 0.0.6 - 2017-04-01
  - merged upstream changes d71835784d5ad55b1dbd8eef61cadbd72ec75465
  - Android Gradle plugin updated to 2.3.0
- - Gradle update to 3.4.1
+ - Gradle updated to 3.4.1
 
 # 0.0.5 - 2017-02-05
  - Robolectric dependency updated to 7.1.0_r7

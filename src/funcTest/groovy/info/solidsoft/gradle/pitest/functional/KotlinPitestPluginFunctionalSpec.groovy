@@ -15,8 +15,8 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                         google()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51"
-                        classpath 'com.android.tools.build:gradle:3.0.0'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.60"
+                        classpath 'com.android.tools.build:gradle:3.0.1'
                     }
                 }
 
@@ -37,7 +37,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
-                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.51"
+                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.1.60"
                 }
             """.stripIndent()
         and:
