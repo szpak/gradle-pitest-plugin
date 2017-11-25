@@ -1,4 +1,5 @@
-# 0.1.4 - Not released yet
+# 0.1.4 - 2017-11-25
+- Fixed mockable Android JAR path when using Android Gradle Plugin 3+ - [#20](https://github.com/koral--/gradle-pitest-plugin/pull/20)
 - Android Gradle Plugin dependency updated to 3.0.1
 - Pitest dependency updated to 1.2.4
 - Kotlin dependency updated to 1.1.60
