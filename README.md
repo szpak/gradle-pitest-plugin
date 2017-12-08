@@ -15,12 +15,30 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` file:
 
     plugins {
-        id "info.solidsoft.pitest" version "1.2.2"
+        id "info.solidsoft.pitest" version "1.3.0-SNAPSHOT"
     }
 
 Call Gradle with pitest task:
 
     gradle pitest
+    
+### SCM task
+
+SCM task runs PIT on mutations on target classes based on their SCM status
+To execute SCM task, task must be configured correctly. SCM task configuration example:
+
+    scmPitest {
+        scm {
+            connection = "scm:git:git@github.com/sample"
+        }
+        connectionType = "connection"
+        scmRoot = projectDir
+        include = ['added','modified','checked-in']
+    }
+
+To apply, call scmPitest task:
+    
+    gradle scmPitest
 
 After the measurements a report created by PIT will be placed in `${PROJECT_DIR}/build/reports/pitest` directory.
 
