@@ -22,7 +22,6 @@ import info.solidsoft.gradle.pitest.extension.ScmPitestPluginExtension
 import info.solidsoft.gradle.pitest.task.AbstractPitestTask
 import info.solidsoft.gradle.pitest.task.PitestTask
 import info.solidsoft.gradle.pitest.task.ScmPitestTask
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -37,7 +36,6 @@ import org.gradle.api.plugins.JavaBasePlugin
 class PitestPlugin implements Plugin<Project> {
     public final static String DEFAULT_PITEST_VERSION = '1.2.2'
     public final static String PITEST_TASK_GROUP = "Report"
-    public final static String PITEST_TASK_NAME = "pitest"
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
@@ -60,6 +58,7 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         applyRequiredJavaPlugin()
         createPitestConfiguration()
+        createScmPitestConfiguration()
         pitestExtension = project.extensions.create(PluginConstants.PITEST_EXTENSION_NAME, PitestPluginExtension, project)
         scmPitestExtension = project.extensions.create(PluginConstants.SCM_PITEST_EXTENSION_NAME, ScmPitestPluginExtension, project)
         project.plugins.withType(JavaBasePlugin) {
@@ -71,7 +70,8 @@ class PitestPlugin implements Plugin<Project> {
         project.afterEvaluate {
             pitestTask.dependsOn(calculateTasksToDependOn())
             scmPitestTask.dependsOn(calculateTasksToDependOn())
-            addPitestCommandLineToConfiguration()
+            addPitestCommandLineToPitestConfiguration()
+            addPitestCommandLineToScmPitestConfiguration()
         }
     }
 
@@ -83,6 +83,13 @@ class PitestPlugin implements Plugin<Project> {
 
     private void createPitestConfiguration() {
         project.rootProject.buildscript.configurations.maybeCreate(PluginConstants.PITEST_CONFIGURATION_NAME).with {
+            visible = false
+            description = "The Pitest libraries to be used for this project."
+        }
+    }
+
+    private void createScmPitestConfiguration() {
+        project.rootProject.buildscript.configurations.maybeCreate(PluginConstants.SCM_PITEST_CONFIGURATION_NAME).with {
             visible = false
             description = "The Pitest libraries to be used for this project."
         }
@@ -101,6 +108,7 @@ class PitestPlugin implements Plugin<Project> {
             endVersionType = { extension.endVersionType }
             includes = {extension.includes}
             managerClasspath = { extension.managerClasspath }
+            launchClasspath = { project.rootProject.buildscript.configurations[PluginConstants.SCM_PITEST_CONFIGURATION_NAME] }
         }
     }
 
@@ -198,8 +206,16 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     @CompileStatic
-    private void addPitestCommandLineToConfiguration() {
+    private void addPitestCommandLineToPitestConfiguration() {
         log.info("Using PIT: $pitestExtension.pitestVersion")
-        project.rootProject.buildscript.dependencies.add(PluginConstants.PITEST_CONFIGURATION_NAME, "org.pitest:pitest-command-line:$pitestExtension.pitestVersion")
+        project.rootProject.buildscript.dependencies.add(PluginConstants.PITEST_CONFIGURATION_NAME,
+            "org.pitest:pitest-command-line:$pitestExtension.pitestVersion")
+    }
+
+    @CompileStatic
+    private void addPitestCommandLineToScmPitestConfiguration() {
+        log.info("Using PIT: $scmPitestExtension.pitestVersion")
+        project.rootProject.buildscript.dependencies.add(PluginConstants.SCM_PITEST_CONFIGURATION_NAME,
+            "org.pitest:pitest-command-line:$scmPitestExtension.pitestVersion")
     }
 }

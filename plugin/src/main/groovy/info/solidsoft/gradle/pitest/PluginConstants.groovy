@@ -6,4 +6,5 @@ interface PluginConstants {
     String PITEST_EXTENSION_NAME = "pitest"
     String SCM_PITEST_EXTENSION_NAME = "scmPitest"
     String PITEST_CONFIGURATION_NAME = "pitest"
+    String SCM_PITEST_CONFIGURATION_NAME = "scmPitest"
 }
