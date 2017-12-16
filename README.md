@@ -14,9 +14,11 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 
 Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` file:
 
-    plugins {
-        id "info.solidsoft.pitest" version "1.2.4"
-    }
+```groovy
+plugins {
+    id "info.solidsoft.pitest" version "1.2.4"
+}
+```
 
 Call Gradle with pitest task:
 
@@ -26,7 +28,9 @@ After the measurements a report created by PIT will be placed in `${PROJECT_DIR}
 
 Optionally make it depend on build:
 
-    build.dependsOn "pitest"
+```groovy
+build.dependsOn "pitest"
+```
 
 Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
 
@@ -36,26 +40,32 @@ Please take into account that only versions starting with 1.1.11 are available v
 
 "The `plugins` way" has some limitations. As the primary repository for the plugin is the [Central Repository](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22info.solidsoft.gradle.pitest%22%20AND%20a%3A%22gradle-pitest-plugin%22) (aka Maven Central) it is also possible to add the plugin to your project using "the generic way":
 
-    buildscript {
-        repositories {
-            mavenCentral()
-            //Needed only for SNAPSHOT versions
-            //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        }
-        dependencies {
-            classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4"
-        }
+```groovy
+buildscript {
+    repositories {
+        mavenCentral()
+        //Needed only for SNAPSHOT versions
+        //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
+    dependencies {
+        classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4"
+    }
+}
+```
 
 Apply the plugin:
 
-    apply plugin: "info.solidsoft.pitest"
+```groovy
+apply plugin: "info.solidsoft.pitest"
+```
 
 ### Older gradle-pitest-plugin versions (<1.1.0)
 
 For versions <1.1.0 the plugin can be applied with:
 
-    apply plugin: "pitest"
+```groovy
+apply plugin: "pitest"
+```
 
 ## Plugin configuration
 
@@ -74,13 +84,15 @@ PIT should be passed as a corresponding types. There is only one important diffe
 a coma separated list of strings in a Gradle configuration a list of strings should be used (see `outputFormats` in the
 following example).
 
-    pitest {
-        targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-        pitestVersion = "1.1.0" //not needed when a default PIT version should be used
-        threads = 4
-        outputFormats = ['XML', 'HTML']
-        timestampedReports = false
-    }
+```groovy
+pitest {
+    targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
+    pitestVersion = "1.1.0" //not needed when a default PIT version should be used
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+}
+```
 
 Check PIT documentation for a [list](http://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
@@ -101,14 +113,16 @@ see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
 
 For example:
 
-    pitest {
-        ...
-        testSourceSets = [sourceSets.test, sourceSets.integrationTest]
-        mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
-        jvmArgs = ['-Xmx1024m']
-        useClasspathFile = true     //useful with bigger projects on Windows 
-        fileExtensionsToFilter += ['xml']
-    }
+```groovy
+pitest {
+    ...
+    testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+    mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
+    jvmArgs = ['-Xmx1024m']
+    useClasspathFile = true     //useful with bigger projects on Windows 
+    fileExtensionsToFilter += ['xml']
+}
+```
 
 
 ## Multi-module projects support
@@ -117,29 +131,31 @@ gradle-pitest-plugin can be used in multi-module projects. The gradle-pitest-plu
 the root project while the plugin has to be applied in all subprojects which should be processed with PIT. A sample snippet from build.gradle located
 for the root project:
 
-    //in root project configuration
-    buildscript {
-        repositories {
-            mavenCentral()
-        }
-        dependencies {
-            classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
-            (...)
+```groovy
+//in root project configuration
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+        (...)
+    }
+}
+
+subprojects {
+    ...
+    apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
+
+    pitest {
+        threads = 4
+
+        if (project.name in ['module-without-any-test']) {
+            failWhenNoMutations = false
         }
     }
-
-    subprojects {
-        ...
-        apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
-
-        pitest {
-            threads = 4
-
-            if (project.name in ['module-without-any-test']) {
-                failWhenNoMutations = false
-            }
-        }
-    }
+}
+```
 
 Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/detail?id=41) an aggregated report for
 multi-module project. A report for each module has to be browsed separately. Alternatively a
@@ -151,34 +167,38 @@ Since gradle-pitest-plugin 1.1.4 it is possible to mutate code located in differ
 output directory from other subproject, but builds JAR and uses classes from it. For PIT those are two different sets of class files, so
 to make it work it is required to define both `mainSourceSets` and `additionalMutableCodePaths`. For example:
 
-    configure(project(':itest')) {
-        apply plugin: "info.solidsoft.pitest"
-        dependencies {
-            compile project(':shared')
-        }
-
-        configurations { mutableCodeBase { transitive false } }
-        dependencies { mutableCodeBase project(':shared') }
-        pitest {
-            mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
-            additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-        }
+```groovy
+configure(project(':itest')) {
+    apply plugin: "info.solidsoft.pitest"
+    dependencies {
+        compile project(':shared')
     }
+
+    configurations { mutableCodeBase { transitive false } }
+    dependencies { mutableCodeBase project(':shared') }
+    pitest {
+        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+    }
+}
+```
 
 The above is the way recommended by the [Gradle team](http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782),
 but in specific cases the simpler solution should also work:
 
-    configure(project(':itest')) {
-        apply plugin: "info.solidsoft.pitest"
-        dependencies {
-            compile project(':shared')
-        }
-
-        pitest {
-            mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
-            additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()
-        }
+```groovy
+configure(project(':itest')) {
+    apply plugin: "info.solidsoft.pitest"
+    dependencies {
+        compile project(':shared')
     }
+
+    pitest {
+        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()
+    }
+}
+```
 
 Minimal working multi-project build is available in
 [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
@@ -189,16 +209,18 @@ PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although 
 
 To enable PIT plugin it is enough to add it to pitest configuration in buildscript closure. For example:
 
-    buildscript {
-       repositories {
-           mavenCentral()
-       }
-       configurations.maybeCreate("pitest")
-       dependencies {
-           classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
-           pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
-       }
-    }
+```groovy
+buildscript {
+   repositories {
+       mavenCentral()
+   }
+   configurations.maybeCreate("pitest")
+   dependencies {
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+       pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
+   }
+}
+```
 
 The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
@@ -230,22 +252,25 @@ See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/C
     It should be fixed in PIT 0.29.
     As a workaround in older versions add `jvmArgs = '-XX:-UseSplitVerifier'` to a pitest configuration block
 
-        pitest {
-            ...
-            //jvmArgs = '-XX:-UseSplitVerifier'     //<0.33.0
-            jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
-        }
+```groovy
+pitest {
+    ...
+    //jvmArgs = '-XX:-UseSplitVerifier'     //<0.33.0
+    jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
+}
+```
 
 ### 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'` after upgrade to version 0.33.0?
 
 To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial, but unfortunately I am not aware of the way to keep both parameter types active at the same time.
 
-        pitest {
-            ...
-            //jvmArgs = '-Xmx1024 -Xms512m'     //old format
-            jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
-
-        }
+```groovy
+pitest {
+    ...
+    //jvmArgs = '-Xmx1024 -Xms512m'     //old format
+    jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+}
+```
 
 ### 3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
 
@@ -257,19 +282,21 @@ There ~~is~~ was an [issue](https://github.com/spring-projects/spring-boot/issue
 
 Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support) with gradle-pitest-plugin 0.32.0:
 
-    buildscript {
-        (...)
-        dependencies {
-            classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0") {
-              exclude group: "org.pitest"
-            }
-            classpath "org.pitest:pitest-command-line:0.33"
+```groovy
+buildscript {
+    (...)
+    dependencies {
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0") {
+          exclude group: "org.pitest"
         }
+        classpath "org.pitest:pitest-command-line:0.33"
     }
+}
 
-    pitest {
-        pitestVersion = "0.33"
-    }
+pitest {
+    pitestVersion = "0.33"
+}
+```
 
 ### 4. How can I override plugin configuration from command line/system properties?
 
@@ -302,9 +329,11 @@ there is a need to adjust to changes in newer PIT version. There is a dedicated 
 or to downgrade PIT in case of detected issues. To override a defalt version it is enough to set `pitestVersion` property in the `pitest` configuration
 closure.
 
-    pitest {
-        pitestVersion = "1.2.9-the.greatest.one"
-    }
+```groovy
+pitest {
+    pitestVersion = "1.2.9-the.greatest.one"
+}
+```
 
 In case of errors detected when the latest available version of the plugin is used with newer PIT version please raise an [issue](https://github.com/szpak/gradle-pitest-plugin/issues).
 
@@ -312,9 +341,11 @@ In case of errors detected when the latest available version of the plugin is us
 
 Placing PIT reports directly in `${PROJECT_DIR}/build/reports/pitest` can be enabled with `timestampedReports` configuration property:
 
-    pitest {
-        timestampedReports = false
-    }
+```groovy
+pitest {
+    timestampedReports = false
+}
+```
 
 ### 8. How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
 
@@ -324,7 +355,7 @@ The gradle-pitest-plugin execution can be remotely debugged with adding `-Dorg.g
 
 However, as PIT is started as a separate process to debug its execution the following arguments need to be added to the plugin configuration:
 
-```
+```groovy
 pitest {
     mainProcessJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"]
 }
