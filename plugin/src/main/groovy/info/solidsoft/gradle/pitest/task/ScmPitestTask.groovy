@@ -26,7 +26,6 @@ class ScmPitestTask extends AbstractPitestTask {
     File scmRoot
 
     @Input
-    @Optional
     Set<String> includes
 
     @Input
