@@ -363,7 +363,7 @@ pitest {
 
 ### 9. Can I use gradle-pitest-plugin with my Android application?
 
-Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supports Android applications (but on the other hand it doesn't work with standard Java applications).
+Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supporting Android applications (but on the other hand it doesn't work with standard Java applications).
 
 ## Known issues
 
