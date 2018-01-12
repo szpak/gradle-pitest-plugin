@@ -47,6 +47,7 @@ class PitestPluginExtension {
     BigDecimal timeoutFactor
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
+    String testPlugin
     /**
      * JVM arguments to use when PIT launches child processes
      *

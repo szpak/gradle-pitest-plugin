@@ -18,12 +18,7 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.*
 
 /**
  * Gradle task implementation for Pitest.
@@ -187,6 +182,10 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> features
 
+    @Input
+    @Optional
+    String testPlugin
+
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
@@ -239,6 +238,7 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
         map['features'] = getFeatures()?.join(',')
+        map['testPlugin'] = getTestPlugin()?.toString()
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
