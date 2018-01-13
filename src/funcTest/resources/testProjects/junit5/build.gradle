@@ -44,6 +44,8 @@ compileTestKotlin {
 
 pitest {
     testPlugin = "junit5"
+    avoidCallsTo = ["kotlin.jvm.internal"]
+    mutators = ["NEW_DEFAULTS"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"
     targetTests = ['pitest.test.*Test']
     pitestVersion = "1.3.1"
