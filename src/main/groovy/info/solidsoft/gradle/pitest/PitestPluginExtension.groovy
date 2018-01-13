@@ -31,7 +31,12 @@ class PitestPluginExtension {
 
     String pitestVersion
 //    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
-
+    /**
+     * specify what test plugin to use.
+     * prior to 1.3 this was autodetected, now it has to be specified
+     * @since 1.3.0
+     */
+    String testPlugin
     File reportDir
     Set<String> targetClasses
     Set<String> targetTests
@@ -47,7 +52,6 @@ class PitestPluginExtension {
     BigDecimal timeoutFactor
     Integer timeoutConstInMillis
     Integer maxMutationsPerClass
-    String testPlugin
     /**
      * JVM arguments to use when PIT launches child processes
      *
