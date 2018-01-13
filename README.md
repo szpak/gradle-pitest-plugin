@@ -207,7 +207,7 @@ Minimal working multi-project build is available in
 
 PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although it was possible to use it since 1.1.0).
 
-To enable PIT plugin it is enough to add it to pitest configuration in buildscript closure. For example:
+To enable PIT plugins it is enough to add it to pitest configuration in buildscript closure. For example:
 
 ```groovy
 buildscript {
@@ -223,6 +223,32 @@ buildscript {
 ```
 
 The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
+
+## PIT test-plugins support
+
+Test plugins are used to support different test frameworks than junit4
+
+Just add them as a normal plugin like mentioned, and also set the testPlugin property
+
+for example to use junit5:
+```groovy
+buildscript {
+   repositories {
+       mavenCentral()
+   }
+   configurations.maybeCreate("pitest")
+   dependencies {
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+       pitest 'org.pitest:pitest-junit5-plugin:0.3'
+   }
+}
+
+pitest {
+    testPlugin = "junit5"
+    // rest of your pitest config
+}
+```
+
 
 ## Versions
 
