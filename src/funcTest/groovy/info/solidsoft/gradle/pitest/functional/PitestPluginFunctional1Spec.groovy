@@ -12,10 +12,10 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    compileSdkVersion 26
+                    compileSdkVersion 27
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 26
+                        targetSdkVersion 27
                     }
                     lintOptions {
                         //ignore missing lint database
@@ -141,10 +141,10 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    compileSdkVersion 26
+                    compileSdkVersion 27
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 26
+                        targetSdkVersion 27
                     }
                 }
                 group = 'gradle.pitest.test'

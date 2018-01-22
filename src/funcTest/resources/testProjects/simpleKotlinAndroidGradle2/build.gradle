@@ -7,17 +7,16 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.60"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20"
         classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 android {
-    buildToolsVersion '26.0.2'
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 26
+        targetSdkVersion 27
     }
     lintOptions {
         //ignore missing lint database
