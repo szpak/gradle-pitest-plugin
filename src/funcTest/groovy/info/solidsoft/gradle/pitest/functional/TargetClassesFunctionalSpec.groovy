@@ -9,10 +9,10 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    compileSdkVersion 26
+                    compileSdkVersion 27
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 26
+                        targetSdkVersion 27
                     }
                 }
             """.stripIndent()

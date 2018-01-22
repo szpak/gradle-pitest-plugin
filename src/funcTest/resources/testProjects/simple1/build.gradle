@@ -2,10 +2,10 @@ apply plugin: 'pl.droidsonroids.pitest'
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 26
+        targetSdkVersion 27
     }
 }
 

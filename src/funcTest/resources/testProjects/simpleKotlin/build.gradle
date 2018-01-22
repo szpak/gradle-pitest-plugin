@@ -8,16 +8,16 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.60"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20"
         classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 26
+        targetSdkVersion 27
     }
     lintOptions {
         //ignore missing lint database
@@ -33,7 +33,7 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.8.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.60"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.20"
 }
 
 group = "pitest.test"
