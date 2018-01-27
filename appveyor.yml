@@ -20,6 +20,8 @@ environment:
   - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     #Regression tests with different Gradle versions only on JDK 8
     PITEST_REGRESSION_TESTS: quick
+  - JAVA_HOME: C:\Program Files\Java\jdk9
+    PITEST_REGRESSION_TESTS: latestOnly
 
 matrix:
   fast_finish: false
