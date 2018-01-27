@@ -5,6 +5,8 @@ import com.google.common.base.Predicates
 import groovy.util.logging.Slf4j
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
+import org.gradle.internal.jvm.Jvm
+import org.gradle.util.GradleVersion
 import spock.lang.Unroll
 
 import java.util.regex.Pattern
@@ -17,7 +19,11 @@ import java.util.regex.Pattern
  *  - Add testing against latest nightly Gradle version?
  */
 @Slf4j
+@SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
+
+    //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
+    private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -38,7 +44,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':pitest')
             result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')
         where:
-            requestedGradleVersion << resolveRequestedGradleVersions().unique()
+            requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
 
     //To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8
@@ -59,7 +65,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
         versions - "2.2" + "2.2.1" - "2.14" + "2.14.1"
     }
 
-    private static List<String> resolveRequestedGradleVersions() {
+    private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
         log.debug("$REGRESSION_TESTS_ENV_NAME set to '${regressionTestsLevel}'")
         switch (regressionTestsLevel) {
@@ -75,5 +81,24 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                         "Assuming 'latestOnly'.")
                 return GRADLE_LATEST_VERSIONS
         }
+    }
+
+    //Jvm class from Spock doesn't work with Java 9 stable releases - otherwise @IgnoreIf could be used
+    private List<String> applyJavaCompatibilityAdjustment(List<String> requestedGradleVersions) {
+        if (!Jvm.current().javaVersion.isJava9Compatible()) {
+            //All supported versions should be Java 8 compatible
+            return requestedGradleVersions
+        }
+        return leaveJava9CompatibleGradleVersionsOnly(requestedGradleVersions)
+    }
+
+    private List<String> leaveJava9CompatibleGradleVersionsOnly(List<String> requestedGradleVersions) {
+        List<String> java9CompatibleGradleVersions = requestedGradleVersions.findAll {
+            GradleVersion.version(it) >= MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION
+        }
+        if (java9CompatibleGradleVersions.size() < 2) {
+            java9CompatibleGradleVersions.add(MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION.version)
+        }
+        return java9CompatibleGradleVersions
     }
 }

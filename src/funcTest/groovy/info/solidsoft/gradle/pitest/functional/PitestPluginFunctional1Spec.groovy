@@ -2,8 +2,14 @@ package info.solidsoft.gradle.pitest.functional
 
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
+import org.gradle.internal.jvm.Jvm
 
+@SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
+
+    private static final String PIT_1_VERSION = "1.1.5"
+    private static final String PIT_2_VERSION = "1.2.0"
+    private static final String MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION = "1.2.3"  //https://github.com/hcoles/pitest/issues/380
 
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
@@ -27,7 +33,8 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         where:
             //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
             //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
-            pitVersion << ([PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", "1.3.1"].unique()) //be aware that unique() is available since Groovy 2.4.0
+            //PIT before 1.2.3 is not compatible with Java 9
+            pitVersion << (applyJavaCompatibilityAdjustment([PitestPlugin.DEFAULT_PITEST_VERSION, PIT_1_VERSION, PIT_2_VERSION, "1.3.1"]).unique()) //be aware that unique() is available since Groovy 2.4.0
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
@@ -140,5 +147,13 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 }
             }
         """.stripIndent()
+    }
+
+    private List<String> applyJavaCompatibilityAdjustment(List<String> requestedPitVersions) {
+        if (Jvm.current().javaVersion.isJava9Compatible()) {
+            return requestedPitVersions - PIT_1_VERSION - PIT_2_VERSION + MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION
+        } else {
+            return requestedPitVersions
+        }
     }
 }

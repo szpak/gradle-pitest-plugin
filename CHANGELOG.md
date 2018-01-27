@@ -6,6 +6,7 @@
  - Support for excludedTestClasses parameter in PIT - [#75]
  - PIT 1.3.1 by default
  - Switch build to Gradle 4.5
+ - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - [#68]  
 
 ## 1.2.4 - 2017-11-14
 
