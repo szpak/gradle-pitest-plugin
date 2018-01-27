@@ -16,7 +16,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id "info.solidsoft.pitest" version "1.2.4"
+    id 'info.solidsoft.pitest' version '1.2.4'
 }
 ```
 
@@ -29,7 +29,7 @@ After the measurements a report created by PIT will be placed in `${PROJECT_DIR}
 Optionally make it depend on build:
 
 ```groovy
-build.dependsOn "pitest"
+build.dependsOn 'pitest'
 ```
 
 Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
@@ -45,10 +45,10 @@ buildscript {
     repositories {
         mavenCentral()
         //Needed only for SNAPSHOT versions
-        //maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4"
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
     }
 }
 ```
@@ -56,7 +56,7 @@ buildscript {
 Apply the plugin:
 
 ```groovy
-apply plugin: "info.solidsoft.pitest"
+apply plugin: 'info.solidsoft.pitest'
 ```
 
 ### Older gradle-pitest-plugin versions (<1.1.0)
@@ -64,7 +64,7 @@ apply plugin: "info.solidsoft.pitest"
 For versions <1.1.0 the plugin can be applied with:
 
 ```groovy
-apply plugin: "pitest"
+apply plugin: 'pitest'
 ```
 
 ## Plugin configuration
@@ -87,7 +87,7 @@ following example).
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = "1.1.0" //not needed when a default PIT version should be used
+    pitestVersion = '1.1.0' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -138,7 +138,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
         (...)
     }
 }
@@ -169,7 +169,7 @@ to make it work it is required to define both `mainSourceSets` and `additionalMu
 
 ```groovy
 configure(project(':itest')) {
-    apply plugin: "info.solidsoft.pitest"
+    apply plugin: 'info.solidsoft.pitest'
     dependencies {
         compile project(':shared')
     }
@@ -188,7 +188,7 @@ but in specific cases the simpler solution should also work:
 
 ```groovy
 configure(project(':itest')) {
-    apply plugin: "info.solidsoft.pitest"
+    apply plugin: 'info.solidsoft.pitest'
     dependencies {
         compile project(':shared')
     }
@@ -214,9 +214,9 @@ buildscript {
    repositories {
        mavenCentral()
    }
-   configurations.maybeCreate("pitest")
+   configurations.maybeCreate('pitest')
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
        pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
    }
 }
@@ -236,15 +236,15 @@ buildscript {
    repositories {
        mavenCentral()
    }
-   configurations.maybeCreate("pitest")
+   configurations.maybeCreate('pitest')
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.2'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
        pitest 'org.pitest:pitest-junit5-plugin:0.3'
    }
 }
 
 pitest {
-    testPlugin = "junit5"
+    testPlugin = 'junit5'
     // rest of your pitest config
 }
 ```
@@ -312,15 +312,15 @@ Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support)
 buildscript {
     (...)
     dependencies {
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0") {
-          exclude group: "org.pitest"
+        classpath('info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0') {
+          exclude group: 'org.pitest'
         }
-        classpath "org.pitest:pitest-command-line:0.33"
+        classpath 'org.pitest:pitest-command-line:0.33'
     }
 }
 
 pitest {
-    pitestVersion = "0.33"
+    pitestVersion = '0.33'
 }
 ```
 
@@ -357,7 +357,7 @@ closure.
 
 ```groovy
 pitest {
-    pitestVersion = "1.2.9-the.greatest.one"
+    pitestVersion = '2.8.1-the.greatest.one'
 }
 ```
 
@@ -383,7 +383,7 @@ However, as PIT is started as a separate process to debug its execution the foll
 
 ```groovy
 pitest {
-    mainProcessJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"]
+    mainProcessJvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
 }
 ```
 
