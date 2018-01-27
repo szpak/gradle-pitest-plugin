@@ -5,6 +5,7 @@
  - Support for test plugin selection in PIT (e.g. JUnit 5) - [#76] - PR by [Christoph Sturm](https://github.com/christophsturm)
  - Support for excludedTestClasses parameter in PIT - [#75]
  - PIT 1.3.1 by default
+ - Switch build to Gradle 4.5
 
 ## 1.2.4 - 2017-11-14
 
