@@ -258,15 +258,16 @@ in a pitest configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 1.1.x by default uses PIT 1.1.x, 1.0.x uses PIT 1.0.x, etc.
+gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
 Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested with
-Gradle 2.0, 2.14.1, 3.0, 3.5.1, 4.0, 4.3.1 and 4.4.1 under Java 8.
-Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
-Due to limited Java 7 availability on CI servers the project is built with Java 8 in Java 7 compatibility mode.
-Java 7 support is [planned to be removed](https://github.com/szpak/gradle-pitest-plugin/issues/70) in the foreseeable future. Please upgrade to Gradle 4.0 and Java 8 if you can.
+Gradle 2.0, 2.14.1, 3.0, 3.5.1, 4.0 and 4.5 under Java 8 and 9.
 
+Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
 The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
+
+Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
+(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
 
 See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
