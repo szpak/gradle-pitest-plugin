@@ -1,0 +1,54 @@
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    ext.junit5Version = '5.0.2'
+    ext.junitPlatformVersion = '1.0.2'
+
+    repositories {
+        mavenCentral()
+    }
+    configurations.maybeCreate("pitest")
+    dependencies {
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        pitest 'org.pitest:pitest-junit5-plugin:0.3'
+    }
+}
+
+group = "pitest.test"
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: "info.solidsoft.pitest"
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
+    testCompile("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+pitest {
+    testPlugin = "junit5"
+    avoidCallsTo = ["kotlin.jvm.internal"]
+    mutators = ["NEW_DEFAULTS"]
+    targetClasses = ['pitest.test.*']  //by default "${project.group}.*"
+    targetTests = ['pitest.test.*Test']
+    pitestVersion = "1.3.1"
+    threads = Runtime.getRuntime().availableProcessors()
+    outputFormats = ['XML', 'HTML']
+}

@@ -187,6 +187,10 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> features
 
+    @Input
+    @Optional
+    String testPlugin
+
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
@@ -239,6 +243,7 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
         map['features'] = getFeatures()?.join(',')
+        map['testPlugin'] = getTestPlugin()?.toString()
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
