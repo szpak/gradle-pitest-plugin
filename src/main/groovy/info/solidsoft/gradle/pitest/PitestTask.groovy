@@ -75,6 +75,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    Set<String> excludedTestClasses
+
+    @Input
+    @Optional
     Set<String> avoidCallsTo
 
     @Input
@@ -222,6 +226,7 @@ class PitestTask extends JavaExec {
         map["mutators"] = getMutators()?.join(',')
         map['excludedMethods'] = getExcludedMethods()?.join(',')
         map['excludedClasses'] = getExcludedClasses()?.join(',')
+        map['excludedTestClasses'] = getExcludedTestClasses()?.join(',')
         map['avoidCallsTo'] = getAvoidCallsTo()?.join(',')
         map['verbose'] = getVerbose()?.toString()
         map['timeoutFactor'] = getTimeoutFactor()?.toString()

@@ -123,6 +123,7 @@ class PitestPlugin implements Plugin<Project> {
             mutators = { extension.mutators }
             excludedMethods = { extension.excludedMethods }
             excludedClasses = { extension.excludedClasses }
+            excludedTestClasses = { extension.excludedTestClasses }
             avoidCallsTo = { extension.avoidCallsTo }
             verbose = { extension.verbose }
             timeoutFactor = { extension.timeoutFactor }

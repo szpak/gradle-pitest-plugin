@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.3.0 - Unreleased
+
+ - Support for test plugin selection in PIT (e.g. JUnit 5) - [#76] - PR by [Christoph Sturm](https://github.com/christophsturm)
+ - Support for excludedTestClasses parameter in PIT - [#75]
+ - PIT 1.3.1 by default
+
 ## 1.2.4 - 2017-11-14
 
  - Make dependency exclusion on classpath configurable - [#53]

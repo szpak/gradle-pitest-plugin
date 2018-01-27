@@ -141,7 +141,7 @@ class PitestPluginExtension {
     boolean useClasspathFile = false
 
     /**
-     * Turned on/off features in PIT itself and its plugins.
+     * Turnes on/off features in PIT itself and its plugins.
      *
      * Some details: https://github.com/hcoles/pitest/releases/tag/pitest-parent-1.2.1
      *
@@ -169,6 +169,16 @@ class PitestPluginExtension {
      */
     @Incubating
     List<String> fileExtensionsToFilter
+
+    /**
+     * A list of test classes which should be excluded when mutating.
+     *
+     * @since 1.3.0
+     * @see #excludedClasses
+     * @see #excludedMethods
+     */
+    @Incubating
+    Set<String> excludedTestClasses
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)

@@ -38,6 +38,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         expect:
             !task.createTaskArgumentMap().containsKey(paramName)
         where:
-            paramName << ['classPathFile', 'features']
+            paramName << ['classPathFile', 'features', 'excludedTestClasses']
     }
 }
