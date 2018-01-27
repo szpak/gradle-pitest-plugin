@@ -31,6 +31,10 @@ import org.gradle.api.tasks.OutputFile
 @CompileStatic
 class PitestTask extends JavaExec {
 
+    @Input
+    @Optional
+    String testPlugin
+
     @OutputDirectory
     File reportDir
 
@@ -187,10 +191,6 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> features
 
-    @Input
-    @Optional
-    String testPlugin
-
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
@@ -211,7 +211,7 @@ class PitestTask extends JavaExec {
     @PackageScope   //visible for testing
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
-        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
+        map['testPlugin'] = getTestPlugin()?.toString()
         map['reportDir'] = getReportDir().toString()
         map['targetClasses'] = getTargetClasses().join(',')
         map['targetTests'] = getTargetTests()?.join(',')
@@ -230,11 +230,12 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
-        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
+        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
         map['detectInlinedCode'] = getDetectInlinedCode()?.toString()
         map['timestampedReports'] = getTimestampedReports()?.toString()
+        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['mutationThreshold'] = getMutationThreshold()?.toString()
         map['coverageThreshold'] = getCoverageThreshold()?.toString()
         map['mutationEngine'] = getMutationEngine()
@@ -243,7 +244,6 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = getMaxSurviving()?.toString()
         map['features'] = getFeatures()?.join(',')
-        map['testPlugin'] = getTestPlugin()?.toString()
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 

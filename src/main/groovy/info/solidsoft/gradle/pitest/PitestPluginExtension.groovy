@@ -30,10 +30,12 @@ import org.gradle.api.tasks.TaskInstantiationException
 class PitestPluginExtension {
 
     String pitestVersion
-//    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
+
     /**
-     * specify what test plugin to use.
-     * prior to 1.3 this was autodetected, now it has to be specified
+     * Specifies what test plugin to use.
+     *
+     * Prior to 1.3.0 this was autodetected, now it has to be specified. The junit plugin is used by default.
+     *
      * @since 1.3.0
      */
     String testPlugin
