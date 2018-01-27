@@ -104,6 +104,7 @@ class PitestPlugin implements Plugin<Project> {
             mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
             sourceDirs = { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set }
 
+            testPlugin = { extension.testPlugin }
             reportDir = { extension.reportDir }
             targetClasses = {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
@@ -149,7 +150,6 @@ class PitestPlugin implements Plugin<Project> {
             pluginConfiguration = { extension.pluginConfiguration }
             maxSurviving = { extension.maxSurviving }
             features = { extension.features }
-            testPlugin = { extension.testPlugin }
         }
 
         project.afterEvaluate {

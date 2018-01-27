@@ -9,7 +9,7 @@
  - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - #68
  - Switch build to Gradle 4.5
 
-**Breaking change**. Starting with 1.3.0 binary artifacts require at least Java in version 8. 
+**Breaking change**. Starting with 1.3.0 binary artifacts require at least Java 8. 
 
 ## 1.2.4 - 2017-11-14
 
