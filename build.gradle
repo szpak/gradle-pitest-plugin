@@ -13,8 +13,8 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.2'
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.3'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.9'
     }
 }
 
@@ -48,7 +48,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.1.2') {
+    funcTestCompile('com.netflix.nebula:nebula-test:6.2.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     signature 'org.codehaus.mojo.signature:java17:1.0@signature'
