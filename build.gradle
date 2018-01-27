@@ -1,5 +1,4 @@
 apply plugin: 'groovy'
-apply plugin: 'ru.vyarus.animalsniffer'
 apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 
 buildscript {
@@ -13,12 +12,11 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.3'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.9'
     }
 }
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -51,7 +49,6 @@ dependencies {
     funcTestCompile('com.netflix.nebula:nebula-test:6.2.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    signature 'org.codehaus.mojo.signature:java17:1.0@signature'
 }
 
 task funcTest(type: Test) {
@@ -69,13 +66,4 @@ uploadArchives.dependsOn funcTest, check
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
     reportOn test, funcTest
-}
-
-animalsniffer {
-    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
-                                            //https://github.com/mojohaus/animal-sniffer/issues/27
-}
-
-tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
-    onlyIf { project.hasProperty('compatibility') }
 }
