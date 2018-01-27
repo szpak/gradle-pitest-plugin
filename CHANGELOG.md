@@ -2,15 +2,15 @@
 
 ## 1.3.0 - Unreleased
 
- - Support for test plugin selection in PIT (e.g. JUnit 5) - [#76] - PR by [Christoph Sturm](https://github.com/christophsturm)
- - Support for excludedTestClasses parameter in PIT - [#75]
+ - Support for test plugin selection in PIT (e.g. JUnit 5) - #76 - PR by [Christoph Sturm](https://github.com/christophsturm)
+ - Support for excludedTestClasses parameter in PIT - #75
  - PIT 1.3.1 by default
+ - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - #68
  - Switch build to Gradle 4.5
- - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - [#68]  
 
 ## 1.2.4 - 2017-11-14
 
- - Make dependency exclusion on classpath configurable - [#53]
+ - Make dependency exclusion on classpath configurable - #53
  - PIT 1.2.4 by default
  - Switch build to Gradle 4.3.1 - nicer executed tasks displaying with `--console=verbose`
 
