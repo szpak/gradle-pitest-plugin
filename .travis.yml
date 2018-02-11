@@ -23,6 +23,8 @@ script:
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -r  $HOME/.gradle/caches/modules-2/metadata-2.48/module-versions.bin
+  - rm -r  $HOME/.gradle/caches/modules-2/metadata-2.48/resource-at-url.bin
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
   - rm -fr $HOME/.gradle/caches/*/scripts/
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
