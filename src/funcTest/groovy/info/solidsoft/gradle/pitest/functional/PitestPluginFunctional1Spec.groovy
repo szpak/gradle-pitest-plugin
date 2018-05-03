@@ -66,13 +66,13 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted(':pitest')
         and: 'plugin enabled'
-            result.getStandardError().contains('with the following plugin configuration')
+            result.getStandardOutput().contains('with the following plugin configuration')
         and: 'plugin parameters passed'
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
+            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
         and: 'built-in features passed'
-            result.getStandardError().contains("-FANN")
-            result.getStandardError().contains("+FINFIT")
+            result.getStandardOutput().contains("-FANN")
+            result.getStandardOutput().contains("+FINFIT")
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
