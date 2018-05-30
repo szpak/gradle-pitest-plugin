@@ -1,7 +1,7 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
-    ext.junit5Version = '5.0.2'
-    ext.junitPlatformVersion = '1.0.2'
+    ext.kotlin_version = '1.2.30'
+    ext.junit5Version = '5.2.0'
+    ext.junitPlatformVersion = '1.2.0'
 
     repositories {
         mavenCentral()
@@ -10,7 +10,7 @@ buildscript {
     dependencies {
 //        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        pitest 'org.pitest:pitest-junit5-plugin:0.3'
+        pitest 'org.pitest:pitest-junit5-plugin:0.5'
     }
 }
 
@@ -48,7 +48,7 @@ pitest {
     mutators = ["NEW_DEFAULTS"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"
     targetTests = ['pitest.test.*Test']
-    pitestVersion = "1.3.1"
+//    pitestVersion = "1.4.0"   //dependency to pitest 1.4.0 is already provided by pitest-junit5-plugin 0.5
     threads = Runtime.getRuntime().availableProcessors()
     outputFormats = ['XML', 'HTML']
 }

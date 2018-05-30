@@ -23,13 +23,13 @@ script:
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -r  $HOME/.gradle/caches/modules-2/metadata-2.48/module-versions.bin
-  - rm -r  $HOME/.gradle/caches/modules-2/metadata-2.48/resource-at-url.bin
+  - rm -f  $HOME/.gradle/caches/modules-2/metadata-2.48/module-versions.bin
+  - rm -f  $HOME/.gradle/caches/modules-2/metadata-2.48/resource-at-url.bin
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
   - rm -fr $HOME/.gradle/caches/*/scripts/
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
   - rm -fr $HOME/.gradle/caches/*/fileHashes/
-  - rm -fr $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -49,3 +49,6 @@ matrix:
       env: PITEST_REGRESSION_TESTS=quick
     - jdk: oraclejdk9
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+    # Java 10 and 11 - https://sormuras.github.io/blog/2018-03-20-jdk-matrix.html
+    - env: JDK='OpenJDK 10' PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+      install: . gradle/install-jdk.sh -F 10 -L GPL -W ~/custom-java -C
