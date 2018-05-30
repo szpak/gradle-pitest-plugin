@@ -7,9 +7,9 @@ import org.gradle.internal.jvm.Jvm
 @SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
-    private static final String PIT_1_VERSION = "1.1.5"
-    private static final String PIT_2_VERSION = "1.2.0"
+    private static final String PIT_1_3_VERSION = "1.3.1"
     private static final String MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION = "1.2.3"  //https://github.com/hcoles/pitest/issues/380
+    private static final String MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION = "1.4.0"
 
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
@@ -31,10 +31,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
             result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
-            //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
-            //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
-            //PIT before 1.2.3 is not compatible with Java 9
-            pitVersion << (applyJavaCompatibilityAdjustment([PitestPlugin.DEFAULT_PITEST_VERSION, PIT_1_VERSION, PIT_2_VERSION, "1.3.1"]).unique()) //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << getPitVersionsCompoatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
@@ -149,11 +146,17 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         """.stripIndent()
     }
 
-    private List<String> applyJavaCompatibilityAdjustment(List<String> requestedPitVersions) {
-        if (Jvm.current().javaVersion.isJava9Compatible()) {
-            return requestedPitVersions - PIT_1_VERSION - PIT_2_VERSION + MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION
-        } else {
-            return requestedPitVersions
+    private List<String> getPitVersionsCompoatibleWithCurrentJavaVersion() {
+        //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
+        //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
+        //PIT before 1.2.3 is not compatible with Java 9
+        //PIT before 1.4.0 is not compatible with Java 10
+        if (Jvm.current().javaVersion.isJava10Compatible()) {
+            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION]
         }
+        if (Jvm.current().javaVersion.isJava9Compatible()) {
+            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION, PIT_1_3_VERSION]
+        }
+        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", PIT_1_3_VERSION, "1.4.0"]
     }
 }
