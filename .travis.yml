@@ -52,3 +52,5 @@ matrix:
     # Java 10 and 11 - https://sormuras.github.io/blog/2018-03-20-jdk-matrix.html
     - env: JDK='OpenJDK 10' PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
       install: . gradle/install-jdk.sh -F 10 -L GPL -W ~/custom-java -C
+    - env: JDK='OpenJDK 11' PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+      install: . gradle/install-jdk.sh -F 11 -L GPL -W ~/custom-java -C
