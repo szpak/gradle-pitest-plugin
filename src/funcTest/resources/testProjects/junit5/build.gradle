@@ -48,7 +48,7 @@ pitest {
     mutators = ["NEW_DEFAULTS"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"
     targetTests = ['pitest.test.*Test']
-//    pitestVersion = "1.4.0"   //dependency to pitest 1.4.0 is already provided by pitest-junit5-plugin 0.5
+//    pitestVersion = "1.4.0"   //current defined for Gradle plugin PIT version should be used
     threads = Runtime.getRuntime().availableProcessors()
     outputFormats = ['XML', 'HTML']
 }
