@@ -17,6 +17,7 @@ class AndroidUtils {
         manifestFile.parentFile.mkdirs()
         manifestFile.write(resource.text)
         project.buildscript.repositories {
+            google()
             mavenCentral()
         }
         project.apply(plugin: "com.android.library")
@@ -43,6 +44,7 @@ class AndroidUtils {
         manifestFile.parentFile.mkdirs()
         manifestFile.write(resource.text)
         project.buildscript.repositories {
+            google()
             mavenCentral()
         }
         project.apply(plugin: "com.android.application")

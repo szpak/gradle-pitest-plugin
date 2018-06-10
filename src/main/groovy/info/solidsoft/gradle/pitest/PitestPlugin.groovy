@@ -73,10 +73,10 @@ class PitestPlugin implements Plugin<Project> {
                 extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
             }
 
-            addPitDependencies(getMockableAndroidJarPath(project.android))
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
+            addPitDependencies(getMockableAndroidJarPath(project.android))
         }
     }
 
@@ -86,9 +86,13 @@ class PitestPlugin implements Plugin<Project> {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
         }
+        def mockableJarTask = project.tasks.findByName("mockableAndroidJar") ?:
+            project.tasks.create("pitestMockableAndroidJar", PitestMockableAndroidJarTask)
+
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
-            variantTask.dependsOn project.tasks.getByName("mockableAndroidJar")
+
+            variantTask.dependsOn mockableJarTask
             configureTaskDefault(variantTask, variant)
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
@@ -215,9 +219,16 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private File getMockableAndroidJarPath(BaseExtension android) {
+        def pitestMockableAndroidJarTask = project.tasks.findByName("pitestMockableAndroidJar")
+        if (pitestMockableAndroidJarTask instanceof PitestMockableAndroidJarTask) {
+            return pitestMockableAndroidJarTask.outputJar
+        }
+
+        def returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
+
         String mockableAndroidJarFilename = "mockable-"
         mockableAndroidJarFilename += sanitizeSdkVersion(android.compileSdkVersion)
-        if (android.testOptions.unitTests.returnDefaultValues) {
+        if (returnDefaultValues) {
             mockableAndroidJarFilename += '.default-values'
         }
 

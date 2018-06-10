@@ -8,6 +8,10 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
 
+                repositories {
+                    google()
+                }
+                
                 android {
                     compileSdkVersion 27
                     defaultConfig {
