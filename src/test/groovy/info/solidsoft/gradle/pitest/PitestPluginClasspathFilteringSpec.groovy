@@ -60,7 +60,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should not filer source set directory"() {
         given:
-            File testClassesDir = new File(tmpProjectDir.root, 'build/intermediates/classes/test/release')
+            File testClassesDir = new File(tmpProjectDir.root, 'build/intermediates/sourceFolderJavaResources/test/release')
         and:
             task = getJustOnePitestTaskOrFail()
         expect:

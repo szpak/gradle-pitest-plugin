@@ -1,3 +1,6 @@
+# 0.1.6 - SNAPSHOT 
+- Fixed mockable Android JAR handling when using Android Gradle Plugin 3.2+ - [#29](https://github.com/koral--/gradle-pitest-plugin/issue/29)
+
 # 0.1.5 - 2018-01-22
 - Fixed classpath order - [#24](https://github.com/koral--/gradle-pitest-plugin/issue/24) 
 

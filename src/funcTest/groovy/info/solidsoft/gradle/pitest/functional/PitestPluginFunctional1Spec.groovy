@@ -5,9 +5,19 @@ import nebula.test.functional.ExecutionResult
 
 class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
 
-    def "setup and run simple build on pitest infrastructure"() {
+    def "setup and run simple build on pitest infrastructure with AGP: #requestedAndroidGradlePluginVersion"() {
         given:
             buildFile << """
+                buildscript {
+                    repositories {
+                        google()
+                        jcenter()
+                    }
+                    dependencies {
+                        classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
+                    }
+                }
+                
                 apply plugin: 'pl.droidsonroids.pitest'
                 apply plugin: 'com.android.library'
 
@@ -23,6 +33,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     }
                 }
                 repositories {
+                    google()
                     mavenCentral()
                     jcenter()
                 }
@@ -43,8 +54,18 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('build')
         then:
-            fileExists('build/intermediates/classes/release/gradle/pitest/test/hello/HelloWorld.class')
+            if (requestedAndroidGradlePluginVersion.startsWith("3.2")) {
+                fileExists('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/gradle/pitest/test/hello/HelloWorld.class')
+            } else {
+                fileExists('build/intermediates/classes/release/gradle/pitest/test/hello/HelloWorld.class')
+            }
             result.wasExecuted(':test')
+        where:
+            requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
+    }
+
+    static List<String> resolveRequestedAndroidGradlePluginVersion() {
+        return ["3.0.1", "3.1.0", "3.1.1", "3.1.2", "3.1.3", "3.2.0-alpha17"]
     }
 
     def "setup and run pitest task with PIT #pitVersion"() {
@@ -105,13 +126,13 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted(':pitestRelease')
         and: 'plugin enabled'
-            result.getStandardError().contains('with the following plugin configuration')
+            result.getStandardOutput().contains('with the following plugin configuration')
         and: 'plugin parameters passed'
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
-            result.getStandardError().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
+            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
         and: 'built-in features passed'
-            result.getStandardError().contains("-FANN")
-            result.getStandardError().contains("+FINFIT")
+            result.getStandardOutput().contains("-FANN")
+            result.getStandardOutput().contains("+FINFIT")
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
@@ -150,11 +171,13 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 group = 'gradle.pitest.test'
 
                 repositories {
+                    google()
                     mavenCentral()
                     jcenter()
                 }
                 buildscript {
                     repositories {
+                        google()
                         mavenCentral()
                         jcenter()
                     }
