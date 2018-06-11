@@ -14,13 +14,8 @@ android {
 
 buildscript {
     repositories {
-        mavenCentral()
-        mavenLocal()
         google()
-    }
-    dependencies {
-        //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
-//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.7-SNAPSHOT'
+        mavenCentral()
     }
 }
 

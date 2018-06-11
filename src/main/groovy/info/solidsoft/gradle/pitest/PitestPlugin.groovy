@@ -130,6 +130,7 @@ class PitestPlugin implements Plugin<Project> {
         }
         combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
         combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
+        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
             combinedTaskClasspath.add(variant.unitTestVariant.javaCompiler.classpath)
             combinedTaskClasspath.add(project.files(variant.unitTestVariant.javaCompiler.destinationDir))

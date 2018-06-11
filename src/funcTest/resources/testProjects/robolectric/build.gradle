@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'pl.droidsonroids.pitest'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "pl.droidsonroids.robolectric"
+        minSdkVersion 25
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext {
+    junitVersion = '4.12'
+    robolectricVersion = '3.7.1'
+    supportLibVersion = '27.1.0'
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    compileOnly 'org.jetbrains:annotations-java5:16.0.1'
+    implementation "com.android.support:support-annotations:$supportLibVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+}
+
+repositories {
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+pitest {
+    if (project.hasProperty('pitestTargetClasses')) {
+        targetClasses = [project.getProperty('pitestTargetClasses')]
+    } else {
+        targetClasses = ['pl.droidsonroids.robolectric.*']
+    }
+    if (project.hasProperty('pitestTargetTests')) {
+        targetTests = [project.getProperty('pitestTargetTests')]
+    }
+    threads = 8
+    timeoutConstInMillis = 30 * 1000
+    outputFormats = ['XML', 'HTML']
+    verbose = true
+    mutators = ['STRONGER', 'EXPERIMENTAL_NAKED_RECEIVER']
+}
