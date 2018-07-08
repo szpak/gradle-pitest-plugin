@@ -9,4 +9,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         memorySafeMode = true   //shutdown Daemon after a few seconds of inactivity
         copyResources('AndroidManifest.xml', 'src/main/AndroidManifest.xml')
     }
+
+    static List<String> resolveRequestedAndroidGradlePluginVersion() {
+        return ["3.0.1", "3.1.0", "3.1.1", "3.1.2", "3.1.3", "3.2.0-alpha17"]
+    }
 }

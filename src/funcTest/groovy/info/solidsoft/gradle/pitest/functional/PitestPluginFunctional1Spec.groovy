@@ -64,10 +64,6 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }
 
-    static List<String> resolveRequestedAndroidGradlePluginVersion() {
-        return ["3.0.1", "3.1.0", "3.1.1", "3.1.2", "3.1.3", "3.2.0-alpha17"]
-    }
-
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
             buildFile << getBasicGradlePitestConfig()

@@ -32,6 +32,7 @@ import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.util.VersionNumber
 
 import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
 
@@ -49,6 +50,7 @@ class PitestPlugin implements Plugin<Project> {
     private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
     private final static Logger log = Logging.getLogger(PitestPlugin)
+    private final static VersionNumber ANDROID_GRADLE_PLUGIN_VERSION_NUMBER = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
 
     @PackageScope
     //visible for testing
@@ -86,13 +88,13 @@ class PitestPlugin implements Plugin<Project> {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
         }
-        def mockableJarTask = project.tasks.findByName("mockableAndroidJar") ?:
-            project.tasks.create("pitestMockableAndroidJar", PitestMockableAndroidJarTask)
 
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
-            variantTask.dependsOn mockableJarTask
+            if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
+                variantTask.dependsOn project.tasks.findByName("mockableAndroidJar")
+            }
             configureTaskDefault(variantTask, variant)
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
@@ -117,7 +119,7 @@ class PitestPlugin implements Plugin<Project> {
         FileCollection combinedTaskClasspath = new UnionFileCollection()
 
         combinedTaskClasspath.add(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
-        if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             combinedTaskClasspath.add(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
                 it.properties.dependencyProject == null
             })
@@ -220,11 +222,6 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private File getMockableAndroidJarPath(BaseExtension android) {
-        def pitestMockableAndroidJarTask = project.tasks.findByName("pitestMockableAndroidJar")
-        if (pitestMockableAndroidJarTask instanceof PitestMockableAndroidJarTask) {
-            return pitestMockableAndroidJarTask.outputJar
-        }
-
         def returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
 
         String mockableAndroidJarFilename = "mockable-"
@@ -234,7 +231,7 @@ class PitestPlugin implements Plugin<Project> {
         }
 
         File mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
-        if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith('3.')) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             mockableAndroidJarFilename += '.v3'
             mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
         }
