@@ -9,7 +9,7 @@ plugins {
     id 'signing'
 }
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 group = GROUP
 version = VERSION
@@ -39,13 +39,13 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.7.5' //for Spying in Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.7.9' //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.1.2') {
+    funcTestCompile('com.netflix.nebula:nebula-test:6.5.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
@@ -56,7 +56,6 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
-    systemProperty 'ignoreDeprecations', 'true'
 }
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest

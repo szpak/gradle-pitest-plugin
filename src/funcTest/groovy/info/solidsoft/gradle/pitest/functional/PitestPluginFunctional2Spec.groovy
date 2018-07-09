@@ -34,7 +34,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('build.gradle')
         when:
-            def result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
             result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')

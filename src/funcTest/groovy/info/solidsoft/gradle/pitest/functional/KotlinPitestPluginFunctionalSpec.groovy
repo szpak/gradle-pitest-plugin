@@ -87,10 +87,4 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':pitestRelease')
             result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
     }
-
-    def writeManifestFile() {
-        def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
-        manifestFile.parentFile.mkdirs()
-        manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
-    }
 }

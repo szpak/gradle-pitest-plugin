@@ -1,0 +1,60 @@
+buildscript {
+    ext.kotlin_version = '1.2.30'
+
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    configurations.maybeCreate("pitest")
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "de.mannodermaus.gradle.plugins:android-junit5:1.0.32"
+        pitest 'org.pitest:pitest-junit5-plugin:0.5'
+    }
+}
+
+group = "pitest.test"
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'pl.droidsonroids.pitest'
+apply plugin: 'de.mannodermaus.android-junit5'
+
+sourceCompatibility = 1.8
+
+repositories {
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testImplementation junit5.unitTests()
+    testCompile("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
+
+}
+
+pitest {
+    testPlugin = "junit5"
+    avoidCallsTo = ["kotlin.jvm.internal"]
+    mutators = ["NEW_DEFAULTS"]
+    targetClasses = ['pitest.test.*']  //by default "${project.group}.*"
+    targetTests = ['pitest.test.*Test']
+//    pitestVersion = "1.4.0"   //current defined for Gradle plugin PIT version should be used
+    threads = Runtime.getRuntime().availableProcessors()
+    outputFormats = ['XML', 'HTML']
+}
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 27
+    }
+    lintOptions {
+        //ignore missing lint database
+        abortOnError false
+    }
+}

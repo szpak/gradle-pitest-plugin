@@ -1,5 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
+import nebula.test.functional.ExecutionResult
+
 //Note: gradle-override-plugin has important limitations in support for collections
 //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
@@ -39,7 +41,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:
             writeHelloWorld('gradle.pitest.test.hello')
         when:
-            def result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')
         then:
             result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
