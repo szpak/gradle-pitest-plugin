@@ -32,6 +32,10 @@ import org.gradle.api.tasks.OutputFile
 @CompileStatic
 class PitestTask extends JavaExec {
 
+    @Input
+    @Optional
+    String testPlugin
+
     @OutputDirectory
     File reportDir
 
@@ -69,6 +73,10 @@ class PitestTask extends JavaExec {
     @Input
     @Optional
     Set<String> excludedClasses
+
+    @Input
+    @Optional
+    Set<String> excludedTestClasses
 
     @Input
     @Optional
@@ -208,7 +216,7 @@ class PitestTask extends JavaExec {
     @PackageScope   //visible for testing
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
-        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
+        map['testPlugin'] = getTestPlugin()?.toString()
         map['reportDir'] = getReportDir().toString()
         map['targetClasses'] = getTargetClasses().join(',')
         map['targetTests'] = getTargetTests()?.join(',')
@@ -219,6 +227,7 @@ class PitestTask extends JavaExec {
         map["mutators"] = getMutators()?.join(',')
         map['excludedMethods'] = getExcludedMethods()?.join(',')
         map['excludedClasses'] = getExcludedClasses()?.join(',')
+        map['excludedTestClasses'] = getExcludedTestClasses()?.join(',')
         map['avoidCallsTo'] = getAvoidCallsTo()?.join(',')
         map['verbose'] = getVerbose()?.toString()
         map['timeoutFactor'] = getTimeoutFactor()?.toString()
@@ -227,11 +236,12 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
         map['outputFormats'] = getOutputFormats()?.join(',')
         map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
-        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['includedGroups'] = getIncludedGroups()?.join(',')
         map['excludedGroups'] = getExcludedGroups()?.join(',')
+        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
         map['detectInlinedCode'] = getDetectInlinedCode()?.toString()
         map['timestampedReports'] = getTimestampedReports()?.toString()
+        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
         map['mutationThreshold'] = getMutationThreshold()?.toString()
         map['coverageThreshold'] = getCoverageThreshold()?.toString()
         map['mutationEngine'] = getMutationEngine()

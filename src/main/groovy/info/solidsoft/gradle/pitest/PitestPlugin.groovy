@@ -23,6 +23,7 @@ import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
+import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -40,14 +41,14 @@ import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.2.4'
+    public final static String DEFAULT_PITEST_VERSION = '1.4.0'
     public final static String PITEST_TASK_GROUP = "Report"
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
     public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
-    private final static List<String> FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
+    private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
     private final static Logger log = Logging.getLogger(PitestPlugin)
     private final static VersionNumber ANDROID_GRADLE_PLUGIN_VERSION_NUMBER = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
@@ -66,6 +67,7 @@ class PitestPlugin implements Plugin<Project> {
 
         extension = project.extensions.create("pitest", PitestPluginExtension)
         extension.pitestVersion = DEFAULT_PITEST_VERSION
+        extension.fileExtensionsToFilter = DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH
         project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
             if (extension.mainSourceSets == null) {
@@ -143,7 +145,7 @@ class PitestPlugin implements Plugin<Project> {
         task.conventionMapping.with {
             additionalClasspath = {
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH.find { file.name.endsWith(".$it") }
+                    !extension.fileExtensionsToFilter.find { file.name.endsWith(".$it") }
                 }
 
                 return filteredCombinedTaskClasspath
@@ -166,6 +168,7 @@ class PitestPlugin implements Plugin<Project> {
                 additionalMutableCodePaths
             }
 
+            testPlugin = { extension.testPlugin }
             reportDir = { extension.reportDir }
             targetClasses = {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
@@ -185,6 +188,7 @@ class PitestPlugin implements Plugin<Project> {
             mutators = { extension.mutators }
             excludedMethods = { extension.excludedMethods }
             excludedClasses = { extension.excludedClasses }
+            excludedTestClasses = { extension.excludedTestClasses }
             avoidCallsTo = { extension.avoidCallsTo }
             verbose = { extension.verbose }
             timeoutFactor = { extension.timeoutFactor }

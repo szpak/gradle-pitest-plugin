@@ -31,8 +31,15 @@ import org.gradle.api.tasks.TaskInstantiationException
 class PitestPluginExtension {
 
     String pitestVersion
-//    Set<File> sourceDirs  //Removed in 0.30.1 - use mainSourceSets
 
+    /**
+     * Specifies what test plugin to use.
+     *
+     * Prior to 1.3.0 this was autodetected, now it has to be specified. The junit plugin is used by default.
+     *
+     * @since 1.3.0
+     */
+    String testPlugin
     File reportDir
     Set<String> targetClasses
     Set<String> targetTests
@@ -126,7 +133,7 @@ class PitestPluginExtension {
     boolean useClasspathFile = false
 
     /**
-     * Turned on/off features in PIT itself and its plugins.
+     * Turnes on/off features in PIT itself and its plugins.
      *
      * Some details: https://github.com/hcoles/pitest/releases/tag/pitest-parent-1.2.1
      *
@@ -134,6 +141,36 @@ class PitestPluginExtension {
      */
     @Incubating
     List<String> features
+
+    /**
+     * File extensions which should be filtered from a classpath.
+     *
+     * PIT fails on not Java specific file passed on a classpath (e.g. native libraries). Native libraries ('*.so', '*.dll', '*.dylib')
+     * and '*.pom' files are filtered by default, but a developer can add extra extensions to the list:
+     * <pre>
+     * pitest {
+     *     fileExtensionsToFilter += ['xml', 'orbit']
+     * }
+     * </pre>
+     *
+     * Rationale: https://github.com/szpak/gradle-pitest-plugin/issues/53
+     *
+     * This feature is specific to the Gradle plugin.
+     *
+     * @since 1.2.4
+     */
+    @Incubating
+    List<String> fileExtensionsToFilter
+
+    /**
+     * A list of test classes which should be excluded when mutating.
+     *
+     * @since 1.3.0
+     * @see #excludedClasses
+     * @see #excludedMethods
+     */
+    @Incubating
+    Set<String> excludedTestClasses
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)

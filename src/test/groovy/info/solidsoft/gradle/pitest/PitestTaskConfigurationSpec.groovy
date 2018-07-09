@@ -38,6 +38,42 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         expect:
             !task.createTaskArgumentMap().containsKey(paramName)
         where:
-            paramName << ['classPathFile', 'features']
+            //It would be best to have it generated automatically based. However, mapping between task parameters and map passed to PIT is not 1-to-1
+            paramName << ['classPathFile',
+                          'features',
+                          'excludedTestClasses',
+                          'testPlugin',
+                          'targetTests',
+                          'dependencyDistance',
+                          'threads',
+                          'mutateStaticInits',
+                          'includeJarFiles',
+                          "mutators",
+                          'excludedMethods',
+                          'excludedClasses',
+                          'excludedTestClasses',
+                          'avoidCallsTo',
+                          'verbose',
+                          'timeoutFactor',
+                          'timeoutConst',
+                          'maxMutationsPerClass',
+                          'jvmArgs',
+                          'outputFormats',
+                          'failWhenNoMutations',
+                          'includedGroups',
+                          'excludedGroups',
+                          'detectInlinedCode',
+                          'timestampedReports',
+                          'mutationThreshold',
+                          'coverageThreshold',
+                          'mutationEngine',
+                          'exportLineCoverage',
+                          'jvmPath',
+                          'maxSurviving',
+                          'features',
+                          'historyInputLocation',
+                          'historyOutputLocation',
+                          'pluginConfiguration'
+            ]
     }
 }
