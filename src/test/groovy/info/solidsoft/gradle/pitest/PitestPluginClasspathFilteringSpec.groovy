@@ -40,7 +40,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             !forceClasspathResolutionAndReturnIt(task).contains(pomFile.path)
     }
 
-    def "should not filer regular dependency '#depFileName' by default"() {
+    def "should not filter regular dependency '#depFileName' by default"() {
         given:
             File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile(depFileName)
         and:
@@ -51,7 +51,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             depFileName << ['foo.jar', 'foo.zip']
     }
 
-    def "should not filer source set directory by default"() {
+    def "should not filter source set directory by default"() {
         given:
             File testClassesDir = new File(new File(new File(new File(tmpProjectDir.root, 'build'), 'classes'), 'java'), 'test')
         and:
