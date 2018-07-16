@@ -37,7 +37,8 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')
+            result.standardError.contains('Generated 1 mutations Killed 1 (100%)') ||
+                result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
         where:
             requestedGradleVersion << resolveRequestedGradleVersions()
     }
@@ -51,7 +52,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE_LATEST_VERSIONS = ["4.6", GradleVersion.current().version]
+    private static final List<String> GRADLE_LATEST_VERSIONS = ["4.6", "4.7", "4.8", GradleVersion.current().version]
 
     private static List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -64,7 +65,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
                 break
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value `$regressionTestsLevel` (expected 'latestOnly', 'quick' or 'full'). " +
-                        "Assuming 'latestOnly'.")
+                    "Assuming 'latestOnly'.")
                 return GRADLE_LATEST_VERSIONS
         }
     }

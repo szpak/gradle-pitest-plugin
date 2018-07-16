@@ -15,16 +15,16 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51"
                         classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
                     }
                 }
 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                     lintOptions {
                         //ignore missing lint database
@@ -38,7 +38,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
-                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.41"
+                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
                 }
             """.stripIndent()
         and:

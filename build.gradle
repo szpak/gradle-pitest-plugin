@@ -3,7 +3,7 @@ import static org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 plugins {
     id 'com.gradle.plugin-publish' version '0.9.9'
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'ru.vyarus.animalsniffer' version '1.2.0'
+    id 'ru.vyarus.animalsniffer' version '1.4.4'
     id 'groovy'
     id 'maven-publish'
     id 'signing'

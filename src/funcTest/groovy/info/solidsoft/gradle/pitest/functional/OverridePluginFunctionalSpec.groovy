@@ -14,10 +14,10 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                 }
                 group = 'gradle.pitest.test'

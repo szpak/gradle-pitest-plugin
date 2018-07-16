@@ -8,9 +8,9 @@ class RobolectricFunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             copyResources("testProjects/robolectric", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasks('pitestRelease')
         then:
             result.wasExecuted('pitestRelease')
-            result.getStandardOutput().contains('Generated 3 Killed 0 (0%)')
+            result.standardOutput.contains('Generated 3 Killed 0 (0%)')
     }
 }

@@ -36,7 +36,7 @@ android {
 
 ext {
     junitVersion = '4.12'
-    robolectricVersion = '3.7.1'
+    robolectricVersion = '3.8'
     supportLibVersion = '27.1.0'
 }
 

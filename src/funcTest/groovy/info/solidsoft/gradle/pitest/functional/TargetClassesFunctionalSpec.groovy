@@ -1,5 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
+import nebula.test.functional.ExecutionResult
+
 class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "report error when no project group and no targetClasses parameter are defined"() {
@@ -13,17 +15,17 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                 }
             """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')
         when:
-            def result = runTasksWithFailure('pitestRelease')
+            ExecutionResult result = runTasksWithFailure('pitestRelease')
         then:
             result.standardError.contains("No value has been specified for property 'targetClasses'")
     }

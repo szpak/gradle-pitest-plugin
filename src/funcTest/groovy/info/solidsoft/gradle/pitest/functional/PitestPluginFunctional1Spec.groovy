@@ -27,10 +27,10 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                     lintOptions {
                         //ignore missing lint database
@@ -86,7 +86,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-	        result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
+            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
             result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
         where:
             pitVersion << getPitVersionsCompoatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
@@ -121,13 +121,18 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted(':pitestRelease')
         and: 'plugin enabled'
-            result.getStandardOutput().contains('with the following plugin configuration')
+            result.standardOutput.contains('with the following plugin configuration') ||
+                result.standardError.contains('with the following plugin configuration')
         and: 'plugin parameters passed'
-            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
-            result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
+            result.standardOutput.contains('pitest-plugin-configuration-reporter-plugin.key1=value1') ||
+                result.standardError.contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
+            result.standardOutput.contains('pitest-plugin-configuration-reporter-plugin.key2=value2') ||
+                result.standardError.contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
         and: 'built-in features passed'
-            result.getStandardOutput().contains("-FANN")
-            result.getStandardOutput().contains("+FINFIT")
+            result.standardOutput.contains("-FANN")   ||
+                result.standardError.contains("-FANN")
+            result.standardOutput.contains("+FINFIT") ||
+                result.standardError.contains("+FINFIT")
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
@@ -146,9 +151,9 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('--classPathFile=')
+            result.standardOutput.contains('--classPathFile=')
             //TODO: Verify file name with regex
-            !result.getStandardOutput().find("--classPath=")
+            !result.standardOutput.find("--classPath=")
     }
 
     private static String getBasicGradlePitestConfig() {
@@ -157,10 +162,10 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                 }
                 group = 'gradle.pitest.test'
