@@ -56,7 +56,7 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted('pitestRelease')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
         where:
             requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }

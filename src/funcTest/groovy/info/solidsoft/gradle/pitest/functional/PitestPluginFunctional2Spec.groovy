@@ -37,8 +37,7 @@ class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.standardError.contains('Generated 1 mutations Killed 1 (100%)') ||
-                result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
+            result.anyOutputContains('Generated 1 mutations Killed 1 (100%)')
         where:
             requestedGradleVersion << resolveRequestedGradleVersions()
     }

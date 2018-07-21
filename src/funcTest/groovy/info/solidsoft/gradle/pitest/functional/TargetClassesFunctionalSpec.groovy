@@ -27,6 +27,6 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksWithFailure('pitestRelease')
         then:
-            result.standardError.contains("No value has been specified for property 'targetClasses'")
+            result.anyOutputContains("No value has been specified for property 'targetClasses'")
     }
 }

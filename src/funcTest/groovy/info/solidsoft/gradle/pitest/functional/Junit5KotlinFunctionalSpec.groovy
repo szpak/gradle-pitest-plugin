@@ -15,6 +15,6 @@ class Junit5KotlinFunctionalSpec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted('pitestRelease')
-            result.getStandardOutput().contains('Generated 2 mutations Killed 2 (100%)')
+            result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
 }

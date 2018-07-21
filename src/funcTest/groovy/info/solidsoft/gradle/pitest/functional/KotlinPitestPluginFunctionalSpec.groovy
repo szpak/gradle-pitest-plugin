@@ -73,7 +73,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             def result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+            result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
 
     def "should run mutation analysis with Android Gradle plugin 2"() {
@@ -85,6 +85,6 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             def result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+            result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
 }

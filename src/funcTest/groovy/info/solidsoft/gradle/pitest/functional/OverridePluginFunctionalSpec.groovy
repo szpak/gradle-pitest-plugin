@@ -43,7 +43,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')
         then:
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
         where:
             requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
