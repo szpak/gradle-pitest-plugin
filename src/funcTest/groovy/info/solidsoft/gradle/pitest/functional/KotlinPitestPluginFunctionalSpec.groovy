@@ -1,5 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
+import nebula.test.functional.ExecutionResult
+
 class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "setup and run simple build on pitest infrastructure with kotlin plugin and AGP #requestedAndroidGradlePluginVersion"() {
@@ -52,7 +54,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('src/test/java/gradle/pitest/test/hello/HelloWorldTest.java')
         when:
-            def result = runTasksSuccessfully('build')
+            ExecutionResult result = runTasksSuccessfully('build')
         then:
             if (requestedAndroidGradlePluginVersion.startsWith("3.2")) {
                 fileExists('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/gradle/pitest/test/hello/HelloWorld.class')
@@ -70,7 +72,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('build.gradle')
         when:
-            def result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
             result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
@@ -82,7 +84,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('build.gradle')
         when:
-            def result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
             result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
