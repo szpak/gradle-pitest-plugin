@@ -11,6 +11,6 @@ class RobolectricFunctionalSpec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted('pitestRelease')
-            result.getStandardOutput().contains('Generated 3 Killed 0 (0%)')
+            result.standardOutput.contains('Generated 3 Killed 0 (0%)')
     }
 }

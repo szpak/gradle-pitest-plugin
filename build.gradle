@@ -1,9 +1,9 @@
 import static org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
 
 plugins {
-    id 'com.gradle.plugin-publish' version '0.9.9'
+    id 'com.gradle.plugin-publish' version '0.9.10'
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'ru.vyarus.animalsniffer' version '1.2.0'
+    id 'ru.vyarus.animalsniffer' version '1.4.4'
     id 'groovy'
     id 'maven-publish'
     id 'signing'
@@ -45,7 +45,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.5.0') {
+    funcTestCompile('com.netflix.nebula:nebula-test:6.7.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
@@ -57,10 +57,12 @@ task funcTest(type: Test) {
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
 }
+
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
 check.dependsOn funcTestClasses
 uploadArchives.dependsOn funcTest, check
+publishPlugins.dependsOn funcTest, check
 
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
@@ -72,11 +74,8 @@ animalsniffer {
     //https://github.com/mojohaus/animal-sniffer/issues/27
 }
 
-publishPlugins.dependsOn funcTest, check
-uploadArchives.dependsOn funcTest, check
-
 wrapper {
-    gradleVersion "4.4.1"
+    gradleVersion "4.9"
     distributionType ALL
 }
 

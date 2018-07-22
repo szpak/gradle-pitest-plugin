@@ -1,5 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
+import nebula.test.functional.ExecutionResult
+
 class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "setup and run simple build on pitest infrastructure with kotlin plugin and AGP #requestedAndroidGradlePluginVersion"() {
@@ -15,16 +17,16 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51"
                         classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
                     }
                 }
 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                     lintOptions {
                         //ignore missing lint database
@@ -38,7 +40,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 dependencies {
                     testCompile 'junit:junit:4.12'
-                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.41"
+                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
                 }
             """.stripIndent()
         and:
@@ -52,7 +54,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('src/test/java/gradle/pitest/test/hello/HelloWorldTest.java')
         when:
-            def result = runTasksSuccessfully('build')
+            ExecutionResult result = runTasksSuccessfully('build')
         then:
             if (requestedAndroidGradlePluginVersion.startsWith("3.2")) {
                 fileExists('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/gradle/pitest/test/hello/HelloWorld.class')
@@ -70,10 +72,10 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('build.gradle')
         when:
-            def result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+            result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
 
     def "should run mutation analysis with Android Gradle plugin 2"() {
@@ -82,9 +84,9 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             fileExists('build.gradle')
         when:
-            def result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted(':pitestRelease')
-            result.getStandardOutput().contains('Generated 3 mutations Killed 3 (100%)')
+            result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
 }

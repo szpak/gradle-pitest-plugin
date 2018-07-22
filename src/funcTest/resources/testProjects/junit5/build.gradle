@@ -48,10 +48,10 @@ pitest {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
     lintOptions {
         //ignore missing lint database

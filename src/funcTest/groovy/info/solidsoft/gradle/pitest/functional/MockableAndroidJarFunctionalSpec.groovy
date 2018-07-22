@@ -13,7 +13,7 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51"
                         classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
                     }
                 }
@@ -22,10 +22,10 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.application'
                 
                 android {
-                    compileSdkVersion 27
+                    compileSdkVersion 28
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 27
+                        targetSdkVersion 28
                     }
                     testOptions {
                         unitTests.returnDefaultValues = true
@@ -56,7 +56,7 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
             result.wasExecuted('pitestRelease')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
         where:
             requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }

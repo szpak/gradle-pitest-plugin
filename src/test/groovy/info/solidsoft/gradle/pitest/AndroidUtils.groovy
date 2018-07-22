@@ -22,10 +22,10 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            compileSdkVersion 27
+            compileSdkVersion 28
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 27
+                targetSdkVersion 28
             }
         }
         project.apply(plugin: "pl.droidsonroids.pitest")
@@ -49,10 +49,10 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.application")
         project.android.with {
-            compileSdkVersion 27
+            compileSdkVersion 28
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 27
+                targetSdkVersion 28
             }
             buildTypes {
                 release { }

@@ -1,5 +1,11 @@
-# 0.1.6 - SNAPSHOT 
+# 0.1.6 - 2018-07-22
+- Android Gradle Plugin dependency updated to 3.2.1
+- Pitest dependency updated to 1.4.0
+- Kotlin dependency updated to 1.2.51
+- Gradle updated to 4.9
+- Merged upstream changes bbca1adac89e6ac00d12303ba2e87ac7068d5d47
 - Fixed mockable Android JAR handling when using Android Gradle Plugin 3.2+ - [#29](https://github.com/koral--/gradle-pitest-plugin/issue/29)
+- Fixed unit test classpath - [#27](https://github.com/koral--/gradle-pitest-plugin/issue/27)
 
 # 0.1.5 - 2018-01-22
 - Fixed classpath order - [#24](https://github.com/koral--/gradle-pitest-plugin/issue/24) 
