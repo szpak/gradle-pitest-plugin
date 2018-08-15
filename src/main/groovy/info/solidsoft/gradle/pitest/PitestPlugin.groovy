@@ -23,13 +23,11 @@ import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
-import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.DefaultDomainObjectSet
-import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.BasePlugin
@@ -118,29 +116,29 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void configureTaskDefault(PitestTask task, BaseVariant variant) {
-        FileCollection combinedTaskClasspath = new UnionFileCollection()
+        FileCollection combinedTaskClasspath = project.files()
 
-        combinedTaskClasspath.add(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
+        combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
-            combinedTaskClasspath.add(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
+            combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
                 it.properties.dependencyProject == null
             })
-            combinedTaskClasspath.add(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
+            combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
                 it.properties.dependencyProject == null
             })
         } else {
-            combinedTaskClasspath.add(project.configurations["compile"])
-            combinedTaskClasspath.add(project.configurations["testCompile"])
+            combinedTaskClasspath.from(project.configurations["compile"])
+            combinedTaskClasspath.from(project.configurations["testCompile"])
         }
-        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
-        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
-        combinedTaskClasspath.add(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
+        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
+        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
+        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
-            combinedTaskClasspath.add(variant.unitTestVariant.javaCompiler.classpath)
-            combinedTaskClasspath.add(project.files(variant.unitTestVariant.javaCompiler.destinationDir))
+            combinedTaskClasspath.from(variant.unitTestVariant.javaCompiler.classpath)
+            combinedTaskClasspath.from(project.files(variant.unitTestVariant.javaCompiler.destinationDir))
         }
-        combinedTaskClasspath.add(variant.javaCompiler.classpath)
-        combinedTaskClasspath.add(project.files(variant.javaCompiler.destinationDir))
+        combinedTaskClasspath.from(variant.javaCompiler.classpath)
+        combinedTaskClasspath.from(project.files(variant.javaCompiler.destinationDir))
 
         task.conventionMapping.with {
             additionalClasspath = {
