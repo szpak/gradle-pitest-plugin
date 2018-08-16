@@ -78,7 +78,7 @@ class PitestPlugin implements Plugin<Project> {
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
-            addPitDependencies(getMockableAndroidJarPath(project.android))
+            addPitDependencies()
         }
     }
 
@@ -89,13 +89,15 @@ class PitestPlugin implements Plugin<Project> {
             group = PITEST_TASK_GROUP
         }
 
+        def mockableAndroidJar = getMockableAndroidJar(project.android)
+
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
                 variantTask.dependsOn project.tasks.findByName("mockableAndroidJar")
             }
-            configureTaskDefault(variantTask, variant)
+            configureTaskDefault(variantTask, variant, mockableAndroidJar)
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
                 group = PITEST_TASK_GROUP
@@ -115,10 +117,12 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    private void configureTaskDefault(PitestTask task, BaseVariant variant) {
+    private void configureTaskDefault(PitestTask task, BaseVariant variant, File mockableAndroidJar) {
         FileCollection combinedTaskClasspath = project.files()
 
         combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
+        combinedTaskClasspath.from(mockableAndroidJar)
+
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
                 it.properties.dependencyProject == null
@@ -215,15 +219,14 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    private void addPitDependencies(File mockableAndroidJar) {
+    private void addPitDependencies() {
         project.rootProject.buildscript.dependencies {
             log.info("Using PIT: $extension.pitestVersion")
             pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
-            pitestTestCompile project.files(mockableAndroidJar)
         }
     }
 
-    private File getMockableAndroidJarPath(BaseExtension android) {
+    private File getMockableAndroidJar(BaseExtension android) {
         def returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
 
         String mockableAndroidJarFilename = "mockable-"
