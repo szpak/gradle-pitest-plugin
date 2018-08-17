@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.9'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.10.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     }
 }
@@ -48,7 +48,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.5.0') {
+    funcTestCompile('com.netflix.nebula:nebula-test:6.7.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
