@@ -253,7 +253,7 @@ class PitestTask extends JavaExec {
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
-        return removeEntriesWithNullValue(map)
+        return removeEntriesWithNullOrEmptyValue(map)
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
@@ -283,8 +283,8 @@ class PitestTask extends JavaExec {
         }
     }
 
-    private Map removeEntriesWithNullValue(Map map) {
-        return map.findAll { it.value != null }
+    private Map removeEntriesWithNullOrEmptyValue(Map map) {
+        return map.findAll { it.value != null && it.value != "" }
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {

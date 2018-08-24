@@ -106,6 +106,7 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
                     }
                 }
                 pitest {
+                    excludedClasses = []
                     verbose = true
                     pluginConfiguration = ['pitest-plugin-configuration-reporter-plugin.key1': 'value1',
                                            'pitest-plugin-configuration-reporter-plugin.key2': 'value2']
@@ -128,6 +129,8 @@ class PitestPluginFunctional1Spec extends AbstractPitestFunctionalSpec {
         and: 'built-in features passed'
             result.anyOutputContains("-FANN")
             result.anyOutputContains("+FINFIT")
+        and: 'verbose output enabled'
+            result.getStandardOutput().contains("PIT >> FINE")
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
