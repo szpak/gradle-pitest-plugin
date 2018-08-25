@@ -1,5 +1,11 @@
+# 0.1.7 - 2018-08-25 
+- Merged upstream changes bbca1adac89e6ac00d12303ba2e87ac7068d5d47
+- Replaced deprecated FileCollection#add() with #from() - [#27](https://github.com/koral--/gradle-pitest-plugin/issue/37)
+- Changed mockable Android JAR classpath entry order - [#30](https://github.com/koral--/gradle-pitest-plugin/issue/30)
+- Android Gradle Plugin dependency updated to 3.1.4 
+
 # 0.1.6 - 2018-07-22
-- Android Gradle Plugin dependency updated to 3.2.1
+- Android Gradle Plugin dependency updated to 3.1.2
 - Pitest dependency updated to 1.4.0
 - Kotlin dependency updated to 1.2.51
 - Gradle updated to 4.9
