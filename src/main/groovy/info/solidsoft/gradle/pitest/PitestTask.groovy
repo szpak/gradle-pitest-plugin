@@ -18,6 +18,7 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.JavaExec
@@ -129,6 +130,7 @@ class PitestTask extends JavaExec {
     Boolean timestampedReports
 
     @InputFiles
+    @Classpath
     FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
 
     @Input
@@ -180,7 +182,8 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> mainProcessJvmArgs
 
-    @Input
+    @InputFiles
+    @Classpath
     FileCollection launchClasspath
 
     @Input
