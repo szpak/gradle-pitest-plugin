@@ -282,7 +282,7 @@ class PitestTask extends JavaExec {
         }
     }
 
-    private Map removeEntriesWithNullOrEmptyValue(Map map) {
+    private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
         return map.findAll { it.value != null && it.value != "" }
     }
 
