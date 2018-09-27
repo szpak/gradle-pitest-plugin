@@ -52,4 +52,4 @@ matrix:
     - jdk: oraclejdk10
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
     - jdk: openjdk11
-      env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+      env: PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
