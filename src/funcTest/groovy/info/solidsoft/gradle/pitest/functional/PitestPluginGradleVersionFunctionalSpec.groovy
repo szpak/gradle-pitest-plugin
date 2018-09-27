@@ -20,7 +20,7 @@ import java.util.regex.Pattern
  */
 @Slf4j
 @SuppressWarnings("GrMethodMayBeStatic")
-class PitestPluginFunctional2Spec extends AbstractPitestFunctionalSpec {
+class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
     private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
