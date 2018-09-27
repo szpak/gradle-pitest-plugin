@@ -37,18 +37,18 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
 
-    testCompile('org.spockframework:spock-core:1.2-RC1-groovy-2.4') {
+    testCompile('org.spockframework:spock-core:1.2-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.8.17' //for Spying in Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.8.22' //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.7.1') {
+    funcTestCompile('com.netflix.nebula:nebula-test:7.1.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
