@@ -18,6 +18,7 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.JavaExec
@@ -129,6 +130,7 @@ class PitestTask extends JavaExec {
     Boolean timestampedReports
 
     @InputFiles
+    @Classpath
     FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
 
     @Input
@@ -180,7 +182,8 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> mainProcessJvmArgs
 
-    @Input
+    @InputFiles
+    @Classpath
     FileCollection launchClasspath
 
     @Input
@@ -252,7 +255,7 @@ class PitestTask extends JavaExec {
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
-        return removeEntriesWithNullValue(map)
+        return removeEntriesWithNullOrEmptyValue(map)
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
@@ -282,8 +285,8 @@ class PitestTask extends JavaExec {
         }
     }
 
-    private Map removeEntriesWithNullValue(Map map) {
-        return map.findAll { it.value != null }
+    private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
+        return map.findAll { it.value != null && it.value != "" }
     }
 
     private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {

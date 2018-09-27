@@ -1,5 +1,10 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.0 - Unreleased
+
+ - Basic Java 10 support verified with CI build - #81
+ - Improve `pitest` task caching with @Classpath - #93
+
 ## 1.3.0 - 2018-01-27
 
  - Support for test plugin selection in PIT (e.g. JUnit 5) - #76 - PR by [Christoph Sturm](https://github.com/christophsturm)
