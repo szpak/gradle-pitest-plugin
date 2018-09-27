@@ -49,6 +49,7 @@ matrix:
       env: PITEST_REGRESSION_TESTS=quick
     - jdk: oraclejdk9
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
-    # Java 10 and 11 - https://sormuras.github.io/blog/2018-03-20-jdk-matrix.html
-    - env: JDK='OpenJDK 10' PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
-      install: . gradle/install-jdk.sh -F 10 -L GPL -W ~/custom-java -C
+    - jdk: oraclejdk10
+      env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+    - jdk: openjdk11
+      env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
