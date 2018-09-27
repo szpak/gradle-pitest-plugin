@@ -13,6 +13,6 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             def result = runTasksWithFailure('pitest')
         then:
-            result.standardError.contains("No value has been specified for property 'targetClasses'")
+            result.standardOutput.contains("No value has been specified for property 'targetClasses'")
     }
 }
