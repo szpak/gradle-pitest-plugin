@@ -17,7 +17,7 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.11'
+        testCompile 'junit:junit:4.12'
     }
 
     version = '1.0'
@@ -26,8 +26,8 @@ subprojects {
 
 configure(project(":shared")) {
     dependencies {
-        compile 'org.slf4j:slf4j-api:1.7.10'
-        compile 'org.slf4j:slf4j-nop:1.7.10'
+        compile 'org.slf4j:slf4j-api:1.7.25'
+        compile 'org.slf4j:slf4j-nop:1.7.25'
     }
 }
 
