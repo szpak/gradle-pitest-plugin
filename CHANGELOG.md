@@ -12,7 +12,7 @@
  - Support for test plugin selection in PIT (e.g. JUnit 5) - #76 - PR by [Christoph Sturm](https://github.com/christophsturm)
  - Support for excludedTestClasses parameter in PIT - #75
  - PIT 1.3.1 by default
- - Drop Java 7 support - #70  
+ - Drop Java 7 support - #70
  - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - #68
  - Switch build to Gradle 4.5
 
