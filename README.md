@@ -261,7 +261,7 @@ Please be aware that in some cases there could be some issues when using non def
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
 Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested with
-Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 under Java 8. Tests with Java 9, 10 and 11 are limited to compatible versions of Gradle.
+Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 under Java 8. Tests with Java 9, 10 and 11 are limited to compatible versions of Gradle and PIT.
 
 Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
 The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
