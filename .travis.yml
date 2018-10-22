@@ -16,6 +16,12 @@ before_install:
   - rvm install 2.4.1
   - ruby --version
   - gem install --no-ri --no-rdoc chandler
+  # Workaround limitation of OpenJDK <11 - https://bugs.openjdk.java.net/browse/JDK-8196141
+  - |
+    if [[ "$TRAVIS_JDK_VERSION" == "openjdk9" || "$TRAVIS_JDK_VERSION" == "openjdk10" ]]; then
+      mv "${JAVA_HOME}/lib/security/cacerts" "${JAVA_HOME}/lib/security/cacerts.jdk"
+      ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+    fi
 
 install: true
 script:
@@ -47,9 +53,9 @@ matrix:
   include:
     - jdk: oraclejdk8
       env: PITEST_REGRESSION_TESTS=quick
-    - jdk: oraclejdk9
+    - jdk: openjdk9
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
-    - jdk: oraclejdk10
+    - jdk: openjdk10
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
     - jdk: openjdk11
       env: PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
