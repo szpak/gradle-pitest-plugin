@@ -254,14 +254,15 @@ pitest {
 
 Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
 of PIT available at the time of releasing a plugin version. It can be overridden by using `pitestVersion` parameter
-in a pitest configuration closure.
+in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
 Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested with
-Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 under Java 8. Tests with Java 9, 10 and 11 are limited to compatible versions of Gradle and PIT.
+Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 nad 5.0-rc-1 under Java 8. Tests with Java 9, 10 and 11 are limited to the compatible versions of
+Gradle and PIT.
 
 Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
 The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
