@@ -260,9 +260,12 @@ Please be aware that in some cases there could be some issues when using non def
 
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
-Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested with
-Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 nad 5.0-rc-4 under Java 8. Tests with Java 9, 10 and 11 are limited to the compatible versions of
-Gradle and PIT.
+Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested
+with Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 nad 5.0-rc-4 under Java 8.
+Tests with Java 9, 10 and 11 are limited to the compatible versions of Gradle and PIT.
+
+Please check an appropriate [point in FAQ](#10-how-to-use-gradle-pitest-plugin-130-with-java-11
+) for gradle-pitest-plugin **1.3.0 compatibility with Java 11**.
 
 Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
 The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
@@ -392,6 +395,16 @@ pitest {
 ### 9. Can I use gradle-pitest-plugin with my Android application?
 
 Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supporting Android applications (but on the other hand it doesn't work with standard Java applications).
+
+### 10. How to use gradle-pitest-plugin 1.3.0 with Java 11?
+
+The gradle-pitest-plugin 1.3.0 is smoke testing with Java 8, 9, 10 and 11. However, to run PIT sucessfully with Java 11, it is required to override a default PIT version defined in the plugin to 1.4.3 (or preferably to the latest one). It can be simply done in the project configuration with:
+
+```groovy
+pitest {
+    pitestVersion = '1.4.3'  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
+}
+```
 
 ## Known issues
 
