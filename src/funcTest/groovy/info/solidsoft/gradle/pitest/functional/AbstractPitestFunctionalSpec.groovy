@@ -23,6 +23,6 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     static List<String> resolveRequestedAndroidGradlePluginVersion() {
-        return ["3.0.1", "3.1.1", "3.1.2", "3.1.3", "3.1.4", "3.2.0-beta05", "3.3.0-alpha05"]
+        return ["3.2.1"] //TODO not taken into account, overridden with project implementation dependency
     }
 }

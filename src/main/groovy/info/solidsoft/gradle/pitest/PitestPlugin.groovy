@@ -89,15 +89,18 @@ class PitestPlugin implements Plugin<Project> {
             group = PITEST_TASK_GROUP
         }
 
-        def mockableAndroidJar = getMockableAndroidJar(project.android)
-
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
                 variantTask.dependsOn project.tasks.findByName("mockableAndroidJar")
+                configureTaskDefault(variantTask, variant, getMockableAndroidJar(project.android))
+            } else {
+                def mockableAndroidJarTask = project.tasks.create("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
+                variantTask.dependsOn mockableAndroidJarTask
+                configureTaskDefault(variantTask, variant, mocmockableAndroidJarTask.outputJar)
             }
-            configureTaskDefault(variantTask, variant, mockableAndroidJar)
+
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
                 group = PITEST_TASK_GROUP

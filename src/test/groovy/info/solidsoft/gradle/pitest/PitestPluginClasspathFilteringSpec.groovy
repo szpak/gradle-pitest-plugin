@@ -53,7 +53,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should not filter source set directory by default"() {
         given:
-            File testClassesDir = new File(tmpProjectDir.root, 'build/intermediates/classes/release')
+            File testClassesDir = new File(tmpProjectDir.root, 'build/intermediates/javac/release/compileReleaseJavaWithJavac/classes')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
