@@ -96,9 +96,9 @@ class PitestPlugin implements Plugin<Project> {
                 variantTask.dependsOn project.tasks.findByName("mockableAndroidJar")
                 configureTaskDefault(variantTask, variant, getMockableAndroidJar(project.android))
             } else {
-                def mockableAndroidJarTask = project.tasks.create("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
+                def mockableAndroidJarTask = project.tasks.maybeCreate("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
                 variantTask.dependsOn mockableAndroidJarTask
-                configureTaskDefault(variantTask, variant, mocmockableAndroidJarTask.outputJar)
+                configureTaskDefault(variantTask, variant, mockableAndroidJarTask.outputJar)
             }
 
             variantTask.with {
