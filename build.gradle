@@ -7,6 +7,7 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'signing'
+    id 'java-gradle-plugin'
 }
 
 sourceCompatibility = 1.8
@@ -42,7 +43,8 @@ dependencies {
     testImplementation 'net.bytebuddy:byte-buddy:1.7.9' //for Spying in Spock
     testImplementation 'junit:junit:4.12'
 
-    funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+    funcTestImplementation sourceSets.main.output
+    //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
     funcTestImplementation('com.netflix.nebula:nebula-test:6.7.1') {
@@ -70,12 +72,13 @@ task testReport(type: TestReport) {
 }
 
 animalsniffer {
-    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
+    sourceSets = [project.sourceSets.main]
+    //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
     //https://github.com/mojohaus/animal-sniffer/issues/27
 }
 
 wrapper {
-    gradleVersion "4.9"
+    gradleVersion "5.0"
     distributionType ALL
 }
 
@@ -128,7 +131,7 @@ pluginBundle {
     description = POM_DESCRIPTION
 
     plugins {
-        pitestPlugin {
+        pitest {
             id = 'pl.droidsonroids.pitest'
             displayName = POM_NAME
         }
@@ -142,6 +145,16 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+        }
+    }
+}
+
+gradlePlugin {
+    testSourceSets sourceSets.funcTest
+    plugins {
+        pitest {
+            id = 'pl.droidsonroids.pitest'
+            implementationClass = 'pl.droidsonroids.gradle.pitest.PitestPlugin'
         }
     }
 }
