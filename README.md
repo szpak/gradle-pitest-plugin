@@ -5,7 +5,6 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
 [![Build Status Travis](https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master)](https://travis-ci.org/szpak/gradle-pitest-plugin)
-[![Build Status Jenkins](https://solidsoft.ci.cloudbees.com/buildStatus/icon?job=pitest-gradle-plugin)](https://solidsoft.ci.cloudbees.com/job/pitest-gradle-plugin/)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
 
