@@ -2,12 +2,15 @@
 
 ## 1.4.0 - Unreleased
 
- - Basic Java 11 support verified with CI build (requires PIT 1.4.1)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
+ - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
  - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
  - PIT 1.4.3 by default
  - Switch build to Gradle 4.10.2
  - Deprecate support for Gradle <4.0 (for better Gradle 5 compatibility)
  - Enable automatic dependency bumping with [Dependabot](https://dependabot.com/)
+ 
+**Known limitations**. To reduce confusion on Java 11 support, this version provides PIT 1.4.3 by default which supports Java 11. However, not all
+new features of PIT 1.4.0 to 1.4.3 have been implemented in this release of the Gradle plugin. They are planned to be added in the future versions.
 
 ## 1.3.0 - 2018-01-27
 
