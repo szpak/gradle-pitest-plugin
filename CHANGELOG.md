@@ -4,7 +4,7 @@
 
  - Basic Java 11 support verified with CI build (requires PIT 1.4.1)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
  - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
- - PIT 1.4.2 by default
+ - PIT 1.4.3 by default
  - Switch build to Gradle 4.10.2
  - Enable automatic dependency bumping with [Dependabot](https://dependabot.com/)
 
