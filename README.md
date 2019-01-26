@@ -260,15 +260,15 @@ Please be aware that in some cases there could be some issues when using non def
 
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
-Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested
-with Gradle 2.5, 2.14.1, 3.0, 3.5.1, 4.0, 4.10.2 nad 5.0-rc-4 under Java 8.
+Starting with version 1.4.0 gradle-pitest-plugin requires Gradle 4.0. Previous version provided support for Gradle 2.0+.
+The current version was automatically smoke tested with Gradle 4.0, 4.10.2, 5.0 and 5.1.1 under Java 8.
 Tests with Java 9, 10 and 11 are limited to the compatible versions of Gradle and PIT.
 
-Please check an appropriate [point in FAQ](#10-how-to-use-gradle-pitest-plugin-130-with-java-11
-) for gradle-pitest-plugin **1.3.0 compatibility with Java 11**.
+Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0 (thanks to using PIT 1.4.3). However, please check an appropriate
+[point in FAQ](#10-how-to-use-gradle-pitest-plugin-130-with-java-11) how to achieve Java 11 compatibility in gradle-pitest-plugin 1.3.0.
 
 Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
-The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
+The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
 (as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
@@ -397,6 +397,8 @@ pitest {
 Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supporting Android applications (but on the other hand it doesn't work with standard Java applications).
 
 ### 10. How to use gradle-pitest-plugin 1.3.0 with Java 11?
+
+**Update**. gradle-pitest-plugin 1.4.0 should work with Java 11 out of the box.
 
 The gradle-pitest-plugin 1.3.0 is smoke testing with Java 8, 9, 10 and 11. However, to run PIT sucessfully with Java 11, it is required to override a default PIT version defined in the plugin to 1.4.3 (or preferably to the latest one). It can be simply done in the project configuration with:
 
