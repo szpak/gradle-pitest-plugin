@@ -1,9 +1,11 @@
 //Continuous Delivery release configuration with CDeliveryBoy
 
 apply plugin: 'info.solidsoft.cdeliveryboy'
+apply plugin: 'io.codearte.nexus-upload-staging'
 
 cDeliveryBoy {
     tasks {
+        uploadArchivesTask = "uploadArchivesStaging"
         promoteRepositoryTask = "releaseRepository"
     }
     nexus {
