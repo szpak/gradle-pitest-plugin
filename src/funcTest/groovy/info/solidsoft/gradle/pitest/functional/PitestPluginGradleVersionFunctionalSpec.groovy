@@ -7,7 +7,6 @@ import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
-import spock.lang.Unroll
 
 import java.util.regex.Pattern
 
@@ -31,7 +30,6 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
-    @Unroll
     def "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
