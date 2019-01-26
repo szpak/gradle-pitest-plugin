@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.0 - Unreleased
+## 1.4.0 - 2019-01-26
 
  - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
  - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
