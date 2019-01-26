@@ -5,8 +5,8 @@ calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects 
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
 [![Build Status Travis](https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master)](https://travis-ci.org/szpak/gradle-pitest-plugin)
-[![Build Status Jenkins](https://solidsoft.ci.cloudbees.com/buildStatus/icon?job=pitest-gradle-plugin)](https://solidsoft.ci.cloudbees.com/job/pitest-gradle-plugin/)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
 
 ## Quick start
 
@@ -16,7 +16,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.3.0'
+    id 'info.solidsoft.pitest' version '1.4.0'
 }
 ```
 
@@ -48,7 +48,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
     }
 }
 ```
@@ -138,7 +138,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
         (...)
     }
 }
@@ -203,34 +203,13 @@ configure(project(':itest')) {
 Minimal working multi-project build is available in
 [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
 
-## PIT plugins support
-
-PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although it was possible to use it since 1.1.0).
-
-To enable PIT plugins it is enough to add it to pitest configuration in buildscript closure. For example:
-
-```groovy
-buildscript {
-   repositories {
-       mavenCentral()
-   }
-   configurations.maybeCreate('pitest')
-   dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
-       pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
-   }
-}
-```
-
-The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
-
 ## PIT test-plugins support
 
-Test plugins are used to support different test frameworks than junit4
+Test plugins are used to support different test frameworks than JUnit4. They are officially supported by gradle-pitest-plugin staring with version 1.1.4
+(although it was possible to use it since 1.1.0).
 
-Just add them as a normal plugin like mentioned, and also set the testPlugin property
+To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
 
-for example to use junit5:
 ```groovy
 buildscript {
    repositories {
@@ -238,33 +217,39 @@ buildscript {
    }
    configurations.maybeCreate('pitest')
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
-       pitest 'org.pitest:pitest-junit5-plugin:0.3'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
+       pitest 'org.pitest:pitest-junit5-plugin:0.8'
    }
 }
 
 pitest {
     testPlugin = 'junit5'
-    // rest of your pitest config
+    // rest of your pitest configuration
 }
 ```
+
+The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 
 ## Versions
 
 Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
 of PIT available at the time of releasing a plugin version. It can be overridden by using `pitestVersion` parameter
-in a pitest configuration closure.
+in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
-Starting with version 1.1.6 gradle-pitest-plugin requires Gradle 2.0+. The current version was automatically smoke tested with
-Gradle 2.0, 2.14.1, 3.0, 3.5.1, 4.0 and 4.5 under Java 8 and 9.
+Starting with version 1.4.0 gradle-pitest-plugin requires Gradle 4.0. Previous version provided support for Gradle 2.0+.
+The current version was automatically smoke tested with Gradle 4.0, 4.10.2, 5.0 and 5.1.1 under Java 8.
+Tests with Java 9, 10 and 11 are limited to the compatible versions of Gradle and PIT.
+
+Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0 (thanks to using PIT 1.4.3). However, please check an appropriate
+[point in FAQ](#10-how-to-use-gradle-pitest-plugin-130-with-java-11) how to achieve Java 11 compatibility in gradle-pitest-plugin 1.3.0.
 
 Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
-The latest version which supports older Gradle 1.x (1.6+) is gradle-pitest-plugin 1.1.4.
+The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
 (as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
@@ -392,6 +377,18 @@ pitest {
 
 Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supporting Android applications (but on the other hand it doesn't work with standard Java applications).
 
+### 10. How to use gradle-pitest-plugin 1.3.0 with Java 11?
+
+**Update**. gradle-pitest-plugin 1.4.0 should work with Java 11 out of the box.
+
+The gradle-pitest-plugin 1.3.0 is smoke testing with Java 8, 9, 10 and 11. However, to run PIT sucessfully with Java 11, it is required to override a default PIT version defined in the plugin to 1.4.3 (or preferably to the latest one). It can be simply done in the project configuration with:
+
+```groovy
+pitest {
+    pitestVersion = '1.4.3'  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
+}
+```
+
 ## Known issues
 
  - too verbose output from PIT
@@ -444,10 +441,6 @@ src="https://c.statcounter.com/9394072/0/db9b06ab/0/"
 alt="create counter"></a></div></noscript>
 </div>
 <br />
-
-<div id="cloudbees" style="width:100%; text-align:center">
-<a href="http://www.cloudbees.com/foss/foss-dev.cb" target="_blank"><img src="images/cloudbees-badge.png"/></a>
-</div>
 
 <!-- Google Analytics -->
 <script>
