@@ -6,7 +6,8 @@
  - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
  - PIT 1.4.3 by default
  - Switch build to Gradle 4.10.2
- - Deprecate support for Gradle <4.0 (for better Gradle 5 compatibility)
+ - Remove support for Gradle <4.0 (for better Gradle 5 compatibility)
+ - Remove deprecation warnings in Gradle 5.0
  - Enable automatic dependency bumping with [Dependabot](https://dependabot.com/)
  
 **Known limitations**. To reduce confusion on Java 11 support, this version provides PIT 1.4.3 by default which supports Java 11. However, not all

@@ -1,6 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
 import nebula.test.IntegrationSpec
+import nebula.test.functional.ExecutionResult
 
 abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
@@ -62,4 +63,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         """.stripIndent()
     }
 
+    protected void assertStdOutOrStdErrContainsGivenText(ExecutionResult result, String textToContain) {
+        //TODO: Simplify if possible - standardOutput for Gradle <5 and standardError for Gradle 5+
+        assert result.standardOutput.contains(textToContain) || result.standardError.contains(textToContain)
+    }
 }

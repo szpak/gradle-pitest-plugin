@@ -34,7 +34,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted(':pitest')
         and: 'plugin enabled'
-            result.getStandardOutput().contains('with the following plugin configuration')
+            assertStdOutOrStdErrContainsGivenText(result, 'with the following plugin configuration')
         and: 'plugin parameters passed'
             result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key1=value1')
             result.getStandardOutput().contains('pitest-plugin-configuration-reporter-plugin.key2=value2')
@@ -42,7 +42,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.getStandardOutput().contains("-FANN")
             result.getStandardOutput().contains("+FINFIT")
         and: 'verbose output enabled'
-            result.getStandardOutput().contains("PIT >> FINE")
+            assertStdOutOrStdErrContainsGivenText(result, "PIT >> FINE")
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 

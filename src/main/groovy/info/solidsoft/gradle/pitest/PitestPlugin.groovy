@@ -15,8 +15,10 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -159,7 +161,7 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileStatic
+    @CompileDynamic //@CompileStatic breaks compilation in Gradle 5 - that method has been removed there
     private Set<File> calculateBaseMutableCodePaths() {
         if (isGradleVersionBefore4()) {
             log.warn("WARNING. Support for Gradle <4.0 in gradle-pitest-plugin is deprecated (due to incompatible changes in Gradle itself).")
@@ -179,7 +181,11 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileStatic
     private Set<String> calculateTasksToDependOn() {
-        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
+//        //Fails with: NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.collect(Ljava/lang/Iterable;Lgroovy/lang/Closure;)Ljava/util/List;
+//        //when compiled with Groovy 2.5 (Gradle 5+) and executed with Groovy 2.4 (Gradle <5). Explicit coercion doesn't help.
+//        //TODO: Workaround with DefaultGroovyMethods.collect. Remove once Gradle 4 support is dropped
+//        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
+        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(extension.testSourceSets) { it.name + "Classes" } as Set
         log.debug("pitest tasksToDependOn: $tasksToDependOn")
         return tasksToDependOn
     }
