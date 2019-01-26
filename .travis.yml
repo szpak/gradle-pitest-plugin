@@ -15,7 +15,7 @@ before_install:
   - ruby --version
   - rvm install 2.4.1
   - ruby --version
-  - gem install --no-document chandler
+  - gem install --no-document chandler -v 0.7.0
   # Workaround limitation of OpenJDK <11 - https://bugs.openjdk.java.net/browse/JDK-8196141
   - |
     if [[ "$TRAVIS_JDK_VERSION" == "openjdk9" || "$TRAVIS_JDK_VERSION" == "openjdk10" ]]; then
