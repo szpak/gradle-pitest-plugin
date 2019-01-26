@@ -15,7 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
@@ -161,16 +160,9 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic //@CompileStatic breaks compilation in Gradle 5 - that method has been removed there
+    @CompileStatic
     private Set<File> calculateBaseMutableCodePaths() {
-        if (isGradleVersionBefore4()) {
-            log.warn("WARNING. Support for Gradle <4.0 in gradle-pitest-plugin is deprecated (due to incompatible changes in Gradle itself).")
-            //Casting to Iterable to eliminate "NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.flatten(Ljava/util/List;)Ljava/util/List;"
-            //while compiling code with Groovy 2.4.11 (Gradle 4.1) and running with Groovy 2.3.2 (Gradle 2.0)
-            return ((Iterable<File>)extension.mainSourceSets*.output.classesDir).flatten() as Set<File>
-        } else {
-            return extension.mainSourceSets*.output.classesDirs.files.flatten() as Set<File>
-        }
+        return extension.mainSourceSets*.output.classesDirs.files.flatten() as Set<File>
     }
 
     @CompileStatic
