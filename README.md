@@ -203,34 +203,13 @@ configure(project(':itest')) {
 Minimal working multi-project build is available in
 [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
 
-## PIT plugins support
-
-PIT plugins are officially supported since gradle-pitest-plugin 1.1.4 (although it was possible to use it since 1.1.0).
-
-To enable PIT plugins it is enough to add it to pitest configuration in buildscript closure. For example:
-
-```groovy
-buildscript {
-   repositories {
-       mavenCentral()
-   }
-   configurations.maybeCreate('pitest')
-   dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
-       pitest 'org.pitest.plugins:pitest-fancy-plugin:0.0.1'
-   }
-}
-```
-
-The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
-
 ## PIT test-plugins support
 
-Test plugins are used to support different test frameworks than junit4
+Test plugins are used to support different test frameworks than JUnit4. They are officially supported by gradle-pitest-plugin staring with version 1.1.4
+(although it was possible to use it since 1.1.0).
 
-Just add them as a normal plugin like mentioned, and also set the testPlugin property
+To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
 
-for example to use junit5:
 ```groovy
 buildscript {
    repositories {
@@ -239,15 +218,17 @@ buildscript {
    configurations.maybeCreate('pitest')
    dependencies {
        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
-       pitest 'org.pitest:pitest-junit5-plugin:0.3'
+       pitest 'org.pitest:pitest-junit5-plugin:0.8'
    }
 }
 
 pitest {
     testPlugin = 'junit5'
-    // rest of your pitest config
+    // rest of your pitest configuration
 }
 ```
+
+The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 
 ## Versions
