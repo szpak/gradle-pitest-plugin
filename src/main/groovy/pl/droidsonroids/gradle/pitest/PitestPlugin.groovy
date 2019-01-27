@@ -127,12 +127,12 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(mockableAndroidJar)
 
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
-            combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
-                it.properties.dependencyProject == null
-            })
-            combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
-                it.properties.dependencyProject == null
-            })
+//            combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
+//                it.properties.dependencyProject == null
+//            })
+//            combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
+//                it.properties.dependencyProject == null
+//            })
         } else {
             combinedTaskClasspath.from(project.configurations["compile"])
             combinedTaskClasspath.from(project.configurations["testCompile"])
@@ -141,11 +141,11 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
-            combinedTaskClasspath.from(variant.unitTestVariant.javaCompiler.classpath)
-            combinedTaskClasspath.from(project.files(variant.unitTestVariant.javaCompiler.destinationDir))
+            combinedTaskClasspath.from(variant.unitTestVariant.javaCompileProvider.get().classpath)
+            combinedTaskClasspath.from(project.files(variant.unitTestVariant.javaCompileProvider.get().destinationDir))
         }
-        combinedTaskClasspath.from(variant.javaCompiler.classpath)
-        combinedTaskClasspath.from(project.files(variant.javaCompiler.destinationDir))
+        combinedTaskClasspath.from(variant.javaCompileProvider.get().classpath)
+        combinedTaskClasspath.from(project.files(variant.javaCompileProvider.get().destinationDir))
 
         task.conventionMapping.with {
             additionalClasspath = {
@@ -165,7 +165,7 @@ class PitestPlugin implements Plugin<Project> {
             }
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
-                additionalMutableCodePaths.add(variant.javaCompiler.destinationDir)
+                additionalMutableCodePaths.add(variant.javaCompileProvider.get().destinationDir)
                 def kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
                 if (kotlinCompileTask != null) {
                     additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
