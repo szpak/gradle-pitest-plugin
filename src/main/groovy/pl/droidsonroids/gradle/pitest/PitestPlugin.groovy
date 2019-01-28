@@ -31,6 +31,7 @@ import org.gradle.api.internal.DefaultDomainObjectSet
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.util.VersionNumber
 
 import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
@@ -127,12 +128,17 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(mockableAndroidJar)
 
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
-//            combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
-//                it.properties.dependencyProject == null
-//            })
-//            combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
-//                it.properties.dependencyProject == null
-//            })
+            if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {
+                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
+                    it.properties.dependencyProject == null
+                })
+                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
+                    it.properties.dependencyProject == null
+                })
+            } else {
+                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"])
+                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"])
+            }
         } else {
             combinedTaskClasspath.from(project.configurations["compile"])
             combinedTaskClasspath.from(project.configurations["testCompile"])
@@ -141,11 +147,11 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
-            combinedTaskClasspath.from(variant.unitTestVariant.javaCompileProvider.get().classpath)
-            combinedTaskClasspath.from(project.files(variant.unitTestVariant.javaCompileProvider.get().destinationDir))
+            combinedTaskClasspath.from(getJavaCompileTask(variant.unitTestVariant).classpath)
+            combinedTaskClasspath.from(project.files(getJavaCompileTask(variant.unitTestVariant).destinationDir))
         }
-        combinedTaskClasspath.from(variant.javaCompileProvider.get().classpath)
-        combinedTaskClasspath.from(project.files(variant.javaCompileProvider.get().destinationDir))
+        combinedTaskClasspath.from(getJavaCompileTask(variant).classpath)
+        combinedTaskClasspath.from(project.files(getJavaCompileTask(variant).destinationDir))
 
         task.conventionMapping.with {
             additionalClasspath = {
@@ -165,7 +171,7 @@ class PitestPlugin implements Plugin<Project> {
             }
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
-                additionalMutableCodePaths.add(variant.javaCompileProvider.get().destinationDir)
+                additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
                 def kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
                 if (kotlinCompileTask != null) {
                     additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
@@ -250,5 +256,13 @@ class PitestPlugin implements Plugin<Project> {
 
     static def sanitizeSdkVersion(def version) {
         return version.replaceAll('[^\\p{Alnum}.-]', '-')
+    }
+
+    static JavaCompile getJavaCompileTask(BaseVariant variant) {
+        if (PitestPlugin.ANDROID_GRADLE_PLUGIN_VERSION_NUMBER >= VersionNumber.parse("3.3")) {
+            return variant.javaCompileProvider.get()
+        } else {
+            return variant.javaCompile
+        }
     }
 }

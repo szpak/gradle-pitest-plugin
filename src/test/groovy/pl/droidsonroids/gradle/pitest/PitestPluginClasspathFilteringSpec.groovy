@@ -33,7 +33,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should filter .pom file by default"() {
         given:
-            File pomFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.pom')
+            File pomFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('foo.pom')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -42,7 +42,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should not filter regular dependency '#depFileName' by default"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile(depFileName)
+            File depFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile(depFileName)
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -62,9 +62,9 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should filter excluded dependencies remaining regular ones"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.jar')
+            File depFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('foo.jar')
         and:
-            File libDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('bar.so')
+            File libDepFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('bar.so')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -75,7 +75,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
     def "should filter user defined extensions"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('file.extra')
+            File depFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
         and:
@@ -87,7 +87,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
     def "should allow to override extensions filtered by default"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('needed.so')
+            File depFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('needed.so')
         and:
             project.pitest.fileExtensionsToFilter = ['extra']
         and:
@@ -99,8 +99,8 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
     def "should allow to provide extra extensions in addition to default ones"() {
         given:
-            File libDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('default.so')
-            File extraDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('file.extra')
+            File libDepFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('default.so')
+            File extraDepFile = addFileWithFileNameAsImplementationDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
         and:
@@ -127,10 +127,10 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
         return task.createTaskArgumentMap()['classPath']
     }
 
-    private File addFileWithFileNameAsCompileDependencyAndReturnAsFile(String depFileName) {
+    private File addFileWithFileNameAsImplementationDependencyAndReturnAsFile(String depFileName) {
         File depFile = new File(tmpProjectDir.root, depFileName)
         depFile.createNewFile()
-        project.dependencies.add('compile', project.files(depFile))
+        project.dependencies.add('implementation', project.files(depFile))
         return depFile
     }
 }
