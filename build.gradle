@@ -1,11 +1,11 @@
 plugins {
-    id 'com.gradle.plugin-publish' version '0.10.0'
     id 'com.bmuschko.nexus' version '2.3.1'
     id 'com.github.ben-manes.versions' version '0.20.0'
     id 'groovy'
     id 'maven-publish'
     id 'signing'
     id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
 }
 
 sourceCompatibility = 1.8
@@ -53,7 +53,7 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
-    systemProperty('ignoreDeprecations', 'true')
+    systemProperty('ignoreDeprecations', 'true') //TODO remove after AGP stops using deprecated API
 }
 
 funcTest.shouldRunAfter test

@@ -2,9 +2,11 @@ package pl.droidsonroids.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
 
+import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+
 class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "setup and run simple build on pitest infrastructure with AGP: #requestedAndroidGradlePluginVersion"() {
+    def "setup and run simple build on pitest infrastructure"() {
         given:
         buildFile << """
                 buildscript {
@@ -13,7 +15,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
+                        classpath 'com.android.tools.build:gradle:3.3.0'
                     }
                 }
                 
@@ -53,14 +55,12 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
         ExecutionResult result = runTasksSuccessfully('build')
         then:
-        if (requestedAndroidGradlePluginVersion.startsWith("3.2")) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith("3.2")) {
             fileExists('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/gradle/pitest/test/hello/HelloWorld.class')
         } else {
             fileExists('build/intermediates/classes/release/gradle/pitest/test/hello/HelloWorld.class')
         }
         result.wasExecuted(':test')
-        where:
-        requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }
 
     def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {

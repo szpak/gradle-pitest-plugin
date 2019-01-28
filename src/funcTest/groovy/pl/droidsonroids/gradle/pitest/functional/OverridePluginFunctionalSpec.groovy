@@ -6,7 +6,7 @@ import nebula.test.functional.ExecutionResult
 //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "should allow to override String configuration parameter from command line with AGP #requestedAndroidGradlePluginVersion"() {
+    def "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
                 apply plugin: 'nebula-override'
@@ -29,7 +29,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     }
                     dependencies {
                         classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+'
-                        classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
+                        classpath 'com.android.tools.build:gradle:3.3.0'
                     }
                 }
                 repositories {
@@ -45,7 +45,5 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
-        where:
-            requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }
 }

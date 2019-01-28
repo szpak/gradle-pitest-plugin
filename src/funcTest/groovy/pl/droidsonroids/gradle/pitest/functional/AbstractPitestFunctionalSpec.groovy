@@ -18,10 +18,6 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }
 
-    static List<String> resolveRequestedAndroidGradlePluginVersion() {
-        return ["3.2.0", "3.2.1", "3.3.0"]
-    }
-
     protected static String getBasicGradlePitestConfig() {
         return """
                 apply plugin: 'pl.droidsonroids.pitest'
