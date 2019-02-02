@@ -114,6 +114,8 @@ pluginBundle {
     vcsUrl = POM_SCM_CONNECTION_URL
     tags = ['pitest', 'android', 'mutation testing']
     description = POM_DESCRIPTION
+    version = VERSION
+    group = GROUP
 
     plugins {
         pitest {
