@@ -1,3 +1,7 @@
+# 0.1.9 - 2019-02-02
+- Merged upstream changes 7ec26eefcbf6234be892e0a3d0fa88b6b36cec3b
+- Android Gradle Plugin dependency updated to 3.3.0
+
 # 0.1.8 - 2018-12-19
 - Android Gradle Plugin dependency updated to 3.2.1
 - Gradle updated to 5.0

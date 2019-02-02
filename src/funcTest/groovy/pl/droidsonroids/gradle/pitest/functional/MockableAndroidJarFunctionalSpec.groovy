@@ -4,7 +4,7 @@ import nebula.test.functional.ExecutionResult
 
 class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "should mutate production code using mockable Android JAR and AGP #requestedAndroidGradlePluginVersion"() {
+    def "should mutate production code using mockable Android JAR"() {
         given:
             buildFile << """
                 buildscript {
@@ -13,8 +13,8 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51"
-                        classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20"
+                        classpath 'com.android.tools.build:gradle:3.3.0'
                     }
                 }
                 
@@ -57,7 +57,5 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             result.wasExecuted('pitestRelease')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
-        where:
-            requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }
 }

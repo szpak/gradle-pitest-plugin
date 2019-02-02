@@ -1,9 +1,7 @@
 package pl.droidsonroids.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
-import org.junit.Ignore
 
-@Ignore("pitest-junit5 not compatible with Android: NoClassDefFoundError: org/junit/platform/engine/support/filter/ExclusionReasonConsumingFilter")
 class Junit5KotlinFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     def "should work with kotlin and junit5"() {

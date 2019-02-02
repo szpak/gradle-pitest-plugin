@@ -1,19 +1,14 @@
-import static org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
-
 plugins {
-    id 'com.gradle.plugin-publish' version '0.9.10'
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'ru.vyarus.animalsniffer' version '1.4.4'
+    id 'com.github.ben-manes.versions' version '0.20.0'
     id 'groovy'
     id 'maven-publish'
     id 'signing'
     id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
 }
 
 sourceCompatibility = 1.8
-
-group = GROUP
-version = VERSION
 
 repositories {
     mavenCentral()
@@ -33,21 +28,21 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.2.1'
+    implementation 'com.android.tools.build:gradle:3.3.0'
 
-    testImplementation('org.spockframework:spock-core:1.1-groovy-2.4') {
+    testImplementation('org.spockframework:spock-core:1.2-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testImplementation 'net.bytebuddy:byte-buddy:1.7.9' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.9.8' //for Spying in Spock
     testImplementation 'junit:junit:4.12'
 
     funcTestImplementation sourceSets.main.output
-    //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+    //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:6.7.1') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:7.1.7') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
@@ -58,28 +53,18 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
+    systemProperty('ignoreDeprecations', 'true') //TODO remove after AGP stops using deprecated API
 }
 
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
-check.dependsOn funcTestClasses
+check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
 uploadArchives.dependsOn funcTest, check
 publishPlugins.dependsOn funcTest, check
 
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
     reportOn test, funcTest
-}
-
-animalsniffer {
-    sourceSets = [project.sourceSets.main]
-    //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
-    //https://github.com/mojohaus/animal-sniffer/issues/27
-}
-
-wrapper {
-    gradleVersion "5.0"
-    distributionType ALL
 }
 
 modifyPom {
@@ -129,6 +114,8 @@ pluginBundle {
     vcsUrl = POM_SCM_CONNECTION_URL
     tags = ['pitest', 'android', 'mutation testing']
     description = POM_DESCRIPTION
+    version = VERSION
+    group = GROUP
 
     plugins {
         pitest {

@@ -2,9 +2,11 @@ package pl.droidsonroids.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
 
+import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+
 class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "setup and run simple build on pitest infrastructure with kotlin plugin and AGP #requestedAndroidGradlePluginVersion"() {
+    def "setup and run simple build on pitest infrastructure with kotlin plugin"() {
         given:
             buildFile << """
                 apply plugin: 'pl.droidsonroids.pitest'
@@ -17,8 +19,8 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.51"
-                        classpath 'com.android.tools.build:gradle:$requestedAndroidGradlePluginVersion'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20"
+                        classpath 'com.android.tools.build:gradle:3.3.0'
                     }
                 }
 
@@ -39,8 +41,8 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     jcenter()
                 }
                 dependencies {
-                    testCompile 'junit:junit:4.12'
-                    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
+                    testImplementation 'junit:junit:4.12'
+                    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.20"
                 }
             """.stripIndent()
         and:
@@ -56,14 +58,12 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('build')
         then:
-            if (requestedAndroidGradlePluginVersion.startsWith("3.2")) {
+            if (ANDROID_GRADLE_PLUGIN_VERSION.startsWith("3.2")) {
                 fileExists('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/gradle/pitest/test/hello/HelloWorld.class')
             } else {
                 fileExists('build/intermediates/classes/release/gradle/pitest/test/hello/HelloWorld.class')
             }
             result.wasExecuted(':test')
-        where:
-            requestedAndroidGradlePluginVersion << resolveRequestedAndroidGradlePluginVersion()
     }
 
     def "should run mutation analysis with Android Gradle plugin 3"() {

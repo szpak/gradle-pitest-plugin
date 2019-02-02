@@ -4,7 +4,7 @@ import nebula.test.functional.ExecutionResult
 
 class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "report error when no project group and no targetClasses parameter are defined"() {
+    def "report error when no targetClasses parameter is defined"() {
         given:
             buildFile << """
                 apply plugin: 'com.android.library'
@@ -27,6 +27,6 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksWithFailure('pitestRelease')
         then:
-            result.anyOutputContains("No value has been specified for property 'targetClasses'")
+            assertStdOutOrStdErrContainsGivenText(result,"No value has been specified for property 'targetClasses'")
     }
 }
