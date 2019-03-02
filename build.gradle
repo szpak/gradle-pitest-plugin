@@ -14,8 +14,8 @@ buildscript {
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0' //override version for more reliable releasing from Travis
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.10.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.10.1'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0'
     }
 }
 
@@ -43,7 +43,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.9.8' //for Spying in Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.9.10' //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
