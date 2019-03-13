@@ -49,7 +49,7 @@ dependencies {
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:7.1.7') {
+    funcTestCompile('com.netflix.nebula:nebula-test:7.1.9') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
