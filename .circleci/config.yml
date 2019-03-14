@@ -1,0 +1,35 @@
+version: 2
+jobs:
+  build:
+#    working_directory: ~/circleci-demo-java-spring # directory where steps will run
+    docker:
+      - image: circleci/openjdk:8-jdk-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+          key: gradle-pitest-plugin-2-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "gradle/cdeliveryboy-release.gradle" }}
+      
+      - run: ./gradlew clean check
+      - run: ./gradlew funTest
+      # To leave clear state in cached ~/.gradle
+      - run: ./gradlew --stop
+      
+      - save_cache:
+          # TODO: Add some excludes?
+          paths:
+            - ~/.gradle
+          key: gradle-pitest-plugin-2-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "gradle/cdeliveryboy-release.gradle" }}
+      
+      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+      - store_test_results:
+          path: build/test-results
+      
+      # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+      - store_artifacts: # store the uberjar as an artifact
+          path: build/reports/tests/test
+          destination: test
+      - store_artifacts: # store the uberjar as an artifact
+          path: build/reports/tests/funcTest
+          destination: funcTest
+
