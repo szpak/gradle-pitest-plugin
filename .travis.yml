@@ -59,3 +59,5 @@ matrix:
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
     - jdk: openjdk11
       env: PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
+    - jdk: openjdk12
+      env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
