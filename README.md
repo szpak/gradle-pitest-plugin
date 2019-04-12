@@ -201,7 +201,7 @@ configure(project(':itest')) {
 ```
 
 Minimal working multi-project build is available in
-[functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
+[functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/funcTest/resources/testProjects/multiproject).
 
 ## PIT test-plugins support
 
