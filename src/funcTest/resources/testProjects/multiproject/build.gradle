@@ -3,6 +3,7 @@ buildscript {
         mavenLocal()
         mavenCentral()
         google()
+        jcenter()
     }
     dependencies {
         //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
@@ -13,21 +14,10 @@ buildscript {
 subprojects {
     apply plugin: 'pl.droidsonroids.pitest'
 
-    android {
-        compileSdkVersion 28
-        defaultConfig {
-            minSdkVersion 10
-            targetSdkVersion 28
-        }
-    }
-
     repositories {
         google()
         mavenCentral()
-    }
-
-    dependencies {
-        testImplementation 'junit:junit:4.12'
+        jcenter()
     }
 
     version = '1.0'
@@ -36,9 +26,19 @@ subprojects {
 
 configure(project(":shared")) {
     apply plugin: 'com.android.library'
+
+    android {
+        compileSdkVersion 28
+        defaultConfig {
+            minSdkVersion 10
+            targetSdkVersion 28
+        }
+
+    }
+
     dependencies {
-        implementation 'org.slf4j:slf4j-api:1.7.25'
-        implementation 'org.slf4j:slf4j-nop:1.7.25'
+        api 'org.slf4j:slf4j-api:1.7.25'
+        testImplementation 'junit:junit:4.12'
     }
 }
 
@@ -54,11 +54,12 @@ configure(project(':itest')) {
     }
     dependencies {
         implementation project(':shared')
+        testImplementation 'junit:junit:4.12'
     }
 
     //Additional configuration to resolve :shared project JAR as mutable code path for PIT
     configurations { mutableCodeBase { transitive false } }
-    dependencies { mutableCodeBase project(':shared') }
+    dependencies { mutableCodeBase project(path: ':shared', configuration: 'default') }
     pitest {
         timestampedReports = false
         mainSourceSets = [project.android.sourceSets.main, project(':shared').android.sourceSets.main]

@@ -28,7 +28,7 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.3.0'
+    implementation 'com.android.tools.build:gradle:3.4.0'
 
     testImplementation('org.spockframework:spock-core:1.2-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself

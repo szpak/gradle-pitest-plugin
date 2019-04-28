@@ -22,9 +22,9 @@ import java.util.regex.Pattern
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
-    private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
+    private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("5.4.1")
     //To do not fail on "NoSuchMethodError: sun.misc.Unsafe.defineClass()"
-    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.8")
+    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("5.4.1")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -56,9 +56,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9", "4.8.1", "4.7", "4.6", "4.5", "4.4.1", "4.3.1", "4.2.1", "4.1", "4.0.1"]
-    private static final List<String> GRADLE5_VERSIONS = ["5.1.1", "5.0"]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE4_VERSIONS.first(), GRADLE5_VERSIONS.first()]
+    //private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9", "4.8.1", "4.7", "4.6", "4.5", "4.4.1", "4.3.1", "4.2.1", "4.1", "4.0.1"]
+    private static final List<String> GRADLE5_VERSIONS = ["5.4.1"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -68,9 +68,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             case null:
                 return GRADLE_LATEST_VERSIONS
             case "quick":
-                return GRADLE_LATEST_VERSIONS + GRADLE4_VERSIONS.last() + GRADLE5_VERSIONS.last()
+                return GRADLE_LATEST_VERSIONS + GRADLE5_VERSIONS.last()
             case "full":
-                return GRADLE5_VERSIONS + GRADLE4_VERSIONS
+                return GRADLE5_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
                     "Assuming 'latestOnly'.")

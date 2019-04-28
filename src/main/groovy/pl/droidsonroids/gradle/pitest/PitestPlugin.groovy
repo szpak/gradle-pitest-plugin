@@ -135,7 +135,7 @@ class PitestPlugin implements Plugin<Project> {
                 combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
                     it.properties.dependencyProject == null
                 })
-            } else {
+            } else if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 4) {
                 combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"])
                 combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"])
             }
@@ -259,7 +259,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     static JavaCompile getJavaCompileTask(BaseVariant variant) {
-        if (PitestPlugin.ANDROID_GRADLE_PLUGIN_VERSION_NUMBER >= VersionNumber.parse("3.3")) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER >= VersionNumber.parse("3.3")) {
             return variant.javaCompileProvider.get()
         } else {
             return variant.javaCompile

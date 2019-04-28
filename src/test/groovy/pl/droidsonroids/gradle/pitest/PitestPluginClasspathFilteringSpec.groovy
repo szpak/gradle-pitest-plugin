@@ -130,7 +130,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     private File addFileWithFileNameAsImplementationDependencyAndReturnAsFile(String depFileName) {
         File depFile = new File(tmpProjectDir.root, depFileName)
         depFile.createNewFile()
-        project.dependencies.add('implementation', project.files(depFile))
+        project.dependencies.add('runtimeOnly', project.files(depFile))
         return depFile
     }
 }
