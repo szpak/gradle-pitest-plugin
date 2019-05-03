@@ -111,7 +111,7 @@ modifyPom {
 
 pluginBundle {
     website = POM_URL
-    vcsUrl = POM_SCM_CONNECTION_URL
+    vcsUrl = POM_URL
     tags = ['pitest', 'android', 'mutation testing']
     description = POM_DESCRIPTION
     version = VERSION
