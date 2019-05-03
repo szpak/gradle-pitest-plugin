@@ -1,3 +1,8 @@
+# 0.2.0 - 2019-05-03
+- Android Gradle Plugin dependency updated to 3.4.0
+- Gradle updated to 5.4.1
+- Fix compatibility with Android Gradle Plugin 3.4 and 3.5 [#48](https://github.com/koral--/gradle-pitest-plugin/issue/48)
+
 # 0.1.9 - 2019-02-02
 - Merged upstream changes 7ec26eefcbf6234be892e0a3d0fa88b6b36cec3b
 - Android Gradle Plugin dependency updated to 3.3.0
