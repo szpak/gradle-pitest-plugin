@@ -228,4 +228,10 @@ class PitestPluginExtension {
         throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
             "property to enable passing classpath to PIT as file. ")
     }
+
+    /**
+     * If set, mockable Android JAR is not added to classpath.
+     * May by needed if you use alternative like UnMock or Robolectric.
+     */
+    Boolean excludeMockableAndroidJar
 }

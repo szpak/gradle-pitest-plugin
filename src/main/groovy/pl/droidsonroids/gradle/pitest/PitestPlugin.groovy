@@ -93,13 +93,17 @@ class PitestPlugin implements Plugin<Project> {
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
+            def mockableAndroidJarTask
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
-                variantTask.dependsOn project.tasks.findByName("mockableAndroidJar")
+                mockableAndroidJarTask = project.tasks.findByName("mockableAndroidJar")
                 configureTaskDefault(variantTask, variant, getMockableAndroidJar(project.android))
             } else {
-                def mockableAndroidJarTask = project.tasks.maybeCreate("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
-                variantTask.dependsOn mockableAndroidJarTask
+                mockableAndroidJarTask = project.tasks.maybeCreate("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
                 configureTaskDefault(variantTask, variant, mockableAndroidJarTask.outputJar)
+            }
+
+            if (!extension.excludeMockableAndroidJar) {
+                variantTask.dependsOn mockableAndroidJarTask
             }
 
             variantTask.with {
@@ -125,7 +129,9 @@ class PitestPlugin implements Plugin<Project> {
         FileCollection combinedTaskClasspath = project.files()
 
         combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
-        combinedTaskClasspath.from(mockableAndroidJar)
+        if (!extension.excludeMockableAndroidJar) {
+            combinedTaskClasspath.from(mockableAndroidJar)
+        }
 
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {

@@ -36,7 +36,7 @@ android {
 
 ext {
     junitVersion = '4.12'
-    robolectricVersion = '3.8'
+    robolectricVersion = '4.2.1'
     supportLibVersion = '27.1.0'
 }
 
@@ -69,4 +69,5 @@ pitest {
     outputFormats = ['XML', 'HTML']
     verbose = true
     mutators = ['STRONGER', 'EXPERIMENTAL_NAKED_RECEIVER']
+    excludeMockableAndroidJar = true
 }

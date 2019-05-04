@@ -1,3 +1,8 @@
+# 0.2.1 - 2019-05-04
+- Add `excludeMockableAndroidJar` extension property
+-- Fix compatibility with Robolectric [#44](https://github.com/koral--/gradle-pitest-plugin/issue/44)
+-- Fix compatibility with UnMock [#49](https://github.com/koral--/gradle-pitest-plugin/issue/49)
+
 # 0.2.0 - 2019-05-03
 - Android Gradle Plugin dependency updated to 3.4.0
 - Gradle updated to 5.4.1
