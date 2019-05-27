@@ -10,7 +10,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     private static final String PIT_1_3_VERSION = "1.3.1"
     private static final String MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION = "1.2.3"  //https://github.com/hcoles/pitest/issues/380
     private static final String MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION = "1.4.0"
-    private static final String MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION = "1.4.1"
+    private static final String MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION = "1.4.2" //in fact 1.4.1, but 1.4.2 is also Java 12 compatible
 
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
