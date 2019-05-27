@@ -223,7 +223,7 @@ buildscript {
 }
 
 pitest {
-    testPlugin = 'junit5'
+    testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
     // rest of your pitest configuration
 }
 ```
