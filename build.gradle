@@ -43,7 +43,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.10.0' //for Spying in Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.10.1' //for Spying in Spock
     testCompile 'junit:junit:4.12'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
