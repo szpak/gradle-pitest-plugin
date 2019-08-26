@@ -25,6 +25,7 @@ import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPlugin
 
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -51,10 +52,9 @@ class PitestPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         this.project = project
-        applyRequiredJavaPlugin()
-        createConfigurations()
-        createExtension(project)
-        project.plugins.withType(JavaBasePlugin) {
+        project.plugins.withType(JavaPlugin).configureEach {
+            createConfigurations()
+            createExtension()
             PitestTask task = project.tasks.create(PITEST_TASK_NAME, PitestTask)
             task.with {
                 description = "Run PIT analysis for java classes"
@@ -62,12 +62,6 @@ class PitestPlugin implements Plugin<Project> {
             }
             configureTaskDefault(task)
         }
-    }
-
-    private void applyRequiredJavaPlugin() {
-        //The new Gradle plugin mechanism requires all mandatory plugins to be applied explicit
-        //See: https://github.com/szpak/gradle-pitest-plugin/issues/21
-        project.apply(plugin: 'java')
     }
 
     private void createConfigurations() {
@@ -78,7 +72,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     //TODO: MZA: Maybe move it to the constructor of an extension class?
-    private void createExtension(Project project) {
+    private void createExtension() {
         extension = project.extensions.create("pitest", PitestPluginExtension)
         extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
         extension.pitestVersion = DEFAULT_PITEST_VERSION
