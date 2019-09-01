@@ -31,6 +31,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
 
+import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 /**
@@ -75,6 +76,7 @@ class PitestPlugin implements Plugin<Project> {
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
                 addPitDependencies(createConfigurations())
+                t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
             }
         }
     }
