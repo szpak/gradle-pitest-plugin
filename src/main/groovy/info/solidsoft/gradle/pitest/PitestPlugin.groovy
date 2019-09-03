@@ -168,12 +168,6 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     @CompileStatic
-    private boolean isGradleVersionBefore4() {
-        String gradleVersionAsString = project.gradle.gradleVersion
-        return gradleVersionAsString.startsWith("2.") || gradleVersionAsString.startsWith("3.")
-    }
-
-    @CompileStatic
     private Set<String> calculateTasksToDependOn() {
 //        //Fails with: NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.collect(Ljava/lang/Iterable;Lgroovy/lang/Closure;)Ljava/util/List;
 //        //when compiled with Groovy 2.5 (Gradle 5+) and executed with Groovy 2.4 (Gradle <5). Explicit coercion doesn't help.
