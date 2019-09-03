@@ -28,10 +28,10 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
-    testCompile("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit5Version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+    testImplementation "org.junit.platform:junit-platform-runner:$junitPlatformVersion"
 
 }
 

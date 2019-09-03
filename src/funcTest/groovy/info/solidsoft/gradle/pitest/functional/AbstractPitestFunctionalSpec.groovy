@@ -29,7 +29,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 //                    }
                 }
                 dependencies {
-                    testCompile 'junit:junit:4.12'
+                    testImplementation 'junit:junit:4.12'
                 }
         """.stripIndent()
     }
