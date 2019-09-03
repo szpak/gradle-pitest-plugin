@@ -24,7 +24,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
     private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
     //To do not fail on "NoSuchMethodError: sun.misc.Unsafe.defineClass()"
-    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.8")
+    private static final GradleVersion MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.8")
+    //https://github.com/gradle/gradle/issues/8681#issuecomment-522951112
+    private static final GradleVersion MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0-20190902220030+0000")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -58,7 +60,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9", "4.8.1", "4.7", "4.6", "4.5", "4.4.1", "4.3.1", "4.2.1", "4.1", "4.0.1"]
     private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1.1", "5.0"]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE4_VERSIONS.first(), GRADLE5_VERSIONS.first()]
+    private static final List<String> GRADLE6_VERSIONS = [MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION.version] //for Java 13 compatibility
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE4_VERSIONS.first(), GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -85,17 +88,18 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             return requestedGradleVersions
         }
         GradleVersion minimalCompatibleGradleVersion = !Jvm.current().javaVersion.isJava10Compatible() ? MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION :
-            MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION
+            (!(Integer.valueOf(Jvm.current().javaVersion.majorVersion) > 12) ? MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION :
+                MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION)
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 
     private List<String> leaveJavaXCompatibleGradleVersionsOnly(List<String> requestedGradleVersions, GradleVersion minimalCompatibleJavaVersion) {
-        List<String> java9CompatibleGradleVersions = requestedGradleVersions.findAll {
+        List<String> javaXCompatibleGradleVersions = requestedGradleVersions.findAll {
             GradleVersion.version(it) >= minimalCompatibleJavaVersion
         }
-        if (java9CompatibleGradleVersions.size() < 2) {
-            java9CompatibleGradleVersions.add(minimalCompatibleJavaVersion.version)
+        if (javaXCompatibleGradleVersions.size() < 2) {
+            javaXCompatibleGradleVersions.add(minimalCompatibleJavaVersion.version)
         }
-        return java9CompatibleGradleVersions
+        return javaXCompatibleGradleVersions
     }
 }
