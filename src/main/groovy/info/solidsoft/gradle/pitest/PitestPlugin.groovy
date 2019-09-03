@@ -26,12 +26,14 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaBasePlugin
 
+import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
+
 /**
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
     public final static String DEFAULT_PITEST_VERSION = '1.4.6'
-    public final static String PITEST_TASK_GROUP = "Report"
+    public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
