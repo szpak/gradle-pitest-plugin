@@ -37,11 +37,6 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     }
 
     private List<String> getPitVersionsCompoatibleWithCurrentJavaVersion() {
-        //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
-        //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
-        //PIT before 1.2.3 is not compatible with Java 9
-        //PIT before 1.4.0 is not compatible with Java 10
-        //PIT before 1.4.1 is not compatible with Java 11
         if (isJava13Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
         }
@@ -55,10 +50,5 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION, PIT_1_3_VERSION]
         }
         return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", PIT_1_3_VERSION, "1.4.0"]
-    }
-
-    //TODO: Switch to Gradle mechanism once upgrade to 5.x
-    private boolean isJava13Compatible() {
-        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
     }
 }

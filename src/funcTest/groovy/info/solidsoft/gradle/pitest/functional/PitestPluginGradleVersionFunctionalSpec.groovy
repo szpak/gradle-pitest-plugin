@@ -88,10 +88,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             return requestedGradleVersions
         }
         GradleVersion minimalCompatibleGradleVersion = !Jvm.current().javaVersion.isJava10Compatible() ? MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION :
-//            //Broken as Gradle 4.10.2 sets the latest know version for unknown versions (e.g. 13)
-//            (!(Integer.valueOf(Jvm.current().javaVersion.majorVersion) > 12) ? MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION :
-            (!(System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")))
-                ? MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION : MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION
+            !isJava13Compatible() ? MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION : MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 
