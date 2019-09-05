@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import spock.lang.Ignore
 import spock.lang.Issue
 
 class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
@@ -73,11 +74,24 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should filter user defined extensions"() {
         given:
             File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+    }
+
+    @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    def "should filter user defined extensions (property syntax))"() {
+        given:
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        and:
+            project.pitest.addFileExtensionsToFilter(['extra'])
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -97,12 +111,28 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should allow to provide extra extensions in addition to default ones"() {
         given:
             File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
             File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+            !resolvedPitClasspath.contains(libDepFile.path)
+            !resolvedPitClasspath.contains(extraDepFile.path)
+    }
+
+    @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    def "should allow to provide extra extensions in addition to default ones (property syntax)"() {
+        given:
+            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
+            File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        and:
+            project.pitest.addFileExtensionsToFilter(['extra'])
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:

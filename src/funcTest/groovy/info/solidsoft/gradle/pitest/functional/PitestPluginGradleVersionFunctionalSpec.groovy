@@ -10,6 +10,8 @@ import org.gradle.util.GradleVersion
 
 import java.util.regex.Pattern
 
+import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
+
 /**
  * TODO: Possible extensions:
  *  - Move functional tests to a separate sourceSet and not run them in every build - DONE
@@ -21,12 +23,10 @@ import java.util.regex.Pattern
 @SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
-    private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
-    //To do not fail on "NoSuchMethodError: sun.misc.Unsafe.defineClass()"
-    private static final GradleVersion MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.8")
+    //4.8, but plugin requires 4.9+
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.9")
     //https://github.com/gradle/gradle/issues/8681#issuecomment-522951112
-    private static final GradleVersion MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0-20190902220030+0000")
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0-20190902220030+0000")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -44,7 +44,12 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
-            result.getStandardOutput().contains('Generated 1 mutations Killed 1 (100%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
+        and:    //issue with Gradle <5.0 where Integer/Boolean property had 0/false provided by default
+            //TODO: verifyAll would be great, but it's broken with explicit "assert" - https://github.com/spockframework/spock/issues/855#issuecomment-528411874
+            PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT.each {
+                assert !result.standardOutput.contains("${it}=")
+            }
         where:
             requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
@@ -58,9 +63,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9", "4.8.1", "4.7", "4.6", "4.5", "4.4.1", "4.3.1", "4.2.1", "4.1", "4.0.1"]
+    private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9"]
     private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1.1", "5.0"]
-    private static final List<String> GRADLE6_VERSIONS = [MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION.version] //for Java 13 compatibility
+    private static final List<String> GRADLE6_VERSIONS = [MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version] //for Java 13 compatibility
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE4_VERSIONS.first(), GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
@@ -87,8 +92,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        GradleVersion minimalCompatibleGradleVersion = !Jvm.current().javaVersion.isJava10Compatible() ? MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION :
-            !isJava13Compatible() ? MINIMAL_STABLE_JAVA12_COMPATIBLE_GRADLE_VERSION : MINIMAL_STABLE_JAVA13_COMPATIBLE_GRADLE_VERSION
+        GradleVersion minimalCompatibleGradleVersion = !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
+            MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 

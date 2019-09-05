@@ -30,8 +30,10 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         then:
             result.wasExecuted(':pitest')
         and:
-            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
-            result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
+            result.standardOutput.contains("Using PIT: ${pitVersion}")
+        and:
+            result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
+            result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
         where:
             pitVersion << getPitVersionsCompoatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }

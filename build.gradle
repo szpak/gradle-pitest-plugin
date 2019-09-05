@@ -47,6 +47,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+    funcTestImplementation sourceSets.test.output
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
     funcTestImplementation('com.netflix.nebula:nebula-test:7.2.5') {
