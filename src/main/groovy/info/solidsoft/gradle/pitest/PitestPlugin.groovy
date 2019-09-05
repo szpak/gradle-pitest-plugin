@@ -33,7 +33,7 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.4.6'
+    public final static String DEFAULT_PITEST_VERSION = '1.4.10'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
