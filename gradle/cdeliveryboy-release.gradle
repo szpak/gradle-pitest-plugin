@@ -1,8 +1,7 @@
 //Continuous Delivery release configuration with CDeliveryBoy
 
 apply plugin: 'info.solidsoft.cdeliveryboy'
-//TODO: Temporarily disabled due to incompatibility with Gradle 5+. Should be fixed in gradle-nexus-staging-plugin 0.21.1
-//apply plugin: 'io.codearte.nexus-upload-staging'
+apply plugin: 'io.codearte.nexus-upload-staging'
 
 cDeliveryBoy {
     tasks {
