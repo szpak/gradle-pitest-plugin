@@ -8,6 +8,7 @@
  - Move `pitest` task to `verification` group - [#136](https://github.com/szpak/gradle-pitest-plugin/issues/136) - PR by [Björn Kautler](https://github.com/Vampire)
  - Remove deprecation warnings in Gradle 6.0
  - Bump minimal Gradle version to 5.1
+ - Meaningful error message on running unsupported Gradle version
  - Switch build to Gradle 5.6.1
 
 **Known limitations**. This is a technical release to cope with the changes in Gradle 5 and 6. PIT 1.4.10 is used by default, but not all

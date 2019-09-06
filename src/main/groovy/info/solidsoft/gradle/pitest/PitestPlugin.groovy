@@ -17,6 +17,7 @@ package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,7 +27,9 @@ import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
+import org.gradle.util.GradleVersion
 
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -39,6 +42,10 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
+    @Internal
+    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.1") //public as used also in regression tests
+    public static final String PLUGIN_ID = "info.solidsoft.pitest"
+
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
@@ -48,11 +55,18 @@ class PitestPlugin implements Plugin<Project> {
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
     private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
 
+    private final GradleVersionEnforcer gradleVersionEnforcer
+
     private Project project
     private PitestPluginExtension extension
 
+    PitestPlugin() {
+        this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(MINIMAL_SUPPORTED_GRADLE_VERSION)
+    }
+
     void apply(Project project) {
         this.project = project
+        gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
         project.plugins.withType(JavaPlugin).configureEach {
             createExtensionAndSetDefaultValues()
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
