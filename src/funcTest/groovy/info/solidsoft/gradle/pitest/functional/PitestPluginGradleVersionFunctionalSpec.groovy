@@ -23,8 +23,8 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //4.8, but plugin requires 4.9+
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.9")
+    //4.8, but plugin requires 5.1.1
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("5.1")
     //https://github.com/gradle/gradle/issues/8681#issuecomment-522951112
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0-20190902220030+0000")
 
@@ -63,10 +63,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE4_VERSIONS = ["4.10.2", "4.9"]
-    private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1.1", "5.0"]
+    private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1"]
     private static final List<String> GRADLE6_VERSIONS = [MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version] //for Java 13 compatibility
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE4_VERSIONS.first(), GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -74,11 +73,11 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         switch (regressionTestsLevel) {
             case "latestOnly":
             case null:
-                return GRADLE_LATEST_VERSIONS
+                return GRADLE_LATEST_VERSIONS + GRADLE5_VERSIONS.last() //after 4.x support removal also with 5.1.1
             case "quick":
-                return GRADLE_LATEST_VERSIONS + GRADLE4_VERSIONS.last() + GRADLE5_VERSIONS.last()
+                return GRADLE_LATEST_VERSIONS + GRADLE5_VERSIONS.last()
             case "full":
-                return GRADLE5_VERSIONS + GRADLE4_VERSIONS
+                return GRADLE5_VERSIONS + GRADLE6_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
                         "Assuming 'latestOnly'.")
