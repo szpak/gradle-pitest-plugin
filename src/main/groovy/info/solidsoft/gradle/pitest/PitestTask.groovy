@@ -23,6 +23,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -277,37 +278,37 @@ class PitestTask extends JavaExec {
 //        map['reportDir'] = reportDir.getOrNull()?.toString()
         map['reportDir'] = getReportDir().toString()
         map['targetClasses'] = targetClasses.get().join(',')
-        map['targetTests'] = targetTests.getOrNull()?.join(',')
-        map['dependencyDistance'] = dependencyDistance.getOrNull()?.toString()
-        map['threads'] = threads.getOrNull()?.toString()
-        map['mutateStaticInits'] = mutateStaticInits.getOrNull()?.toString()
-        map['includeJarFiles'] = includeJarFiles.getOrNull()?.toString()
-        map["mutators"] = mutators.getOrNull()?.join(',')
-        map['excludedMethods'] = excludedMethods.getOrNull()?.join(',')
-        map['excludedClasses'] = excludedClasses.getOrNull()?.join(',')
-        map['excludedTestClasses'] = excludedTestClasses.getOrNull()?.join(',')
-        map['avoidCallsTo'] = avoidCallsTo.getOrNull()?.join(',')
-        map['verbose'] = verbose.getOrNull()?.toString()
-        map['timeoutFactor'] = timeoutFactor.getOrNull()?.toString()
-        map['timeoutConst'] = timeoutConstInMillis.getOrNull()?.toString()
-        map['maxMutationsPerClass'] = maxMutationsPerClass.getOrNull()?.toString()
-        map['jvmArgs'] = childProcessJvmArgs.getOrNull()?.join(',')
-        map['outputFormats'] = outputFormats.getOrNull()?.join(',')
-        map['failWhenNoMutations'] = failWhenNoMutations.getOrNull()?.toString()
-        map['includedGroups'] = includedGroups.getOrNull()?.join(',')
-        map['excludedGroups'] = excludedGroups.getOrNull()?.join(',')
+        map['targetTests'] = optionalCollectionAsString(targetTests)
+        map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
+        map['threads'] = optionalPropertyAsString(threads)
+        map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
+        map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
+        map["mutators"] = optionalCollectionAsString(mutators)
+        map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
+        map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
+        map['excludedTestClasses'] = optionalCollectionAsString(excludedTestClasses)
+        map['avoidCallsTo'] = optionalCollectionAsString(avoidCallsTo)
+        map['verbose'] = optionalPropertyAsString(verbose)
+        map['timeoutFactor'] = optionalPropertyAsString(timeoutFactor)
+        map['timeoutConst'] = optionalPropertyAsString(timeoutConstInMillis)
+        map['maxMutationsPerClass'] = optionalPropertyAsString(maxMutationsPerClass)
+        map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
+        map['outputFormats'] = optionalCollectionAsString(outputFormats)
+        map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
+        map['includedGroups'] = optionalCollectionAsString(includedGroups)
+        map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
-        map['detectInlinedCode'] = detectInlinedCode.getOrNull()?.toString()
-        map['timestampedReports'] = timestampedReports.getOrNull()?.toString()
+        map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
+        map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
-        map['mutationThreshold'] = mutationThreshold.getOrNull()?.toString()
-        map['coverageThreshold'] = coverageThreshold.getOrNull()?.toString()
+        map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
+        map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
         map['mutationEngine'] = mutationEngine.getOrNull()
-        map['exportLineCoverage'] = exportLineCoverage.getOrNull()?.toString()
+        map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
-        map['maxSurviving'] = maxSurviving.getOrNull()?.toString()
-        map['features'] = features.getOrNull()?.join(',')
+        map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
+        map['features'] = optionalCollectionAsString(features)
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
@@ -349,6 +350,18 @@ class PitestTask extends JavaExec {
         return taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
+    }
+
+    private <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
+        return optionalSetProperty.getOrNull()?.toString()
+    }
+
+    private String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
+        return optionalSetProperty.getOrNull()?.join(',')
+    }
+
+    private String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
+        return optionalListProperty.getOrNull()?.join(',')
     }
 
     @PackageScope   //visible for testing
