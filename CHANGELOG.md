@@ -3,6 +3,7 @@
 ## 1.4.6 - Unreleased
 
  - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
+ - Support for useClasspathJar (PIT 1.4.2) - [#92](https://github.com/szpak/gradle-pitest-plugin/issues/92)
  - Support for skipFailingTests (PIT 1.4.4) - [#113](https://github.com/szpak/gradle-pitest-plugin/issues/113)
 
 ## 1.4.5 - Unreleased

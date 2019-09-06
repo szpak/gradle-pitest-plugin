@@ -146,6 +146,7 @@ class PitestPlugin implements Plugin<Project> {
 //        task.mutableCodePaths.set(extension.additionalMutableCodePaths)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
+        task.useClasspathJar.set(extension.useClasspathJar)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.features.set(extension.features)
 

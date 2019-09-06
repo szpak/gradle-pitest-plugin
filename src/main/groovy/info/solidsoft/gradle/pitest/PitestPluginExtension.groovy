@@ -151,6 +151,9 @@ class PitestPluginExtension {
 
     final Property<Integer> maxSurviving    //new in PIT 1.1.10
 
+    @Incubating
+    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
+
     /**
      * Use classpath file instead of passing classpath in a command line
      *
@@ -240,6 +243,7 @@ class PitestPluginExtension {
 //        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
         useClasspathFile = of.property(Boolean)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)

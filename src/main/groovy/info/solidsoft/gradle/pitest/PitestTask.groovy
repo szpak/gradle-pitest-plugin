@@ -214,6 +214,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Boolean> useClasspathJar
+
+    @Input
+    @Optional
     final ListProperty<String> features
 
     PitestTask() {
@@ -259,6 +263,7 @@ class PitestTask extends JavaExec {
 //        mutableCodePaths = of.setProperty(File)
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
         useAdditionalClasspathFile = of.property(Boolean)
 //        additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
@@ -320,6 +325,7 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
+        map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
         map['features'] = optionalCollectionAsString(features)
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
