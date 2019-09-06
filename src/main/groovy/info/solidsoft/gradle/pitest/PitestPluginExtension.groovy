@@ -195,53 +195,50 @@ class PitestPluginExtension {
 
     PitestPluginExtension(Project project) {
         ObjectFactory of = project.objects
-        pitestVersion = of.property(String)
+        Project p = project
 
+        pitestVersion = of.property(String)
         testPlugin = of.property(String)
 //        reportDir = of.fileProperty()
-        targetClasses = setSetPropertyToNull(of.setProperty(String))    //empty collection (default value) is resolved as set to target classes
-        targetTests = of.setProperty(String)
-        dependencyDistance = setPropertyToNull(of.property(Integer))
-        threads = setPropertyToNull(of.property(Integer))
-        mutateStaticInits = setPropertyToNull(of.property(Boolean))
-        includeJarFiles = setPropertyToNull(of.property(Boolean))
-        mutators = of.setProperty(String)
-        excludedMethods = of.setProperty(String)
-        excludedClasses = of.setProperty(String)
-        excludedTestClasses = of.setProperty(String)
-        avoidCallsTo = of.setProperty(String)
-        verbose = setPropertyToNull(of.property(Boolean))
+        targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
+        targetTests = nullSetPropertyOf(p, String)
+        dependencyDistance = of.property(Integer)
+        threads = of.property(Integer)
+        mutateStaticInits = of.property(Boolean)
+        includeJarFiles = of.property(Boolean)
+        mutators = nullSetPropertyOf(p, String)
+        excludedMethods = nullSetPropertyOf(p, String)
+        excludedClasses = nullSetPropertyOf(p, String)
+        excludedTestClasses = nullSetPropertyOf(p, String)
+        avoidCallsTo = nullSetPropertyOf(p, String)
+        verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
-        timeoutConstInMillis = setPropertyToNull(of.property(Integer))
-        maxMutationsPerClass = setPropertyToNull(of.property(Integer))
-
-        jvmArgs = setListPropertyToNull(of.listProperty(String))
-        outputFormats = of.setProperty(String)
-        failWhenNoMutations = setPropertyToNull(of.property(Boolean))
-        includedGroups = of.setProperty(String)
-        excludedGroups = of.setProperty(String)
-        detectInlinedCode = setPropertyToNull(of.property(Boolean))
-        timestampedReports = setPropertyToNull(of.property(Boolean))
+        timeoutConstInMillis = of.property(Integer)
+        maxMutationsPerClass = of.property(Integer)
+        jvmArgs = nullListPropertyOf(p, String)
+        outputFormats = nullSetPropertyOf(p, String)
+        failWhenNoMutations = of.property(Boolean)
+        includedGroups = nullSetPropertyOf(p, String)
+        excludedGroups = nullSetPropertyOf(p, String)
+        detectInlinedCode = of.property(Boolean)
+        timestampedReports = of.property(Boolean)
 //        historyInputLocation = of.fileProperty()
 //        historyOutputLocation = of.fileProperty()
-        enableDefaultIncrementalAnalysis = setPropertyToNull(of.property(Boolean))
-        mutationThreshold = setPropertyToNull(of.property(Integer))
-        coverageThreshold = setPropertyToNull(of.property(Integer))
+        enableDefaultIncrementalAnalysis = of.property(Boolean)
+        mutationThreshold = of.property(Integer)
+        coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
-        testSourceSets = setSetPropertyToNull(of.setProperty(SourceSet))
-        mainSourceSets = setSetPropertyToNull(of.setProperty(SourceSet))
-        exportLineCoverage = setPropertyToNull(of.property(Boolean))
+        testSourceSets = nullSetPropertyOf(p, SourceSet)
+        mainSourceSets = nullSetPropertyOf(p, SourceSet)
+        exportLineCoverage = of.property(Boolean)
 //        jvmPath = of.fileProperty()
-
-        mainProcessJvmArgs = of.listProperty(String)
-//        additionalMutableCodePaths = setSetPropertyToNull(of.setProperty(File))
-        pluginConfiguration = setMapPropertyToNull(of.mapProperty(String, String))
-        maxSurviving = setPropertyToNull(of.property(Integer))
-
-        useClasspathFile = setPropertyToNull(of.property(Boolean))
-        features = of.listProperty(String)
-
-        fileExtensionsToFilter = of.listProperty(String)
+        mainProcessJvmArgs = nullListPropertyOf(p, String)
+//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
+        pluginConfiguration = nullMapPropertyOf(p, String, String)
+        maxSurviving = of.property(Integer)
+        useClasspathFile = of.property(Boolean)
+        features = nullListPropertyOf(p, String)
+        fileExtensionsToFilter = nullListPropertyOf(p, String)
     }
 
     void setReportDir(File reportDir) {
@@ -307,27 +304,22 @@ class PitestPluginExtension {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
-    private <T> SetProperty<T> setSetPropertyToNull(SetProperty<T> setProperty) {
-        // TODO: Switch to value() once 5.6+ is minimal required Gradle version
+    private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
+        //Replace with .value(null) once only Gradle 5.6+ is supported
+        SetProperty<T> setProperty = p.objects.setProperty(clazz)
         setProperty.set(null as Set)
         return setProperty
     }
 
-    private <T> ListProperty<T> setListPropertyToNull(ListProperty<T> listProperty) {
-        //TODO: Switch to value() once 5.6+ is minimal required Gradle version
+    private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
+        ListProperty<T> listProperty = p.objects.listProperty(clazz)
         listProperty.set(null as List)
         return listProperty
     }
 
-    private <K, V> MapProperty<K, V> setMapPropertyToNull(MapProperty<K, V> mapProperty) {
-        //TODO: Switch to value() once 5.6+ is minimal required Gradle version
+    private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
+        MapProperty<K, V> mapProperty = p.objects.mapProperty(keyClazz, valueClazz)
         mapProperty.set(null as Map)
         return mapProperty
-    }
-
-    //Workaround on issue with Gradle <5.0 where Integer/Boolean property had 0/false provided by default - changed in 5.0+
-    private <T> Property<T> setPropertyToNull(Property<T> property) {
-        property.set(null as T)
-        return property
     }
 }
