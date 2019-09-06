@@ -128,6 +128,10 @@ class PitestTask extends JavaExec {
     @Optional
     final SetProperty<String> excludedGroups
 
+    @Input
+    @Optional
+    final SetProperty<String> includedTestMethods
+
     @InputFiles
     Set<File> sourceDirs
 
@@ -233,6 +237,7 @@ class PitestTask extends JavaExec {
         failWhenNoMutations = of.property(Boolean)
         includedGroups = of.setProperty(String)
         excludedGroups = of.setProperty(String)
+        includedTestMethods = of.setProperty(String)
 //        sourceDirs = of.fileProperty()
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
@@ -297,6 +302,7 @@ class PitestTask extends JavaExec {
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
         map['includedGroups'] = optionalCollectionAsString(includedGroups)
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
+        map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
         map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
         map['timestampedReports'] = optionalPropertyAsString(timestampedReports)

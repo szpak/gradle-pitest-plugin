@@ -41,6 +41,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'failWhenNoMutations',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
+                                                                                'includedTestMethods',
                                                                                 'detectInlinedCode',
                                                                                 'timestampedReports',
                                                                                 'mutationThreshold',
@@ -111,6 +112,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "failWhenNoMutations"    | false                                        || "false"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"
             "mutationThreshold"      | 90                                           || "90"

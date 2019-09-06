@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.6 - Unreleased
+
+ - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
+
 ## 1.4.5 - Unreleased
 
  - Rework internal plugin implementation to Gradle 5+ standards
