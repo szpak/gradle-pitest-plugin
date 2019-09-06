@@ -20,7 +20,6 @@ import groovy.transform.PackageScope
 import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.UnionFileCollection
@@ -28,7 +27,6 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.TaskProvider
 
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -130,7 +128,7 @@ class PitestPlugin implements Plugin<Project> {
 //        task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
 //        task.mutableCodePaths.set(extension.additionalMutableCodePaths)
-//        task.pluginConfiguration.set(extension.pluginConfiguration)
+        task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.features.set(extension.features)
@@ -158,7 +156,6 @@ class PitestPlugin implements Plugin<Project> {
             historyOutputLocation = { extension.historyOutputLocation }
             defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
             jvmPath = { extension.jvmPath }
-            pluginConfiguration = { extension.pluginConfiguration }
         }
     }
 

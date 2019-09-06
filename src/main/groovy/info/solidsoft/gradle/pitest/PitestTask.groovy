@@ -21,6 +21,7 @@ import org.gradle.api.Incubating
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
@@ -196,7 +197,7 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    Map<String, String> pluginConfiguration
+    final MapProperty<String, String> pluginConfiguration
 
     @Input
     @Optional
@@ -227,7 +228,6 @@ class PitestTask extends JavaExec {
         timeoutConstInMillis = of.property(Integer)
         maxMutationsPerClass = of.property(Integer)
         childProcessJvmArgs = of.listProperty(String)
-//        jvmArgs = of.listProperty(String) //???
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
         includedGroups = of.setProperty(String)
@@ -238,6 +238,7 @@ class PitestTask extends JavaExec {
 //        historyInputLocation = of.fileProperty()
 //        historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
+//        defaultFileForHistoryData = of.fileProperty()
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
@@ -245,9 +246,10 @@ class PitestTask extends JavaExec {
 //        jvmPath = of.fileProperty()
         mainProcessJvmArgs = of.listProperty(String)
 //        mutableCodePaths = of.setProperty(File)
-//        pluginConfiguration = of.mapProperty(String, String)
+        pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useAdditionalClasspathFile = of.property(Boolean)
+//        additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
     }
 
@@ -272,7 +274,7 @@ class PitestTask extends JavaExec {
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
-//        map['reportDir'] = reportDir?.toString()
+//        map['reportDir'] = reportDir.getOrNull()?.toString()
         map['reportDir'] = getReportDir().toString()
         map['targetClasses'] = targetClasses.get().join(',')
         map['targetTests'] = targetTests.getOrNull()?.join(',')
@@ -313,7 +315,7 @@ class PitestTask extends JavaExec {
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
-        if (useAdditionalClasspathFile.getOrNull()) {
+        if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
             return [classPathFile: getAdditionalClasspathFile().absolutePath]
         } else {
@@ -352,7 +354,7 @@ class PitestTask extends JavaExec {
     @PackageScope   //visible for testing
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        return getPluginConfiguration()?.collect { k, v ->
+        return pluginConfiguration.getOrNull()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
             "--pluginConfiguration=$it".toString()

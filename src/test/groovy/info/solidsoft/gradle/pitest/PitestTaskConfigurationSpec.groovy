@@ -118,9 +118,9 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "mutationEngine"         | "gregor2"                                    || "gregor2"
             //sourceSet x2
             "exportLineCoverage"     | true                                         || "true"
-            "jvmPath"                | new File("/opt/jvm15/")                      || "/opt/jvm15"
+            "jvmPath"                | new File("/opt/jvm15/")                      || "/opt/jvm15" //TODO: Fails on Windows... Test with generated canonical name?
             //mainProcessJvmArgs?
-//            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //TODO: Tested separately
+//            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
             "maxSurviving"           | 20                                           || "20"
 //            "useClasspathFile"       | true                                         || "false"    //TODO
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"

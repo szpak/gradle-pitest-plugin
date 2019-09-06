@@ -20,6 +20,7 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
@@ -144,7 +145,7 @@ class PitestPluginExtension {
      *
      * @since 1.1.6
      */
-    Map<String, String> pluginConfiguration
+    MapProperty<String, String> pluginConfiguration
 
     final Property<Integer> maxSurviving    //new in PIT 1.1.10
 
@@ -234,7 +235,7 @@ class PitestPluginExtension {
 
         mainProcessJvmArgs = of.listProperty(String)
 //        additionalMutableCodePaths = setSetPropertyToNull(of.setProperty(File))
-//        pluginConfiguration = of.mapProperty(String, String)
+        pluginConfiguration = setMapPropertyToNull(of.mapProperty(String, String))
         maxSurviving = setPropertyToNull(of.property(Integer))
 
         useClasspathFile = setPropertyToNull(of.property(Boolean))
@@ -316,6 +317,12 @@ class PitestPluginExtension {
         //TODO: Switch to value() once 5.6+ is minimal required Gradle version
         listProperty.set(null as List)
         return listProperty
+    }
+
+    private <K, V> MapProperty<K, V> setMapPropertyToNull(MapProperty<K, V> mapProperty) {
+        //TODO: Switch to value() once 5.6+ is minimal required Gradle version
+        mapProperty.set(null as Map)
+        return mapProperty
     }
 
     //Workaround on issue with Gradle <5.0 where Integer/Boolean property had 0/false provided by default - changed in 5.0+
