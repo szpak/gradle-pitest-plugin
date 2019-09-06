@@ -91,7 +91,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             configParamName          | gradleConfigValue                            || expectedPitConfigValue
             "testPlugin"             | "testng"                                     || "testng"
-            "reportDir"              | new File("/tmp/foo")                         || "/tmp/foo"
+            "reportDir"              | new File("/tmp/foo")                         || new File("/tmp/foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
             "dependencyDistance"     | 42                                           || "42"
@@ -118,15 +118,15 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "mutationEngine"         | "gregor2"                                    || "gregor2"
             //sourceSet x2
             "exportLineCoverage"     | true                                         || "true"
-            "jvmPath"                | new File("/opt/jvm15/")                      || "/opt/jvm15" //TODO: Fails on Windows... Test with generated canonical name?
+            "jvmPath"                | new File("/opt/jvm15/")                      || new File("/opt/jvm15/").path
             //mainProcessJvmArgs?
 //            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
             "maxSurviving"           | 20                                           || "20"
 //            "useClasspathFile"       | true                                         || "false"    //TODO
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
 //            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT
-            "historyInputLocation"   | new File("/tmp/hi")                          || "/tmp/hi"
-            "historyOutputLocation"  | new File("/tmp/ho")                          || "/tmp/ho"
+            "historyInputLocation"   | new File("/tmp/hi")                          || new File("/tmp/hi").path
+            "historyOutputLocation"  | new File("/tmp/ho")                          || new File("/tmp/ho").path
     }
 
     def "should pass plugin configuration (#gradleConfigParamName) from Gradle to PIT (overidden name)"() {
@@ -145,6 +145,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         given:
             project.pitest.additionalMutableCodePaths = [new File("/tmp/p1"), new File("/tmp/p2")]
         expect:
-            task.createTaskArgumentMap()["mutableCodePaths"].contains("/tmp/p1,/tmp/p2")
+            task.createTaskArgumentMap()["mutableCodePaths"].contains("${new File("/tmp/p1").path},${new File("/tmp/p2").path}")
     }
 }
