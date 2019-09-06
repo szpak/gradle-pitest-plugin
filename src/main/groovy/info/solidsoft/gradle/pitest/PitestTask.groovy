@@ -122,6 +122,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Boolean> skipFailingTests
+
+    @Input
+    @Optional
     final SetProperty<String> includedGroups
 
     @Input
@@ -235,6 +239,7 @@ class PitestTask extends JavaExec {
         childProcessJvmArgs = of.listProperty(String)
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
         includedGroups = of.setProperty(String)
         excludedGroups = of.setProperty(String)
         includedTestMethods = of.setProperty(String)
@@ -300,6 +305,7 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
         map['outputFormats'] = optionalCollectionAsString(outputFormats)
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
+        map['skipFailingTests'] = optionalPropertyAsString(skipFailingTests)
         map['includedGroups'] = optionalCollectionAsString(includedGroups)
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)

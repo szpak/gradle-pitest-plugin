@@ -39,6 +39,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'jvmArgs',
                                                                                 'outputFormats',
                                                                                 'failWhenNoMutations',
+                                                                                'skipFailingTests',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
                                                                                 'includedTestMethods',
@@ -110,6 +111,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
             "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
             "failWhenNoMutations"    | false                                        || "false"
+            "skipFailingTests"       | true                                         || "true"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"

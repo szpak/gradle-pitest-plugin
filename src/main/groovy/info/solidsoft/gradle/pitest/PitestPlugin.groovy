@@ -129,6 +129,7 @@ class PitestPlugin implements Plugin<Project> {
         task.childProcessJvmArgs.set(extension.jvmArgs)
         task.outputFormats.set(extension.outputFormats)
         task.failWhenNoMutations.set(extension.failWhenNoMutations)
+        task.skipFailingTests.set(extension.skipFailingTests)
         task.includedGroups.set(extension.includedGroups)
         task.excludedGroups.set(extension.excludedGroups)
         task.includedTestMethods.set(extension.includedTestMethods)

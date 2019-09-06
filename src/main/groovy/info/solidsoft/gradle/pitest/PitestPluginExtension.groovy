@@ -83,9 +83,10 @@ class PitestPluginExtension {
     final ListProperty<String> jvmArgs
     final SetProperty<String> outputFormats
     final Property<Boolean> failWhenNoMutations
+    final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
     final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-    final SetProperty<String> includedTestMethods   //new in PIT 1.3.4 (GPP 1.4.6)
+    final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
     final Property<Boolean> detectInlinedCode   //new in PIT 0.28
     final Property<Boolean> timestampedReports
     File historyInputLocation   //new in PIT 0.29
@@ -219,6 +220,7 @@ class PitestPluginExtension {
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
         includedGroups = nullSetPropertyOf(p, String)
         excludedGroups = nullSetPropertyOf(p, String)
         includedTestMethods = nullSetPropertyOf(p, String)
