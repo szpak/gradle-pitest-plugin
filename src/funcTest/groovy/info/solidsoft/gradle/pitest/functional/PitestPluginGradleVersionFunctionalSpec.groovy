@@ -51,7 +51,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
                 assert !result.standardOutput.contains("${it}=")
             }
         where:
-            requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
+            requestedGradleVersion << ["4.10.2", "5.5.1", "5.6.1"]
     }
 
     //To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8

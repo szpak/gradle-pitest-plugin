@@ -77,7 +77,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void createExtensionAndSetDefaultValues() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
+        extension.reportDir.set(new File("${project.reporting.baseDir.path}/pitest"))
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         extension.testSourceSets.set([project.sourceSets.test] as Set)
         extension.mainSourceSets.set([project.sourceSets.main] as Set)
@@ -88,7 +88,7 @@ class PitestPlugin implements Plugin<Project> {
     private void configureTaskDefault(PitestTask task) {
 
         task.testPlugin.set(extension.testPlugin)
-//        task.reportDir.set(extension.reportDir)
+        task.reportDir.set(extension.reportDir)
         task.targetClasses.set(project.providers.provider() {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
                 if (extension.targetClasses.isPresent()) {
@@ -153,7 +153,6 @@ class PitestPlugin implements Plugin<Project> {
             }
             mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
             sourceDirs = { extension.mainSourceSets.get()*.allSource.srcDirs.flatten() as Set }
-            reportDir = { extension.reportDir }
             historyInputLocation = { extension.historyInputLocation }
             historyOutputLocation = { extension.historyOutputLocation }
             defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }

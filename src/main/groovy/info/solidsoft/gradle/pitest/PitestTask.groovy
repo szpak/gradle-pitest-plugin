@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Incubating
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -41,11 +42,8 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<String> testPlugin
 
-//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
-//    RegularFileProperty reportDir
-    @Incubating //will be replaced with RegularFileProperty when switched to Gradle 5.6+
     @OutputDirectory
-    File reportDir
+    final RegularFileProperty reportDir
 
     @Input
     final SetProperty<String> targetClasses
@@ -210,7 +208,7 @@ class PitestTask extends JavaExec {
         ObjectFactory of = project.objects
 
         testPlugin = of.property(String)
-//        reportDir = of.fileProperty()
+        reportDir = of.fileProperty()
         targetClasses = of.setProperty(String)
         targetTests = of.setProperty(String)
         dependencyDistance = of.property(Integer)
@@ -272,8 +270,7 @@ class PitestTask extends JavaExec {
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
-//        map['reportDir'] = reportDir?.toString()
-        map['reportDir'] = getReportDir().toString()
+        map['reportDir'] = reportDir.get()?.toString()
         map['targetClasses'] = targetClasses.get().join(',')
         map['targetTests'] = targetTests.getOrNull()?.join(',')
         map['dependencyDistance'] = dependencyDistance.getOrNull()?.toString()

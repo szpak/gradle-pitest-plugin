@@ -18,6 +18,7 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import org.gradle.api.Incubating
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -43,11 +44,7 @@ class PitestPluginExtension {
      * @since 1.3.0
      */
     final Property<String> testPlugin
-
-//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
-//    final RegularFileProperty reportDir
-    private File reportDir
-
+    final RegularFileProperty reportDir
     final SetProperty<String> targetClasses
     final SetProperty<String> targetTests
     final Property<Integer> dependencyDistance
@@ -197,7 +194,7 @@ class PitestPluginExtension {
         pitestVersion = of.property(String)
 
         testPlugin = of.property(String)
-//        reportDir = of.fileProperty()
+        reportDir = of.fileProperty()
         targetClasses = setSetPropertyToNull(of.setProperty(String))    //empty collection (default value) is resolved as set to target classes
         targetTests = of.setProperty(String)
         dependencyDistance = setPropertyToNull(of.property(Integer))
@@ -243,16 +240,8 @@ class PitestPluginExtension {
         fileExtensionsToFilter = of.listProperty(String)
     }
 
-    void setReportDir(File reportDir) {
-        this.reportDir = reportDir
-    }
-
-    File getReportDir() {
-        return reportDir
-    }
-
     void setReportDir(String reportDirAsString) {
-        this.reportDir = new File(reportDirAsString)
+        this.reportDir.set(new File(reportDirAsString))
     }
 
     void setHistoryInputLocation(String historyInputLocationPath) {
