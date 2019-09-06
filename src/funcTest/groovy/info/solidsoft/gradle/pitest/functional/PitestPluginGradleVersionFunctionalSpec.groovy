@@ -9,6 +9,8 @@ import nebula.test.functional.GradleRunner
 import org.gradle.api.GradleException
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
+import org.spockframework.runtime.extension.builtin.PreconditionContext
+import spock.lang.IgnoreIf
 import spock.util.Exceptions
 
 import java.util.regex.Pattern
@@ -57,6 +59,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
 
+    @IgnoreIf({new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
     def "should fail with meaningful error message with too old Gradle version"() {
         given:
             gradleVersion = "5.0"
