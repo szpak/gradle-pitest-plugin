@@ -1,5 +1,30 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.5 - Unreleased
+
+ - Rework internal plugin implementation to Gradle 5+ standards
+ - PIT 1.4.10 by default
+ - Basic Java 12 support tested by CI build
+ - Move `pitest` task to `verification` group - [#136](https://github.com/szpak/gradle-pitest-plugin/issues/136) - PR by [Björn Kautler](https://github.com/Vampire)
+ - Remove deprecation warnings in Gradle 6.0
+ - Bump minimal Gradle version to 5.1
+ - Switch build to Gradle 5.6.1
+
+**Known limitations**. This is a technical release to cope with the changes in Gradle 5 and 6. PIT 1.4.10 is used by default, but not all
+new features of PIT 1.4.0+ have been implemented yet.
+
+**Breaking changes**. This release changes internal implementation of the plugin configuration. The Gradle team worked hard to keep it as compatible
+as possible, but not everything is supported. The new syntax can be [required](https://github.com/gradle/gradle/issues/10475) for adding elements to
+the file extensions to filter (`fileExtensionsToFilter`):
+
+```
+pitest {
+    addFileExtensionsToFilter(['xml', 'orbit'])
+}
+```
+There could be also some issues for people interacting with the plugin from custom code (instead of from `build.gradle`). As a side effect Gradle 5.1
+(released in I 2019) is required. 
+
 ## 1.4.0 - 2019-01-26
 
  - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)

@@ -21,13 +21,13 @@ class PitestPluginTypesConversionTest extends BasicProjectBuilderSpec implements
         given:
             project.pitest.timeoutFactor = 1.23
         expect:
-            task.timeoutFactor == 1.23
+            task.timeoutFactor.get() == 1.23
     }
 
     def "accept String as timeoutFactor configuration parameter"() {
         given:
             project.pitest.timeoutFactor = "1.23"
         expect:
-            task.timeoutFactor == 1.23
+            task.timeoutFactor.get() == 1.23
     }
 }

@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import spock.lang.Ignore
 import spock.lang.Issue
 
 class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
@@ -22,7 +23,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/52')
     def "should filter dynamic library '#libFileName' by default"() {
         given:
-            File libFile = new File(tmpProjectDir.root, libFileName)
+            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile(libFileName)
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -33,7 +34,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should filter .pom file by default"() {
         given:
-            File pomFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.pom')
+            File pomFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.pom')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -42,7 +43,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should not filter regular dependency '#depFileName' by default"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile(depFileName)
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile(depFileName)
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -62,9 +63,9 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     def "should filter excluded dependencies remaining regular ones"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('foo.jar')
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.jar')
         and:
-            File libDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('bar.so')
+            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('bar.so')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -73,9 +74,10 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should filter user defined extensions"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('file.extra')
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
         and:
@@ -85,9 +87,21 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    def "should filter user defined extensions (property syntax))"() {
+        given:
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        and:
+            project.pitest.addFileExtensionsToFilter(['extra'])
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+    }
+
+    @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
     def "should allow to override extensions filtered by default"() {
         given:
-            File depFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('needed.so')
+            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('needed.so')
         and:
             project.pitest.fileExtensionsToFilter = ['extra']
         and:
@@ -97,12 +111,28 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should allow to provide extra extensions in addition to default ones"() {
         given:
-            File libDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('default.so')
-            File extraDepFile = addFileWithFileNameAsCompileDependencyAndReturnAsFile('file.extra')
+            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
+            File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
             project.pitest.fileExtensionsToFilter += ['extra']
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+            !resolvedPitClasspath.contains(libDepFile.path)
+            !resolvedPitClasspath.contains(extraDepFile.path)
+    }
+
+    @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
+    def "should allow to provide extra extensions in addition to default ones (property syntax)"() {
+        given:
+            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
+            File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        and:
+            project.pitest.addFileExtensionsToFilter(['extra'])
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -125,13 +155,24 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             resolvedPitClasspath.contains('main')
     }
 
+    def "should filter dependencies also from 'api' configuration in java-library"() {
+        given:
+            project.apply(plugin: "java-library")   //to add 'api' configuration
+        and:
+            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile('lib.so', 'api')
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
+    }
+
     private String forceClasspathResolutionAndReturnIt(PitestTask task) {
         return task.createTaskArgumentMap()['classPath']
     }
 
-    private File addFileWithFileNameAsCompileDependencyAndReturnAsFile(String depFileName) {
+    private File addFileWithFileNameAsDependencyAndReturnAsFile(String depFileName, String configurationName = 'implementation') {
         File depFile = new File(tmpProjectDir.root, depFileName)
-        project.dependencies.add('compile', project.files(depFile))
+        project.dependencies.add(configurationName, project.files(depFile))
         return depFile
     }
 }
