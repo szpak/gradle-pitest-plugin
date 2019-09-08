@@ -83,8 +83,10 @@ class PitestPluginExtension {
     final ListProperty<String> jvmArgs
     final SetProperty<String> outputFormats
     final Property<Boolean> failWhenNoMutations
+    final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
     final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
     final Property<Boolean> detectInlinedCode   //new in PIT 0.28
     final Property<Boolean> timestampedReports
     File historyInputLocation   //new in PIT 0.29
@@ -148,6 +150,9 @@ class PitestPluginExtension {
     MapProperty<String, String> pluginConfiguration
 
     final Property<Integer> maxSurviving    //new in PIT 1.1.10
+
+    @Incubating
+    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
 
     /**
      * Use classpath file instead of passing classpath in a command line
@@ -218,8 +223,10 @@ class PitestPluginExtension {
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
         includedGroups = nullSetPropertyOf(p, String)
         excludedGroups = nullSetPropertyOf(p, String)
+        includedTestMethods = nullSetPropertyOf(p, String)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
 //        historyInputLocation = of.fileProperty()
@@ -236,6 +243,7 @@ class PitestPluginExtension {
 //        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
         useClasspathFile = of.property(Boolean)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)

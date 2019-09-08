@@ -39,8 +39,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'jvmArgs',
                                                                                 'outputFormats',
                                                                                 'failWhenNoMutations',
+                                                                                'skipFailingTests',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
+                                                                                'includedTestMethods',
                                                                                 'detectInlinedCode',
                                                                                 'timestampedReports',
                                                                                 'mutationThreshold',
@@ -49,6 +51,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'exportLineCoverage',
                                                                                 'jvmPath',
                                                                                 'maxSurviving',
+                                                                                'useClasspathJar',
                                                                                 'features',
                                                                                 'historyInputLocation',
                                                                                 'historyOutputLocation',
@@ -109,8 +112,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
             "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
             "failWhenNoMutations"    | false                                        || "false"
+            "skipFailingTests"       | true                                         || "true"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"
             "mutationThreshold"      | 90                                           || "90"
@@ -122,6 +127,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //mainProcessJvmArgs?
 //            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
             "maxSurviving"           | 20                                           || "20"
+            "useClasspathJar"        | true                                         || "true"
 //            "useClasspathFile"       | true                                         || "false"    //TODO
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
 //            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT

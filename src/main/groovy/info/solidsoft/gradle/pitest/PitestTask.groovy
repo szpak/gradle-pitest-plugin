@@ -122,11 +122,19 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Boolean> skipFailingTests
+
+    @Input
+    @Optional
     final SetProperty<String> includedGroups
 
     @Input
     @Optional
     final SetProperty<String> excludedGroups
+
+    @Input
+    @Optional
+    final SetProperty<String> includedTestMethods
 
     @InputFiles
     Set<File> sourceDirs
@@ -206,6 +214,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Boolean> useClasspathJar
+
+    @Input
+    @Optional
     final ListProperty<String> features
 
     PitestTask() {
@@ -231,8 +243,10 @@ class PitestTask extends JavaExec {
         childProcessJvmArgs = of.listProperty(String)
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
         includedGroups = of.setProperty(String)
         excludedGroups = of.setProperty(String)
+        includedTestMethods = of.setProperty(String)
 //        sourceDirs = of.fileProperty()
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
@@ -249,6 +263,7 @@ class PitestTask extends JavaExec {
 //        mutableCodePaths = of.setProperty(File)
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
         useAdditionalClasspathFile = of.property(Boolean)
 //        additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
@@ -295,8 +310,10 @@ class PitestTask extends JavaExec {
         map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
         map['outputFormats'] = optionalCollectionAsString(outputFormats)
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
+        map['skipFailingTests'] = optionalPropertyAsString(skipFailingTests)
         map['includedGroups'] = optionalCollectionAsString(includedGroups)
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
+        map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
         map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
         map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
@@ -308,6 +325,7 @@ class PitestTask extends JavaExec {
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
+        map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
         map['features'] = optionalCollectionAsString(features)
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
