@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.5 - Unreleased
+## 1.4.5 - 2019-09-08
 
  - Rework internal plugin implementation to Gradle 5+ standards
  - PIT 1.4.10 by default
