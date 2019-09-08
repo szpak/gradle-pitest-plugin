@@ -16,7 +16,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.4.0'
+    id 'info.solidsoft.pitest' version '1.4.5'
 }
 ```
 
@@ -48,7 +48,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
     }
 }
 ```
@@ -59,13 +59,6 @@ Apply the plugin:
 apply plugin: 'info.solidsoft.pitest'
 ```
 
-### Older gradle-pitest-plugin versions (<1.1.0)
-
-For versions <1.1.0 the plugin can be applied with:
-
-```groovy
-apply plugin: 'pitest'
-```
 
 ## Plugin configuration
 
@@ -87,7 +80,7 @@ following example).
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.1.0' //not needed when a default PIT version should be used
+    pitestVersion = '1.4.1' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -138,7 +131,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
         (...)
     }
 }
@@ -201,7 +194,7 @@ configure(project(':itest')) {
 ```
 
 Minimal working multi-project build is available in
-[functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/test/resources/testProjects/multiproject).
+[functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/funcTest/resources/testProjects/multiproject).
 
 ## PIT test-plugins support
 
@@ -217,13 +210,13 @@ buildscript {
    }
    configurations.maybeCreate('pitest')
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
        pitest 'org.pitest:pitest-junit5-plugin:0.8'
    }
 }
 
 pitest {
-    testPlugin = 'junit5'
+    testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
     // rest of your pitest configuration
 }
 ```
@@ -241,20 +234,19 @@ Please be aware that in some cases there could be some issues when using non def
 
 gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
 
-Starting with version 1.4.0 gradle-pitest-plugin requires Gradle 4.0. Previous version provided support for Gradle 2.0+.
-The current version was automatically smoke tested with Gradle 4.0, 4.10.2, 5.0 and 5.1.1 under Java 8.
-Tests with Java 9, 10 and 11 are limited to the compatible versions of Gradle and PIT.
+Starting with version 1.4.5 gradle-pitest-plugin requires Gradle 5.1. The latest version with the Gradle 4.x support is 1.4.0.
+The current version was automatically smoke tested with Gradle 5.1, 5.6.1 and 6.0-SNAPSHOT under Java 8.
+Tests with Java 9 - 13 are limited to the compatible versions of Gradle and PIT.
 
-Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0 (thanks to using PIT 1.4.3). However, please check an appropriate
-[point in FAQ](#10-how-to-use-gradle-pitest-plugin-130-with-java-11) how to achieve Java 11 compatibility in gradle-pitest-plugin 1.3.0.
+Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0 (thanks to using PIT 1.4.3).
 
-Due to incompatible changes in Gradle 4.0 support for older Gradle versions will be removed in one of the future versions.
+Due to incompatible changes in Gradle 4/5/6 support for the older Gradle versions have been limited/removed.
 The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
 (as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
 
-See [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
+See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
 
 ## FAQ
@@ -413,9 +405,9 @@ There are also basic functional tests written using [nebula-test](https://github
 
 ## Support
 
-[gradle-pitest-plugin](http://gradle-pitest-plugin.solidsoft.info/) was written by Marcin Zajączkowski.
+[gradle-pitest-plugin](https://gradle-pitest-plugin.solidsoft.info/) was written by Marcin Zajączkowski with a help from [contributors](https://github.com/szpak/gradle-pitest-plugin/graphs/contributors).
 The author can be contacted directly via email: mszpak ATT wp DOTT pl.
-There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
+There is also Marcin's blog available: [Solid Soft](https://blog.solidsoft.info) - working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
 However it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
