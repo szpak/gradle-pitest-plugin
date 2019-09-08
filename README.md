@@ -59,13 +59,6 @@ Apply the plugin:
 apply plugin: 'info.solidsoft.pitest'
 ```
 
-### Older gradle-pitest-plugin versions (<1.1.0)
-
-For versions <1.1.0 the plugin can be applied with:
-
-```groovy
-apply plugin: 'pitest'
-```
 
 ## Plugin configuration
 
@@ -87,7 +80,7 @@ following example).
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.1.0' //not needed when a default PIT version should be used
+    pitestVersion = '1.4.1' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
