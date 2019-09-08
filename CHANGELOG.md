@@ -34,8 +34,8 @@ There could be also some issues for people interacting with the plugin from cust
 
 ## 1.4.0 - 2019-01-26
 
- - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
- - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
+ - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/gradle/gradle/issues/86), [#81](hhttps://github.com/gradle/gradle/issues/81)
+ - Improve `pitest` task caching with @Classpath - [#93](https://github.com/gradle/gradle/issues/93)
  - PIT 1.4.3 by default
  - Switch build to Gradle 4.10.2
  - Remove support for Gradle <4.0 (for better Gradle 5 compatibility)
