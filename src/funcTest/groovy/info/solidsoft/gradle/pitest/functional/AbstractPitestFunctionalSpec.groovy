@@ -12,6 +12,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     protected static String getBasicGradlePitestConfig() {
         return """
+                apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
                 group = 'gradle.pitest.test'
 
@@ -29,7 +30,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 //                    }
                 }
                 dependencies {
-                    testCompile 'junit:junit:4.12'
+                    testImplementation 'junit:junit:4.12'
                 }
         """.stripIndent()
     }
@@ -66,5 +67,10 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     protected void assertStdOutOrStdErrContainsGivenText(ExecutionResult result, String textToContain) {
         //TODO: Simplify if possible - standardOutput for Gradle <5 and standardError for Gradle 5+
         assert result.standardOutput.contains(textToContain) || result.standardError.contains(textToContain)
+    }
+
+    //TODO: Switch to Gradle mechanism once upgrade to 6.x
+    protected boolean isJava13Compatible() {
+        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
     }
 }

@@ -17,7 +17,14 @@ package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import org.gradle.api.Incubating
 import org.gradle.api.file.FileCollection
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -34,107 +41,110 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    String testPlugin
+    final Property<String> testPlugin
 
+//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
+//    RegularFileProperty reportDir
+    @Incubating //will be replaced with RegularFileProperty when switched to Gradle 5.6+
     @OutputDirectory
     File reportDir
 
     @Input
-    Set<String> targetClasses
+    final SetProperty<String> targetClasses
 
     @Input
     @Optional
-    Set<String> targetTests
+    final SetProperty<String> targetTests
 
     @Input
     @Optional
-    Integer dependencyDistance
+    final Property<Integer> dependencyDistance
 
     @Input
     @Optional
-    Integer threads
+    final Property<Integer> threads
 
     @Input
     @Optional
-    Boolean mutateStaticInits
+    final Property<Boolean> mutateStaticInits
 
     @Input
     @Optional
-    Boolean includeJarFiles
+    final Property<Boolean> includeJarFiles
 
     @Input
     @Optional
-    Set<String> mutators
+    final SetProperty<String> mutators
 
     @Input
     @Optional
-    Set<String> excludedMethods
+    final SetProperty<String> excludedMethods
 
     @Input
     @Optional
-    Set<String> excludedClasses
+    final SetProperty<String> excludedClasses
 
     @Input
     @Optional
-    Set<String> excludedTestClasses
+    final SetProperty<String> excludedTestClasses
 
     @Input
     @Optional
-    Set<String> avoidCallsTo
+    final SetProperty<String> avoidCallsTo
 
     @Input
     @Optional
-    Boolean verbose
+    final Property<Boolean> verbose
 
     @Input
     @Optional
-    BigDecimal timeoutFactor
+    final Property<BigDecimal> timeoutFactor
 
     @Input
     @Optional
-    Integer timeoutConstInMillis
+    final Property<Integer> timeoutConstInMillis
 
     @Input
     @Optional
-    Integer maxMutationsPerClass
+    final Property<Integer> maxMutationsPerClass
 
     @Input
     @Optional
-    List<String> childProcessJvmArgs
+    final ListProperty<String> childProcessJvmArgs
 
     @Input
     @Optional
-    Set<String> outputFormats
+    final SetProperty<String> outputFormats
 
     @Input
     @Optional
-    Boolean failWhenNoMutations
+    final Property<Boolean> failWhenNoMutations
 
     @Input
     @Optional
-    Set<String> includedGroups
+    final SetProperty<String> includedGroups
 
     @Input
     @Optional
-    Set<String> excludedGroups
+    final SetProperty<String> excludedGroups
 
     @InputFiles
     Set<File> sourceDirs
 
     @Input
     @Optional
-    Boolean detectInlinedCode
+    final Property<Boolean> detectInlinedCode
 
     @Input
     @Optional
-    Boolean timestampedReports
+    final Property<Boolean> timestampedReports
 
     @InputFiles
     @Classpath
     FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
 
     @Input
-    Boolean useAdditionalClasspathFile
+    final Property<Boolean> useAdditionalClasspathFile
 
     @Input
     @OutputFile
@@ -153,26 +163,26 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    Boolean enableDefaultIncrementalAnalysis
+    final Property<Boolean> enableDefaultIncrementalAnalysis
 
     @Input
     File defaultFileForHistoryData
 
     @Input
     @Optional
-    Integer mutationThreshold
+    final Property<Integer> mutationThreshold
 
     @Input
     @Optional
-    Integer coverageThreshold
+    final Property<Integer> coverageThreshold
 
     @Input
     @Optional
-    String mutationEngine
+    final Property<String> mutationEngine
 
     @Input
     @Optional
-    Boolean exportLineCoverage
+    final Property<Boolean> exportLineCoverage
 
     @Input
     @Optional
@@ -180,7 +190,7 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    List<String> mainProcessJvmArgs
+    final ListProperty<String> mainProcessJvmArgs
 
     @InputFiles
     @Classpath
@@ -188,21 +198,67 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    Map<String, String> pluginConfiguration
+    final MapProperty<String, String> pluginConfiguration
 
     @Input
     @Optional
-    Integer maxSurviving
+    final Property<Integer> maxSurviving
 
     @Input
     @Optional
-    List<String> features
+    final ListProperty<String> features
+
+    PitestTask() {
+        ObjectFactory of = project.objects
+
+        testPlugin = of.property(String)
+//        reportDir = of.fileProperty()
+        targetClasses = of.setProperty(String)
+        targetTests = of.setProperty(String)
+        dependencyDistance = of.property(Integer)
+        threads = of.property(Integer)
+        mutateStaticInits = of.property(Boolean)
+        includeJarFiles = of.property(Boolean)
+        mutators = of.setProperty(String)
+        excludedMethods = of.setProperty(String)
+        excludedClasses = of.setProperty(String)
+        excludedTestClasses = of.setProperty(String)
+        avoidCallsTo = of.setProperty(String)
+        verbose = of.property(Boolean)
+        timeoutFactor = of.property(BigDecimal)
+        timeoutConstInMillis = of.property(Integer)
+        maxMutationsPerClass = of.property(Integer)
+        childProcessJvmArgs = of.listProperty(String)
+        outputFormats = of.setProperty(String)
+        failWhenNoMutations = of.property(Boolean)
+        includedGroups = of.setProperty(String)
+        excludedGroups = of.setProperty(String)
+//        sourceDirs = of.fileProperty()
+        detectInlinedCode = of.property(Boolean)
+        timestampedReports = of.property(Boolean)
+//        historyInputLocation = of.fileProperty()
+//        historyOutputLocation = of.fileProperty()
+        enableDefaultIncrementalAnalysis = of.property(Boolean)
+//        defaultFileForHistoryData = of.fileProperty()
+        mutationThreshold = of.property(Integer)
+        coverageThreshold = of.property(Integer)
+        mutationEngine = of.property(String)
+        exportLineCoverage = of.property(Boolean)
+//        jvmPath = of.fileProperty()
+        mainProcessJvmArgs = of.listProperty(String)
+//        mutableCodePaths = of.setProperty(File)
+        pluginConfiguration = of.mapProperty(String, String)
+        maxSurviving = of.property(Integer)
+        useAdditionalClasspathFile = of.property(Boolean)
+//        additionalClasspathFile = of.fileProperty()
+        features = of.listProperty(String)
+    }
 
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = createListOfAllArgumentsForPit()
-        jvmArgs = (getMainProcessJvmArgs() ?: getJvmArgs())
+        jvmArgs = ((List<String>)getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
@@ -212,46 +268,47 @@ class PitestTask extends JavaExec {
         Map<String, String> taskArgumentsMap = createTaskArgumentMap()
         List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
         List<String> multiValueArgsAsList = createMultiValueArgsAsList()
-        return concatenateTwoLists(argsAsList, multiValueArgsAsList)
+        return argsAsList + multiValueArgsAsList
     }
 
     @PackageScope   //visible for testing
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
-        map['testPlugin'] = getTestPlugin()?.toString()
+        map['testPlugin'] = testPlugin.getOrNull()
+//        map['reportDir'] = reportDir.getOrNull()?.toString()
         map['reportDir'] = getReportDir().toString()
-        map['targetClasses'] = getTargetClasses().join(',')
-        map['targetTests'] = getTargetTests()?.join(',')
-        map['dependencyDistance'] = getDependencyDistance()?.toString()
-        map['threads'] = getThreads()?.toString()
-        map['mutateStaticInits'] = getMutateStaticInits()?.toString()
-        map['includeJarFiles'] = getIncludeJarFiles()?.toString()
-        map["mutators"] = getMutators()?.join(',')
-        map['excludedMethods'] = getExcludedMethods()?.join(',')
-        map['excludedClasses'] = getExcludedClasses()?.join(',')
-        map['excludedTestClasses'] = getExcludedTestClasses()?.join(',')
-        map['avoidCallsTo'] = getAvoidCallsTo()?.join(',')
-        map['verbose'] = getVerbose()?.toString()
-        map['timeoutFactor'] = getTimeoutFactor()?.toString()
-        map['timeoutConst'] = getTimeoutConstInMillis()?.toString()
-        map['maxMutationsPerClass'] = getMaxMutationsPerClass()?.toString()
-        map['jvmArgs'] = getChildProcessJvmArgs()?.join(',')
-        map['outputFormats'] = getOutputFormats()?.join(',')
-        map['failWhenNoMutations'] = getFailWhenNoMutations()?.toString()
-        map['includedGroups'] = getIncludedGroups()?.join(',')
-        map['excludedGroups'] = getExcludedGroups()?.join(',')
+        map['targetClasses'] = targetClasses.get().join(',')
+        map['targetTests'] = optionalCollectionAsString(targetTests)
+        map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
+        map['threads'] = optionalPropertyAsString(threads)
+        map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
+        map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
+        map["mutators"] = optionalCollectionAsString(mutators)
+        map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
+        map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
+        map['excludedTestClasses'] = optionalCollectionAsString(excludedTestClasses)
+        map['avoidCallsTo'] = optionalCollectionAsString(avoidCallsTo)
+        map['verbose'] = optionalPropertyAsString(verbose)
+        map['timeoutFactor'] = optionalPropertyAsString(timeoutFactor)
+        map['timeoutConst'] = optionalPropertyAsString(timeoutConstInMillis)
+        map['maxMutationsPerClass'] = optionalPropertyAsString(maxMutationsPerClass)
+        map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
+        map['outputFormats'] = optionalCollectionAsString(outputFormats)
+        map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
+        map['includedGroups'] = optionalCollectionAsString(includedGroups)
+        map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
-        map['detectInlinedCode'] = getDetectInlinedCode()?.toString()
-        map['timestampedReports'] = getTimestampedReports()?.toString()
+        map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
+        map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
         map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
-        map['mutationThreshold'] = getMutationThreshold()?.toString()
-        map['coverageThreshold'] = getCoverageThreshold()?.toString()
-        map['mutationEngine'] = getMutationEngine()
-        map['exportLineCoverage'] = getExportLineCoverage()?.toString()
+        map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
+        map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
+        map['mutationEngine'] = mutationEngine.getOrNull()
+        map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
         map['jvmPath'] = getJvmPath()?.path
-        map['maxSurviving'] = getMaxSurviving()?.toString()
-        map['features'] = getFeatures()?.join(',')
+        map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
+        map['features'] = optionalCollectionAsString(features)
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
@@ -259,7 +316,7 @@ class PitestTask extends JavaExec {
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
-        if (getUseAdditionalClasspathFile()) {
+        if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
             return [classPathFile: getAdditionalClasspathFile().absolutePath]
         } else {
@@ -276,7 +333,7 @@ class PitestTask extends JavaExec {
     }
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
-        if (getEnableDefaultIncrementalAnalysis()) {
+        if (enableDefaultIncrementalAnalysis.getOrNull()) {
             return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryData().path,
                     historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryData().path]
         } else {
@@ -295,22 +352,25 @@ class PitestTask extends JavaExec {
         }
     }
 
+    private <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
+        return optionalSetProperty.getOrNull()?.toString()
+    }
+
+    private String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
+        return optionalSetProperty.getOrNull()?.join(',')
+    }
+
+    private String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
+        return optionalListProperty.getOrNull()?.join(',')
+    }
+
     @PackageScope   //visible for testing
     List<String> createMultiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        return getPluginConfiguration()?.collect { k, v ->
+        return pluginConfiguration.getOrNull()?.collect { k, v ->
             "$k=$v".toString()
         }?.collect {
             "--pluginConfiguration=$it".toString()
         } ?: [] as List<String>
-    }
-
-    //Workaround to keep compatibility with Gradle <2.8
-    //[] + [] is compiled in Groovy 2.4.x as "List<T> plus(List<T> left, Collection<T> right)" which is unavailable in Groovy 2.3 and fails with Gradle <2.8
-    private List<String> concatenateTwoLists(List<String> argsAsList, List<String> multiValueArgsAsList) {
-        List<String> allArgs = []
-        allArgs.addAll(argsAsList)
-        allArgs.addAll(multiValueArgsAsList)
-        return allArgs
     }
 }

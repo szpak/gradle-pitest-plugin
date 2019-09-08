@@ -13,9 +13,9 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.0' //override version for more reliable releasing from Travis
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1' //override version for more reliable releasing from Travis
         classpath 'com.gradle.publish:plugin-publish-plugin:0.10.1'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.24.0'
     }
 }
 
@@ -35,21 +35,22 @@ sourceSets {
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
+    implementation gradleApi()
+    implementation localGroovy()
 
-    testCompile('org.spockframework:spock-core:1.3-groovy-2.4') {
+    testImplementation('org.spockframework:spock-core:1.3-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'net.bytebuddy:byte-buddy:1.10.1' //for Spying in Spock
-    testCompile 'junit:junit:4.12'
+    testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
+    testImplementation 'net.bytebuddy:byte-buddy:1.10.1' //for Spying in Spock
+    testImplementation 'junit:junit:4.12'
 
-    funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
-    funcTestCompile configurations.testCompile
-    funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:7.2.5') {
+    funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+    funcTestImplementation sourceSets.test.output
+    funcTestImplementation configurations.testImplementation
+    funcTestRuntimeOnly configurations.testRuntimeOnly
+    funcTestImplementation('com.netflix.nebula:nebula-test:7.2.5') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }

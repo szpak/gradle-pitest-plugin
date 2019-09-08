@@ -34,8 +34,7 @@ class PitestPluginTest extends Specification {
             assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
-    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/21")
-    def "apply Java plugin itself of not already applied"() {
+    def "do nothing if Java plugin is not applied but react to it becoming applied"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
@@ -43,8 +42,11 @@ class PitestPluginTest extends Specification {
         when:
             project.apply(plugin: "info.solidsoft.pitest");
         then:
-            project.plugins.hasPlugin(PitestPlugin)
-            project.plugins.hasPlugin('java')
+            project.tasks.withType(PitestTask).isEmpty()
+        when:
+            project.apply(plugin: "java");
+        then:
+            !project.tasks.withType(PitestTask).isEmpty()
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

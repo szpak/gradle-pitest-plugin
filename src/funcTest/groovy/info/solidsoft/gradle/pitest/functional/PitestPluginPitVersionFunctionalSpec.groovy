@@ -11,6 +11,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     private static final String MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION = "1.2.3"  //https://github.com/hcoles/pitest/issues/380
     private static final String MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION = "1.4.0"
     private static final String MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION = "1.4.2" //in fact 1.4.1, but 1.4.2 is also Java 12 compatible
+    private static final String MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION = "1.4.6" //not officially, but at least simple case works
 
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
@@ -29,18 +30,18 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         then:
             result.wasExecuted(':pitest')
         and:
-            result.getStandardOutput().contains('Generated 2 mutations Killed 1 (50%)')
-            result.getStandardOutput().contains('Ran 2 tests (1 tests per mutation)')
+            result.standardOutput.contains("Using PIT: ${pitVersion}")
+        and:
+            result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
+            result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
         where:
             pitVersion << getPitVersionsCompoatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }
 
     private List<String> getPitVersionsCompoatibleWithCurrentJavaVersion() {
-        //Gradle plugin should be compatible with at least PIT 1.0.0, but this test fails on Windows
-        //due to https://github.com/hcoles/pitest/issues/179 which was fixed in 1.1.5
-        //PIT before 1.2.3 is not compatible with Java 9
-        //PIT before 1.4.0 is not compatible with Java 10
-        //PIT before 1.4.1 is not compatible with Java 11
+        if (isJava13Compatible()) {
+            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
+        }
         if (Jvm.current().javaVersion.isJava11Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION]
         }

@@ -19,7 +19,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     dependencies { classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+' }
                 }
                 repositories { mavenCentral() }
-                dependencies { testCompile 'junit:junit:4.11' }
+                dependencies { testImplementation 'junit:junit:4.11' }
             """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')
