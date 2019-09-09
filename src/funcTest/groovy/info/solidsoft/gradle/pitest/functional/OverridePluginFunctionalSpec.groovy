@@ -1,11 +1,15 @@
 package info.solidsoft.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
+import spock.lang.Ignore
+import spock.lang.Issue
 
-//Note: gradle-override-plugin has important limitations in support for collections
-//See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
+    //Note: gradle-override-plugin has important limitations in support for collections
+    //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
+    //Update 201909. Gradle 4.6 introduced built-in support for overriding (with its on limitations, but also with support for lists):
+    //    https://docs.gradle.org/5.6.2/userguide/custom_tasks.html#sec:declaring_and_using_command_line_options
     def "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
@@ -26,7 +30,28 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('pitest', '-Doverride.pitest.reportDir=build/treports')
         then:
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/139")
+    @Ignore("Not implemented yet due to Gradle limitations described in linked issue")
+    def "should allow to define features from command line and override those from configuration"() {
+        given:
+            buildFile << """
+                ${getBasicGradlePitestConfig()}
+
+                pitest {
+                    failWhenNoMutations = false
+                    timestampedReports = true
+                }
+            """.stripIndent()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest', '--pitest.timestampedReports=false',
+                '--pitest.features=+EXPORT', '--pitest.features=-FINFINC')
+        then:
+            result.standardOutput.contains("--timestampedReports=true") //false
+        and:
+            result.standardOutput.contains("--features=+EXPORT,-FINFINC")
     }
 }
