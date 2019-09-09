@@ -15,6 +15,8 @@
  */
 package info.solidsoft.gradle.pitest
 
+import spock.lang.Issue
+
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
     //public to be used also in functional tests
@@ -22,7 +24,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'features',
                                                                                 'excludedTestClasses',
                                                                                 'testPlugin',
-                                                                                'targetTests',
                                                                                 'dependencyDistance',
                                                                                 'threads',
                                                                                 'mutateStaticInits',
@@ -152,5 +153,22 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             project.pitest.additionalMutableCodePaths = [new File("/tmp/p1"), new File("/tmp/p2")]
         expect:
             task.createTaskArgumentMap()["mutableCodePaths"].contains("${new File("/tmp/p1").path},${new File("/tmp/p2").path}")
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
+    def "should set targetTest to targetClasses by default if not defined in configuration"() {
+        when:
+            project.pitest.targetClasses = ["myClasses.*"]
+        then:
+            task.createTaskArgumentMap()['targetTests'] == "myClasses.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
+    def "should set targetTest to configuration defined value"() {
+        when:
+            project.pitest.targetClasses = ["myClasses.*"]
+            project.pitest.targetTests = ["myClasses.tests.*"]
+        then:
+            task.createTaskArgumentMap()['targetTests'] == "myClasses.tests.*"
     }
 }

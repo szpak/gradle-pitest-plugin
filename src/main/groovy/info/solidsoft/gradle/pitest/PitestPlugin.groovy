@@ -101,7 +101,7 @@ class PitestPlugin implements Plugin<Project> {
 
         task.testPlugin.set(extension.testPlugin)
 //        task.reportDir.set(extension.reportDir)
-        task.targetClasses.set(project.providers.provider() {
+        task.targetClasses.set(project.providers.provider {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
                 if (extension.targetClasses.isPresent()) {
                     return extension.targetClasses.get()
@@ -112,7 +112,13 @@ class PitestPlugin implements Plugin<Project> {
                 return null
             }
         )
-        task.targetTests.set(extension.targetTests)
+        task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
+            if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
+                return extension.targetTests.get()
+            } else {
+                return task.targetClasses.getOrNull()
+            }
+        })
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
         task.mutateStaticInits.set(extension.mutateStaticInits)
