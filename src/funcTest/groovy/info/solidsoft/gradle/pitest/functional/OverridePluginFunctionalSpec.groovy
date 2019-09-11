@@ -1,8 +1,9 @@
 package info.solidsoft.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
-import spock.lang.Ignore
+import org.gradle.api.GradleException
 import spock.lang.Issue
+import spock.lang.PendingFeature
 
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
@@ -35,7 +36,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/139")
-    @Ignore("Not implemented yet due to Gradle limitations described in linked issue")
+    @PendingFeature(exceptions = GradleException, reason = "Not implemented yet due to Gradle limitations described in linked issue")
     def "should allow to define features from command line and override those from configuration"() {
         given:
             buildFile << """
@@ -47,10 +48,10 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest', '--pitest.timestampedReports=false',
-                '--pitest.features=+EXPORT', '--pitest.features=-FINFINC')
+            ExecutionResult result = runTasksSuccessfully('pitest', '--timestampedReports=false',
+                '--features=+EXPORT', '--features=-FINFINC')
         then:
-            result.standardOutput.contains("--timestampedReports=true") //false
+            result.standardOutput.contains("--timestampedReports=false")
         and:
             result.standardOutput.contains("--features=+EXPORT,-FINFINC")
     }
