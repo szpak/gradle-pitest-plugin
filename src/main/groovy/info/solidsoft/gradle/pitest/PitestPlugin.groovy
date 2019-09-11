@@ -75,8 +75,8 @@ class PitestPlugin implements Plugin<Project> {
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
-                addPitDependencies(createConfigurations())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
+                addPitDependencies(createConfigurations())
             }
         }
     }
