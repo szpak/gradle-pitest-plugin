@@ -32,6 +32,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.options.Option
 
 /**
  * Gradle task implementation for Pitest.
@@ -220,6 +221,10 @@ class PitestTask extends JavaExec {
     @Optional
     final ListProperty<String> features
 
+    @Incubating
+    @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
+    List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
+
     PitestTask() {
         ObjectFactory of = project.objects
 
@@ -326,7 +331,7 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.path
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
-        map['features'] = optionalCollectionAsString(features)
+        map['features'] = (features.getOrElse([]) + (additionalFeatures?: []))?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 

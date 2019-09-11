@@ -76,6 +76,27 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             task.createTaskArgumentMap()['features'] == "-FOO,+BAR(a[1] a[2])"
     }
 
+    def "should pass additional features alone if features not set in configuration"() {
+        given:
+            getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
+        expect:
+            task.createTaskArgumentMap()['features'] == "+XYZ,-ABC"
+    }
+
+    def "should add additional features to those defined in configuration"() {
+        given:
+            project.pitest.features = ["-FOO", "+BAR"]
+            getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
+        expect:
+            task.createTaskArgumentMap()['features'] == "-FOO,+BAR,+XYZ,-ABC"
+    }
+
+    def "should not pass features configuration to PIT if not set in configuration or via option"() {
+        //Intentional duplication with generic parametrized tests to emphasis requirement
+        expect:
+            task.createTaskArgumentMap()['featues'] == null
+    }
+
     def "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
         expect:
             !task.createTaskArgumentMap().containsKey(paramName)

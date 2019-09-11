@@ -55,4 +55,20 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:
             result.standardOutput.contains("--features=+EXPORT,-FINFINC")
     }
+
+    def "should allow to add features from command line to those from configuration"() {
+        given:
+            buildFile << """
+                ${getBasicGradlePitestConfig()}
+
+                pitest {
+                    failWhenNoMutations = false
+                    features = ['-FINFINC']
+                }
+            """.stripIndent()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest', '--additionalFeatures=+EXPORT')
+        then:
+            result.standardOutput.contains("--features=-FINFINC,+EXPORT")
+    }
 }
