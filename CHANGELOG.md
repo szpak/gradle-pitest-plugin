@@ -7,6 +7,7 @@
  - Support for skipFailingTests (PIT 1.4.4) - [#113](https://github.com/szpak/gradle-pitest-plugin/issues/113)
  - Pass additional PIT features from command line with `--additionalFeatures` - [#139](https://github.com/szpak/gradle-pitest-plugin/issues/139)
  - Set `targetTests` explicitly - [#144](https://github.com/szpak/gradle-pitest-plugin/issues/144)
+ - Run `pitest` after `test` if both scheduled to run - [#141](https://github.com/szpak/gradle-pitest-plugin/pull/141) - PR by [Björn Kautler](https://github.com/Vampire)
  - Travis build with OpenJ9 11 - [#112](https://github.com/szpak/gradle-pitest-plugin/issues/112)
 
 ## 1.4.5 - 2019-09-08
