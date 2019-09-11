@@ -225,6 +225,10 @@ class PitestTask extends JavaExec {
     @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
     List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
 
+    @Incubating
+    @Option(option = "targetTests", description = "Tests classes to use. Overrides 'testClasses' defined in configuration")
+    List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
+
     PitestTask() {
         ObjectFactory of = project.objects
 
@@ -298,7 +302,7 @@ class PitestTask extends JavaExec {
 //        map['reportDir'] = reportDir.getOrNull()?.toString()
         map['reportDir'] = getReportDir().toString()
         map['targetClasses'] = targetClasses.get().join(',')
-        map['targetTests'] = optionalCollectionAsString(targetTests)
+        map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
         map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
         map['threads'] = optionalPropertyAsString(threads)
         map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)

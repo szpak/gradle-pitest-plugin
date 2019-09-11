@@ -177,7 +177,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
-    def "should set targetTest to targetClasses by default if not defined in configuration"() {
+    def "should set targetTests to targetClasses by default if not defined in configuration"() {
         when:
             project.pitest.targetClasses = ["myClasses.*"]
         then:
@@ -185,11 +185,29 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
-    def "should set targetTest to configuration defined value"() {
+    def "should set targetTests to configuration defined value"() {
         when:
             project.pitest.targetClasses = ["myClasses.*"]
             project.pitest.targetTests = ["myClasses.tests.*"]
         then:
             task.createTaskArgumentMap()['targetTests'] == "myClasses.tests.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
+    def "should override explicitly defined in configuration targetTests from command line"() {
+        given:
+            project.pitest.targetTests = ["com.foobar.*"]
+            getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
+        expect:
+            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
+    def "should override targetTests inferred from targetClasses from command line"() {
+        given:
+            project.pitest.targetClasses = ["com.foobar.*"]
+            getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
+        expect:
+            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
     }
 }
