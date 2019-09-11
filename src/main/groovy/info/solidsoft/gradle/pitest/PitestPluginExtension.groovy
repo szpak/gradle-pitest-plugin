@@ -190,7 +190,12 @@ class PitestPluginExtension {
      *
      * This feature is specific to the Gradle plugin.
      *
-     * <b>Please note</b>. Starting with 1.4.5 due to Gradle limitations only the new syntax with addFileExtensionsToFilter(['xml'[) is available.
+     * <b>Please note</b>. Starting with 1.4.6 due to Gradle limitations only the new syntax with addAll()/addAll([] is possible (instead of "+="):
+     *
+     * pitest {
+     *     fileExtensionsToFilter.addAll('xml', 'orbit')
+     * }
+     *
      * More information: https://github.com/gradle/gradle/issues/10475
      *
      * @since 1.2.4
@@ -275,30 +280,6 @@ class PitestPluginExtension {
 
     void setTimeoutFactor(String timeoutFactor) {
         this.timeoutFactor.set(new BigDecimal(timeoutFactor))
-    }
-
-    /**
-     * File extensions which should be filtered from a classpath (ListProperty edition).
-     *
-     * PIT fails on not Java specific file passed on a classpath (e.g. native libraries). Native libraries ('*.so', '*.dll', '*.dylib')
-     * and '*.pom' files are filtered by default, but a developer can add extra extensions to the list:
-     * <pre>
-     * pitest {
-     *     addFileExtensionsToFilter(['xml', 'orbit'])
-     * }
-     * </pre>
-     *
-     * Rationale: https://github.com/szpak/gradle-pitest-plugin/issues/53
-     *
-     * This syntax is a workaround caused by a lack of support for "+=" with ListProperty: https://github.com/gradle/gradle/issues/10475
-     *
-     * This feature is specific to the Gradle plugin.
-     *
-     * @since 1.4.5
-     */
-    @Incubating
-    void addFileExtensionsToFilter(List<String> fileExtensionsToFilterToAdd) {
-        this.fileExtensionsToFilter.set(this.fileExtensionsToFilter.get() + fileExtensionsToFilterToAdd)
     }
 
     /**

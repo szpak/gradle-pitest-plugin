@@ -9,7 +9,17 @@
  - Set `targetTests` explicitly - [#144](https://github.com/szpak/gradle-pitest-plugin/issues/144)
  - Ability to override `targetTests` from command line - [#143](https://github.com/szpak/gradle-pitest-plugin/issues/143)
  - Run `pitest` after `test` if both scheduled to run - [#141](https://github.com/szpak/gradle-pitest-plugin/pull/141) - PR by [Björn Kautler](https://github.com/Vampire)
+ - Remove incubating `addFileExtensionsToFilter()` method added in 1.4.5 - suggestion by [Björn Kautler](https://github.com/Vampire)
  - Travis build with OpenJ9 11 - [#112](https://github.com/szpak/gradle-pitest-plugin/issues/112)
+
+**Compatibility changes**. The incubating `addFileExtensionsToFilter()` method added in 1.4.5 was removed as it is possible to achieve the same effect
+(while waiting for [improvement in Gradle](https://github.com/gradle/gradle/issues/10475)) with:
+
+``` 
+pitest {
+    fileExtensionsToFilter.addAll('xml', 'orbit')
+}
+```
 
 ## 1.4.5 - 2019-09-08
 

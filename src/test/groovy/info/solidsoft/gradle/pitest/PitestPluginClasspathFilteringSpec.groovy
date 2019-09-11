@@ -17,6 +17,7 @@ package info.solidsoft.gradle.pitest
 
 import spock.lang.Ignore
 import spock.lang.Issue
+import spock.lang.PendingFeature
 
 class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
@@ -74,7 +75,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
+    @PendingFeature(exceptions = MissingMethodException, reason = "Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should filter user defined extensions"() {
         given:
             File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
@@ -91,7 +92,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
         given:
             File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
-            project.pitest.addFileExtensionsToFilter(['extra'])
+            project.pitest.fileExtensionsToFilter.addAll('extra')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -111,7 +112,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    @Ignore("Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
+    @PendingFeature(exceptions = MissingMethodException, reason = "Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
     def "should allow to provide extra extensions in addition to default ones"() {
         given:
             File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
@@ -132,7 +133,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
             File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
         and:
-            project.pitest.addFileExtensionsToFilter(['extra'])
+            project.pitest.fileExtensionsToFilter.addAll('extra')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
