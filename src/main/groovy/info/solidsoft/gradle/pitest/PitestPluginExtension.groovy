@@ -294,21 +294,14 @@ class PitestPluginExtension {
     }
 
     private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        //Replace with .value(null) once only Gradle 5.6+ is supported
-        SetProperty<T> setProperty = p.objects.setProperty(clazz)
-        setProperty.set(null as Set)
-        return setProperty
+        return p.objects.setProperty(clazz).convention(p.providers.provider({ null }))
     }
 
     private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        ListProperty<T> listProperty = p.objects.listProperty(clazz)
-        listProperty.set(null as List)
-        return listProperty
+        return p.objects.listProperty(clazz).convention(p.providers.provider({ null }))
     }
 
     private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        MapProperty<K, V> mapProperty = p.objects.mapProperty(keyClazz, valueClazz)
-        mapProperty.set(null as Map)
-        return mapProperty
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider({ null }))
     }
 }
