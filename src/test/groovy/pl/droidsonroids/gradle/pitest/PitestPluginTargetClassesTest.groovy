@@ -66,9 +66,9 @@ class PitestPluginTargetClassesTest extends Specification {
     //Test case "throw Gradle exception if project group not defined and not explicit set targetClasses parameter" implemented as functional test
     // in TargetClassesFunctionalSpec
 
-    private static assertOnePitestTaskWithGivenTargetClasses(Set<Task> tasks, Set<String> expectedTargetClasses) {
-        tasks.size() == 1
+    private static void assertOnePitestTaskWithGivenTargetClasses(Set<Task> tasks, Set<String> expectedTargetClasses) {
+        assert tasks.size() == 1
         PitestTask pitestTask = (PitestTask) tasks.first()
-        pitestTask.getTargetClasses() == expectedTargetClasses
+        assert pitestTask.getTargetClasses().getOrNull() == expectedTargetClasses
     }
 }

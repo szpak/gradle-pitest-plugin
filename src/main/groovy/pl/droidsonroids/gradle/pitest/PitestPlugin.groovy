@@ -35,13 +35,14 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.util.VersionNumber
 
 import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 /**
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.4.0'
-    public final static String PITEST_TASK_GROUP = "Report"
+    public final static String DEFAULT_PITEST_VERSION = '1.4.10'
+    public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
     public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
@@ -64,13 +65,14 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         createConfigurations()
 
-        extension = project.extensions.create("pitest", PitestPluginExtension)
-        extension.pitestVersion = DEFAULT_PITEST_VERSION
-        extension.fileExtensionsToFilter = DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH
+        extension = project.extensions.create("pitest", PitestPluginExtension, project)
+        extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
+        extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
+
         project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
-            if (extension.mainSourceSets == null) {
-                extension.mainSourceSets = project.android.sourceSets.main as Set<AndroidSourceSet>
+            if (extension.mainSourceSets.empty()) {
+                extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
             }
             if (extension.reportDir == null) {
                 extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
@@ -88,6 +90,7 @@ class PitestPlugin implements Plugin<Project> {
         globalTask.with {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
+            shouldRunAfter("test")
         }
 
         variants.all { BaseVariant variant ->
@@ -102,13 +105,14 @@ class PitestPlugin implements Plugin<Project> {
                 configureTaskDefault(variantTask, variant, mockableAndroidJarTask.outputJar)
             }
 
-            if (!extension.excludeMockableAndroidJar) {
+            if (!extension.excludeMockableAndroidJar.getOrElse(false)) {
                 variantTask.dependsOn mockableAndroidJarTask
             }
 
             variantTask.with {
                 description = "Run PIT analysis for java classes, for ${variant.name} build variant"
                 group = PITEST_TASK_GROUP
+                shouldRunAfter("test${variant.name.capitalize()}UnitTest")
             }
             variantTask.reportDir = new File(variantTask.reportDir, variant.name)
             variantTask.dependsOn "compile${variant.name.capitalize()}UnitTestSources"
@@ -129,7 +133,7 @@ class PitestPlugin implements Plugin<Project> {
         FileCollection combinedTaskClasspath = project.files()
 
         combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
-        if (!extension.excludeMockableAndroidJar) {
+        if (!extension.excludeMockableAndroidJar.getOrElse(false)) {
             combinedTaskClasspath.from(mockableAndroidJar)
         }
 
@@ -159,21 +163,80 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(getJavaCompileTask(variant).classpath)
         combinedTaskClasspath.from(project.files(getJavaCompileTask(variant).destinationDir))
 
+        task.with {
+            testPlugin.set(extension.testPlugin)
+//        task.reportDir.set(extension.reportDir)
+            targetClasses.set(project.providers.provider {
+                log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
+                if (extension.targetClasses.isPresent()) {
+                    return extension.targetClasses.get()
+                }
+                if (project.getGroup()) {   //Assuming it is always a String class instance
+                    return [project.getGroup() + ".*"] as Set
+                }
+                return null
+            }
+            )
+            targetTests.set(project.providers.provider {
+                //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
+                if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
+                    return extension.targetTests.get()
+                } else {
+                    return targetClasses.getOrNull()
+                }
+            })
+            dependencyDistance.set(extension.dependencyDistance)
+            threads.set(extension.threads)
+            mutateStaticInits.set(extension.mutateStaticInits)
+            includeJarFiles.set(extension.includeJarFiles)
+            mutators.set(extension.mutators)
+            excludedMethods.set(extension.excludedMethods)
+            excludedClasses.set(extension.excludedClasses)
+            excludedTestClasses.set(extension.excludedTestClasses)
+            avoidCallsTo.set(extension.avoidCallsTo)
+            verbose.set(extension.verbose)
+            timeoutFactor.set(extension.timeoutFactor)
+            timeoutConstInMillis.set(extension.timeoutConstInMillis)
+            maxMutationsPerClass.set(extension.maxMutationsPerClass)
+            childProcessJvmArgs.set(extension.jvmArgs)
+            outputFormats.set(extension.outputFormats)
+            failWhenNoMutations.set(extension.failWhenNoMutations)
+            skipFailingTests.set(extension.skipFailingTests)
+            includedGroups.set(extension.includedGroups)
+            excludedGroups.set(extension.excludedGroups)
+            includedTestMethods.set(extension.includedTestMethods)
+//        sourceDirs.set(project.providers.provider() { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set })
+            detectInlinedCode.set(extension.detectInlinedCode)
+            timestampedReports.set(extension.timestampedReports)
+            enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
+            mutationThreshold.set(extension.mutationThreshold)
+            coverageThreshold.set(extension.coverageThreshold)
+            mutationEngine.set(extension.mutationEngine)
+            exportLineCoverage.set(extension.exportLineCoverage)
+//        jvmPath.set(extension.jvmPath)
+            mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
+//        mutableCodePaths.set(extension.additionalMutableCodePaths)
+            pluginConfiguration.set(extension.pluginConfiguration)
+            maxSurviving.set(extension.maxSurviving)
+            useClasspathJar.set(extension.useClasspathJar)
+            useAdditionalClasspathFile.set(extension.useClasspathFile)
+            features.set(extension.features)
+
+        }
         task.conventionMapping.with {
             additionalClasspath = {
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !extension.fileExtensionsToFilter.find { file.name.endsWith(".$it") }
+                    !extension.fileExtensionsToFilter.getOrNull().find { file.name.endsWith(".$it") }
                 }
 
                 return filteredCombinedTaskClasspath
             }
-            useAdditionalClasspathFile = { extension.useClasspathFile }
             additionalClasspathFile = { new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME) }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
             sourceDirs = {
-                extension.mainSourceSets*.java.srcDirs.flatten() as Set
+                extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
             }
             mutableCodePaths = {
                 def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
@@ -185,59 +248,19 @@ class PitestPlugin implements Plugin<Project> {
                 additionalMutableCodePaths
             }
 
-            testPlugin = { extension.testPlugin }
             reportDir = { extension.reportDir }
-            targetClasses = {
-                log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
-                if (extension.targetClasses) {
-                    return extension.targetClasses
-                }
-                if (project.getGroup()) {   //Assuming it is always a String class instance
-                    return [project.getGroup() + ".*"] as Set
-                }
-                return null
-            }
-            targetTests = { extension.targetTests }
-            dependencyDistance = { extension.dependencyDistance }
-            threads = { extension.threads }
-            mutateStaticInits = { extension.mutateStaticInits }
-            includeJarFiles = { extension.includeJarFiles }
-            mutators = { extension.mutators }
-            excludedMethods = { extension.excludedMethods }
-            excludedClasses = { extension.excludedClasses }
-            excludedTestClasses = { extension.excludedTestClasses }
-            avoidCallsTo = { extension.avoidCallsTo }
-            verbose = { extension.verbose }
-            timeoutFactor = { extension.timeoutFactor }
-            timeoutConstInMillis = { extension.timeoutConstInMillis }
-            maxMutationsPerClass = { extension.maxMutationsPerClass }
-            childProcessJvmArgs = { extension.jvmArgs }
-            outputFormats = { extension.outputFormats }
-            failWhenNoMutations = { extension.failWhenNoMutations }
-            includedGroups = { extension.includedGroups }
-            excludedGroups = { extension.excludedGroups }
-            detectInlinedCode = { extension.detectInlinedCode }
-            timestampedReports = { extension.timestampedReports }
             historyInputLocation = { extension.historyInputLocation }
             historyOutputLocation = { extension.historyOutputLocation }
-            enableDefaultIncrementalAnalysis = { extension.enableDefaultIncrementalAnalysis }
             defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
-            mutationThreshold = { extension.mutationThreshold }
-            mutationEngine = { extension.mutationEngine }
-            coverageThreshold = { extension.coverageThreshold }
-            exportLineCoverage = { extension.exportLineCoverage }
             jvmPath = { extension.jvmPath }
-            mainProcessJvmArgs = { extension.mainProcessJvmArgs }
-            pluginConfiguration = { extension.pluginConfiguration }
-            maxSurviving = { extension.maxSurviving }
-            features = { extension.features }
         }
     }
 
     private void addPitDependencies() {
         project.rootProject.buildscript.dependencies {
-            log.info("Using PIT: $extension.pitestVersion")
-            pitest "org.pitest:pitest-command-line:$extension.pitestVersion"
+            def pitestVersion = extension.pitestVersion.get()
+            log.info("Using PIT: $pitestVersion")
+            pitest "org.pitest:pitest-command-line:$pitestVersion"
         }
     }
 

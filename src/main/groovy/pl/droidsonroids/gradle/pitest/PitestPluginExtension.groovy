@@ -18,8 +18,12 @@ package pl.droidsonroids.gradle.pitest
 import com.android.build.gradle.api.AndroidSourceSet
 import groovy.transform.CompileStatic
 import org.gradle.api.Incubating
-import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.TaskInstantiationException
+import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
 
 /**
  * Extension class with configurable parameters for Pitest plugin.
@@ -30,7 +34,7 @@ import org.gradle.api.tasks.TaskInstantiationException
 @CompileStatic
 class PitestPluginExtension {
 
-    String pitestVersion
+    final Property<String> pitestVersion
 
     /**
      * Specifies what test plugin to use.
@@ -39,43 +43,60 @@ class PitestPluginExtension {
      *
      * @since 1.3.0
      */
-    String testPlugin
-    File reportDir
-    Set<String> targetClasses
-    Set<String> targetTests
-    Integer dependencyDistance
-    Integer threads
-    Boolean mutateStaticInits
-    Boolean includeJarFiles
-    Set<String> mutators
-    Set<String> excludedMethods
-    Set<String> excludedClasses
-    Set<String> avoidCallsTo
-    Boolean verbose
-    BigDecimal timeoutFactor
-    Integer timeoutConstInMillis
-    Integer maxMutationsPerClass
+    final Property<String> testPlugin
+
+//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
+//    final RegularFileProperty reportDir
+    private File reportDir
+
+    final SetProperty<String> targetClasses
+    final SetProperty<String> targetTests
+    final Property<Integer> dependencyDistance
+    final Property<Integer> threads
+    @Deprecated //PIT doesn't know it
+    final Property<Boolean> mutateStaticInits
+    @Deprecated //removed in PIT 0.33
+    final Property<Boolean> includeJarFiles
+    final SetProperty<String> mutators
+    final SetProperty<String> excludedMethods
+    final SetProperty<String> excludedClasses
+
+    /**
+     * A list of test classes which should be excluded when mutating.
+     *
+     * @since 1.3.0
+     * @see #excludedClasses
+     * @see #excludedMethods
+     */
+    @Incubating
+    final SetProperty<String> excludedTestClasses
+    final SetProperty<String> avoidCallsTo
+    final Property<Boolean> verbose
+    final Property<BigDecimal> timeoutFactor
+    final Property<Integer> timeoutConstInMillis
+    final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
      *
      * Note. This parameter type was changed from String to List<String> in 0.33.0.
      */
-    List<String> jvmArgs
-    Set<String> outputFormats
-    Boolean failWhenNoMutations
-    Set<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-    Set<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-//    File configFile           //removed in 1.1.6 to adjust to changes in PIT
-    Boolean detectInlinedCode   //new in PIT 0.28
-    Boolean timestampedReports
+    final ListProperty<String> jvmArgs
+    final SetProperty<String> outputFormats
+    final Property<Boolean> failWhenNoMutations
+    final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
+    final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
+    final Property<Boolean> detectInlinedCode   //new in PIT 0.28
+    final Property<Boolean> timestampedReports
     File historyInputLocation   //new in PIT 0.29
     File historyOutputLocation
-    Boolean enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
-    Integer mutationThreshold   //new in PIT 0.30
-    Integer coverageThreshold   //new in PIT 0.32
-    String mutationEngine
-    Set<AndroidSourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
-    Boolean exportLineCoverage  //new in PIT 0.32 - for debugging usage only
+    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
+    final Property<Integer> mutationThreshold   //new in PIT 0.30
+    final Property<Integer> coverageThreshold   //new in PIT 0.32
+    final Property<String> mutationEngine
+    final SetProperty<AndroidSourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
+    final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
     File jvmPath    //new in PIT 0.32
 
     /**
@@ -83,7 +104,7 @@ class PitestPluginExtension {
      *
      * @since 0.33.0 (specific for Gradle plugin)
      */
-    List<String> mainProcessJvmArgs
+    final ListProperty<String> mainProcessJvmArgs
 
     /**
      * Additional mutableCodePaths (paths with production classes which should be mutated).<p/>
@@ -117,9 +138,12 @@ class PitestPluginExtension {
      *
      * @since 1.1.6
      */
-    Map<String, String> pluginConfiguration
+    MapProperty<String, String> pluginConfiguration
 
-    Integer maxSurviving    //new in PIT 1.1.10
+    final Property<Integer> maxSurviving    //new in PIT 1.1.10
+
+    @Incubating
+    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
 
     /**
      * Use classpath file instead of passing classpath in a command line
@@ -130,7 +154,7 @@ class PitestPluginExtension {
      * @since 1.2.0
      */
     @Incubating
-    boolean useClasspathFile = false
+    final Property<Boolean> useClasspathFile
 
     /**
      * Turnes on/off features in PIT itself and its plugins.
@@ -140,7 +164,7 @@ class PitestPluginExtension {
      * @since 1.2.1
      */
     @Incubating
-    List<String> features
+    final ListProperty<String> features
 
     /**
      * File extensions which should be filtered from a classpath.
@@ -157,37 +181,81 @@ class PitestPluginExtension {
      *
      * This feature is specific to the Gradle plugin.
      *
+     * <b>Please note</b>. Starting with 1.4.6 due to Gradle limitations only the new syntax with addAll()/addAll([] is possible (instead of "+="):
+     *
+     * pitest {
+     *     fileExtensionsToFilter.addAll('xml', 'orbit')
+     * }
+     *
+     * More information: https://github.com/gradle/gradle/issues/10475
+     *
      * @since 1.2.4
      */
     @Incubating
-    List<String> fileExtensionsToFilter
+    final ListProperty<String> fileExtensionsToFilter
 
-    /**
-     * A list of test classes which should be excluded when mutating.
-     *
-     * @since 1.3.0
-     * @see #excludedClasses
-     * @see #excludedMethods
-     */
-    @Incubating
-    Set<String> excludedTestClasses
+    PitestPluginExtension(Project project) {
+        ObjectFactory of = project.objects
+        Project p = project
+
+        pitestVersion = of.property(String)
+        testPlugin = of.property(String)
+//        reportDir = of.fileProperty()
+        targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
+        targetTests = nullSetPropertyOf(p, String)
+        dependencyDistance = of.property(Integer)
+        threads = of.property(Integer)
+        mutateStaticInits = of.property(Boolean)
+        includeJarFiles = of.property(Boolean)
+        mutators = nullSetPropertyOf(p, String)
+        excludedMethods = nullSetPropertyOf(p, String)
+        excludedClasses = nullSetPropertyOf(p, String)
+        excludedTestClasses = nullSetPropertyOf(p, String)
+        avoidCallsTo = nullSetPropertyOf(p, String)
+        verbose = of.property(Boolean)
+        timeoutFactor = of.property(BigDecimal)
+        timeoutConstInMillis = of.property(Integer)
+        maxMutationsPerClass = of.property(Integer)
+        jvmArgs = nullListPropertyOf(p, String)
+        outputFormats = nullSetPropertyOf(p, String)
+        failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
+        includedGroups = nullSetPropertyOf(p, String)
+        excludedGroups = nullSetPropertyOf(p, String)
+        includedTestMethods = nullSetPropertyOf(p, String)
+        detectInlinedCode = of.property(Boolean)
+        timestampedReports = of.property(Boolean)
+//        historyInputLocation = of.fileProperty()
+//        historyOutputLocation = of.fileProperty()
+        enableDefaultIncrementalAnalysis = of.property(Boolean)
+        mutationThreshold = of.property(Integer)
+        coverageThreshold = of.property(Integer)
+        mutationEngine = of.property(String)
+        mainSourceSets = nullSetPropertyOf(p, AndroidSourceSet)
+        exportLineCoverage = of.property(Boolean)
+//        jvmPath = of.fileProperty()
+        mainProcessJvmArgs = nullListPropertyOf(p, String)
+//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
+        pluginConfiguration = nullMapPropertyOf(p, String, String)
+        maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
+        useClasspathFile = of.property(Boolean)
+        useClasspathFile.set(false)
+        features = nullListPropertyOf(p, String)
+        fileExtensionsToFilter = nullListPropertyOf(p, String)
+        excludeMockableAndroidJar = of.property(Boolean)
+    }
+
+    void setReportDir(File reportDir) {
+        this.reportDir = reportDir
+    }
+
+    File getReportDir() {
+        return reportDir
+    }
 
     void setReportDir(String reportDirAsString) {
         this.reportDir = new File(reportDirAsString)
-    }
-
-    void setSourceDirsAsFiles(Set<File> sourceDirs) {
-        throwExceptionAboutRemovedManualSettingOfSourceDirs()
-    }
-
-    void setSourceDirs(Set<String> sourceDirs) {
-        throwExceptionAboutRemovedManualSettingOfSourceDirs()
-    }
-
-    private throwExceptionAboutRemovedManualSettingOfSourceDirs() {
-        throw new TaskInstantiationException("Manual setting of sourceDirs was removed in version 0.30.1. " +
-                "Use mainSourceSets property to select source sets which would be used to get source directories. " +
-                "Feel free to raise an issue if you need removed feature.")
     }
 
     void setHistoryInputLocation(String historyInputLocationPath) {
@@ -203,7 +271,7 @@ class PitestPluginExtension {
     }
 
     void setTimeoutFactor(String timeoutFactor) {
-        this.timeoutFactor = new BigDecimal(timeoutFactor)
+        this.timeoutFactor.set(new BigDecimal(timeoutFactor))
     }
 
     /**
@@ -214,24 +282,24 @@ class PitestPluginExtension {
      * @since 1.1.10
      */
     void setWithHistory(Boolean withHistory) {
-        this.enableDefaultIncrementalAnalysis = withHistory
+        this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
-    /**
-     * The first (broken) implementation of using a file to pass additional classpath to PIT.
-     * Use "useClasspathFile" property instead.
-     *
-     * @since 1.1.11
-     */
-    @Deprecated //as of 1.2.0
-    void setClassPathFile(File classPathFile) {
-        throw new TaskInstantiationException("Passing 'classPathFile' manually was broken and it is no longer available. Use 'useClasspathFile' " +
-            "property to enable passing classpath to PIT as file. ")
+    private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.setProperty(clazz).convention(p.providers.provider({ null }))
+    }
+
+    private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.listProperty(clazz).convention(p.providers.provider({ null }))
+    }
+
+    private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider({ null }))
     }
 
     /**
      * If set, mockable Android JAR is not added to classpath.
      * May by needed if you use alternative like UnMock or Robolectric.
      */
-    Boolean excludeMockableAndroidJar
+    final Property<Boolean> excludeMockableAndroidJar
 }
