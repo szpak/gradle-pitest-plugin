@@ -1,3 +1,6 @@
+# 0.2.2 - 2019-09-30
+- Merge upstream changes 42c9e3211da4b160695ee4004722a68a59243088 [#53](https://github.com/koral--/gradle-pitest-plugin/issue/53)
+
 # 0.2.1 - 2019-05-04
 - Add `excludeMockableAndroidJar` extension property
 -- Fix compatibility with Robolectric [#44](https://github.com/koral--/gradle-pitest-plugin/issue/44)
