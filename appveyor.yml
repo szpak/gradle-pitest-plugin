@@ -5,6 +5,7 @@ build:
 
 before_build:
   - SET PATH=%JAVA_HOME%\bin;%PATH%
+  - SET GRADLE_OPTS=-Xmx1024m
   - java -version -Xmx32m
 
 build_script:

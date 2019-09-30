@@ -5,7 +5,6 @@ import nebula.test.functional.ExecutionResult
 
 class RobolectricFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //@Ignore("TODO fix, no longer work with AGP 3.2+")
     def "should not fail with tests using Robolectric"() {
         given:
             copyResources("testProjects/robolectric", "")
