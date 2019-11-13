@@ -62,7 +62,7 @@ apply plugin: 'info.solidsoft.pitest'
 
 ## Plugin configuration
 
-The Pitest plugin has to be configured. All the [command line options](http://pitest.org/quickstart/commandline/) are
+The Pitest plugin has to be configured. All the [command line options](https://pitest.org/quickstart/commandline/) are
 supported. To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir` and `pitestVersion` are
 automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by an user.
 
@@ -87,7 +87,7 @@ pitest {
 }
 ```
 
-Check PIT documentation for a [list](http://pitest.org/quickstart/commandline/) of all available command line parameters.
+Check PIT documentation for a [list](https://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
 
