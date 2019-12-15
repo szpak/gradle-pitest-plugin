@@ -31,6 +31,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
 
+import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 /**
@@ -74,6 +75,7 @@ class PitestPlugin implements Plugin<Project> {
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
+                t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
                 addPitDependencies(createConfigurations())
             }
         }
@@ -101,7 +103,7 @@ class PitestPlugin implements Plugin<Project> {
 
         task.testPlugin.set(extension.testPlugin)
 //        task.reportDir.set(extension.reportDir)
-        task.targetClasses.set(project.providers.provider() {
+        task.targetClasses.set(project.providers.provider {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
                 if (extension.targetClasses.isPresent()) {
                     return extension.targetClasses.get()
@@ -112,7 +114,13 @@ class PitestPlugin implements Plugin<Project> {
                 return null
             }
         )
-        task.targetTests.set(extension.targetTests)
+        task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
+            if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
+                return extension.targetTests.get()
+            } else {
+                return task.targetClasses.getOrNull()
+            }
+        })
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
         task.mutateStaticInits.set(extension.mutateStaticInits)
@@ -129,8 +137,10 @@ class PitestPlugin implements Plugin<Project> {
         task.childProcessJvmArgs.set(extension.jvmArgs)
         task.outputFormats.set(extension.outputFormats)
         task.failWhenNoMutations.set(extension.failWhenNoMutations)
+        task.skipFailingTests.set(extension.skipFailingTests)
         task.includedGroups.set(extension.includedGroups)
         task.excludedGroups.set(extension.excludedGroups)
+        task.includedTestMethods.set(extension.includedTestMethods)
 //        task.sourceDirs.set(project.providers.provider() { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set })
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
@@ -144,6 +154,7 @@ class PitestPlugin implements Plugin<Project> {
 //        task.mutableCodePaths.set(extension.additionalMutableCodePaths)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
+        task.useClasspathJar.set(extension.useClasspathJar)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.features.set(extension.features)
 

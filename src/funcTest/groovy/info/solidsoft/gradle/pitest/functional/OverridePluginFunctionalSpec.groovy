@@ -1,11 +1,16 @@
 package info.solidsoft.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
+import org.gradle.api.GradleException
+import spock.lang.Issue
+import spock.lang.PendingFeature
 
-//Note: gradle-override-plugin has important limitations in support for collections
-//See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
+    //Note: gradle-override-plugin has important limitations in support for collections
+    //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
+    //Update 201909. Gradle 4.6 introduced built-in support for overriding (with its on limitations, but also with support for lists):
+    //    https://docs.gradle.org/5.6.2/userguide/custom_tasks.html#sec:declaring_and_using_command_line_options
     def "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
@@ -26,7 +31,49 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         when:
             ExecutionResult result = runTasksSuccessfully('pitest', '-Doverride.pitest.reportDir=build/treports')
         then:
-            result.getStandardOutput().contains('Generated 1 mutations Killed 0 (0%)')
+            result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/139")
+    @PendingFeature(exceptions = GradleException, reason = "Not implemented yet due to Gradle limitations described in linked issue")
+    def "should allow to define features from command line and override those from configuration"() {
+        given:
+            buildFile << """
+                ${getBasicGradlePitestConfig()}
+
+                pitest {
+                    failWhenNoMutations = false
+                    timestampedReports = true
+                }
+            """.stripIndent()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest', '--timestampedReports=false',
+                '--features=+EXPORT', '--features=-FINFINC')
+        then:
+            result.standardOutput.contains("--timestampedReports=false")
+        and:
+            result.standardOutput.contains("--features=+EXPORT,-FINFINC")
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
+    def "should allow to add features from command line to those from configuration and override selected tests"() {
+        given:
+            final String OVERRIDDEN_TARGET_TESTS = "com.foo.*"
+            buildFile << """
+                ${getBasicGradlePitestConfig()}
+
+                pitest {
+                    failWhenNoMutations = false
+                    features = ['-FINFINC']
+                    targetTests = ['com.example.tests.*']
+                }
+            """.stripIndent()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest', '--additionalFeatures=+EXPORT', "--targetTests=$OVERRIDDEN_TARGET_TESTS")
+        then:
+            result.standardOutput.contains("--features=-FINFINC,+EXPORT")
+        and:
+            result.standardOutput.contains("--targetTests=${OVERRIDDEN_TARGET_TESTS}")
     }
 }

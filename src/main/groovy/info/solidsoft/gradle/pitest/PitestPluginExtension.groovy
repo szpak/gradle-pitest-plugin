@@ -83,8 +83,10 @@ class PitestPluginExtension {
     final ListProperty<String> jvmArgs
     final SetProperty<String> outputFormats
     final Property<Boolean> failWhenNoMutations
+    final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
     final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
     final Property<Boolean> detectInlinedCode   //new in PIT 0.28
     final Property<Boolean> timestampedReports
     File historyInputLocation   //new in PIT 0.29
@@ -149,6 +151,9 @@ class PitestPluginExtension {
 
     final Property<Integer> maxSurviving    //new in PIT 1.1.10
 
+    @Incubating
+    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
+
     /**
      * Use classpath file instead of passing classpath in a command line
      *
@@ -185,7 +190,12 @@ class PitestPluginExtension {
      *
      * This feature is specific to the Gradle plugin.
      *
-     * <b>Please note</b>. Starting with 1.4.5 due to Gradle limitations only the new syntax with addFileExtensionsToFilter(['xml'[) is available.
+     * <b>Please note</b>. Starting with 1.4.6 due to Gradle limitations only the new syntax with addAll()/addAll([] is possible (instead of "+="):
+     *
+     * pitest {
+     *     fileExtensionsToFilter.addAll('xml', 'orbit')
+     * }
+     *
      * More information: https://github.com/gradle/gradle/issues/10475
      *
      * @since 1.2.4
@@ -218,8 +228,10 @@ class PitestPluginExtension {
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)
+        skipFailingTests = of.property(Boolean)
         includedGroups = nullSetPropertyOf(p, String)
         excludedGroups = nullSetPropertyOf(p, String)
+        includedTestMethods = nullSetPropertyOf(p, String)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
 //        historyInputLocation = of.fileProperty()
@@ -236,6 +248,7 @@ class PitestPluginExtension {
 //        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
+        useClasspathJar = of.property(Boolean)
         useClasspathFile = of.property(Boolean)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
@@ -270,30 +283,6 @@ class PitestPluginExtension {
     }
 
     /**
-     * File extensions which should be filtered from a classpath (ListProperty edition).
-     *
-     * PIT fails on not Java specific file passed on a classpath (e.g. native libraries). Native libraries ('*.so', '*.dll', '*.dylib')
-     * and '*.pom' files are filtered by default, but a developer can add extra extensions to the list:
-     * <pre>
-     * pitest {
-     *     addFileExtensionsToFilter(['xml', 'orbit'])
-     * }
-     * </pre>
-     *
-     * Rationale: https://github.com/szpak/gradle-pitest-plugin/issues/53
-     *
-     * This syntax is a workaround caused by a lack of support for "+=" with ListProperty: https://github.com/gradle/gradle/issues/10475
-     *
-     * This feature is specific to the Gradle plugin.
-     *
-     * @since 1.4.5
-     */
-    @Incubating
-    void addFileExtensionsToFilter(List<String> fileExtensionsToFilterToAdd) {
-        this.fileExtensionsToFilter.set(this.fileExtensionsToFilter.get() + fileExtensionsToFilterToAdd)
-    }
-
-    /**
      * Alias for enableDefaultIncrementalAnalysis.
      *
      * To make migration from PIT Maven plugin to PIT Gradle plugin easier.
@@ -305,21 +294,14 @@ class PitestPluginExtension {
     }
 
     private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        //Replace with .value(null) once only Gradle 5.6+ is supported
-        SetProperty<T> setProperty = p.objects.setProperty(clazz)
-        setProperty.set(null as Set)
-        return setProperty
+        return p.objects.setProperty(clazz).convention(p.providers.provider({ null }))
     }
 
     private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        ListProperty<T> listProperty = p.objects.listProperty(clazz)
-        listProperty.set(null as List)
-        return listProperty
+        return p.objects.listProperty(clazz).convention(p.providers.provider({ null }))
     }
 
     private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        MapProperty<K, V> mapProperty = p.objects.mapProperty(keyClazz, valueClazz)
-        mapProperty.set(null as Map)
-        return mapProperty
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider({ null }))
     }
 }

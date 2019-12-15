@@ -15,6 +15,8 @@
  */
 package info.solidsoft.gradle.pitest
 
+import spock.lang.Issue
+
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
     //public to be used also in functional tests
@@ -22,7 +24,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'features',
                                                                                 'excludedTestClasses',
                                                                                 'testPlugin',
-                                                                                'targetTests',
                                                                                 'dependencyDistance',
                                                                                 'threads',
                                                                                 'mutateStaticInits',
@@ -39,8 +40,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'jvmArgs',
                                                                                 'outputFormats',
                                                                                 'failWhenNoMutations',
+                                                                                'skipFailingTests',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
+                                                                                'includedTestMethods',
                                                                                 'detectInlinedCode',
                                                                                 'timestampedReports',
                                                                                 'mutationThreshold',
@@ -49,6 +52,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'exportLineCoverage',
                                                                                 'jvmPath',
                                                                                 'maxSurviving',
+                                                                                'useClasspathJar',
                                                                                 'features',
                                                                                 'historyInputLocation',
                                                                                 'historyOutputLocation',
@@ -70,6 +74,27 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             project.pitest.features = ["-FOO", "+BAR(a[1] a[2])"]
         expect:
             task.createTaskArgumentMap()['features'] == "-FOO,+BAR(a[1] a[2])"
+    }
+
+    def "should pass additional features alone if features not set in configuration"() {
+        given:
+            getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
+        expect:
+            task.createTaskArgumentMap()['features'] == "+XYZ,-ABC"
+    }
+
+    def "should add additional features to those defined in configuration"() {
+        given:
+            project.pitest.features = ["-FOO", "+BAR"]
+            getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
+        expect:
+            task.createTaskArgumentMap()['features'] == "-FOO,+BAR,+XYZ,-ABC"
+    }
+
+    def "should not pass features configuration to PIT if not set in configuration or via option"() {
+        //Intentional duplication with generic parametrized tests to emphasis requirement
+        expect:
+            task.createTaskArgumentMap()['featues'] == null
     }
 
     def "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
@@ -109,8 +134,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
             "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
             "failWhenNoMutations"    | false                                        || "false"
+            "skipFailingTests"       | true                                         || "true"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"
             "mutationThreshold"      | 90                                           || "90"
@@ -122,6 +149,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //mainProcessJvmArgs?
 //            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
             "maxSurviving"           | 20                                           || "20"
+            "useClasspathJar"        | true                                         || "true"
 //            "useClasspathFile"       | true                                         || "false"    //TODO
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
 //            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT
@@ -146,5 +174,40 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             project.pitest.additionalMutableCodePaths = [new File("/tmp/p1"), new File("/tmp/p2")]
         expect:
             task.createTaskArgumentMap()["mutableCodePaths"].contains("${new File("/tmp/p1").path},${new File("/tmp/p2").path}")
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
+    def "should set targetTests to targetClasses by default if not defined in configuration"() {
+        when:
+            project.pitest.targetClasses = ["myClasses.*"]
+        then:
+            task.createTaskArgumentMap()['targetTests'] == "myClasses.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
+    def "should set targetTests to configuration defined value"() {
+        when:
+            project.pitest.targetClasses = ["myClasses.*"]
+            project.pitest.targetTests = ["myClasses.tests.*"]
+        then:
+            task.createTaskArgumentMap()['targetTests'] == "myClasses.tests.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
+    def "should override explicitly defined in configuration targetTests from command line"() {
+        given:
+            project.pitest.targetTests = ["com.foobar.*"]
+            getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
+        expect:
+            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
+    def "should override targetTests inferred from targetClasses from command line"() {
+        given:
+            project.pitest.targetClasses = ["com.foobar.*"]
+            getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
+        expect:
+            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
     }
 }

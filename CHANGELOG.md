@@ -1,5 +1,26 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.6 - Unreleased
+
+ - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
+ - Support for useClasspathJar (PIT 1.4.2) - [#92](https://github.com/szpak/gradle-pitest-plugin/issues/92)
+ - Support for skipFailingTests (PIT 1.4.4) - [#113](https://github.com/szpak/gradle-pitest-plugin/issues/113)
+ - Pass additional PIT features from command line with `--additionalFeatures` - [#139](https://github.com/szpak/gradle-pitest-plugin/issues/139)
+ - Set `targetTests` explicitly - [#144](https://github.com/szpak/gradle-pitest-plugin/issues/144)
+ - Ability to override `targetTests` from command line `--targetTests` - [#143](https://github.com/szpak/gradle-pitest-plugin/issues/143)
+ - Run `pitest` after `test` if both scheduled to run - [#141](https://github.com/szpak/gradle-pitest-plugin/pull/141) - PR by [Björn Kautler](https://github.com/Vampire)
+ - Remove incubating `addFileExtensionsToFilter()` method added in 1.4.5 - suggestion by [Björn Kautler](https://github.com/Vampire)
+ - Travis build with OpenJ9 11 - [#112](https://github.com/szpak/gradle-pitest-plugin/issues/112)
+
+**Compatibility changes**. The incubating `addFileExtensionsToFilter()` method added in 1.4.5 was removed as it is possible to achieve the same effect
+(while waiting for [improvement in Gradle](https://github.com/gradle/gradle/issues/10475)) with:
+
+``` 
+pitest {
+    fileExtensionsToFilter.addAll('xml', 'orbit')
+}
+```
+
 ## 1.4.5 - 2019-09-08
 
  - Rework internal plugin implementation to Gradle 5+ standards
@@ -28,8 +49,8 @@ There could be also some issues for people interacting with the plugin from cust
 
 ## 1.4.0 - 2019-01-26
 
- - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/szpak/CDeliveryBoy/issues/#86), [#81](https://github.com/szpak/CDeliveryBoy/issues/#81)
- - Improve `pitest` task caching with @Classpath - [#93](https://github.com/szpak/CDeliveryBoy/issues/#93)
+ - Basic Java 11 support verified with CI build (requires PIT 1.4.1+)- [#86](https://github.com/gradle/gradle/issues/86), [#81](hhttps://github.com/gradle/gradle/issues/81)
+ - Improve `pitest` task caching with @Classpath - [#93](https://github.com/gradle/gradle/issues/93)
  - PIT 1.4.3 by default
  - Switch build to Gradle 4.10.2
  - Remove support for Gradle <4.0 (for better Gradle 5 compatibility)

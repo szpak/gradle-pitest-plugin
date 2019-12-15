@@ -69,7 +69,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         assert result.standardOutput.contains(textToContain) || result.standardError.contains(textToContain)
     }
 
-    //TODO: Switch to Gradle mechanism once upgrade to 6.x
+    //TODO: Switch to Gradle mechanism once upgraded to 6.x
     protected boolean isJava13Compatible() {
         return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
     }
