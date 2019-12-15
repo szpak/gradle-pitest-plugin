@@ -7,7 +7,7 @@
  - Support for skipFailingTests (PIT 1.4.4) - [#113](https://github.com/szpak/gradle-pitest-plugin/issues/113)
  - Pass additional PIT features from command line with `--additionalFeatures` - [#139](https://github.com/szpak/gradle-pitest-plugin/issues/139)
  - Set `targetTests` explicitly - [#144](https://github.com/szpak/gradle-pitest-plugin/issues/144)
- - Ability to override `targetTests` from command line - [#143](https://github.com/szpak/gradle-pitest-plugin/issues/143)
+ - Ability to override `targetTests` from command line `--targetTests` - [#143](https://github.com/szpak/gradle-pitest-plugin/issues/143)
  - Run `pitest` after `test` if both scheduled to run - [#141](https://github.com/szpak/gradle-pitest-plugin/pull/141) - PR by [Björn Kautler](https://github.com/Vampire)
  - Remove incubating `addFileExtensionsToFilter()` method added in 1.4.5 - suggestion by [Björn Kautler](https://github.com/Vampire)
  - Travis build with OpenJ9 11 - [#112](https://github.com/szpak/gradle-pitest-plugin/issues/112)
