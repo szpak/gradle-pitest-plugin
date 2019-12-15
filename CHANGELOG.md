@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.6 - Unreleased
+## 1.4.6 - 2019-12-15
 
  - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
  - Support for useClasspathJar (PIT 1.4.2) - [#92](https://github.com/szpak/gradle-pitest-plugin/issues/92)
