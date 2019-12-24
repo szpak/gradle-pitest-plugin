@@ -13,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1' //override version for more reliable releasing from Travis
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2' //override version for more reliable releasing from Travis
         classpath 'com.gradle.publish:plugin-publish-plugin:0.10.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.26.0'
     }
