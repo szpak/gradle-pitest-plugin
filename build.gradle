@@ -44,7 +44,7 @@ dependencies {
     }
     testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testImplementation 'net.bytebuddy:byte-buddy:1.10.5' //for Spying in Spock
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
