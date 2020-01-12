@@ -77,19 +77,26 @@ PIT should be passed as a corresponding types. There is only one important diffe
 a coma separated list of strings in a Gradle configuration a list of strings should be used (see `outputFormats` in the
 following example).
 
+You can update mutators by setting them in gradle. Check available [pitest mutators](https://pitest.org/quickstart/mutators/)
+
 ```groovy
 pitest {
-    targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.4.1' //not needed when a default PIT version should be used
-    threads = 4
-    outputFormats = ['XML', 'HTML']
-    timestampedReports = false
+    targetClasses.set(['our.base.package.*'])  //by default "${project.group}.*"
+    pitestVersion.set('1.4.10')                //not needed when a default PIT version should be used
+    threads.set(4)
+    outputFormats.set(['XML', 'HTML'])
+    timestampedReports.set(false)
+    mutators.set(['CONDITIONALS_BOUNDARY', 'VOID_METHOD_CALLS', 'NEGATE_CONDITIONALS',
+                  'INVERT_NEGS', 'MATH', 'INCREMENTS',
+                  'TRUE_RETURNS', 'FALSE_RETURNS', 'PRIMITIVE_RETURNS', 'EMPTY_RETURNS', 'NULL_RETURNS']
+    )                                          //by default 'DEFAULT'
 }
 ```
 
 Check PIT documentation for a [list](https://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
+
 
 There are a few parameters specific for Gradle plugin:
 
@@ -109,11 +116,11 @@ For example:
 ```groovy
 pitest {
     ...
-    testSourceSets = [sourceSets.test, sourceSets.integrationTest]
-    mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
-    jvmArgs = ['-Xmx1024m']
-    useClasspathFile = true     //useful with bigger projects on Windows 
-    fileExtensionsToFilter += ['xml']
+    testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
+    mainSourceSets.set([sourceSets.main, sourceSets.additionalMain])
+    jvmArgs.set(['-Xmx1024m'])
+    useClasspathFile.set(true)     //useful with bigger projects on Windows 
+    fileExtensionsToFilter.add('xml')
 }
 ```
 
@@ -141,10 +148,10 @@ subprojects {
     apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
 
     pitest {
-        threads = 4
+        threads.set(4)
 
         if (project.name in ['module-without-any-test']) {
-            failWhenNoMutations = false
+            failWhenNoMutations.set(false)
         }
     }
 }
@@ -170,8 +177,8 @@ configure(project(':itest')) {
     configurations { mutableCodeBase { transitive false } }
     dependencies { mutableCodeBase project(':shared') }
     pitest {
-        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
-        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+        mainSourceSets.set([project.sourceSets.main, project(':shared').sourceSets.main])
+        additionalMutableCodePaths.set([configurations.mutableCodeBase.singleFile])
     }
 }
 ```
@@ -187,8 +194,8 @@ configure(project(':itest')) {
     }
 
     pitest {
-        mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
-        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()
+        mainSourceSets.set([project.sourceSets.main, project(':shared').sourceSets.main])
+        additionalMutableCodePaths.set(project(':shared').jar.outputs.files.getFiles())
     }
 }
 ```
@@ -216,7 +223,7 @@ buildscript {
 }
 
 pitest {
-    testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
+    testPlugin.set('junit5') //or built-in 'testng' which also has to be activated
     // rest of your pitest configuration
 }
 ```
@@ -260,7 +267,7 @@ See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/mast
 pitest {
     ...
     //jvmArgs = '-XX:-UseSplitVerifier'     //<0.33.0
-    jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
+    jvmArgs.set(['-XX:-UseSplitVerifier'])     //>=0.33.0
 }
 ```
 
@@ -272,7 +279,7 @@ To keep consistency with the new `mainProcessJvmArgs` configuration parameter an
 pitest {
     ...
     //jvmArgs = '-Xmx1024 -Xms512m'     //old format
-    jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
+    jvmArgs.set(['-Xmx1024', '-Xms512m'])  //new format
 }
 ```
 
@@ -377,7 +384,7 @@ The gradle-pitest-plugin 1.3.0 is smoke testing with Java 8, 9, 10 and 11. Howev
 
 ```groovy
 pitest {
-    pitestVersion = '1.4.3'  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
+    pitestVersion.set('1.4.3')  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
 }
 ```
 
