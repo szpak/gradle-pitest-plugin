@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'info.solidsoft.pitest'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    configurations.maybeCreate('pitest')
+    dependencies {
+        //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.7-SNAPSHOT'
+        pitest 'org.pitest:pitest-junit5-plugin:0.12'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "pitest.test"
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+pitest {
+    testPlugin = "junit5"
+}
