@@ -12,6 +12,7 @@ import org.gradle.util.GradleVersion
 import org.spockframework.runtime.extension.builtin.PreconditionContext
 import spock.lang.IgnoreIf
 import spock.util.Exceptions
+import spock.util.environment.RestoreSystemProperties
 
 import java.util.regex.Pattern
 
@@ -28,19 +29,25 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //4.8, but plugin requires 5.1.1
+    //4.8, but plugin requires 5.1
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
-    //https://github.com/gradle/gradle/issues/8681#issuecomment-522951112
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0-20190902220030+0000")
+    //6.0+ - https://github.com/gradle/gradle/issues/8681#issuecomment-532507276
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0.1")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
+    @RestoreSystemProperties
     def "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
+        and:
+            //Until fixed: https://github.com/szpak/gradle-pitest-plugin/issues/155
+            if (requestedGradleVersion.toString().startsWith("6.")) {
+                System.setProperty("ignoreDeprecations", "true")
+            }
         when:
             copyResources("testProjects/simple1", "")
         then:
