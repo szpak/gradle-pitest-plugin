@@ -41,9 +41,22 @@ class PitestPluginExtension {
      *
      * Prior to 1.3.0 this was autodetected, now it has to be specified. The junit plugin is used by default.
      *
+     * For using with JUnit 5 please see: junit5PluginVersion
+     *
      * @since 1.3.0
      */
     final Property<String> testPlugin
+
+    /**
+     * Specifies JUnit 5 plugin for PIT which should be added as a dependency.
+     *
+     * It sets also 'testPlugin' to 'junit5' - unless not explicitly set.
+     *
+     * Related issue: https://github.com/szpak/gradle-pitest-plugin/issues/177
+     *
+     * @since 1.4.7
+     */
+    final Property<String> junit5PluginVersion
 
 //    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
 //    final RegularFileProperty reportDir
@@ -209,6 +222,7 @@ class PitestPluginExtension {
 
         pitestVersion = of.property(String)
         testPlugin = of.property(String)
+        junit5PluginVersion = of.property(String)
 //        reportDir = of.fileProperty()
         targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
         targetTests = nullSetPropertyOf(p, String)

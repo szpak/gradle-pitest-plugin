@@ -1,5 +1,23 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.7 - Unreleased
+
+ - Simpler usage with JUnit 5 with `junit5PluginVersion` configuration parameter - [#177](https://github.com/szpak/gradle-pitest-plugin/issues/177) - idea by [John Scancella](https://github.com/jscancella)
+
+Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
+
+```
+plugins {
+    id 'java'
+    id 'info.solidsoft.pitest' version '...'
+}
+
+pitest {
+    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    junit5PluginVersion = '0.12'
+}
+```
+
 ## 1.4.6 - 2019-12-15
 
  - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
@@ -15,7 +33,7 @@
 **Compatibility changes**. The incubating `addFileExtensionsToFilter()` method added in 1.4.5 was removed as it is possible to achieve the same effect
 (while waiting for [improvement in Gradle](https://github.com/gradle/gradle/issues/10475)) with:
 
-``` 
+```
 pitest {
     fileExtensionsToFilter.addAll('xml', 'orbit')
 }
@@ -45,7 +63,7 @@ pitest {
 }
 ```
 There could be also some issues for people interacting with the plugin from custom code (instead of from `build.gradle`). As a side effect Gradle 5.1
-(released in I 2019) is required. 
+(released in I 2019) is required.
 
 ## 1.4.0 - 2019-01-26
 
@@ -56,7 +74,7 @@ There could be also some issues for people interacting with the plugin from cust
  - Remove support for Gradle <4.0 (for better Gradle 5 compatibility)
  - Remove deprecation warnings in Gradle 5.0
  - Enable automatic dependency bumping with [Dependabot](https://dependabot.com/)
- 
+
 **Known limitations**. To reduce confusion on Java 11 support, this version provides PIT 1.4.3 by default which supports Java 11. However, not all
 new features of PIT 1.4.0 to 1.4.3 have been implemented in this release of the Gradle plugin. They are planned to be added in the future versions.
 
@@ -69,7 +87,7 @@ new features of PIT 1.4.0 to 1.4.3 have been implemented in this release of the 
  - Basic Java 9 compatibility verified with CI build (preliminary support for Java 9 has been available since PIT 1.2.3) - #68
  - Switch build to Gradle 4.5
 
-**Breaking change**. Starting with 1.3.0 binary artifacts require at least Java 8. 
+**Breaking change**. Starting with 1.3.0 binary artifacts require at least Java 8.
 
 ## 1.2.4 - 2017-11-14
 
@@ -109,7 +127,7 @@ new features of PIT 1.4.0 to 1.4.3 have been implemented in this release of the 
  - add `withHistory` alias (new thing in PIT Maven plugin)  for long established `enableDefaultIncrementalAnalysis` parameter in Gradle plugin
  - PIT 1.1.10 by default - #49
  - bring full Gradle 2.0 - 2.14.1 range of functional tests back (with custom changes to nebula-test)
- - upgrade Gradle wrapper to 2.14.1 - #48 
+ - upgrade Gradle wrapper to 2.14.1 - #48
 
 ## 1.1.9 - 2016-02-15
 

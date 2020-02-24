@@ -43,6 +43,8 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
+    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
+
     @Internal
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.1") //public as used also in regression tests
     public static final String PLUGIN_ID = "info.solidsoft.pitest"
@@ -206,5 +208,24 @@ class PitestPlugin implements Plugin<Project> {
     private void addPitDependencies(Configuration pitestConfiguration) {
         log.info("Using PIT: ${extension.pitestVersion.get()}")
         pitestConfiguration.dependencies.add(project.dependencies.create("org.pitest:pitest-command-line:${extension.pitestVersion.get()}"))
+
+        addPitJUnit5PluginIfRequested(pitestConfiguration)
+    }
+
+    private void addPitJUnit5PluginIfRequested(Configuration pitestConfiguration) {
+        if (extension.junit5PluginVersion.isPresent()) {
+
+            if (!extension.testPlugin.isPresent()) {
+                log.info("Implicitly using JUnit 5 plugin for PIT with version defined in 'junit5PluginVersion'")
+                extension.testPlugin.set(PITEST_JUNIT5_PLUGIN_NAME)
+            }
+            if (extension.testPlugin.isPresent() && extension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
+                log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${extension.testPlugin.get()}'")
+            }
+
+            String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
+            log.warn("Adding dependency: ${junit5PluginDependencyAsString}")
+            pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
+        }
     }
 }

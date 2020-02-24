@@ -112,7 +112,7 @@ pitest {
     testSourceSets = [sourceSets.test, sourceSets.integrationTest]
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
     jvmArgs = ['-Xmx1024m']
-    useClasspathFile = true     //useful with bigger projects on Windows 
+    useClasspathFile = true     //useful with bigger projects on Windows
     fileExtensionsToFilter += ['xml']
 }
 ```
@@ -201,6 +201,27 @@ Minimal working multi-project build is available in
 Test plugins are used to support different test frameworks than JUnit4. They are officially supported by gradle-pitest-plugin staring with version 1.1.4
 (although it was possible to use it since 1.1.0).
 
+### JUnit 5 plugin for PIT support (gradle-pitest-plugin 1.4.7+)
+
+Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
+
+```
+plugins {
+    id 'java'
+    id 'info.solidsoft.pitest' version '1.4.6'
+}
+
+pitest {
+    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    junit5PluginVersion = '0.12'
+    // ...
+}
+```
+
+The minimal working example for JUhnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
+
+### Generic plugin support (also JUnit 5 in gradle-pitest-plugin <1.4.7)
+
 To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
 
 ```groovy
@@ -211,17 +232,17 @@ buildscript {
    configurations.maybeCreate('pitest')
    dependencies {
        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
-       pitest 'org.pitest:pitest-junit5-plugin:0.8'
+       pitest 'org.pitest:pitest-junit5-plugin:0.12'
    }
 }
 
 pitest {
     testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
-    // rest of your pitest configuration
+    // ...
 }
 ```
 
-The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
+The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 
 ## Versions
@@ -244,7 +265,7 @@ Due to incompatible changes in Gradle 4/5/6 support for the older Gradle version
 The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
-(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
+(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4.
 
 See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 

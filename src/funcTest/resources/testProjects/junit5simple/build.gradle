@@ -10,7 +10,8 @@ buildscript {
     dependencies {
         //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
 //        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.7-SNAPSHOT'
-        pitest 'org.pitest:pitest-junit5-plugin:0.12'
+        //Not needed, 'junit5PluginVersion' should implicitly add it in requested version
+//        pitest 'org.pitest:pitest-junit5-plugin:0.12'
     }
 }
 
@@ -29,5 +30,6 @@ test {
 }
 
 pitest {
-    testPlugin = "junit5"
+//    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
+    junit5PluginVersion = "0.12"
 }

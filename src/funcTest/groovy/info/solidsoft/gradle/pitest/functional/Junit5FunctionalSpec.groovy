@@ -16,7 +16,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/177")
-    def "should work with junit5 - WIP"() {
+    def "should work with junit5 without explicitly adding dependency"() {
         given:
             copyResources("testProjects/junit5simple", "")
         when:
