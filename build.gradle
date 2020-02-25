@@ -38,7 +38,7 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
-    testImplementation('org.spockframework:spock-core:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-M2-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
