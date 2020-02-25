@@ -42,7 +42,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.0-M2-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
