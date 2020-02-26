@@ -44,7 +44,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             gradleVersion = requestedGradleVersion
             classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
         and:
-            //Until fixed: https://github.com/szpak/gradle-pitest-plugin/issues/155
+            //TODO: Until fixed: https://github.com/szpak/gradle-pitest-plugin/issues/155
             if (requestedGradleVersion.toString().startsWith("6.")) {
                 System.setProperty("ignoreDeprecations", "true")
             }
@@ -53,7 +53,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         then:
             fileExists('build.gradle')
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all')
         then:
             result.wasExecuted(':pitest')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
@@ -97,7 +97,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1"]
-    private static final List<String> GRADLE6_VERSIONS = [MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version] //for Java 13 compatibility
+    private static final List<String> GRADLE6_VERSIONS = ["6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
