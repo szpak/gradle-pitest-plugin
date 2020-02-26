@@ -3,6 +3,9 @@
 ## 1.4.7 - Unreleased
 
  - Simpler usage with JUnit 5 with `junit5PluginVersion` configuration parameter - [#177](https://github.com/szpak/gradle-pitest-plugin/issues/177) - idea by [John Scancella](https://github.com/jscancella)
+ - Remove deprecation warnings in Gradle 6 - [#155](https://github.com/gradle/gradle/issues/155)
+ - `additionalClasspathFile` no longer marked as `@OutputFile` for better Gradle 6+ compatibility
+ - Bump minimal Gradle version to 5.6 - required to fix deprecation warnings due to [#10953](https://github.com/gradle/gradle/issues/10953)
 
 Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
 

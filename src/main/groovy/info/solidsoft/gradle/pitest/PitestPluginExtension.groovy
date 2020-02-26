@@ -18,6 +18,8 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import org.gradle.api.Incubating
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
@@ -58,9 +60,9 @@ class PitestPluginExtension {
      */
     final Property<String> junit5PluginVersion
 
-//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
-//    final RegularFileProperty reportDir
-    private File reportDir
+    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
+    //See: https://github.com/gradle/gradle/issues/10953 - on the other hand deprecation warnings in Gradle 6.x with regular File
+    final DirectoryProperty reportDir
 
     final SetProperty<String> targetClasses
     final SetProperty<String> targetTests
@@ -102,8 +104,8 @@ class PitestPluginExtension {
     final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
     final Property<Boolean> detectInlinedCode   //new in PIT 0.28
     final Property<Boolean> timestampedReports
-    File historyInputLocation   //new in PIT 0.29
-    File historyOutputLocation
+    final RegularFileProperty historyInputLocation   //new in PIT 0.29
+    final RegularFileProperty historyOutputLocation
     final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
     final Property<Integer> mutationThreshold   //new in PIT 0.30
     final Property<Integer> coverageThreshold   //new in PIT 0.32
@@ -111,7 +113,7 @@ class PitestPluginExtension {
     final SetProperty<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
     final SetProperty<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
     final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
-    File jvmPath    //new in PIT 0.32
+    final RegularFileProperty jvmPath    //new in PIT 0.32
 
     /**
      * JVM arguments to use when Gradle plugin launches the main PIT process.
@@ -223,7 +225,7 @@ class PitestPluginExtension {
         pitestVersion = of.property(String)
         testPlugin = of.property(String)
         junit5PluginVersion = of.property(String)
-//        reportDir = of.fileProperty()
+        reportDir = of.directoryProperty()
         targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
         targetTests = nullSetPropertyOf(p, String)
         dependencyDistance = of.property(Integer)
@@ -248,8 +250,8 @@ class PitestPluginExtension {
         includedTestMethods = nullSetPropertyOf(p, String)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
-//        historyInputLocation = of.fileProperty()
-//        historyOutputLocation = of.fileProperty()
+        historyInputLocation = of.fileProperty()
+        historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
@@ -257,7 +259,7 @@ class PitestPluginExtension {
         testSourceSets = nullSetPropertyOf(p, SourceSet)
         mainSourceSets = nullSetPropertyOf(p, SourceSet)
         exportLineCoverage = of.property(Boolean)
-//        jvmPath = of.fileProperty()
+        jvmPath = of.fileProperty()
         mainProcessJvmArgs = nullListPropertyOf(p, String)
 //        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
@@ -269,27 +271,19 @@ class PitestPluginExtension {
     }
 
     void setReportDir(File reportDir) {
-        this.reportDir = reportDir
-    }
-
-    File getReportDir() {
-        return reportDir
-    }
-
-    void setReportDir(String reportDirAsString) {
-        this.reportDir = new File(reportDirAsString)
+        this.reportDir.set(reportDir)
     }
 
     void setHistoryInputLocation(String historyInputLocationPath) {
-        this.historyInputLocation = new File(historyInputLocationPath)
+        this.historyInputLocation.set(new File(historyInputLocationPath))
     }
 
     void setHistoryOutputLocation(String historyOutputLocationPath) {
-        this.historyOutputLocation = new File(historyOutputLocationPath)
+        this.historyOutputLocation.set(new File(historyOutputLocationPath))
     }
 
     void setJvmPath(String jvmPathAsString) {
-        this.jvmPath = new File(jvmPathAsString)
+        this.jvmPath.set(new File(jvmPathAsString))
     }
 
     void setTimeoutFactor(String timeoutFactor) {
