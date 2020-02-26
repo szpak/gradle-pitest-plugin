@@ -28,7 +28,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @SuppressWarnings("GrMethodMayBeStatic")
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //4.8, but plugin requires 5.1
+    //4.8, but plugin requires 5.6
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
     //6.0+ - https://github.com/gradle/gradle/issues/8681#issuecomment-532507276
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0.1")
@@ -62,7 +62,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     @IgnoreIf({new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
     def "should fail with meaningful error message with too old Gradle version"() {
         given:
-            gradleVersion = "5.0"
+            gradleVersion = "5.5.1"
         and:
             assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.compareTo(GradleVersion.version(gradleVersion)) > 0
         when:
@@ -80,7 +80,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             }
     }
 
-//To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8
+    //To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8
     //Spock is not needed in this artificial project - just the test classpath leaks to Gradle instance started by Nebula
     private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile(".*spock-core-1\\..*.jar")
     private static final Predicate<URL> FILTER_SPOCK_JAR = { URL url ->
@@ -89,7 +89,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.5.1", "5.4.1", "5.3.1", "5.2.1", "5.1"]
+    private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.6"]
     private static final List<String> GRADLE6_VERSIONS = ["6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 

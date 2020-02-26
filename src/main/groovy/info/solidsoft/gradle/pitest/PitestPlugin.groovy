@@ -46,7 +46,7 @@ class PitestPlugin implements Plugin<Project> {
     private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
 
     @Internal
-    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.1") //public as used also in regression tests
+    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
     public static final String PLUGIN_ID = "info.solidsoft.pitest"
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
