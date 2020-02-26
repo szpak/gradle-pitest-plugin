@@ -288,12 +288,12 @@ class PitestTask extends JavaExec {
 
     @Input
     String getDefaultFileForHistoryDataPath() {
-        defaultFileForHistoryData.asFile.get().absolutePath
+        defaultFileForHistoryData.asFile.get().path
     }
 
     @Input
     String getAdditionalClasspathFilePath() {
-        additionalClasspathFile.asFile.get().absolutePath
+        additionalClasspathFile.asFile.get().path
     }
 
     @Override
@@ -362,7 +362,7 @@ class PitestTask extends JavaExec {
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
+            return [classPathFile: getAdditionalClasspathFile().asFile.get().path]
         } else {
             return [classPath: getAdditionalClasspath().files.join(',')]
         }
