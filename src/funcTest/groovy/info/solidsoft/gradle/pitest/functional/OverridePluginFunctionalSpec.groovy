@@ -10,7 +10,8 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
     //Note: gradle-override-plugin has important limitations in support for collections
     //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
     //Update 201909. Gradle 4.6 introduced built-in support for overriding (with its on limitations, but also with support for lists):
-    //    https://docs.gradle.org/5.6.2/userguide/custom_tasks.html#sec:declaring_and_using_command_line_options
+    //    https://docs.gradle.org/6.2.1/userguide/custom_tasks.html#sec:declaring_and_using_command_line_options
+    @PendingFeature(exceptions = GradleException, reason = "gradle-override-plugin nor @Option don't work with DirectoryProperty")
     def "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """

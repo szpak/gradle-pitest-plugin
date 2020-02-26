@@ -151,7 +151,7 @@ class PitestPlugin implements Plugin<Project> {
         task.coverageThreshold.set(extension.coverageThreshold)
         task.mutationEngine.set(extension.mutationEngine)
         task.exportLineCoverage.set(extension.exportLineCoverage)
-//        task.defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
+        task.defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
 //        task.mutableCodePaths.set(extension.additionalMutableCodePaths)
@@ -161,6 +161,7 @@ class PitestPlugin implements Plugin<Project> {
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
+        task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
         task.features.set(extension.features)
 
         //Temporarily for types not supported in Gradle 4.x
@@ -175,14 +176,11 @@ class PitestPlugin implements Plugin<Project> {
 
                 return filteredCombinedTaskClasspath
             }
-            additionalClasspathFile = { new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME) }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
             mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
             sourceDirs = { extension.mainSourceSets.get()*.allSource.srcDirs.flatten() as Set }
-            defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
-            jvmPath = { extension.jvmPath }
         }
     }
 

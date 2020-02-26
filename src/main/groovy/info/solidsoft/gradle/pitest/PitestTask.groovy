@@ -30,6 +30,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
@@ -157,8 +158,9 @@ class PitestTask extends JavaExec {
     @Input
     final Property<Boolean> useAdditionalClasspathFile
 
-    @Input
-    File additionalClasspathFile
+    //Workaround with @Internal for "Unable to store input properties for task" - https://github.com/gradle/gradle/issues/12351
+    @Internal
+    final RegularFileProperty additionalClasspathFile
 
     @InputFiles
     Set<File> mutableCodePaths
@@ -175,9 +177,9 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> enableDefaultIncrementalAnalysis
 
-    //TODO: Switch to RegularFileProperty once https://github.com/gradle/gradle/issues/12351 is solved
-    @Input
-    File defaultFileForHistoryData
+    //Workaround with @Internal for "Unable to store input properties for task" - https://github.com/gradle/gradle/issues/12351
+    @Internal
+    final RegularFileProperty defaultFileForHistoryData
 
     @Input
     @Optional
@@ -268,7 +270,7 @@ class PitestTask extends JavaExec {
         historyInputLocation = of.fileProperty()
         historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
-//        defaultFileForHistoryData = of.fileProperty()
+        defaultFileForHistoryData = of.fileProperty()
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
@@ -280,8 +282,18 @@ class PitestTask extends JavaExec {
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
         useAdditionalClasspathFile = of.property(Boolean)
-//        additionalClasspathFile = of.fileProperty()
+        additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
+    }
+
+    @Input
+    String getDefaultFileForHistoryDataPath() {
+        defaultFileForHistoryData.asFile.get().absolutePath
+    }
+
+    @Input
+    String getAdditionalClasspathFilePath() {
+        additionalClasspathFile.asFile.get().absolutePath
     }
 
     @Override
@@ -350,7 +362,7 @@ class PitestTask extends JavaExec {
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().absolutePath]
+            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
         } else {
             return [classPath: getAdditionalClasspath().files.join(',')]
         }
@@ -359,15 +371,15 @@ class PitestTask extends JavaExec {
     private void fillAdditionalClasspathFileWithClasspathElements() {
         String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
         //"withWriter" as "file << content" works in append mode (instead of overwrite one)
-        getAdditionalClasspathFile().withWriter() {
+        getAdditionalClasspathFile().asFile.get().withWriter() {
             it << classpathElementsAsFileContent
         }
     }
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().path,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().path]
+            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().asFile.get().path,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().asFile.get().path]
         } else {
             return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.path,
                     historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.path]

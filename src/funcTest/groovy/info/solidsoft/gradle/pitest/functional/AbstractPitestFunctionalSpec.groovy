@@ -58,7 +58,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
             public class HelloPitTest {
                 @Test public void shouldReturnInputNumber() {
-                    assertEquals(5, new HelloPit().returnInputNumber(5)); 
+                    assertEquals(5, new HelloPit().returnInputNumber(5));
                 }
             }
         """.stripIndent()
