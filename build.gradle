@@ -78,6 +78,10 @@ tasks.withType(Test).configureEach { testTask ->
     testTask.configure {
         useJUnitPlatform()
 
+        testLogging {
+            exceptionFormat = 'full'
+        }
+
         afterSuite { desc, result ->
             if (!desc.parent) {
                 if (result.testCount == 0) {
