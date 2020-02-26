@@ -288,12 +288,12 @@ class PitestTask extends JavaExec {
 
     @Input
     String getDefaultFileForHistoryDataPath() {
-        defaultFileForHistoryData.asFile.get().path
+        defaultFileForHistoryData.asFile.get().absolutePath
     }
 
     @Input
     String getAdditionalClasspathFilePath() {
-        additionalClasspathFile.asFile.get().path
+        additionalClasspathFile.asFile.get().absolutePath
     }
 
     @Override
@@ -340,16 +340,16 @@ class PitestTask extends JavaExec {
         map['includedGroups'] = optionalCollectionAsString(includedGroups)
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)
-        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
+        map['sourceDirs'] = (getSourceDirs()*.absolutePath)?.join(',')
         map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
         map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
-        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
+        map['mutableCodePaths'] = (getMutableCodePaths()*.absolutePath)?.join(',')
         map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
         map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
         map['mutationEngine'] = mutationEngine.getOrNull()
         map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
-        map['jvmPath'] = getJvmPath()?.getOrNull()?.toString()
+        map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
         map['features'] = (features.getOrElse([]) + (additionalFeatures?: []))?.join(',')
@@ -362,7 +362,7 @@ class PitestTask extends JavaExec {
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().asFile.get().path]
+            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
         } else {
             return [classPath: getAdditionalClasspath().files.join(',')]
         }
@@ -378,11 +378,11 @@ class PitestTask extends JavaExec {
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().asFile.get().path,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.path ?: getDefaultFileForHistoryData().asFile.get().path]
+            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath]
         } else {
-            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.path,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.path]
+            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath]
         }
     }
 
