@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.7 - Unreleased
+## 1.4.7 - 2020-02-27
 
  - Simpler usage with JUnit 5 with `junit5PluginVersion` configuration parameter - [#177](https://github.com/szpak/gradle-pitest-plugin/issues/177) - idea by [John Scancella](https://github.com/jscancella)
  - Remove deprecation warnings in Gradle 6 - [#155](https://github.com/gradle/gradle/issues/155)
