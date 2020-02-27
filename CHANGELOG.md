@@ -23,6 +23,11 @@ pitest {
 }
 ```
 
+See this [blog post](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/) for more details.
+
+**Compatibility changes**. A new set of the configuration parameters (`jvmPath`, `historyInputLocation` and `historyOutputLocation`) has been converted from `File` to `RegularFileProperty` to prevent deprecation warnings in Gradle 6+. Gradle itself should handle those changes for configuration in `build.gradle`, however, there could be some corner cases if those fields were used directly.
+
+
 ## 1.4.6 - 2019-12-15
 
  - Support for includedTestMethods (PIT 1.3.2) - [#79](https://github.com/szpak/gradle-pitest-plugin/issues/79)
