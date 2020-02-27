@@ -10,6 +10,8 @@ cDeliveryBoy {
     }
     nexus {
         autoPromote = true
+        numberOfRetries = 40
+        delayBetweenRetriesInMillis = 3000
     }
 }
 
