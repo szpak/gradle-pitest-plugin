@@ -1,4 +1,5 @@
 apply plugin: 'groovy'
+apply plugin: 'codenarc'
 apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 apply plugin: "com.github.ben-manes.versions"
 
@@ -90,4 +91,8 @@ tasks.withType(Test).configureEach { testTask ->
             }
         }
     }
+}
+
+codenarc {
+    toolVersion = "1.5"
 }

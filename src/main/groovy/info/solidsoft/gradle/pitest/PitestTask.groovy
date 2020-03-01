@@ -41,7 +41,7 @@ import org.gradle.api.tasks.options.Option
  * Gradle task implementation for Pitest.
  */
 @CompileStatic
-@SuppressWarnings("UnstableApiUsage")   //@Option
+@SuppressWarnings('UnstableApiUsage')   //@Option
 class PitestTask extends JavaExec {
 
     @Input
@@ -226,13 +226,13 @@ class PitestTask extends JavaExec {
     final ListProperty<String> features
 
     @Incubating
-    @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
+    @Option(option = 'additionalFeatures', description = 'Additional PIT features to be appended to those placed in configuration')
     @Input
     @Optional
     List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
 
     @Incubating
-    @Option(option = "targetTests", description = "Tests classes to use. Overrides 'testClasses' defined in configuration")
+    @Option(option = 'targetTests', description = 'Tests classes to use. Overrides "testClasses" defined in configuration')
     @Input
     @Optional
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
@@ -299,22 +299,15 @@ class PitestTask extends JavaExec {
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
-        args = createListOfAllArgumentsForPit()
+        args = argumentsForPit()
         jvmArgs = ((List<String>)getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
-        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+        main = 'org.pitest.mutationtest.commandline.MutationCoverageReport'
         classpath = getLaunchClasspath()
         super.exec()
     }
 
-    private List<String> createListOfAllArgumentsForPit() {
-        Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
-        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
-        return argsAsList + multiValueArgsAsList
-    }
-
     @PackageScope   //visible for testing
-    Map<String, String> createTaskArgumentMap() {
+    Map<String, String> taskArgumentsMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
         map['reportDir'] = reportDir.getOrNull()?.toString()
@@ -324,7 +317,7 @@ class PitestTask extends JavaExec {
         map['threads'] = optionalPropertyAsString(threads)
         map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
         map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
-        map["mutators"] = optionalCollectionAsString(mutators)
+        map['mutators'] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
         map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
         map['excludedTestClasses'] = optionalCollectionAsString(excludedTestClasses)
@@ -352,69 +345,75 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
-        map['features'] = (features.getOrElse([]) + (additionalFeatures?: []))?.join(',')
+        map['features'] = (features.getOrElse([]) + (additionalFeatures ?: []))?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
-        return removeEntriesWithNullOrEmptyValue(map)
+        removeEntriesWithNullOrEmptyValue(map)
+    }
+
+    @PackageScope   //visible for testing
+    List<String> multiValueArgsAsList() {
+        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
+        pluginConfiguration.getOrNull()?.collect { k, v ->
+            "$k=$v".toString()
+        }?.collect { configString ->
+            "--pluginConfiguration=$configString".toString()
+        } ?: []
+    }
+
+    private List<String> argumentsForPit() {
+        Map<String, String> taskArgumentsMap = taskArgumentsMap()
+        List<String> argsAsList = argumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = multiValueArgsAsList()
+        argsAsList + multiValueArgsAsList
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
-        } else {
-            return [classPath: getAdditionalClasspath().files.join(',')]
+            return [classPathFile:getAdditionalClasspathFile().asFile.get().absolutePath]
         }
+        [classPath:getAdditionalClasspath().files.join(',')]
     }
 
     private void fillAdditionalClasspathFileWithClasspathElements() {
-        String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
+        String classpathElementsAsFileContent = getAdditionalClasspath().files*.getAbsolutePath().join(System.lineSeparator())
         //"withWriter" as "file << content" works in append mode (instead of overwrite one)
-        getAdditionalClasspathFile().asFile.get().withWriter() {
-            it << classpathElementsAsFileContent
+        getAdditionalClasspathFile().asFile.get().withWriter { writer ->
+            writer << classpathElementsAsFileContent
         }
     }
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath]
-        } else {
-            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath]
+            return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
+                    historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
         }
+        [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
     }
 
     private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
-        return map.findAll { it.value != null && it.value != "" }
+        map.findAll { entry -> entry.value != null && entry.value != '' }
     }
 
-    private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        return taskArgumentsMap.collect { k, v ->
+    private List<String> argumentsListFromMap(Map<String, String> taskArgumentsMap) {
+        taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
     }
 
     private <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
-        return optionalSetProperty.getOrNull()?.toString()
+        optionalSetProperty.getOrNull()?.toString()
     }
 
     private String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
-        return optionalSetProperty.getOrNull()?.join(',')
+        optionalSetProperty.getOrNull()?.join(',')
     }
 
     private String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
-        return optionalListProperty.getOrNull()?.join(',')
+        optionalListProperty.getOrNull()?.join(',')
     }
 
-    @PackageScope   //visible for testing
-    List<String> createMultiValueArgsAsList() {
-        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        return pluginConfiguration.getOrNull()?.collect { k, v ->
-            "$k=$v".toString()
-        }?.collect {
-            "--pluginConfiguration=$it".toString()
-        } ?: [] as List<String>
-    }
 }

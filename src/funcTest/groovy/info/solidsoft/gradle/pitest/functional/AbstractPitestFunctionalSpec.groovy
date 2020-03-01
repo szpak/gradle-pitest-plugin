@@ -1,9 +1,11 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
-abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
+@CompileDynamic
+class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     void setup() {
         fork = true //to make stdout assertion work with Gradle 2.x - http://forums.gradle.org/gradle/topics/unable-to-catch-stdout-stderr-when-using-tooling-api-i-gradle-2-x#reply_15357743
@@ -11,7 +13,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected static String getBasicGradlePitestConfig() {
-        return """
+        """
                 apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
                 group = 'gradle.pitest.test'
@@ -36,8 +38,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected void writeHelloPitClass(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
-        def path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
-        def javaFile = createFile(path, baseDir)
+        String path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
+        File javaFile = createFile(path, baseDir)
         javaFile << """package ${packageDotted};
 
             public class HelloPit {
@@ -50,8 +52,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected void writeHelloPitTest(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
-        def path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
-        def javaFile = createFile(path, baseDir)
+        String path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
+        File javaFile = createFile(path, baseDir)
         javaFile << """package ${packageDotted};
             import org.junit.Test;
             import static org.junit.Assert.assertEquals;
@@ -71,6 +73,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     //TODO: Switch to Gradle mechanism once upgraded to 6.x
     protected boolean isJava13Compatible() {
-        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
+        System.getProperty('java.version').startsWith('13') || System.getProperty('java.version').startsWith('14')
     }
+
 }

@@ -15,6 +15,10 @@
  */
 package info.solidsoft.gradle.pitest
 
+import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
+import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
+
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -31,32 +35,31 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
 
-import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
-import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
-
 /**
  * The main class for Pitest plugin.
  */
+@CompileDynamic
 class PitestPlugin implements Plugin<Project> {
+
     public final static String DEFAULT_PITEST_VERSION = '1.5.0'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
-    public final static String PITEST_TASK_NAME = "pitest"
+    public final static String PITEST_TASK_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
+    private static final String PITEST_JUNIT5_PLUGIN_NAME = 'junit5'
 
     @Internal
-    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
-    public static final String PLUGIN_ID = "info.solidsoft.pitest"
+    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version('5.6') //public as used also in regression tests
+    public static final String PLUGIN_ID = 'info.solidsoft.pitest'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
-    private final static Logger log =  Logging.getLogger(PitestPlugin)
+    private final static Logger LOG =  Logging.getLogger(PitestPlugin)
 
     @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
-    private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
+    private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = 'pitClasspath'
 
     private final GradleVersionEnforcer gradleVersionEnforcer
 
@@ -71,29 +74,29 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
         project.plugins.withType(JavaPlugin).configureEach {
-            createExtensionAndSetDefaultValues()
+            setupExtensionWithDefaults()
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
-                t.description = "Run PIT analysis for java classes"
+                t.description = 'Run PIT analysis for java classes'
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
-                addPitDependencies(createConfigurations())
+                addPitDependencies(configuration())
             }
         }
     }
 
-    private Configuration createConfigurations() {
-        return project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with {
+    private Configuration configuration() {
+        project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
             visible = false
-            description = "The Pitest libraries to be used for this project."
-            return it
+            description = 'The Pitest libraries to be used for this project.'
+            configuration
         }
     }
 
-    private void createExtensionAndSetDefaultValues() {
-        extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        extension.reportDir.set(new File(project.reporting.baseDir, "pitest"))
+    private void setupExtensionWithDefaults() {
+        extension = project.extensions.create('pitest', PitestPluginExtension, project)
+        extension.reportDir.set(new File(project.reporting.baseDir, 'pitest'))
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         extension.testSourceSets.set([project.sourceSets.test] as Set)
         extension.mainSourceSets.set([project.sourceSets.main] as Set)
@@ -102,26 +105,23 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void configureTaskDefault(PitestTask task) {
-
         task.testPlugin.set(extension.testPlugin)
         task.reportDir.set(extension.reportDir)
         task.targetClasses.set(project.providers.provider {
-                log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
-                if (extension.targetClasses.isPresent()) {
-                    return extension.targetClasses.get()
-                }
-                if (project.getGroup()) {   //Assuming it is always a String class instance
-                    return [project.getGroup() + ".*"] as Set
-                }
-                return null
+            LOG.debug('Setting targetClasses. project.getGroup: {}, class: {}', project.getGroup(), project.getGroup()?.class)
+            if (extension.targetClasses.isPresent()) {
+                return extension.targetClasses.get()
             }
-        )
+            if (project.getGroup()) {   //Assuming it is always a String class instance
+                return [project.getGroup() + '.*'] as Set
+            }
+            null
+        })
         task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
             if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
                 return extension.targetTests.get()
-            } else {
-                return task.targetClasses.getOrNull()
             }
+            task.targetClasses.getOrNull()
         })
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
@@ -171,10 +171,10 @@ class PitestPlugin implements Plugin<Project> {
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !extension.fileExtensionsToFilter.getOrNull().find { file.name.endsWith(".$it") }
+                    !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
                 }
 
-                return filteredCombinedTaskClasspath
+                filteredCombinedTaskClasspath
             }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
@@ -187,7 +187,7 @@ class PitestPlugin implements Plugin<Project> {
     @CompileStatic
     private Set<File> calculateBaseMutableCodePaths() {
         Set<SourceSet> sourceSets = extension.mainSourceSets.get()
-        return sourceSets*.output.classesDirs.files.flatten() as Set<File>
+        sourceSets*.output.classesDirs.files.flatten() as Set<File>
     }
 
     @CompileStatic
@@ -197,14 +197,14 @@ class PitestPlugin implements Plugin<Project> {
 //        //TODO: Workaround with DefaultGroovyMethods.collect. Remove once Gradle 4 support is dropped
 //        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
         Set<SourceSet> testSourceSets = extension.testSourceSets.get()
-        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(testSourceSets) { SourceSet it -> it.name + "Classes" } as Set
-        log.debug("pitest tasksToDependOn: $tasksToDependOn")
-        return tasksToDependOn
+        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(testSourceSets) { SourceSet sourceSet -> sourceSet.name + 'Classes' } as Set
+        LOG.debug("pitest tasksToDependOn: $tasksToDependOn")
+        tasksToDependOn
     }
 
     @CompileStatic
     private void addPitDependencies(Configuration pitestConfiguration) {
-        log.info("Using PIT: ${extension.pitestVersion.get()}")
+        LOG.info("Using PIT: ${extension.pitestVersion.get()}")
         pitestConfiguration.dependencies.add(project.dependencies.create("org.pitest:pitest-command-line:${extension.pitestVersion.get()}"))
 
         addPitJUnit5PluginIfRequested(pitestConfiguration)
@@ -212,18 +212,18 @@ class PitestPlugin implements Plugin<Project> {
 
     private void addPitJUnit5PluginIfRequested(Configuration pitestConfiguration) {
         if (extension.junit5PluginVersion.isPresent()) {
-
             if (!extension.testPlugin.isPresent()) {
-                log.info("Implicitly using JUnit 5 plugin for PIT with version defined in 'junit5PluginVersion'")
+                LOG.info('Implicitly using JUnit 5 plugin for PIT with version defined in "junit5PluginVersion"')
                 extension.testPlugin.set(PITEST_JUNIT5_PLUGIN_NAME)
             }
             if (extension.testPlugin.isPresent() && extension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
-                log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${extension.testPlugin.get()}'")
+                LOG.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${extension.testPlugin.get()}'")
             }
 
             String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
-            log.warn("Adding dependency: ${junit5PluginDependencyAsString}")
+            LOG.warn("Adding dependency: ${junit5PluginDependencyAsString}")
             pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
         }
     }
+
 }

@@ -1,7 +1,10 @@
 package info.solidsoft.gradle.pitest.functional
 
+import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
+
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
+import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
@@ -15,8 +18,6 @@ import spock.util.Exceptions
 
 import java.util.regex.Pattern
 
-import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
-
 /**
  * TODO: Possible extensions:
  *  - Move functional tests to a separate sourceSet and not run them in every build - DONE
@@ -25,84 +26,96 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
  *  - Add testing against latest nightly Gradle version?
  */
 @Slf4j
-@SuppressWarnings("GrMethodMayBeStatic")
+@SuppressWarnings('GrMethodMayBeStatic')
+@CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     //4.8, but plugin requires 5.6
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
     //6.0+ - https://github.com/gradle/gradle/issues/8681#issuecomment-532507276
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0.1")
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version('6.0.1')
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
-    def "should run mutation analysis with Gradle #requestedGradleVersion"() {
+    void "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
-            gradleVersion = requestedGradleVersion
-            classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
+        gradleVersion = requestedGradleVersion
+        classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
+
         when:
-            copyResources("testProjects/simple1", "")
+        copyResources('testProjects/simple1', '')
+
         then:
-            fileExists('build.gradle')
+        fileExists('build.gradle')
+
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all')
+        ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all')
+
         then:
-            result.wasExecuted(':pitest')
-            result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
+        result.wasExecuted(':pitest')
+        result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
+
         and:    //issue with Gradle <5.0 where Integer/Boolean property had 0/false provided by default
-            //TODO: verifyAll would be great, but it's broken with explicit "assert" - https://github.com/spockframework/spock/issues/855#issuecomment-528411874
-            PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT.each {
-                assert !result.standardOutput.contains("${it}=")
-            }
+        //TODO: verifyAll would be great, but it's broken with explicit "assert" - https://github.com/spockframework/spock/issues/855#issuecomment-528411874
+        PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT.each { parameterName ->
+            assert !result.standardOutput.contains("${parameterName}=")
+        }
+
         where:
-            requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
+        requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
 
-    @IgnoreIf({new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
-    def "should fail with meaningful error message with too old Gradle version"() {
+    @IgnoreIf({ new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
+    void "should fail with meaningful error message with too old Gradle version"() {
         given:
-            gradleVersion = "5.5.1"
+        gradleVersion = '5.5.1'
+
         and:
-            assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.compareTo(GradleVersion.version(gradleVersion)) > 0
+        assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION > GradleVersion.version(gradleVersion)
+
         when:
-            copyResources("testProjects/simple1", "")
+        copyResources('testProjects/simple1', '')
+
         then:
-            fileExists('build.gradle')
+        fileExists('build.gradle')
+
         when:
-            ExecutionResult result = runTasksWithFailure('tasks')
+        ExecutionResult result = runTasksWithFailure('tasks')
+
         then:
-            verifyAll {
-                def root = Exceptions.getRootCause(result.failure)
-                root.class.name == GradleException.name //name to mitigate differences on classloader
-                root.message.contains("'info.solidsoft.pitest' requires")
-                result.standardOutput.contains("WARNING. The 'info.solidsoft.pitest' plugin requires")
-            }
+        verifyAll {
+            Throwable root = Exceptions.getRootCause(result.failure)
+            root.class.name == GradleException.name //name to mitigate differences on classloader
+            root.message.contains("'info.solidsoft.pitest' requires")
+            result.standardOutput.contains("WARNING. The 'info.solidsoft.pitest' plugin requires")
+        }
     }
 
     //To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8
     //Spock is not needed in this artificial project - just the test classpath leaks to Gradle instance started by Nebula
-    private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile(".*spock-core-1\\..*.jar")
+    private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile('.*spock-core-1\\..*.jar')
     private static final Predicate<URL> FILTER_SPOCK_JAR = { URL url ->
-        return !url.toExternalForm().matches(SPOCK_JAR_PATTERN)
+        !url.toExternalForm().matches(SPOCK_JAR_PATTERN)
     } as Predicate<URL>
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
-    private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.6"]
-    private static final List<String> GRADLE6_VERSIONS = ["6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
+    private static final String REGRESSION_TESTS_ENV_NAME = 'PITEST_REGRESSION_TESTS'
+    private static final List<String> GRADLE5_VERSIONS = ['5.6.1', '5.6']
+    private static final List<String> GRADLE6_VERSIONS = ['6.2.1', '6.1.1', MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
         log.debug("$REGRESSION_TESTS_ENV_NAME set to '${regressionTestsLevel}'")
         switch (regressionTestsLevel) {
-            case "latestOnly":
+            case 'latestOnly':
             case null:
                 return GRADLE_LATEST_VERSIONS + GRADLE5_VERSIONS.last() //after 4.x support removal also with 5.1.1
-            case "quick":
+            case 'quick':
                 return GRADLE_LATEST_VERSIONS + GRADLE5_VERSIONS.last()
-            case "full":
+            case 'full':
                 return GRADLE5_VERSIONS + GRADLE6_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
@@ -117,18 +130,19 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        GradleVersion minimalCompatibleGradleVersion = !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
-            MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION
-        return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
+        GradleVersion minimalCompatibleGradleVersion = isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
+            MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION
+        leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 
     private List<String> leaveJavaXCompatibleGradleVersionsOnly(List<String> requestedGradleVersions, GradleVersion minimalCompatibleJavaVersion) {
-        List<String> javaXCompatibleGradleVersions = requestedGradleVersions.findAll {
-            GradleVersion.version(it) >= minimalCompatibleJavaVersion
+        List<String> javaXCompatibleGradleVersions = requestedGradleVersions.findAll { version ->
+            GradleVersion.version(version) >= minimalCompatibleJavaVersion
         }
         if (javaXCompatibleGradleVersions.size() < 2) {
             javaXCompatibleGradleVersions.add(minimalCompatibleJavaVersion.version)
         }
-        return javaXCompatibleGradleVersions
+        javaXCompatibleGradleVersions
     }
+
 }

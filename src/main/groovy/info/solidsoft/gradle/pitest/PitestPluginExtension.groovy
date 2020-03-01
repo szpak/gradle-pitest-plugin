@@ -302,14 +302,15 @@ class PitestPluginExtension {
     }
 
     private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.setProperty(clazz).convention(p.providers.provider({ null }))
+        p.objects.setProperty(clazz).convention(p.providers.provider { null })
     }
 
     private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.listProperty(clazz).convention(p.providers.provider({ null }))
+        p.objects.listProperty(clazz).convention(p.providers.provider { null })
     }
 
     private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider({ null }))
+        p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null })
     }
+
 }

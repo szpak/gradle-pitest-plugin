@@ -15,165 +15,202 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Ignore
+import groovy.transform.CompileDynamic
 import spock.lang.Issue
 import spock.lang.PendingFeature
 
+@CompileDynamic
 class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/52')
-    def "should filter dynamic library '#libFileName' by default"() {
+    void "should filter dynamic library '#libFileName' by default"() {
         given:
-            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile(libFileName)
+        File libFile = addFileWithFileNameAsDependencyAndReturnAsFile(libFileName)
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
+
         where:
-            libFileName << ['lib.so', 'win.dll', 'dyn.dylib']   //TODO: Add test with more than one element
+        libFileName << ['lib.so', 'win.dll', 'dyn.dylib']   //TODO: Add test with more than one element
     }
 
-    def "should filter .pom file by default"() {
+    void "should filter .pom file by default"() {
         given:
-            File pomFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.pom')
+        File pomFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.pom')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            !forceClasspathResolutionAndReturnIt(task).contains(pomFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(pomFile.path)
     }
 
-    def "should not filter regular dependency '#depFileName' by default"() {
+    void "should not filter regular dependency '#depFileName' by default"() {
         given:
-            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile(depFileName)
+        File depFile = addFileWithFileNameAsDependencyAndReturnAsFile(depFileName)
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+        forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+
         where:
-            depFileName << ['foo.jar', 'foo.zip']
+        depFileName << ['foo.jar', 'foo.zip']
     }
 
-    def "should not filter source set directory by default"() {
+    void "should not filter source set directory by default"() {
         given:
-            File testClassesDir = new File(new File(new File(new File(tmpProjectDir.root, 'build'), 'classes'), 'java'), 'test')
+        File testClassesDir = new File(new File(new File(new File(tmpProjectDir.root, 'build'), 'classes'), 'java'), 'test')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            forceClasspathResolutionAndReturnIt(task).contains(testClassesDir.path)
+        forceClasspathResolutionAndReturnIt(task).contains(testClassesDir.path)
     }
 
-    def "should filter excluded dependencies remaining regular ones"() {
+    void "should filter excluded dependencies remaining regular ones"() {
         given:
-            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.jar')
+        File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('foo.jar')
+
         and:
-            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('bar.so')
+        File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('bar.so')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
-            !forceClasspathResolutionAndReturnIt(task).contains(libDepFile.path)
+        forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(libDepFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    @PendingFeature(exceptions = MissingMethodException, reason = "Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
-    def "should filter user defined extensions"() {
+    @PendingFeature(exceptions = MissingMethodException, reason = 'Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475')
+    void "should filter user defined extensions"() {
         given:
-            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+
         and:
-            project.pitest.fileExtensionsToFilter += ['extra']
+        project.pitest.fileExtensionsToFilter += ['extra']
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    def "should filter user defined extensions (property syntax))"() {
+    void "should filter user defined extensions (property syntax))"() {
         given:
-            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+
         and:
-            project.pitest.fileExtensionsToFilter.addAll('extra')
+        project.pitest.fileExtensionsToFilter.addAll('extra')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    def "should allow to override extensions filtered by default"() {
+    void "should allow to override extensions filtered by default"() {
         given:
-            File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('needed.so')
+        File depFile = addFileWithFileNameAsDependencyAndReturnAsFile('needed.so')
+
         and:
-            project.pitest.fileExtensionsToFilter = ['extra']
+        project.pitest.fileExtensionsToFilter = ['extra']
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
+        forceClasspathResolutionAndReturnIt(task).contains(depFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    @PendingFeature(exceptions = MissingMethodException, reason = "Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475")
-    def "should allow to provide extra extensions in addition to default ones"() {
+    @PendingFeature(exceptions = MissingMethodException, reason = 'Not supported in with ListProperty - https://github.com/gradle/gradle/issues/10475')
+    void "should allow to provide extra extensions in addition to default ones"() {
         given:
-            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
-            File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
+        File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+
         and:
-            project.pitest.fileExtensionsToFilter += ['extra']
+        project.pitest.fileExtensionsToFilter += ['extra']
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
-            !resolvedPitClasspath.contains(libDepFile.path)
-            !resolvedPitClasspath.contains(extraDepFile.path)
+        String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+        !resolvedPitClasspath.contains(libDepFile.path)
+        !resolvedPitClasspath.contains(extraDepFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    def "should allow to provide extra extensions in addition to default ones (property syntax)"() {
+    void "should allow to provide extra extensions in addition to default ones (property syntax)"() {
         given:
-            File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
-            File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+        File libDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('default.so')
+        File extraDepFile = addFileWithFileNameAsDependencyAndReturnAsFile('file.extra')
+
         and:
-            project.pitest.fileExtensionsToFilter.addAll('extra')
+        project.pitest.fileExtensionsToFilter.addAll('extra')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
-            !resolvedPitClasspath.contains(libDepFile.path)
-            !resolvedPitClasspath.contains(extraDepFile.path)
+        String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+        !resolvedPitClasspath.contains(libDepFile.path)
+        !resolvedPitClasspath.contains(extraDepFile.path)
     }
 
     @Issue('https://github.com/szpak/gradle-pitest-plugin/issues/53')
-    def "should not fail on fileExtensionsToFilter set to null"() {
+    void "should not fail on fileExtensionsToFilter set to null"() {
         given:
-            project.pitest.fileExtensionsToFilter = null
+        project.pitest.fileExtensionsToFilter = null
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         when:
-            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+        String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+
         then:
-            noExceptionThrown()
+        noExceptionThrown()
+
         and:
-            resolvedPitClasspath.contains('main')
+        resolvedPitClasspath.contains('main')
     }
 
-    def "should filter dependencies also from 'api' configuration in java-library"() {
+    void "should filter dependencies also from 'api' configuration in java-library"() {
         given:
-            project.apply(plugin: "java-library")   //to add 'api' configuration
+        project.apply(plugin:'java-library')   //to add 'api' configuration
+
         and:
-            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile('lib.so', 'api')
+        File libFile = addFileWithFileNameAsDependencyAndReturnAsFile('lib.so', 'api')
+
         and:
-            PitestTask task = getJustOnePitestTaskOrFail()
+        PitestTask task = getJustOnePitestTaskOrFail()
+
         expect:
-            !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
+        !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
     }
 
     private String forceClasspathResolutionAndReturnIt(PitestTask task) {
-        return task.createTaskArgumentMap()['classPath']
+        task.taskArgumentsMap()['classPath']
     }
 
     private File addFileWithFileNameAsDependencyAndReturnAsFile(String depFileName, String configurationName = 'implementation') {
         File depFile = new File(tmpProjectDir.root, depFileName)
         project.dependencies.add(configurationName, project.files(depFile))
-        return depFile
+        depFile
     }
+
 }
