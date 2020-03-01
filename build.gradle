@@ -59,6 +59,7 @@ dependencies {
 
 tasks.validateTaskProperties {
     enableStricterValidation = true
+    failOnWarning = true
 }
 
 task funcTest(type: Test) {
