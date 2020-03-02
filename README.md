@@ -113,7 +113,7 @@ pitest {
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
     jvmArgs = ['-Xmx1024m']
     useClasspathFile = true     //useful with bigger projects on Windows
-    fileExtensionsToFilter += ['xml']
+    fileExtensionsToFilter.addAll('xml', 'orbit')
 }
 ```
 
