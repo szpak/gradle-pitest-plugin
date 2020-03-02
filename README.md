@@ -205,7 +205,7 @@ Test plugins are used to support different test frameworks than JUnit4. They are
 
 Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
 
-```
+```groovy
 plugins {
     id 'java'
     id 'info.solidsoft.pitest' version '1.4.7'
