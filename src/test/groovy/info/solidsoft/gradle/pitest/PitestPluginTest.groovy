@@ -26,35 +26,28 @@ class PitestPluginTest extends Specification {
 
     void "add pitest task to java project in proper group"() {
         given:
-        Project project = ProjectBuilder.builder().build()
-        project.pluginManager.apply('java')   //to add SourceSets
-
+            Project project = ProjectBuilder.builder().build()
+            project.pluginManager.apply('java')   //to add SourceSets
         when:
-        project.pluginManager.apply('info.solidsoft.pitest')
-
+            project.pluginManager.apply('info.solidsoft.pitest')
         then:
-        project.plugins.hasPlugin(PitestPlugin)
-        assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            project.plugins.hasPlugin(PitestPlugin)
+            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
     void "do nothing if Java plugin is not applied but react to it becoming applied"() {
         given:
-        Project project = ProjectBuilder.builder().build()
-
+            Project project = ProjectBuilder.builder().build()
         expect:
-        !project.plugins.hasPlugin('java')
-
+            !project.plugins.hasPlugin("java")
         when:
-        project.pluginManager.apply('info.solidsoft.pitest')
-
+            project.pluginManager.apply('info.solidsoft.pitest')
         then:
-        project.tasks.withType(PitestTask).isEmpty()
-
+            project.tasks.withType(PitestTask).isEmpty()
         when:
-        project.pluginManager.apply('java')
-
+            project.pluginManager.apply('java')
         then:
-        !project.tasks.withType(PitestTask).isEmpty()
+            !project.tasks.withType(PitestTask).isEmpty()
     }
 
     void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {

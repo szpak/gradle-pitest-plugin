@@ -6,13 +6,18 @@
     <ruleset-ref path='rulesets/basic.xml' />
     <ruleset-ref path='rulesets/braces.xml' />
     <ruleset-ref path='rulesets/concurrency.xml' />
-    <ruleset-ref path='rulesets/convention.xml' />
-    <ruleset-ref path='rulesets/design.xml' />
+    <ruleset-ref path='rulesets/convention.xml'>
+        <exclude name="PublicMethodsBeforeNonPublicMethods" />
+    </ruleset-ref>
+    <ruleset-ref path='rulesets/design.xml'>
+        <exclude name="ReturnsNullInsteadOfEmptyCollection" />
+    </ruleset-ref>
     <ruleset-ref path='rulesets/dry.xml'>
         <exclude name='DuplicateStringLiteral' />
     </ruleset-ref>
     <ruleset-ref path='rulesets/exceptions.xml' />
     <ruleset-ref path='rulesets/formatting.xml'>
+        <exclude name="Indentation" />
         <exclude name="LineLength" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/generic.xml' />
@@ -28,6 +33,8 @@
     <ruleset-ref path='rulesets/serialization.xml' />
     <ruleset-ref path='rulesets/unnecessary.xml'>
         <exclude name="UnnecessaryGetter" />
+        <exclude name="UnnecessaryGString" />
+        <exclude name="UnnecessaryReturnKeyword" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/unused.xml' />
 </ruleset>

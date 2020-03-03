@@ -56,7 +56,7 @@ class BasicProjectBuilderSpec extends Specification {
         Set<Task> tasks = project.getTasksByName(PITEST_TASK_NAME, false) //forces "afterEvaluate"
         assert tasks?.size() == 1 : "Expected tasks: '$PITEST_TASK_NAME', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
-        (PitestTask)tasks[0]
+        return (PitestTask)tasks[0]
     }
 
 }

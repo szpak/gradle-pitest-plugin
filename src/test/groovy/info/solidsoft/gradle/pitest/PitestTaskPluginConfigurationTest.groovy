@@ -22,24 +22,20 @@ class PitestTaskPluginConfigurationTest extends BasicProjectBuilderSpec implemen
 
     void "should not create pluginConfiguration command line argument when no parameters"() {
         given:
-        project.pitest.pluginConfiguration = null
-
+            project.pitest.pluginConfiguration = null
         when:
-        List<String> multiValueArgList = task.multiValueArgsAsList()
-
+            List<String> multiValueArgList = task.multiValueArgsAsList()
         then:
-        multiValueArgList['pluginConfiguration'] == []
+            multiValueArgList['pluginConfiguration'] == []
     }
 
     void "should split parameters into separate pluginConfiguration arguments"() {
         given:
-        project.pitest.pluginConfiguration = ['plugin1.foo':'one', 'plugin1.bar':'2']
-
+            project.pitest.pluginConfiguration = ["plugin1.foo":"one", "plugin1.bar":"2"]
         when:
-        List<String> multiValueArgList = task.multiValueArgsAsList()
-
+            List<String> multiValueArgList = task.multiValueArgsAsList()
         then:
-        multiValueArgList == ['--pluginConfiguration=plugin1.foo=one', '--pluginConfiguration=plugin1.bar=2']
+            multiValueArgList == ['--pluginConfiguration=plugin1.foo=one', '--pluginConfiguration=plugin1.bar=2']
     }
 
 }

@@ -22,18 +22,16 @@ class PitestPluginTypesConversionTest extends BasicProjectBuilderSpec implements
 
     void "accept BigDecimal as timeoutFactor configuration parameter"() {
         given:
-        project.pitest.timeoutFactor = 1.23
-
+            project.pitest.timeoutFactor = 1.23
         expect:
-        task.timeoutFactor.get() == 1.23
+            task.timeoutFactor.get() == 1.23
     }
 
     void "accept String as timeoutFactor configuration parameter"() {
         given:
-        project.pitest.timeoutFactor = '1.23'
-
+            project.pitest.timeoutFactor = "1.23"
         expect:
-        task.timeoutFactor.get() == 1.23
+            task.timeoutFactor.get() == 1.23
     }
 
 }

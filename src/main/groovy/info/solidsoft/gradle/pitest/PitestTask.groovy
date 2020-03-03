@@ -41,7 +41,7 @@ import org.gradle.api.tasks.options.Option
  * Gradle task implementation for Pitest.
  */
 @CompileStatic
-@SuppressWarnings('UnstableApiUsage')   //@Option
+@SuppressWarnings("UnstableApiUsage")   //@Option
 class PitestTask extends JavaExec {
 
     @Input
@@ -226,13 +226,13 @@ class PitestTask extends JavaExec {
     final ListProperty<String> features
 
     @Incubating
-    @Option(option = 'additionalFeatures', description = 'Additional PIT features to be appended to those placed in configuration')
+    @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
     @Input
     @Optional
     List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
 
     @Incubating
-    @Option(option = 'targetTests', description = 'Tests classes to use. Overrides "testClasses" defined in configuration')
+    @Option(option = "targetTests", description = "Tests classes to use. Overrides 'testClasses' defined in configuration")
     @Input
     @Optional
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
@@ -301,13 +301,20 @@ class PitestTask extends JavaExec {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = argumentsForPit()
         jvmArgs = ((List<String>)getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
-        main = 'org.pitest.mutationtest.commandline.MutationCoverageReport'
+        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
     }
 
+    private List<String> argumentsForPit() {
+        Map<String, String> taskArgumentsMap = taskArgumentMap()
+        List<String> argsAsList = argumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = multiValueArgsAsList()
+        return argsAsList + multiValueArgsAsList
+    }
+
     @PackageScope   //visible for testing
-    Map<String, String> taskArgumentsMap() {
+    Map<String, String> taskArgumentMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
         map['reportDir'] = reportDir.getOrNull()?.toString()
@@ -317,7 +324,7 @@ class PitestTask extends JavaExec {
         map['threads'] = optionalPropertyAsString(threads)
         map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
         map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
-        map['mutators'] = optionalCollectionAsString(mutators)
+        map["mutators"] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
         map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
         map['excludedTestClasses'] = optionalCollectionAsString(excludedTestClasses)
@@ -349,24 +356,7 @@ class PitestTask extends JavaExec {
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
-        removeEntriesWithNullOrEmptyValue(map)
-    }
-
-    @PackageScope   //visible for testing
-    List<String> multiValueArgsAsList() {
-        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
-        pluginConfiguration.getOrNull()?.collect { k, v ->
-            "$k=$v".toString()
-        }?.collect { configString ->
-            "--pluginConfiguration=$configString".toString()
-        } ?: []
-    }
-
-    private List<String> argumentsForPit() {
-        Map<String, String> taskArgumentsMap = taskArgumentsMap()
-        List<String> argsAsList = argumentsListFromMap(taskArgumentsMap)
-        List<String> multiValueArgsAsList = multiValueArgsAsList()
-        argsAsList + multiValueArgsAsList
+        return removeEntriesWithNullOrEmptyValue(map)
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
@@ -374,7 +364,7 @@ class PitestTask extends JavaExec {
             fillAdditionalClasspathFileWithClasspathElements()
             return [classPathFile:getAdditionalClasspathFile().asFile.get().absolutePath]
         }
-        [classPath:getAdditionalClasspath().files.join(',')]
+        return [classPath:getAdditionalClasspath().files.join(',')]
     }
 
     private void fillAdditionalClasspathFileWithClasspathElements() {
@@ -385,35 +375,46 @@ class PitestTask extends JavaExec {
         }
     }
 
+    @SuppressWarnings("IfStatementCouldBeTernary")
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
             return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
                     historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
         }
-        [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+        return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
                 historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
     }
 
     private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
-        map.findAll { entry -> entry.value != null && entry.value != '' }
+        return map.findAll { entry -> entry.value != null && entry.value != "" }
     }
 
     private List<String> argumentsListFromMap(Map<String, String> taskArgumentsMap) {
-        taskArgumentsMap.collect { k, v ->
+        return taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
     }
 
     private <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
-        optionalSetProperty.getOrNull()?.toString()
+        return optionalSetProperty.getOrNull()?.toString()
     }
 
     private String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
-        optionalSetProperty.getOrNull()?.join(',')
+        return optionalSetProperty.getOrNull()?.join(',')
     }
 
     private String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
-        optionalListProperty.getOrNull()?.join(',')
+        return optionalListProperty.getOrNull()?.join(',')
+    }
+
+    @PackageScope   //visible for testing
+    List<String> multiValueArgsAsList() {
+        //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
+        return pluginConfiguration.getOrNull()?.collect { k, v ->
+            "$k=$v".toString()
+        }?.collect { configString ->
+            "--pluginConfiguration=$configString".toString()
+        } ?: []
     }
 
 }

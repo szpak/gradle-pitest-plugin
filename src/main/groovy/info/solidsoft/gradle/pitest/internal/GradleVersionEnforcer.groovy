@@ -25,7 +25,7 @@ class GradleVersionEnforcer {
     }
 
     static GradleVersionEnforcer defaultEnforcer(GradleVersion minimalSupportedVersion) {
-        new GradleVersionEnforcer(minimalSupportedVersion, DISABLE_GRADLE_VERSION_ENFORCEMENT_PROPERTY_NAME)
+        return new GradleVersionEnforcer(minimalSupportedVersion, DISABLE_GRADLE_VERSION_ENFORCEMENT_PROPERTY_NAME)
     }
 
     void failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(Project project) {
@@ -34,7 +34,7 @@ class GradleVersionEnforcer {
                 "(detected: ${GradleVersion.current()}). Please upgrade your Gradle or downgrade the plugin version.")
 
             if (GradleUtil.isPropertyNotDefinedOrFalse(project, propertyNameToDisable)) {
-                log.warn('Aborting the build with the meaningful error message to prevent confusion. If you are sure it is an error, ' +
+                log.warn("Aborting the build with the meaningful error message to prevent confusion. If you are sure it is an error, " +
                     "please report it in the plugin issue tracker and in the meantime use '-D${propertyNameToDisable}' to disable this check")
 
                 throw new GradleException("'${PitestPlugin.PLUGIN_ID}' requires Gradle ${minimalSupportedVersion.version}")

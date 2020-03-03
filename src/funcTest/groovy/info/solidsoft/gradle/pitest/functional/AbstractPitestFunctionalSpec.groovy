@@ -13,7 +13,7 @@ class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected static String getBasicGradlePitestConfig() {
-        """
+        return """
                 apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
                 group = 'gradle.pitest.test'
@@ -73,7 +73,7 @@ class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     //TODO: Switch to Gradle mechanism once upgraded to 6.x
     protected boolean isJava13Compatible() {
-        System.getProperty('java.version').startsWith('13') || System.getProperty('java.version').startsWith('14')
+        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
     }
 
 }

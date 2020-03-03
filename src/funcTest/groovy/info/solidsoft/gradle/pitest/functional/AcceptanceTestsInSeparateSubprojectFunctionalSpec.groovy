@@ -8,14 +8,12 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
 
     void "should mutate production code in another subproject"() {
         given:
-        copyResources('testProjects/multiproject', '')
-
+            copyResources("testProjects/multiproject", "")
         when:
-        ExecutionResult result = runTasksSuccessfully('pitest')
-
+            ExecutionResult result = runTasksSuccessfully('pitest')
         then:
-        result.wasExecuted(':itest:pitest')
-        result.getStandardOutput().contains('Generated 4 mutations Killed 3 (75%)')
+            result.wasExecuted(':itest:pitest')
+            result.getStandardOutput().contains('Generated 4 mutations Killed 3 (75%)')
     }
 
 }

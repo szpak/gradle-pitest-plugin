@@ -34,45 +34,38 @@ class PitestPluginTargetClassesTest extends Specification {
 
     void "take target classes from pitest configuration closure"() {
         given:
-        project.pitest.targetClasses = ['foo']
-
+            project.pitest.targetClasses = ["foo"]
         when:
-        Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
-
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
-        assertOnePitestTaskWithGivenTargetClasses(tasks, ['foo'] as Set)
+            assertOnePitestTaskWithGivenTargetClasses(tasks, ["foo"] as Set)
     }
 
     void "set target classes to project group if defined"() {
         given:
-        project.group = 'group'
-
+            project.group = "group"
         when:
-        Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
-
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
-        assertOnePitestTaskWithGivenTargetClasses(tasks, ['group.*'] as Set)
+            assertOnePitestTaskWithGivenTargetClasses(tasks, ["group.*"] as Set)
     }
 
     void "override default target classes from project group if defined by user"() {
         given:
-        project.group = 'group'
-        project.pitest.targetClasses = ['target.classes']
-
+            project.group = "group"
+            project.pitest.targetClasses = ["target.classes"]
         when:
-        Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
-
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
-        assertOnePitestTaskWithGivenTargetClasses(tasks, ['target.classes'] as Set)
+            assertOnePitestTaskWithGivenTargetClasses(tasks, ["target.classes"] as Set)
     }
 
     //Only imitation of testing Gradle validation exception
     void "keep classes to mutate by PIT not set if project group not defined and not explicit set targetClasses parameter"() {
         when:
-        Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
-
+            Set<Task> tasks = project.getTasksByName(PitestPlugin.PITEST_TASK_NAME, false)
         then:
-        assertOnePitestTaskWithGivenTargetClasses(tasks, null)
+            assertOnePitestTaskWithGivenTargetClasses(tasks, null)
     }
 
     //Test case "throw Gradle exception if project group not defined and not explicit set targetClasses parameter" implemented as functional test
