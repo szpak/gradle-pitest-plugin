@@ -95,4 +95,5 @@ tasks.withType(Test).configureEach { testTask ->
 
 codenarc {
     toolVersion = "1.5"
+    reportFormat = "console"
 }
