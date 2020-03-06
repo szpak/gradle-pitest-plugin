@@ -220,6 +220,8 @@ pitest {
 
 The minimal working example for JUhnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
 
+For mixing JUnit 5 with other PIT plugins, you can read [this section](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-approach-with-plugins-br-with-older-gradle-pitest-plugin) in my blog post.
+
 ### Generic plugin support (also JUnit 5 in gradle-pitest-plugin <1.4.7)
 
 To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
