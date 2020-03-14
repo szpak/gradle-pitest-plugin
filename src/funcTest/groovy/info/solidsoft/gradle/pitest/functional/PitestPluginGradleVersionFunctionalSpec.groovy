@@ -119,7 +119,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        GradleVersion minimalCompatibleGradleVersion = !isJava14Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
+        GradleVersion minimalCompatibleGradleVersion =
+            !isJava14Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
             !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
                 MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
