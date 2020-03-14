@@ -58,7 +58,7 @@ matrix:
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
       before_install:
         - sed -ie s/distributionSha256Sum/\#distributionSha256Sum/g gradle/wrapper/gradle-wrapper.properties
-        - echo "distributionUrl=https://services.gradle.org/distributions-snapshots/gradle-6.3-branch-sg_merges_63_jdk_14-20200228234606+0000-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        - echo "distributionUrl=https://services.gradle.org/distributions/gradle-6.3-rc-1-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
         - ./gradlew --version
     - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
       before_install:
