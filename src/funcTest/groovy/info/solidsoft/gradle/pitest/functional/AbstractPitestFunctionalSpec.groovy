@@ -71,6 +71,10 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     //TODO: Switch to Gradle mechanism once upgraded to 6.x
     protected boolean isJava13Compatible() {
-        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
+        return System.getProperty("java.version").startsWith("13") || isJava14Compatible()
+    }
+
+    protected boolean isJava14Compatible() {
+        return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
     }
 }

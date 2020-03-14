@@ -12,6 +12,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     private static final String MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION = "1.4.0"
     private static final String MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION = "1.4.2" //in fact 1.4.1, but 1.4.2 is also Java 12 compatible
     private static final String MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION = "1.4.6" //not officially, but at least simple case works
+    private static final String MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION = "1.4.11" //not officially, but with ASM 7.3.1
 
     def "setup and run pitest task with PIT #pitVersion"() {
         given:
@@ -35,10 +36,13 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
             result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
             result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
         where:
-            pitVersion << getPitVersionsCompoatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
+            pitVersion << getPitVersionsCompatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }
 
-    private List<String> getPitVersionsCompoatibleWithCurrentJavaVersion() {
+    private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
+        if (isJava14Compatible()) {
+            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION]
+        }
         if (isJava13Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
         }

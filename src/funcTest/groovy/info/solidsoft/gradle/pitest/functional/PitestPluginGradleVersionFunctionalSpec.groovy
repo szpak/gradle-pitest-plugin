@@ -32,6 +32,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
     //6.0+ - https://github.com/gradle/gradle/issues/8681#issuecomment-532507276
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0.1")
+    //6.3+ - https://github.com/gradle/gradle/issues/10248
+    private static final GradleVersion MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.3-rc-1")
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -90,7 +92,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.6"]
-    private static final List<String> GRADLE6_VERSIONS = ["6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
+    private static final List<String> GRADLE6_VERSIONS = ["6.3-rc-1", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
@@ -117,8 +119,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        GradleVersion minimalCompatibleGradleVersion = !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
-            MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION
+        GradleVersion minimalCompatibleGradleVersion = !isJava14Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
+            !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
+                MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 
