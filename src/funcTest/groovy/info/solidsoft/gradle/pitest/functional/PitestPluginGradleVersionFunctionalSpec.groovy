@@ -35,16 +35,6 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //6.3+ - https://github.com/gradle/gradle/issues/10248
     private static final GradleVersion MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.3-rc-1")
 
-    private static List<GradleToJavaCompatibility> gradleToJavaCompatibilityList = []
-
-    void beforeSpec() {
-        gradleToJavaCompatibilityList =+ [
-            new GradleToJavaCompatibility({ isJava14Compatible() }, MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION),
-            new GradleToJavaCompatibility({ isJava13Compatible() }, MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION),
-            new GradleToJavaCompatibility({ true }, MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION)
-        ]
-    }
-
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
@@ -129,13 +119,10 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        for (GradleToJavaCompatibility gradleToJavaCompatibility : gradleToJavaCompatibilityList) {
-            if (gradleToJavaCompatibility.isCompatibleCheck()) {
-                return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, gradleToJavaCompatibility.minimalSupportedGradle)
-            }
-        }
-        log.warn("Unable to find configured supported Gradle version for current Java. Assuming ${MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION}.")
-        return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION)
+        GradleVersion minimalCompatibleGradleVersion = !isJava14Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
+            !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
+                MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION
+        return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 
     private List<String> leaveJavaXCompatibleGradleVersionsOnly(List<String> requestedGradleVersions, GradleVersion minimalCompatibleJavaVersion) {
@@ -146,16 +133,5 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             javaXCompatibleGradleVersions.add(minimalCompatibleJavaVersion.version)
         }
         return javaXCompatibleGradleVersions
-    }
-
-//    @Immutable  //@Immutable cannot be used with GradleVersion
-    private static class GradleToJavaCompatibility {
-        final Closure<Boolean> isCompatibleCheck
-        final GradleVersion minimalSupportedGradle
-
-        GradleToJavaCompatibility(Closure<Boolean> isCompatibleCheck, GradleVersion minimalSupportedGradle) {
-            this.isCompatibleCheck = isCompatibleCheck
-            this.minimalSupportedGradle = minimalSupportedGradle
-        }
     }
 }
