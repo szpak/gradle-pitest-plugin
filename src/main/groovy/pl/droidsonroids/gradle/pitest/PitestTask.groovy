@@ -27,12 +27,16 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.options.Option
+
+import static java.util.Collections.emptyList
 
 /**
  * Gradle task implementation for Pitest.
@@ -155,14 +159,13 @@ class PitestTask extends JavaExec {
     @Input
     final Property<Boolean> useAdditionalClasspathFile
 
-    @Input
-    @OutputFile
+    @Internal
     File additionalClasspathFile
 
     @InputFiles
     Set<File> mutableCodePaths
 
-    @Input
+    @InputFile
     @Optional
     File historyInputLocation
 
@@ -174,7 +177,7 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> enableDefaultIncrementalAnalysis
 
-    @Input
+    @Internal
     File defaultFileForHistoryData
 
     @Input
@@ -193,7 +196,7 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> exportLineCoverage
 
-    @Input
+    @InputFile
     @Optional
     File jvmPath
 
@@ -222,15 +225,19 @@ class PitestTask extends JavaExec {
     final ListProperty<String> features
 
     @Incubating
+    @Input
     @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
     List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
 
     @Incubating
+    @Input
     @Option(option = "targetTests", description = "Tests classes to use. Overrides 'testClasses' defined in configuration")
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
     PitestTask() {
         ObjectFactory of = project.objects
+        additionalFeatures = emptyList()
+        overriddenTargetTests = emptyList()
 
         testPlugin = of.property(String)
 //        reportDir = of.fileProperty()
