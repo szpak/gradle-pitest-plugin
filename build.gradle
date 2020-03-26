@@ -1,4 +1,5 @@
 apply plugin: 'groovy'
+apply plugin: 'java-gradle-plugin'
 apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 apply plugin: "com.github.ben-manes.versions"
 
@@ -35,7 +36,6 @@ sourceSets {
 }
 
 dependencies {
-    implementation gradleApi()
     implementation localGroovy()
 
     testImplementation('org.spockframework:spock-core:2.0-M2-groovy-2.5') {
@@ -55,6 +55,11 @@ dependencies {
     funcTestImplementation('com.netflix.nebula:nebula-test:7.8.5') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+}
+
+tasks.validateTaskProperties {
+    enableStricterValidation = true
+    failOnWarning = true
 }
 
 task funcTest(type: Test) {
