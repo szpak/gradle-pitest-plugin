@@ -143,7 +143,7 @@ class PitestTask extends JavaExec {
     final SetProperty<String> includedTestMethods
 
     @InputFiles
-    @PathSensitive(PathSensitivity.ABSOLUTE)
+    @PathSensitive(PathSensitivity.RELATIVE)
     Set<File> sourceDirs
 
     @Input
@@ -166,7 +166,7 @@ class PitestTask extends JavaExec {
     final RegularFileProperty additionalClasspathFile
 
     @InputFiles
-    @PathSensitive(PathSensitivity.ABSOLUTE)
+    @PathSensitive(PathSensitivity.RELATIVE)
     Set<File> mutableCodePaths
 
     @Input
