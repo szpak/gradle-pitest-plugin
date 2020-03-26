@@ -375,14 +375,14 @@ class PitestTask extends JavaExec {
         }
     }
 
-    @SuppressWarnings("IfStatementCouldBeTernary")
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
             return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
                     historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
+        } else {
+            return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                    historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
         }
-        return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
-                historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
     }
 
     private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {

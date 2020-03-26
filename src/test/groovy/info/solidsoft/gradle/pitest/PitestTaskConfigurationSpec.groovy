@@ -21,8 +21,7 @@ import spock.lang.Issue
 @CompileDynamic
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
-    //public to be used also in functional tests
-    @SuppressWarnings("JUnitPublicField")
+    @SuppressWarnings("JUnitPublicField")   //public to be used also in functional tests
     public static final List<String> PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT = ['classPathFile',
                                                                                 'features',
                                                                                 'excludedTestClasses',
@@ -117,47 +116,47 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             // TODO: Move timeoutConst to separate test
         where:
             //pitConfigParamName value taken from gradleConfigParamName if set to null
-            configParamName          | gradleConfigValue                            | expectedPitConfigValue
-            "testPlugin"             | "testng"                                     | "testng"
-            "reportDir"              | new File("//tmp//foo")                       | new File("//tmp//foo").path    //due to issues on Windows
-            "targetClasses"          | ["a", "b"]                                   | "a,b"
-            "targetTests"            | ["t1", "t2"]                                 | "t1,t2"
-            "dependencyDistance"     | 42                                           | "42"
-            "threads"                | 42                                           | "42"
-            "mutateStaticInits"      | true                                         | "true" //???
-            "includeJarFiles"        | false                                        | "false"
-            "mutators"               | ["MUTATOR_X", "MUTATOR_Y"]                   | "MUTATOR_X,MUTATOR_Y"
-            "excludedMethods"        | ["methodX", "methodY"]                       | "methodX,methodY"
-            "excludedClasses"        | ["classX", "foo.classY"]                     | "classX,foo.classY"
-            "excludedTestClasses"    | ["classX", "foo.classY"]                     | "classX,foo.classY"
-            "avoidCallsTo"           | ["callX", "foo.callY"]                       | "callX,foo.callY"
-            "verbose"                | true                                         | "true"
-            "timeoutFactor"          | 1.25                                         | "1.25"
-            "maxMutationsPerClass"   | 25                                           | "25"
-            "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     | "-Xmx250m,-Xms100m"
-            "outputFormats"          | ["HTML", "CSV"]                              | "HTML,CSV"
-            "failWhenNoMutations"    | false                                        | "false"
-            "skipFailingTests"       | true                                         | "true"
-            "includedGroups"         | ["Group1", "Group2"]                         | "Group1,Group2"
-            "excludedGroups"         | ["Group1", "Group2"]                         | "Group1,Group2"
-            "includedTestMethods"    | ["method1", "method2"]                       | "method1,method2"
-            "detectInlinedCode"      | true                                         | "true"
-            "timestampedReports"     | true                                         | "true"
-            "mutationThreshold"      | 90                                           | "90"
-            "coverageThreshold"      | 95                                           | "95"
-            "mutationEngine"         | "gregor2"                                    | "gregor2"
+            configParamName          | gradleConfigValue                            || expectedPitConfigValue
+            "testPlugin"             | "testng"                                     || "testng"
+            "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
+            "targetClasses"          | ["a", "b"]                                   || "a,b"
+            "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
+            "dependencyDistance"     | 42                                           || "42"
+            "threads"                | 42                                           || "42"
+            "mutateStaticInits"      | true                                         || "true" //???
+            "includeJarFiles"        | false                                        || "false"
+            "mutators"               | ["MUTATOR_X", "MUTATOR_Y"]                   || "MUTATOR_X,MUTATOR_Y"
+            "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"
+            "excludedClasses"        | ["classX", "foo.classY"]                     || "classX,foo.classY"
+            "excludedTestClasses"    | ["classX", "foo.classY"]                     || "classX,foo.classY"
+            "avoidCallsTo"           | ["callX", "foo.callY"]                       || "callX,foo.callY"
+            "verbose"                | true                                         || "true"
+            "timeoutFactor"          | 1.25                                         || "1.25"
+            "maxMutationsPerClass"   | 25                                           || "25"
+            "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
+            "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
+            "failWhenNoMutations"    | false                                        || "false"
+            "skipFailingTests"       | true                                         || "true"
+            "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
+            "detectInlinedCode"      | true                                         || "true"
+            "timestampedReports"     | true                                         || "true"
+            "mutationThreshold"      | 90                                           || "90"
+            "coverageThreshold"      | 95                                           || "95"
+            "mutationEngine"         | "gregor2"                                    || "gregor2"
             //sourceSet x2
-            "exportLineCoverage"     | true                                         | "true"
-            "jvmPath"                | new File("//opt//jvm15//")                   | new File("//opt//jvm15//").path
+            "exportLineCoverage"     | true                                         || "true"
+            "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path
             //mainProcessJvmArgs?
 //            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
-            "maxSurviving"           | 20                                           | "20"
-            "useClasspathJar"        | true                                         | "true"
+            "maxSurviving"           | 20                                           || "20"
+            "useClasspathJar"        | true                                         || "true"
 //            "useClasspathFile"       | true                                         || "false"    //TODO
-            "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  | "-FOO,+BAR(a[1] a[2])"
+            "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
 //            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT
-            "historyInputLocation"   | new File("//tmp//hi")                        | new File("//tmp//hi").path
-            "historyOutputLocation"  | new File("//tmp//ho")                        | new File("//tmp//ho").path
+            "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
+            "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
     }
 
     void "should pass plugin configuration (#gradleConfigParamName) from Gradle to PIT (overridden name)"() {
@@ -167,8 +166,8 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             task.taskArgumentMap()[pitConfigParamName ?: gradleConfigParamName] == expectedPitConfigValue
         where:
             //pitConfigParamName value taken from gradleConfigParamName if set to null
-            gradleConfigParamName  | gradleConfigValue | pitConfigParamName | expectedPitConfigValue
-            "timeoutConstInMillis" | 100               | "timeoutConst"     | "100"
+            gradleConfigParamName  | gradleConfigValue | pitConfigParamName || expectedPitConfigValue
+            "timeoutConstInMillis" | 100               | "timeoutConst"     || "100"
 //            "useClasspathFile" | true               | "classPathFile"     || "?"    //tested separately
     }
 

@@ -5,7 +5,8 @@ import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
 @CompileDynamic
-class AbstractPitestFunctionalSpec extends IntegrationSpec {
+@SuppressWarnings("AbstractClassWithoutAbstractMethod")
+abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     void setup() {
         fork = true //to make stdout assertion work with Gradle 2.x - http://forums.gradle.org/gradle/topics/unable-to-catch-stdout-stderr-when-using-tooling-api-i-gradle-2-x#reply_15357743

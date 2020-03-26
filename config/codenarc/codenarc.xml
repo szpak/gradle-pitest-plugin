@@ -8,6 +8,7 @@
     <ruleset-ref path='rulesets/concurrency.xml' />
     <ruleset-ref path='rulesets/convention.xml'>
         <exclude name="PublicMethodsBeforeNonPublicMethods" />
+        <exclude name="IfStatementCouldBeTernary" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/design.xml'>
         <exclude name="ReturnsNullInsteadOfEmptyCollection" />
@@ -35,6 +36,9 @@
         <exclude name="UnnecessaryGetter" />
         <exclude name="UnnecessaryGString" />
         <exclude name="UnnecessaryReturnKeyword" />
+        <exclude name="UnnecessaryElseStatement" />
+        <!-- || is commonly used in Spock parameterized tests -->
+        <exclude name="UnnecessaryBooleanExpression" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/unused.xml' />
 </ruleset>

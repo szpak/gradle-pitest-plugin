@@ -121,8 +121,9 @@ class PitestPlugin implements Plugin<Project> {
         task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
             if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
                 return extension.targetTests.get()
+            } else {
+                return task.targetClasses.getOrNull()
             }
-            return task.targetClasses.getOrNull()
         })
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
