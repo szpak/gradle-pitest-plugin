@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.8 - Unreleased
+
+ - Basic functional testing with Java 14
+ - CodeNarc code checks - [#184](https://github.com/szpak/gradle-pitest-plugin/pull/184) - PR by [Matthew Haughton](https://github.com/3flex)
+ - Less noisy "Adding dependency" logging - [#182](https://github.com/szpak/gradle-pitest-plugin/issues/182)
+
 ## 1.4.7 - 2020-02-27
 
  - Simpler usage with JUnit 5 with `junit5PluginVersion` configuration parameter - [#177](https://github.com/szpak/gradle-pitest-plugin/issues/177) - idea by [John Scancella](https://github.com/jscancella)
