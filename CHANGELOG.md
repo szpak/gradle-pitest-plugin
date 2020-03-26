@@ -1,3 +1,6 @@
+# 0.2.3 - 2020-03-22
+- Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issue/57)
+
 # 0.2.2 - 2019-09-30
 - Merge upstream changes 42c9e3211da4b160695ee4004722a68a59243088 [#53](https://github.com/koral--/gradle-pitest-plugin/issue/53)
 
