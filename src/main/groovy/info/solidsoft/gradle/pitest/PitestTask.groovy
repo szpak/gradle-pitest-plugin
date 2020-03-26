@@ -35,6 +35,8 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
 
 /**
@@ -141,6 +143,7 @@ class PitestTask extends JavaExec {
     final SetProperty<String> includedTestMethods
 
     @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     Set<File> sourceDirs
 
     @Input
@@ -163,6 +166,7 @@ class PitestTask extends JavaExec {
     final RegularFileProperty additionalClasspathFile
 
     @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     Set<File> mutableCodePaths
 
     @Input
