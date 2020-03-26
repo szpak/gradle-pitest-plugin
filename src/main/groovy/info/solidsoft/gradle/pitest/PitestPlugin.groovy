@@ -222,7 +222,7 @@ class PitestPlugin implements Plugin<Project> {
             }
 
             String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
-            log.warn("Adding dependency: ${junit5PluginDependencyAsString}")
+            log.info("Adding dependency: ${junit5PluginDependencyAsString}")
             pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
         }
     }
