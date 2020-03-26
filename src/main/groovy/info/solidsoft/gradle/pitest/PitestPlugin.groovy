@@ -15,6 +15,10 @@
  */
 package info.solidsoft.gradle.pitest
 
+import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
+import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
+
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -31,13 +35,12 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
 
-import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
-import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
-
 /**
  * The main class for Pitest plugin.
  */
+@CompileDynamic
 class PitestPlugin implements Plugin<Project> {
+
     public final static String DEFAULT_PITEST_VERSION = '1.5.0'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
@@ -52,6 +55,7 @@ class PitestPlugin implements Plugin<Project> {
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
+    @SuppressWarnings("FieldName")
     private final static Logger log =  Logging.getLogger(PitestPlugin)
 
     @PackageScope   //visible for testing
@@ -71,27 +75,27 @@ class PitestPlugin implements Plugin<Project> {
         this.project = project
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
         project.plugins.withType(JavaPlugin).configureEach {
-            createExtensionAndSetDefaultValues()
+            setupExtensionWithDefaults()
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
                 t.description = "Run PIT analysis for java classes"
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
-                addPitDependencies(createConfigurations())
+                addPitDependencies(configuration())
             }
         }
     }
 
-    private Configuration createConfigurations() {
-        return project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with {
+    private Configuration configuration() {
+        return project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
             visible = false
             description = "The Pitest libraries to be used for this project."
-            return it
+            return configuration
         }
     }
 
-    private void createExtensionAndSetDefaultValues() {
+    private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
         extension.reportDir.set(new File(project.reporting.baseDir, "pitest"))
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
@@ -102,26 +106,23 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void configureTaskDefault(PitestTask task) {
-
         task.testPlugin.set(extension.testPlugin)
         task.reportDir.set(extension.reportDir)
         task.targetClasses.set(project.providers.provider {
-                log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
-                if (extension.targetClasses.isPresent()) {
-                    return extension.targetClasses.get()
-                }
-                if (project.getGroup()) {   //Assuming it is always a String class instance
-                    return [project.getGroup() + ".*"] as Set
-                }
-                return null
+            log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
+            if (extension.targetClasses.isPresent()) {
+                return extension.targetClasses.get()
             }
-        )
+            if (project.getGroup()) {   //Assuming it is always a String class instance
+                return [project.getGroup() + ".*"] as Set
+            }
+            return null
+        })
         task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
             if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
                 return extension.targetTests.get()
-            } else {
-                return task.targetClasses.getOrNull()
             }
+            return task.targetClasses.getOrNull()
         })
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
@@ -171,7 +172,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !extension.fileExtensionsToFilter.getOrNull().find { file.name.endsWith(".$it") }
+                    !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
                 }
 
                 return filteredCombinedTaskClasspath
@@ -197,7 +198,7 @@ class PitestPlugin implements Plugin<Project> {
 //        //TODO: Workaround with DefaultGroovyMethods.collect. Remove once Gradle 4 support is dropped
 //        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
         Set<SourceSet> testSourceSets = extension.testSourceSets.get()
-        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(testSourceSets) { SourceSet it -> it.name + "Classes" } as Set
+        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(testSourceSets) { sourceSet -> sourceSet.name + "Classes" } as Set
         log.debug("pitest tasksToDependOn: $tasksToDependOn")
         return tasksToDependOn
     }
@@ -212,7 +213,6 @@ class PitestPlugin implements Plugin<Project> {
 
     private void addPitJUnit5PluginIfRequested(Configuration pitestConfiguration) {
         if (extension.junit5PluginVersion.isPresent()) {
-
             if (!extension.testPlugin.isPresent()) {
                 log.info("Implicitly using JUnit 5 plugin for PIT with version defined in 'junit5PluginVersion'")
                 extension.testPlugin.set(PITEST_JUNIT5_PLUGIN_NAME)
@@ -226,4 +226,5 @@ class PitestPlugin implements Plugin<Project> {
             pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
         }
     }
+
 }

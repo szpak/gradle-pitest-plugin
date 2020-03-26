@@ -1,11 +1,13 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import spock.lang.Issue
 
+@CompileDynamic
 class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "should work with kotlin and junit5"() {
+    void "should work with kotlin and junit5"() {
         given:
             copyResources("testProjects/junit5kotlin", "")
         when:
@@ -16,7 +18,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/177")
-    def "should work with junit5 without explicitly adding dependency"() {
+    void "should work with junit5 without explicitly adding dependency"() {
         given:
             copyResources("testProjects/junit5simple", "")
         when:
@@ -27,4 +29,5 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('--testPlugin=junit5')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
     }
+
 }

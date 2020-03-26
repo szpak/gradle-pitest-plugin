@@ -1,10 +1,12 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.GradleException
 import spock.lang.Issue
 import spock.lang.PendingFeature
 
+@CompileDynamic
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     //Note: gradle-override-plugin has important limitations in support for collections
@@ -12,7 +14,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
     //Update 201909. Gradle 4.6 introduced built-in support for overriding (with its on limitations, but also with support for lists):
     //    https://docs.gradle.org/6.2.1/userguide/custom_tasks.html#sec:declaring_and_using_command_line_options
     @PendingFeature(exceptions = GradleException, reason = "gradle-override-plugin nor @Option don't work with DirectoryProperty")
-    def "should allow to override String configuration parameter from command line"() {
+    void "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
                 apply plugin: 'java'
@@ -38,7 +40,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/139")
     @PendingFeature(exceptions = GradleException, reason = "Not implemented yet due to Gradle limitations described in linked issue")
-    def "should allow to define features from command line and override those from configuration"() {
+    void "should allow to define features from command line and override those from configuration"() {
         given:
             buildFile << """
                 ${getBasicGradlePitestConfig()}
@@ -58,7 +60,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
-    def "should allow to add features from command line to those from configuration and override selected tests"() {
+    void "should allow to add features from command line to those from configuration and override selected tests"() {
         given:
             final String OVERRIDDEN_TARGET_TESTS = "com.foo.*"
             buildFile << """
@@ -77,4 +79,5 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:
             result.standardOutput.contains("--targetTests=${OVERRIDDEN_TARGET_TESTS}")
     }
+
 }

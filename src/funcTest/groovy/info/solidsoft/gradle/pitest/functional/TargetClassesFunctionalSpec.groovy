@@ -1,10 +1,12 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 
+@CompileDynamic
 class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "report error when no project group and no targetClasses parameter are defined"() {
+    void "report error when no project group and no targetClasses parameter are defined"() {
         given:
             buildFile << """
                 apply plugin: 'java'
@@ -17,4 +19,5 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
             assertStdOutOrStdErrContainsGivenText(result, "No value has been specified for property 'targetClasses'")
     }
+
 }

@@ -1,7 +1,10 @@
 package info.solidsoft.gradle.pitest.functional
 
+import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
+
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
+import groovy.transform.CompileDynamic
 import groovy.util.logging.Slf4j
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
@@ -15,8 +18,6 @@ import spock.util.Exceptions
 
 import java.util.regex.Pattern
 
-import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
-
 /**
  * TODO: Possible extensions:
  *  - Move functional tests to a separate sourceSet and not run them in every build - DONE
@@ -26,6 +27,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
  */
 @Slf4j
 @SuppressWarnings("GrMethodMayBeStatic")
+@CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     //4.8, but plugin requires 5.6
@@ -39,7 +41,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
-    def "should run mutation analysis with Gradle #requestedGradleVersion"() {
+    void "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
@@ -54,19 +56,19 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
         and:    //issue with Gradle <5.0 where Integer/Boolean property had 0/false provided by default
             //TODO: verifyAll would be great, but it's broken with explicit "assert" - https://github.com/spockframework/spock/issues/855#issuecomment-528411874
-            PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT.each {
-                assert !result.standardOutput.contains("${it}=")
+            PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT.each { parameterName ->
+                assert !result.standardOutput.contains("${parameterName}=")
             }
         where:
             requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
 
-    @IgnoreIf({new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
-    def "should fail with meaningful error message with too old Gradle version"() {
+    @IgnoreIf({ new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
+    void "should fail with meaningful error message with too old Gradle version"() {
         given:
             gradleVersion = "5.5.1"
         and:
-            assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.compareTo(GradleVersion.version(gradleVersion)) > 0
+            assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION > GradleVersion.version(gradleVersion)
         when:
             copyResources("testProjects/simple1", "")
         then:
@@ -75,7 +77,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             ExecutionResult result = runTasksWithFailure('tasks')
         then:
             verifyAll {
-                def root = Exceptions.getRootCause(result.failure)
+                Throwable root = Exceptions.getRootCause(result.failure)
                 root.class.name == GradleException.name //name to mitigate differences on classloader
                 root.message.contains("'info.solidsoft.pitest' requires")
                 result.standardOutput.contains("WARNING. The 'info.solidsoft.pitest' plugin requires")
@@ -114,6 +116,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     }
 
     //Jvm class from Spock doesn't work with Java 9 stable releases - otherwise @IgnoreIf could be used - TODO: check with Spock 1.2
+    @SuppressWarnings("ConfusingTernary")
     private List<String> applyJavaCompatibilityAdjustment(List<String> requestedGradleVersions) {
         if (!Jvm.current().javaVersion.isJava9Compatible()) {
             //All supported versions should be Java 8 compatible
@@ -127,12 +130,13 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     }
 
     private List<String> leaveJavaXCompatibleGradleVersionsOnly(List<String> requestedGradleVersions, GradleVersion minimalCompatibleJavaVersion) {
-        List<String> javaXCompatibleGradleVersions = requestedGradleVersions.findAll {
-            GradleVersion.version(it) >= minimalCompatibleJavaVersion
+        List<String> javaXCompatibleGradleVersions = requestedGradleVersions.findAll { version ->
+            GradleVersion.version(version) >= minimalCompatibleJavaVersion
         }
         if (javaXCompatibleGradleVersions.size() < 2) {
             javaXCompatibleGradleVersions.add(minimalCompatibleJavaVersion.version)
         }
         return javaXCompatibleGradleVersions
     }
+
 }

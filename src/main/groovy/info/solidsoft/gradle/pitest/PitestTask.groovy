@@ -299,22 +299,22 @@ class PitestTask extends JavaExec {
     @Override
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
-        args = createListOfAllArgumentsForPit()
+        args = argumentsForPit()
         jvmArgs = ((List<String>)getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
     }
 
-    private List<String> createListOfAllArgumentsForPit() {
-        Map<String, String> taskArgumentsMap = createTaskArgumentMap()
-        List<String> argsAsList = createArgumentsListFromMap(taskArgumentsMap)
-        List<String> multiValueArgsAsList = createMultiValueArgsAsList()
+    private List<String> argumentsForPit() {
+        Map<String, String> taskArgumentsMap = taskArgumentMap()
+        List<String> argsAsList = argumentsListFromMap(taskArgumentsMap)
+        List<String> multiValueArgsAsList = multiValueArgsAsList()
         return argsAsList + multiValueArgsAsList
     }
 
     @PackageScope   //visible for testing
-    Map<String, String> createTaskArgumentMap() {
+    Map<String, String> taskArgumentMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
         map['reportDir'] = reportDir.getOrNull()?.toString()
@@ -352,7 +352,7 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
-        map['features'] = (features.getOrElse([]) + (additionalFeatures?: []))?.join(',')
+        map['features'] = (features.getOrElse([]) + (additionalFeatures ?: []))?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())
 
@@ -362,35 +362,34 @@ class PitestTask extends JavaExec {
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
-        } else {
-            return [classPath: getAdditionalClasspath().files.join(',')]
+            return [classPathFile:getAdditionalClasspathFile().asFile.get().absolutePath]
         }
+        return [classPath:getAdditionalClasspath().files.join(',')]
     }
 
     private void fillAdditionalClasspathFileWithClasspathElements() {
-        String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
+        String classpathElementsAsFileContent = getAdditionalClasspath().files*.getAbsolutePath().join(System.lineSeparator())
         //"withWriter" as "file << content" works in append mode (instead of overwrite one)
-        getAdditionalClasspathFile().asFile.get().withWriter() {
-            it << classpathElementsAsFileContent
+        getAdditionalClasspathFile().asFile.get().withWriter { writer ->
+            writer << classpathElementsAsFileContent
         }
     }
 
+    @SuppressWarnings("IfStatementCouldBeTernary")
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath]
-        } else {
-            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
-                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath]
+            return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
+                    historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
         }
+        return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
     }
 
     private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
-        return map.findAll { it.value != null && it.value != "" }
+        return map.findAll { entry -> entry.value != null && entry.value != "" }
     }
 
-    private List<String> createArgumentsListFromMap(Map<String, String> taskArgumentsMap) {
+    private List<String> argumentsListFromMap(Map<String, String> taskArgumentsMap) {
         return taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
@@ -409,12 +408,13 @@ class PitestTask extends JavaExec {
     }
 
     @PackageScope   //visible for testing
-    List<String> createMultiValueArgsAsList() {
+    List<String> multiValueArgsAsList() {
         //It is a duplication/special case handling, but a PoC implementation with emulated multimap was also quite ugly and in addition error prone
         return pluginConfiguration.getOrNull()?.collect { k, v ->
             "$k=$v".toString()
-        }?.collect {
-            "--pluginConfiguration=$it".toString()
-        } ?: [] as List<String>
+        }?.collect { configString ->
+            "--pluginConfiguration=$configString".toString()
+        } ?: []
     }
+
 }

@@ -9,4 +9,5 @@ class GradleUtil {
     static boolean isPropertyNotDefinedOrFalse(Project project, String propertyName) {
         return !project.hasProperty(propertyName) || project.findProperty(propertyName) == "false" || project.findProperty(propertyName) == false
     }
+
 }

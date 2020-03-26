@@ -1,10 +1,12 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 
+@CompileDynamic
 class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
+    void "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
@@ -46,7 +48,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
-    def "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
+    void "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
         given:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
@@ -65,4 +67,5 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             //TODO: Verify file name with regex
             !result.getStandardOutput().find("--classPath=")
     }
+
 }

@@ -15,36 +15,37 @@
  */
 package info.solidsoft.gradle.pitest
 
-import spock.lang.Issue
+import groovy.transform.CompileDynamic
 import spock.lang.Specification
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.api.Task
 
+@CompileDynamic
 class PitestPluginTest extends Specification {
 
-    def "add pitest task to java project in proper group"() {
+    void "add pitest task to java project in proper group"() {
         given:
             Project project = ProjectBuilder.builder().build()
-            project.apply(plugin: "java")   //to add SourceSets
+            project.pluginManager.apply('java')   //to add SourceSets
         when:
-            project.apply(plugin: "info.solidsoft.pitest")
+            project.pluginManager.apply('info.solidsoft.pitest')
         then:
             project.plugins.hasPlugin(PitestPlugin)
             assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
-    def "do nothing if Java plugin is not applied but react to it becoming applied"() {
+    void "do nothing if Java plugin is not applied but react to it becoming applied"() {
         given:
             Project project = ProjectBuilder.builder().build()
         expect:
             !project.plugins.hasPlugin("java")
         when:
-            project.apply(plugin: "info.solidsoft.pitest");
+            project.pluginManager.apply('info.solidsoft.pitest')
         then:
             project.tasks.withType(PitestTask).isEmpty()
         when:
-            project.apply(plugin: "java");
+            project.pluginManager.apply('java')
         then:
             !project.tasks.withType(PitestTask).isEmpty()
     }
@@ -56,4 +57,5 @@ class PitestPluginTest extends Specification {
             assert task.group == group
         }
     }
+
 }

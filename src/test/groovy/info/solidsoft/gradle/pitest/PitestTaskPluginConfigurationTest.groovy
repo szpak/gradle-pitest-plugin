@@ -15,23 +15,27 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileDynamic
+
+@CompileDynamic
 class PitestTaskPluginConfigurationTest extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
-    def "should not create pluginConfiguration command line argument when no parameters"() {
+    void "should not create pluginConfiguration command line argument when no parameters"() {
         given:
             project.pitest.pluginConfiguration = null
         when:
-            List<String> multiValueArgList = task.createMultiValueArgsAsList()
+            List<String> multiValueArgList = task.multiValueArgsAsList()
         then:
             multiValueArgList['pluginConfiguration'] == []
     }
 
-    def "should split parameters into separate pluginConfiguration arguments"() {
+    void "should split parameters into separate pluginConfiguration arguments"() {
         given:
-            project.pitest.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": "2"]
+            project.pitest.pluginConfiguration = ["plugin1.foo":"one", "plugin1.bar":"2"]
         when:
-            List<String> multiValueArgList = task.createMultiValueArgsAsList()
+            List<String> multiValueArgList = task.multiValueArgsAsList()
         then:
             multiValueArgList == ['--pluginConfiguration=plugin1.foo=one', '--pluginConfiguration=plugin1.bar=2']
     }
+
 }

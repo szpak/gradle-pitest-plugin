@@ -1,12 +1,14 @@
 package info.solidsoft.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import spock.util.environment.RestoreSystemProperties
 
+@CompileDynamic
 class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     @RestoreSystemProperties
-    def "should mutate production code in another subproject"() {
+    void "should mutate production code in another subproject"() {
         given:
             copyResources("testProjects/multiproject", "")
         and:
@@ -18,4 +20,5 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
             result.wasExecuted(':itest:pitest')
             result.getStandardOutput().contains('Generated 4 mutations Killed 3 (75%)')
     }
+
 }
