@@ -2,9 +2,15 @@ package info.solidsoft.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
+import spock.lang.Issue
 
 @CompileDynamic
 class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
+
+    @Rule
+    protected TemporaryFolder tmpDir = new TemporaryFolder()
 
     void "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
@@ -66,6 +72,32 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.getStandardOutput().contains('--classPathFile=')
             //TODO: Verify file name with regex
             !result.getStandardOutput().find("--classPath=")
+    }
+
+    @Issue(["https://github.com/gradle/gradle/issues/12351", "https://github.com/szpak/gradle-pitest-plugin/issues/189"])
+    void "allow to use RegularFileProperty @Input and @Output fields in task"() {
+        given:
+            File historyInputLocation = tmpDir.newFile()
+            File historyOutputLocation = tmpDir.newFile()
+        and:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    historyInputLocation = "$historyInputLocation"
+                    historyOutputLocation = "$historyOutputLocation"
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().contains("--historyInputLocation=${historyInputLocation.absolutePath}")
+        and:    //it works with @OutputFile by default, but just in case
+            result.getStandardOutput().contains("--historyOutputLocation=${historyOutputLocation.absolutePath}")
+            historyOutputLocation.size()
     }
 
 }

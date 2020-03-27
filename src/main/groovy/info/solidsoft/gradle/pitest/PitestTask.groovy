@@ -169,8 +169,8 @@ class PitestTask extends JavaExec {
     @PathSensitive(PathSensitivity.RELATIVE)
     Set<File> mutableCodePaths
 
-    @Input
-    @Optional
+    //Workaround with getter - see https://github.com/gradle/gradle/issues/12351
+    @Internal
     final RegularFileProperty historyInputLocation
 
     @OutputFile
@@ -181,7 +181,7 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> enableDefaultIncrementalAnalysis
 
-    //Workaround with @Internal for "Unable to store input properties for task" - https://github.com/gradle/gradle/issues/12351
+    //Workaround with getter - see https://github.com/gradle/gradle/issues/12351
     @Internal
     final RegularFileProperty defaultFileForHistoryData
 
@@ -201,8 +201,8 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> exportLineCoverage
 
-    @Input
-    @Optional
+    //Workaround with getter - see https://github.com/gradle/gradle/issues/12351
+    @Internal
     final RegularFileProperty jvmPath
 
     @Input
@@ -291,13 +291,26 @@ class PitestTask extends JavaExec {
     }
 
     @Input
-    String getDefaultFileForHistoryDataPath() {
-        defaultFileForHistoryData.asFile.get().absolutePath
+    String getAdditionalClasspathFilePath() {
+        return additionalClasspathFile.asFile.get().absolutePath
     }
 
     @Input
-    String getAdditionalClasspathFilePath() {
-        additionalClasspathFile.asFile.get().absolutePath
+    @Optional
+    String getHistoryInputLocationPath() {
+        //?. operator doesn't work with Gradle Providers
+        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().absolutePath : null
+    }
+
+    @Input
+    String getDefaultFileForHistoryDataPath() {
+        return defaultFileForHistoryData.asFile.get().absolutePath
+    }
+
+    @Input
+    @Optional
+    String getJvmPathPath() {
+        return jvmPath.isPresent() ? jvmPath.asFile.get().absolutePath : null
     }
 
     @Override
