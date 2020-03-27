@@ -45,6 +45,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'skipFailingTests',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
+                                                                                'fullMutationMatrix',
                                                                                 'includedTestMethods',
                                                                                 'detectInlinedCode',
                                                                                 'timestampedReports',
@@ -139,6 +140,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "skipFailingTests"       | true                                         || "true"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "fullMutationMatrix"     | true                                         || "true"
             "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"

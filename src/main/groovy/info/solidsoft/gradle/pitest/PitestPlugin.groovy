@@ -144,6 +144,7 @@ class PitestPlugin implements Plugin<Project> {
         task.skipFailingTests.set(extension.skipFailingTests)
         task.includedGroups.set(extension.includedGroups)
         task.excludedGroups.set(extension.excludedGroups)
+        task.fullMutationMatrix.set(extension.fullMutationMatrix)
         task.includedTestMethods.set(extension.includedTestMethods)
 //        task.sourceDirs.set(project.providers.provider() { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set })
         task.detectInlinedCode.set(extension.detectInlinedCode)

@@ -101,6 +101,7 @@ class PitestPluginExtension {
     final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
     final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final Property<Boolean> fullMutationMatrix  //new in PIT 1.4.3
     final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
     final Property<Boolean> detectInlinedCode   //new in PIT 0.28
     final Property<Boolean> timestampedReports
@@ -247,6 +248,7 @@ class PitestPluginExtension {
         skipFailingTests = of.property(Boolean)
         includedGroups = nullSetPropertyOf(p, String)
         excludedGroups = nullSetPropertyOf(p, String)
+        fullMutationMatrix = of.property(Boolean)
         includedTestMethods = nullSetPropertyOf(p, String)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
