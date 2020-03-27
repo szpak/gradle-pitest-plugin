@@ -148,6 +148,7 @@ class PitestTask extends JavaExec {
     final SetProperty<String> includedTestMethods
 
     @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
     final ConfigurableFileCollection sourceDirs
 
     @Input
