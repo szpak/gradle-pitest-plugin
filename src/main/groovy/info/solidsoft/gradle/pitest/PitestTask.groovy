@@ -18,6 +18,7 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Incubating
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
@@ -147,8 +148,7 @@ class PitestTask extends JavaExec {
     final SetProperty<String> includedTestMethods
 
     @InputFiles
-    @PathSensitive(PathSensitivity.RELATIVE)
-    Set<File> sourceDirs
+    final ConfigurableFileCollection sourceDirs
 
     @Input
     @Optional
@@ -273,7 +273,7 @@ class PitestTask extends JavaExec {
         excludedGroups = of.setProperty(String)
         fullMutationMatrix = of.property(Boolean)
         includedTestMethods = of.setProperty(String)
-//        sourceDirs = of.fileProperty()
+        sourceDirs = of.fileCollection()
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
         historyInputLocation = of.fileProperty()

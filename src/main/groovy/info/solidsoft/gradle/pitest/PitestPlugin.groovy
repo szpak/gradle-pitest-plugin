@@ -105,6 +105,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.useClasspathFile.set(false)
     }
 
+    @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
     private void configureTaskDefault(PitestTask task) {
         task.testPlugin.set(extension.testPlugin)
         task.reportDir.set(extension.reportDir)
@@ -146,7 +147,7 @@ class PitestPlugin implements Plugin<Project> {
         task.excludedGroups.set(extension.excludedGroups)
         task.fullMutationMatrix.set(extension.fullMutationMatrix)
         task.includedTestMethods.set(extension.includedTestMethods)
-//        task.sourceDirs.set(project.providers.provider() { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set })
+        task.sourceDirs.setFrom(extension.mainSourceSets.get()*.allSource)
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
@@ -183,7 +184,6 @@ class PitestPlugin implements Plugin<Project> {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }
             mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
-            sourceDirs = { extension.mainSourceSets.get()*.allSource.srcDirs.flatten() as Set }
         }
     }
 
