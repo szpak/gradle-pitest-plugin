@@ -317,7 +317,7 @@ class PitestTask extends JavaExec {
     void exec() {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = argumentsForPit()
-        jvmArgs = ((List<String>)getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
+        jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
@@ -379,9 +379,9 @@ class PitestTask extends JavaExec {
     private Map<String, String> prepareMapWithClasspathConfiguration() {
         if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile:getAdditionalClasspathFile().asFile.get().absolutePath]
+            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
         }
-        return [classPath:getAdditionalClasspath().files.join(',')]
+        return [classPath: getAdditionalClasspath().files.join(',')]
     }
 
     private void fillAdditionalClasspathFileWithClasspathElements() {
@@ -394,11 +394,11 @@ class PitestTask extends JavaExec {
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
-                    historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
+            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,]
         } else {
-            return [historyInputLocation:getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
-                    historyOutputLocation:getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
+            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath,]
         }
     }
 

@@ -31,7 +31,7 @@ class PitestTaskPluginConfigurationTest extends BasicProjectBuilderSpec implemen
 
     void "should split parameters into separate pluginConfiguration arguments"() {
         given:
-            project.pitest.pluginConfiguration = ["plugin1.foo":"one", "plugin1.bar":"2"]
+            project.pitest.pluginConfiguration = ["plugin1.foo": "one", "plugin1.bar": "2"]
         when:
             List<String> multiValueArgList = task.multiValueArgsAsList()
         then:

@@ -22,6 +22,7 @@
         <exclude name="LineLength" />
         <!-- TODO: Started to occur while CodeNarc 1.5 is used with Groovy 2.5.10 - https://github.com/gradle/gradle/issues/12646#issuecomment-604594943 -->
         <exclude name="ClosureStatementOnOpeningLineOfMultipleLineClosure" />
+        <exclude name="SpaceAroundMapEntryColon" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/generic.xml' />
     <ruleset-ref path='rulesets/groovyism.xml' />
@@ -43,4 +44,9 @@
         <exclude name="UnnecessaryBooleanExpression" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/unused.xml' />
+
+    <rule class='org.codenarc.rule.formatting.SpaceAroundMapEntryColonRule'>
+        <property name='characterAfterColonRegex' value='\ '/>
+    </rule>
+
 </ruleset>

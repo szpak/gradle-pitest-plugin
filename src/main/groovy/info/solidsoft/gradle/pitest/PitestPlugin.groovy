@@ -56,7 +56,7 @@ class PitestPlugin implements Plugin<Project> {
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
     @SuppressWarnings("FieldName")
-    private final static Logger log =  Logging.getLogger(PitestPlugin)
+    private final static Logger log = Logging.getLogger(PitestPlugin)
 
     @PackageScope   //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
