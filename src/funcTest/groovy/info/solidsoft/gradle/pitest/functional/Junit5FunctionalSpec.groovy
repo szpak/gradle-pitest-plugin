@@ -17,6 +17,16 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
 
+    void "should work with kotlin and junit5 in build.gradle.kts"() {
+        given:
+            copyResources("testProjects/junit5kotlin2", "")
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest', '-b', 'build.gradle.kts')
+        then:
+            result.wasExecuted('pitest')
+            result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
+    }
+
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/177")
     void "should work with junit5 without explicitly adding dependency"() {
         given:
