@@ -3,15 +3,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val junit5Version = "5.6.1"
 val junitPlatformVersion = "1.6.1"
 
+//"plugins {}" cannot be simply used as there is problem with resolving build plugins with classpath modifications made by nebula-test
 buildscript {
     repositories {
         mavenCentral()
     }
-    val pitest by configurations.creating
     dependencies {
 //        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.70")
-        pitest("org.pitest:pitest-junit5-plugin:0.12")
     }
 }
 
@@ -43,7 +42,7 @@ tasks.withType<KotlinCompile> {
 }
 
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-    testPlugin.set("junit5")
+    junit5PluginVersion.set("0.12")
     avoidCallsTo.set(setOf("kotlin.jvm.internal"))
     mutators.set(setOf("STRONGER"))
     targetClasses.set(setOf("pitest.test.*"))  //by default "${project.group}.*"

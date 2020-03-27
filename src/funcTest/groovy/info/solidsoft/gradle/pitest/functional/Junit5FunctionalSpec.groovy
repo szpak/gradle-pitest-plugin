@@ -19,7 +19,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
 
     void "should work with kotlin and junit5 in build.gradle.kts"() {
         given:
-            copyResources("testProjects/junit5kotlin2", "")
+            copyResources("testProjects/junit5kotlin", "")
         when:
             ExecutionResult result = runTasksSuccessfully('pitest', '-b', 'build.gradle.kts')
         then:
