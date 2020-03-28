@@ -1,5 +1,5 @@
 # 0.2.3 - 2020-03-29
-- Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issues/57)
+- Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issue/57)
 - Merge upstream changes a934028bb2efb474f441d818d3de2849de80a3a5
 - Update Android Gradle Plugin to 3.6.1
 - Update Gradle to 6.3
