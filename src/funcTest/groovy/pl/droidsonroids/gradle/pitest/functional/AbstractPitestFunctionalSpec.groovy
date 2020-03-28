@@ -73,7 +73,7 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
             public class HelloPitTest {
                 @Test public void shouldReturnInputNumber() {
-                    assertEquals(5, new HelloPit().returnInputNumber(5)); 
+                    assertEquals(5, new HelloPit().returnInputNumber(5));
                 }
             }
         """.stripIndent()
@@ -86,6 +86,10 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     //TODO: Switch to Gradle mechanism once upgrade to 6.x
     protected boolean isJava13Compatible() {
-        return System.getProperty("java.version").startsWith("13") || System.getProperty("java.version").startsWith("14")
+        return System.getProperty("java.version").startsWith("13") || isJava14Compatible()
+    }
+
+    protected boolean isJava14Compatible() {
+        return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
     }
 }

@@ -4,10 +4,13 @@ import com.android.builder.testing.MockableJarGenerator
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
 class PitestMockableAndroidJarTask extends DefaultTask {
     @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
     File inputJar = new File("${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar")
 
     @OutputFile

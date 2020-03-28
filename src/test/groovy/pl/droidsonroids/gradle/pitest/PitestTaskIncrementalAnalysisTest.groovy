@@ -56,8 +56,8 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
         when:
             Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
-            createdMap.get('historyInputLocation') == task.historyInputLocation.path
-            createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
+            createdMap.get('historyInputLocation') == task.historyInputLocation.asFile.get().path
+            createdMap.get('historyOutputLocation') == task.historyOutputLocation.asFile.get().path
     }
 
     def "given in configuration files for history location are used also not in default incremental analysis mode"() {
@@ -72,7 +72,7 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
         when:
             Map<String, String> createdMap = task.createTaskArgumentMap()
         then:
-            createdMap.get('historyInputLocation') == task.historyInputLocation.path
-            createdMap.get('historyOutputLocation') == task.historyOutputLocation.path
+            createdMap.get('historyInputLocation') == task.historyInputLocation.asFile.get().path
+            createdMap.get('historyOutputLocation') == task.historyOutputLocation.asFile.get().path
     }
 }

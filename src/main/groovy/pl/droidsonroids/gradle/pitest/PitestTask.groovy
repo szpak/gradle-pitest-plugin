@@ -18,7 +18,9 @@ package pl.droidsonroids.gradle.pitest
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Incubating
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
@@ -34,25 +36,25 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
-
-import static java.util.Collections.emptyList
 
 /**
  * Gradle task implementation for Pitest.
  */
 @CompileStatic
+@SuppressWarnings("UnstableApiUsage")   //@Option
 class PitestTask extends JavaExec {
 
     @Input
     @Optional
     final Property<String> testPlugin
 
-//    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
-//    RegularFileProperty reportDir
-    @Incubating //will be replaced with RegularFileProperty when switched to Gradle 5.6+
+    //ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty in Gradle <5.6 due to super interface of RegularFileProperty
+    //See: https://github.com/gradle/gradle/issues/10953 - on the other hand deprecation warnings in Gradle 6.x with regular File
     @OutputDirectory
-    File reportDir
+    final DirectoryProperty reportDir
 
     @Input
     final SetProperty<String> targetClasses
@@ -142,6 +144,7 @@ class PitestTask extends JavaExec {
     final SetProperty<String> includedTestMethods
 
     @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     Set<File> sourceDirs
 
     @Input
@@ -159,26 +162,30 @@ class PitestTask extends JavaExec {
     @Input
     final Property<Boolean> useAdditionalClasspathFile
 
+    //Workaround with @Internal for "Unable to store input properties for task" - https://github.com/gradle/gradle/issues/12351
     @Internal
-    File additionalClasspathFile
+    final RegularFileProperty additionalClasspathFile
 
     @InputFiles
+    @PathSensitive(PathSensitivity.ABSOLUTE)
     Set<File> mutableCodePaths
 
     @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
-    File historyInputLocation
+    final RegularFileProperty historyInputLocation
 
     @OutputFile
     @Optional
-    File historyOutputLocation
+    final RegularFileProperty historyOutputLocation
 
     @Input
     @Optional
     final Property<Boolean> enableDefaultIncrementalAnalysis
 
+    //Workaround with @Internal for "Unable to store input properties for task" - https://github.com/gradle/gradle/issues/12351
     @Internal
-    File defaultFileForHistoryData
+    final RegularFileProperty defaultFileForHistoryData
 
     @Input
     @Optional
@@ -197,8 +204,9 @@ class PitestTask extends JavaExec {
     final Property<Boolean> exportLineCoverage
 
     @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
-    File jvmPath
+    final RegularFileProperty jvmPath
 
     @Input
     @Optional
@@ -227,20 +235,20 @@ class PitestTask extends JavaExec {
     @Incubating
     @Input
     @Option(option = "additionalFeatures", description = "Additional PIT features to be appended to those placed in configuration")
+    @Optional
     List<String> additionalFeatures //ListProperty<String> cannot be used with @Option - https://github.com/gradle/gradle/issues/10517
 
     @Incubating
     @Input
     @Option(option = "targetTests", description = "Tests classes to use. Overrides 'testClasses' defined in configuration")
+    @Optional
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
     PitestTask() {
         ObjectFactory of = project.objects
-        additionalFeatures = emptyList()
-        overriddenTargetTests = emptyList()
 
         testPlugin = of.property(String)
-//        reportDir = of.fileProperty()
+        reportDir = of.directoryProperty()
         targetClasses = of.setProperty(String)
         targetTests = of.setProperty(String)
         dependencyDistance = of.property(Integer)
@@ -266,23 +274,33 @@ class PitestTask extends JavaExec {
 //        sourceDirs = of.fileProperty()
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
-//        historyInputLocation = of.fileProperty()
-//        historyOutputLocation = of.fileProperty()
+        historyInputLocation = of.fileProperty()
+        historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
-//        defaultFileForHistoryData = of.fileProperty()
+        defaultFileForHistoryData = of.fileProperty()
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
-//        jvmPath = of.fileProperty()
+        jvmPath = of.fileProperty()
         mainProcessJvmArgs = of.listProperty(String)
 //        mutableCodePaths = of.setProperty(File)
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
         useAdditionalClasspathFile = of.property(Boolean)
-//        additionalClasspathFile = of.fileProperty()
+        additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
+    }
+
+    @Input
+    String getDefaultFileForHistoryDataPath() {
+        defaultFileForHistoryData.asFile.get().absolutePath
+    }
+
+    @Input
+    String getAdditionalClasspathFilePath() {
+        additionalClasspathFile.asFile.get().absolutePath
     }
 
     @Override
@@ -306,8 +324,7 @@ class PitestTask extends JavaExec {
     Map<String, String> createTaskArgumentMap() {
         Map<String, String> map = [:]
         map['testPlugin'] = testPlugin.getOrNull()
-//        map['reportDir'] = reportDir.getOrNull()?.toString()
-        map['reportDir'] = getReportDir().toString()
+        map['reportDir'] = reportDir.getOrNull()?.toString()
         map['targetClasses'] = targetClasses.get().join(',')
         map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
         map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
@@ -330,16 +347,16 @@ class PitestTask extends JavaExec {
         map['includedGroups'] = optionalCollectionAsString(includedGroups)
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)
-        map['sourceDirs'] = (getSourceDirs()*.path)?.join(',')
+        map['sourceDirs'] = (getSourceDirs()*.absolutePath)?.join(',')
         map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
         map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
-        map['mutableCodePaths'] = (getMutableCodePaths()*.path)?.join(',')
+        map['mutableCodePaths'] = (getMutableCodePaths()*.absolutePath)?.join(',')
         map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
         map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
         map['mutationEngine'] = mutationEngine.getOrNull()
         map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath
-        map['jvmPath'] = getJvmPath()?.path
+        map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
         map['features'] = (features.getOrElse([]) + (additionalFeatures?: []))?.join(',')
@@ -350,9 +367,9 @@ class PitestTask extends JavaExec {
     }
 
     private Map<String, String> prepareMapWithClasspathConfiguration() {
-        if (useAdditionalClasspathFile.getOrElse(false)) {
+        if (useAdditionalClasspathFile.get()) {
             fillAdditionalClasspathFileWithClasspathElements()
-            return [classPathFile: getAdditionalClasspathFile().absolutePath]
+            return [classPathFile: getAdditionalClasspathFile().asFile.get().absolutePath]
         } else {
             return [classPath: getAdditionalClasspath().files.join(',')]
         }
@@ -361,18 +378,18 @@ class PitestTask extends JavaExec {
     private void fillAdditionalClasspathFileWithClasspathElements() {
         String classpathElementsAsFileContent = getAdditionalClasspath().files.collect { it.getAbsolutePath() }.join(System.lineSeparator())
         //"withWriter" as "file << content" works in append mode (instead of overwrite one)
-        getAdditionalClasspathFile().withWriter() {
+        getAdditionalClasspathFile().asFile.get().withWriter() {
             it << classpathElementsAsFileContent
         }
     }
 
     private Map<String, String> prepareMapWithIncrementalAnalysisConfiguration() {
         if (enableDefaultIncrementalAnalysis.getOrNull()) {
-            return [historyInputLocation : getHistoryInputLocation()?.path ?: getDefaultFileForHistoryData().path,
-                    historyOutputLocation: getHistoryOutputLocation()?.path ?: getDefaultFileForHistoryData().path]
+            return [historyInputLocation : getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath ?: getDefaultFileForHistoryData().asFile.get().absolutePath]
         } else {
-            return [historyInputLocation: getHistoryInputLocation()?.path,
-                    historyOutputLocation: getHistoryOutputLocation()?.path]
+            return [historyInputLocation: getHistoryInputLocation()?.getOrNull()?.asFile?.absolutePath,
+                    historyOutputLocation: getHistoryOutputLocation()?.getOrNull()?.asFile?.absolutePath]
         }
     }
 
