@@ -72,11 +72,10 @@ class PitestPlugin implements Plugin<Project> {
 
         project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
+            extension.reportDir.set(new File("${project.reporting.baseDir.path}/pitest"))
+
             if (extension.mainSourceSets.empty()) {
                 extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
-            }
-            if (extension.reportDir == null) {
-                extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
             }
 
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
@@ -260,7 +259,6 @@ class PitestPlugin implements Plugin<Project> {
             historyInputLocation = { extension.historyInputLocation }
             historyOutputLocation = { extension.historyOutputLocation }
             defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
-            jvmPath = { extension.jvmPath }
         }
     }
 

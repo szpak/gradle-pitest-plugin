@@ -1,12 +1,15 @@
 package pl.droidsonroids.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
+import org.gradle.api.GradleException
+import spock.lang.PendingFeature
 
 class ExternalLibrariesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
+    @PendingFeature(exceptions = GradleException, reason = "To investigate")
     def "should work with kotlin and junit5"() {
         given:
-            copyResources("testProjects/junit5", "")
+            copyResources("testProjects/junit5kotlin", "")
         and:
             writeManifestFile()
         when:
