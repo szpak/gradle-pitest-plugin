@@ -1,18 +1,21 @@
-# 0.2.3 - 2020-03-22
-- Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issue/57)
+# 0.2.3 - 2020-03-29
+- Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issues/57)
+- Merge upstream changes a934028bb2efb474f441d818d3de2849de80a3a5
+- Update Android Gradle Plugin to 3.6.1
+- Update Gradle to 6.3
 
 # 0.2.2 - 2019-09-30
-- Merge upstream changes 42c9e3211da4b160695ee4004722a68a59243088 [#53](https://github.com/koral--/gradle-pitest-plugin/issue/53)
+- Merge upstream changes 42c9e3211da4b160695ee4004722a68a59243088 [#53](https://github.com/koral--/gradle-pitest-plugin/issues/53)
 
 # 0.2.1 - 2019-05-04
 - Add `excludeMockableAndroidJar` extension property
--- Fix compatibility with Robolectric [#44](https://github.com/koral--/gradle-pitest-plugin/issue/44)
--- Fix compatibility with UnMock [#49](https://github.com/koral--/gradle-pitest-plugin/issue/49)
+-- Fix compatibility with Robolectric [#44](https://github.com/koral--/gradle-pitest-plugin/issues/44)
+-- Fix compatibility with UnMock [#49](https://github.com/koral--/gradle-pitest-plugin/issues/49)
 
 # 0.2.0 - 2019-05-03
 - Android Gradle Plugin dependency updated to 3.4.0
 - Gradle updated to 5.4.1
-- Fix compatibility with Android Gradle Plugin 3.4 and 3.5 [#48](https://github.com/koral--/gradle-pitest-plugin/issue/48)
+- Fix compatibility with Android Gradle Plugin 3.4 and 3.5 [#48](https://github.com/koral--/gradle-pitest-plugin/issues/48)
 
 # 0.1.9 - 2019-02-02
 - Merged upstream changes 7ec26eefcbf6234be892e0a3d0fa88b6b36cec3b
@@ -21,13 +24,13 @@
 # 0.1.8 - 2018-12-19
 - Android Gradle Plugin dependency updated to 3.2.1
 - Gradle updated to 5.0
-- Change info.solidsoft  package name [#42](https://github.com/koral--/gradle-pitest-plugin/issue/42)
-- Fixed missing Android Mockable JAR with AGP 3.2+ [#41](https://github.com/koral--/gradle-pitest-plugin/issue/41)
+- Change info.solidsoft  package name [#42](https://github.com/koral--/gradle-pitest-plugin/issues/42)
+- Fixed missing Android Mockable JAR with AGP 3.2+ [#41](https://github.com/koral--/gradle-pitest-plugin/issues/41)
 
 # 0.1.7 - 2018-08-25 
 - Merged upstream changes bbca1adac89e6ac00d12303ba2e87ac7068d5d47
-- Replaced deprecated FileCollection#add() with #from() - [#37](https://github.com/koral--/gradle-pitest-plugin/issue/37)
-- Changed mockable Android JAR classpath entry order - [#30](https://github.com/koral--/gradle-pitest-plugin/issue/30)
+- Replaced deprecated FileCollection#add() with #from() - [#37](https://github.com/koral--/gradle-pitest-plugin/issues/37)
+- Changed mockable Android JAR classpath entry order - [#30](https://github.com/koral--/gradle-pitest-plugin/issues/30)
 - Android Gradle Plugin dependency updated to 3.1.4 
 
 # 0.1.6 - 2018-07-22
@@ -36,11 +39,11 @@
 - Kotlin dependency updated to 1.2.51
 - Gradle updated to 4.9
 - Merged upstream changes bbca1adac89e6ac00d12303ba2e87ac7068d5d47
-- Fixed mockable Android JAR handling when using Android Gradle Plugin 3.2+ - [#29](https://github.com/koral--/gradle-pitest-plugin/issue/29)
-- Fixed unit test classpath - [#27](https://github.com/koral--/gradle-pitest-plugin/issue/27)
+- Fixed mockable Android JAR handling when using Android Gradle Plugin 3.2+ - [#29](https://github.com/koral--/gradle-pitest-plugin/issues/29)
+- Fixed unit test classpath - [#27](https://github.com/koral--/gradle-pitest-plugin/issues/27)
 
 # 0.1.5 - 2018-01-22
-- Fixed classpath order - [#24](https://github.com/koral--/gradle-pitest-plugin/issue/24) 
+- Fixed classpath order - [#24](https://github.com/koral--/gradle-pitest-plugin/issues/24)
 
 # 0.1.4 - 2017-11-25
 - Fixed mockable Android JAR path when using Android Gradle Plugin 3+ - [#20](https://github.com/koral--/gradle-pitest-plugin/pull/20)
@@ -55,7 +58,7 @@
 
 # 0.1.2 - 2017-10-23
 - Fixed compatibility with Android Gradle Plugin 3-rc1
-- Fixed compatibility with Kotlin - [#15](https://github.com/koral--/gradle-pitest-plugin/issue/15)
+- Fixed compatibility with Kotlin - [#15](https://github.com/koral--/gradle-pitest-plugin/issues/15)
 
 # 0.0.11 - 2017-09-11
 - Merged upstream changes 491bf25072ee7ed6a8f10c0618e464586e5ee32a
