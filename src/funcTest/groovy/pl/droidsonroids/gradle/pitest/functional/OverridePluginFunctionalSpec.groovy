@@ -1,11 +1,15 @@
 package pl.droidsonroids.gradle.pitest.functional
 
 import nebula.test.functional.ExecutionResult
+import org.gradle.api.GradleException
+import spock.lang.Issue
+import spock.lang.PendingFeature
 
 //Note: gradle-override-plugin has important limitations in support for collections
 //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
+    @PendingFeature(exceptions = GradleException, reason = "gradle-override-plugin nor @Option don't work with DirectoryProperty")
     def "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
@@ -29,7 +33,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     }
                     dependencies {
                         classpath 'com.netflix.nebula:gradle-override-plugin:1.12.+'
-                        classpath 'com.android.tools.build:gradle:3.3.0'
+                        classpath 'com.android.tools.build:gradle:3.6.1'
                     }
                 }
                 repositories {

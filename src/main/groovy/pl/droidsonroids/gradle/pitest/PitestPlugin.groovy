@@ -41,7 +41,7 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
  * The main class for Pitest plugin.
  */
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.4.10'
+    public final static String DEFAULT_PITEST_VERSION = '1.5.0'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
@@ -68,14 +68,14 @@ class PitestPlugin implements Plugin<Project> {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
+        extension.useClasspathFile.set(false)
 
         project.pluginManager.apply(BasePlugin)
         project.afterEvaluate {
+            extension.reportDir.set(new File("${project.reporting.baseDir.path}/pitest"))
+
             if (extension.mainSourceSets.empty()) {
                 extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
-            }
-            if (extension.reportDir == null) {
-                extension.reportDir = new File("${project.reporting.baseDir.path}/pitest")
             }
 
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
@@ -114,7 +114,6 @@ class PitestPlugin implements Plugin<Project> {
                 group = PITEST_TASK_GROUP
                 shouldRunAfter("test${variant.name.capitalize()}UnitTest")
             }
-            variantTask.reportDir = new File(variantTask.reportDir, variant.name)
             variantTask.dependsOn "compile${variant.name.capitalize()}UnitTestSources"
             globalTask.dependsOn variantTask
         }
@@ -155,6 +154,8 @@ class PitestPlugin implements Plugin<Project> {
         }
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
+        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}/out"))
+        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}UnitTest/out"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
         if (variant instanceof TestedVariant) {
             combinedTaskClasspath.from(getJavaCompileTask(variant.unitTestVariant).classpath)
@@ -164,8 +165,9 @@ class PitestPlugin implements Plugin<Project> {
         combinedTaskClasspath.from(project.files(getJavaCompileTask(variant).destinationDir))
 
         task.with {
+            defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
             testPlugin.set(extension.testPlugin)
-//        task.reportDir.set(extension.reportDir)
+            reportDir.set(extension.reportDir)
             targetClasses.set(project.providers.provider {
                 log.debug("Setting targetClasses. project.getGroup: {}, class: {}", project.getGroup(), project.getGroup()?.class)
                 if (extension.targetClasses.isPresent()) {
@@ -179,7 +181,8 @@ class PitestPlugin implements Plugin<Project> {
             )
             targetTests.set(project.providers.provider {
                 //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
-                if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
+                if (extension.targetTests.isPresent()) {
+                    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
                     return extension.targetTests.get()
                 } else {
                     return targetClasses.getOrNull()
@@ -213,16 +216,20 @@ class PitestPlugin implements Plugin<Project> {
             coverageThreshold.set(extension.coverageThreshold)
             mutationEngine.set(extension.mutationEngine)
             exportLineCoverage.set(extension.exportLineCoverage)
-//        jvmPath.set(extension.jvmPath)
+            jvmPath.set(extension.jvmPath)
             mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
 //        mutableCodePaths.set(extension.additionalMutableCodePaths)
+            historyInputLocation.set(extension.historyInputLocation)
+            historyOutputLocation.set(extension.historyOutputLocation)
             pluginConfiguration.set(extension.pluginConfiguration)
             maxSurviving.set(extension.maxSurviving)
             useClasspathJar.set(extension.useClasspathJar)
             useAdditionalClasspathFile.set(extension.useClasspathFile)
             features.set(extension.features)
-
+            task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
+            task.features.set(extension.features)
         }
+
         task.conventionMapping.with {
             additionalClasspath = {
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
@@ -252,7 +259,6 @@ class PitestPlugin implements Plugin<Project> {
             historyInputLocation = { extension.historyInputLocation }
             historyOutputLocation = { extension.historyOutputLocation }
             defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
-            jvmPath = { extension.jvmPath }
         }
     }
 

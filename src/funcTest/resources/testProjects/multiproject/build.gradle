@@ -58,12 +58,18 @@ configure(project(':itest')) {
     }
 
     //Additional configuration to resolve :shared project JAR as mutable code path for PIT
-    configurations { mutableCodeBase { transitive false } }
-    dependencies { mutableCodeBase project(path: ':shared', configuration: 'default') }
+    configurations {
+        mutableCodeBase { transitive false }
+        dependencies {
+            mutableCodeBase.extendsFrom(project(path: ':shared', configuration: 'default').configurations.implementation)
+        }
+    }
     pitest {
         timestampedReports = false
         mainSourceSets = [project.android.sourceSets.main, project(':shared').android.sourceSets.main]
-        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-//        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
+        //Fails with IllegalArgumentException: Mutable Project State warnings were found - workaround applied
+        //Asked for recommendation: https://discuss.gradle.org/t/accessing-other-module-dependency-files-without-mutable-project-state-warnings/35048
+//        additionalMutableCodePaths = configurations.mutableCodeBase.files
+        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
     }
 }

@@ -16,6 +16,8 @@ cDeliveryBoy {
 nexusStaging {
     packageGroup = "info.solidsoft"
     stagingProfileId = "34a3a5beeaa96"
+    numberOfRetries = 40
+    delayBetweenRetriesInMillis = 3000
 }
 
 scmVersion {
