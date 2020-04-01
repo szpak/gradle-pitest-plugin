@@ -117,6 +117,19 @@ pitest {
 }
 ```
 
+### Eliminate warning in Idea
+
+As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) Idea displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`. It is not a real problem as Gradle internally intercepts those calls and use a setter instead . Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
+
+```groovy
+    testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
+    mainSourceSets.set([sourceSets.main, sourceSets.additionalMain])
+    jvmArgs.set(['-Xmx1024m'])
+    useClasspathFile.set(true)     //useful with bigger projects on Windows
+    fileExtensionsToFilter.addAll('xml', 'orbit')
+```
+
+Similar syntax can be used also for Kotlin configuration (`build.gradle.kts`).
 
 ## Multi-module projects support
 
