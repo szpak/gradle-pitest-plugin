@@ -109,5 +109,22 @@ dependencies {
 
 codenarc {
     toolVersion = "1.5"
-    reportFormat = "console"
+}
+
+//Workaround on https://github.com/gradle/gradle/issues/12663
+tasks.withType(CodeNarc) { codeNarcTask ->
+    reports {
+        text.enabled = true
+        html.enabled = true
+    }
+    codeNarcTask.finalizedBy(project.task("print${codeNarcTask.name.capitalize()}") {
+        onlyIf {
+            codeNarcTask.state.failure != null
+        }
+        doLast {
+            logger.warn("\n****************************** CODE NARC ******************************")
+            logger.warn(codeNarcTask.reports.text.destination.text.trim())
+            logger.warn("****************************** CODE NARC ******************************\n")
+        }
+    })
 }
