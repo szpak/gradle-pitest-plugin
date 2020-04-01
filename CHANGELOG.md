@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.8 - Unreleased
+## 1.4.8 - 2020-04-01
 
  - Fix problem with setting `historyInputLocation` and `jvmPath` - [#189](https://github.com/szpak/gradle-pitest-plugin/issues/189)
  - Less noisy "Adding dependency" logging - [#182](https://github.com/szpak/gradle-pitest-plugin/issues/182)

@@ -16,7 +16,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.4.7'
+    id 'info.solidsoft.pitest' version '1.4.8'
 }
 ```
 
@@ -48,7 +48,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.8'
     }
 }
 ```
@@ -144,7 +144,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.8'
         (...)
     }
 }
@@ -221,7 +221,7 @@ Starting with this release the configuration required to use PIT with JUnit 5 ha
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.4.7'
+    id 'info.solidsoft.pitest' version '1.4.8'
 }
 
 pitest {
@@ -246,7 +246,7 @@ buildscript {
    }
    configurations.maybeCreate('pitest')
    dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7'
+       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.8'
        pitest 'org.pitest:pitest-junit5-plugin:0.12'
    }
 }
