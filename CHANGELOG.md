@@ -4,6 +4,7 @@
 
  - Fix problem with setting `historyInputLocation` and `jvmPath` - [#189](https://github.com/szpak/gradle-pitest-plugin/issues/189)
  - Less noisy "Adding dependency" logging - [#182](https://github.com/szpak/gradle-pitest-plugin/issues/182)
+ - PIT 1.5.1 by default (better Java 14 support)
  - Basic functional testing with Java 14
  - Validation with Java Gradle plugin - [#106](https://github.com/szpak/gradle-pitest-plugin/issues/106) - PR by [Matthew Haughton](https://github.com/3flex)
  - CodeNarc code checks - [#184](https://github.com/szpak/gradle-pitest-plugin/pull/184) - PR by [Matthew Haughton](https://github.com/3flex)
