@@ -83,9 +83,8 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
                 pitest {
-                    //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
-                    historyInputLocation = "${historyInputLocation.absolutePath.replaceAll('\\\\', '\\\\\\\\')}"
-                    historyOutputLocation = "${historyOutputLocation.absolutePath.replaceAll('\\\\', '\\\\\\\\')}"
+                    historyInputLocation = "${quoteBackslashesInWindowsPath(historyInputLocation)}"
+                    historyOutputLocation = "${quoteBackslashesInWindowsPath(historyOutputLocation)}"
                 }
             """.stripIndent()
         and:
@@ -99,6 +98,11 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:    //it works with @OutputFile by default, but just in case
             result.getStandardOutput().contains("--historyOutputLocation=${historyOutputLocation.absolutePath}")
             historyOutputLocation.size()
+    }
+
+    private String quoteBackslashesInWindowsPath(File file) {
+        //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
+        return file.absolutePath.replaceAll('\\\\', '\\\\\\\\')
     }
 
 }
