@@ -84,8 +84,8 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << """
                 pitest {
                     //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
-                    historyInputLocation = /${historyInputLocation.absolutePath}/
-                    historyOutputLocation = /${historyOutputLocation.absolutePath}/
+                    historyInputLocation = "${historyInputLocation.absolutePath.replaceAll('\\\\', '\\\\\\\\')}"
+                    historyOutputLocation = "${historyOutputLocation.absolutePath.replaceAll('\\\\', '\\\\\\\\')}"
                 }
             """.stripIndent()
         and:
