@@ -83,8 +83,9 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
                 pitest {
-                    historyInputLocation = "$historyInputLocation"
-                    historyOutputLocation = "$historyOutputLocation"
+                    //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
+                    historyInputLocation = /${historyInputLocation.absolutePath}/
+                    historyOutputLocation = /${historyOutputLocation.absolutePath}/
                 }
             """.stripIndent()
         and:
