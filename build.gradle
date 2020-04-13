@@ -103,7 +103,7 @@ dependencies {
     constraints {
         codenarc("org.codehaus.groovy:groovy:2.5.10")
         //codenarc("org.codehaus.groovy:groovy-ant:2.5.10") --> this constraint causes NoClassDefFoundError: Lgroovy/text/TemplateEngine;
-        codenarc("org.codehaus.groovy:groovy-xml:2.5.10")
+        codenarc("org.codehaus.groovy:groovy-xml:3.0.3")
     }
 }
 
