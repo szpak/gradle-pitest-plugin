@@ -152,7 +152,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //mainSourceSets and testSourceSets tested separately
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path
-            //TODO: mainProcessJvmArgs?
+            //mainProcessJvmArgs tested separately
             //pluginConfiguration tested separately
             "maxSurviving"           | 20                                           || "20"
             "useClasspathJar"        | true                                         || "true"

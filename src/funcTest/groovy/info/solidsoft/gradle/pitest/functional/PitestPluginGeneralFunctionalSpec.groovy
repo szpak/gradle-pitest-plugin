@@ -1,6 +1,7 @@
 package info.solidsoft.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
+import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -54,26 +55,6 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             //TODO: Add plugin features once available - https://github.com/hcoles/pitest-plugins/issues/2
     }
 
-    void "use file to pass additional classpath to PIT if enabled"() {   //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
-        given:
-            buildFile << getBasicGradlePitestConfig()
-            buildFile << """
-                pitest {
-                    useClasspathFile = true
-                }
-            """.stripIndent()
-        and:
-            writeHelloPitClass()
-            writeHelloPitTest()
-        when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
-        then:
-            result.wasExecuted(':pitest')
-            result.getStandardOutput().contains('--classPathFile=')
-            //TODO: Verify file name with regex
-            !result.getStandardOutput().find("--classPath=")
-    }
-
     @Issue(["https://github.com/gradle/gradle/issues/12351", "https://github.com/szpak/gradle-pitest-plugin/issues/189"])
     void "allow to use RegularFileProperty @Input and @Output fields in task"() {
         given:
@@ -98,6 +79,32 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:    //it works with @OutputFile by default, but just in case
             result.getStandardOutput().contains("--historyOutputLocation=${historyOutputLocation.absolutePath}")
             historyOutputLocation.size()
+    }
+
+    void "pass additional configured parameters that cannot be test with ProjectBuilder"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    useClasspathFile = true
+                    mainProcessJvmArgs = ["-XX:+UnlockExperimentalVMOptions"]
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+
+        and: "use file to pass additional classpath to PIT if enabled"  //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
+            result.getStandardOutput().contains(
+                "--classPathFile=${new File(projectDir, "build//${PitestPlugin.PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME}").absolutePath}")
+            !result.getStandardOutput().find("--classPath=")
+
+        and: "use defined mainProcessJvmArgs to run PIT main process"
+            result.getStandardOutput().matches(/(?m)[\s\S]*java(.exe)* -XX:\+UnlockExperimentalVMOptions[\s\S]*/)
     }
 
     private String quoteBackslashesInWindowsPath(File file) {
