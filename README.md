@@ -4,6 +4,7 @@ The plugin provides an ability to perform a [mutation testing](https://en.wikipe
 calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
+[![Plugin Portal](https://img.shields.io/maven-metadata/v?label=Plugin&color=blue&metadataUrl=https://plugins.gradle.org/m2/info/solidsoft/gradle/pitest/gradle-pitest-plugin/maven-metadata.xml)](https://plugins.gradle.org/plugin/info.solidsoft.pitest)
 [![Build Status Travis](https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master)](https://travis-ci.org/szpak/gradle-pitest-plugin)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
