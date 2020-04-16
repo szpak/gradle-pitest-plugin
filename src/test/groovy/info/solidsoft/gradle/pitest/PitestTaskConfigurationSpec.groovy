@@ -16,7 +16,9 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileDynamic
+import org.gradle.api.Project
 import spock.lang.Issue
+import spock.lang.PendingFeature
 
 @CompileDynamic
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
@@ -147,16 +149,16 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "mutationThreshold"      | 90                                           || "90"
             "coverageThreshold"      | 95                                           || "95"
             "mutationEngine"         | "gregor2"                                    || "gregor2"
-            //sourceSet x2
+            //mainSourceSets and testSourceSets tested separately
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path
-            //mainProcessJvmArgs?
-//            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
+            //TODO: mainProcessJvmArgs?
+            //pluginConfiguration tested separately
             "maxSurviving"           | 20                                           || "20"
             "useClasspathJar"        | true                                         || "true"
-//            "useClasspathFile"       | true                                         || "false"    //TODO
+            //useClasspathFile tested separately
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
-//            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT
+            //fileExtensionsToFilter not passed to PIT, tested separately
             "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
             "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
     }
@@ -213,6 +215,37 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
         expect:
             task.taskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/198")
+    @PendingFeature //Questions posted: https://discuss.gradle.org/t/how-to-configurablefilecollection-setfrom-with-provider/35713
+    void "should pass configured mainSourceSets to PIT"() {
+        given:
+            project.pitest.mainSourceSets = [project.sourceSets.main]
+        when:
+            String sourceDirs = task.taskArgumentMap()['sourceDirs']
+        then:
+            sourceDirs == assembleMainSourceDirAsStringSet(project).join(",")
+    }
+
+    private Set<String> assembleMainSourceDirAsStringSet(Project project) {
+        return ["resources", "java"].collect { String dirName ->
+            new File(project.projectDir, "src//main//${dirName}")
+        }*.absolutePath
+    }
+
+    void "should consider testSourceSets in (additional) classpath"() {
+        given:
+            project.sourceSets { intTest }
+            project.pitest.testSourceSets = [project.sourceSets.intTest]
+        expect:
+            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet(project, "intTest").join(",")
+    }
+
+    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(Project project, String sourceSetName) {
+        return [new File(project.buildDir, "classes//java//${sourceSetName}"),
+                new File(project.buildDir, "resources//${sourceSetName}")
+        ]*.absolutePath
     }
 
 }

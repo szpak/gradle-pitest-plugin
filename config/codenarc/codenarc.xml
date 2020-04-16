@@ -9,6 +9,7 @@
     <ruleset-ref path='rulesets/convention.xml'>
         <exclude name="PublicMethodsBeforeNonPublicMethods" />
         <exclude name="IfStatementCouldBeTernary" />
+        <exclude name="TrailingComma" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/design.xml'>
         <exclude name="ReturnsNullInsteadOfEmptyCollection" />

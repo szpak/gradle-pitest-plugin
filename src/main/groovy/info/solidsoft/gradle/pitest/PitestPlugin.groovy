@@ -27,7 +27,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
@@ -172,8 +171,7 @@ class PitestPlugin implements Plugin<Project> {
         task.conventionMapping.with {
             additionalClasspath = {
                 List<FileCollection> testRuntimeClasspath = extension.testSourceSets.get()*.runtimeClasspath
-
-                FileCollection combinedTaskClasspath = new UnionFileCollection(testRuntimeClasspath)
+                FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
                 FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
                     !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
                 }
