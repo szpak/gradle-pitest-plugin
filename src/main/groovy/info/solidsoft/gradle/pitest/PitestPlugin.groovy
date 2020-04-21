@@ -19,7 +19,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
-import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -191,12 +190,8 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileStatic
     private Set<String> calculateTasksToDependOn() {
-//        //Fails with: NoSuchMethodError: org.codehaus.groovy.runtime.DefaultGroovyMethods.collect(Ljava/lang/Iterable;Lgroovy/lang/Closure;)Ljava/util/List;
-//        //when compiled with Groovy 2.5 (Gradle 5+) and executed with Groovy 2.4 (Gradle <5). Explicit coercion doesn't help.
-//        //TODO: Workaround with DefaultGroovyMethods.collect. Remove once Gradle 4 support is dropped
-//        Set<String> tasksToDependOn = extension.testSourceSets.collect { it.name + "Classes" } as Set
         Set<SourceSet> testSourceSets = extension.testSourceSets.get()
-        Set<String> tasksToDependOn = DefaultGroovyMethods.collect(testSourceSets) { sourceSet -> sourceSet.name + "Classes" } as Set
+        Set<String> tasksToDependOn = testSourceSets.collect { sourceSet -> sourceSet.name + "Classes" } as Set
         log.debug("pitest tasksToDependOn: $tasksToDependOn")
         return tasksToDependOn
     }
