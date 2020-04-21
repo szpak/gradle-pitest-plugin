@@ -111,6 +111,12 @@ codenarc {
     toolVersion = "1.5"
 }
 
+tasks.register("codenarc") {
+    configure {
+        dependsOn tasks.withType(CodeNarc)
+    }
+}
+
 //Workaround on https://github.com/gradle/gradle/issues/12663
 tasks.withType(CodeNarc) { codeNarcTask ->
     reports {
