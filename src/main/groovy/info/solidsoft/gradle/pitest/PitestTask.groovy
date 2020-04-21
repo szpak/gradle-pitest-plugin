@@ -20,7 +20,6 @@ import groovy.transform.PackageScope
 import org.gradle.api.Incubating
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
@@ -216,7 +215,7 @@ class PitestTask extends JavaExec {
 
     @InputFiles
     @Classpath
-    FileCollection launchClasspath
+    final ConfigurableFileCollection launchClasspath
 
     @Input
     @Optional
@@ -287,6 +286,7 @@ class PitestTask extends JavaExec {
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
         mainProcessJvmArgs = of.listProperty(String)
+        launchClasspath = of.fileCollection()
 //        mutableCodePaths = of.setProperty(File)
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)

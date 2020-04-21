@@ -172,6 +172,9 @@ class PitestPlugin implements Plugin<Project> {
         task.exportLineCoverage.set(extension.exportLineCoverage)
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
+        task.launchClasspath.setFrom({
+            project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+        } as Callable<Configuration>)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
@@ -179,9 +182,6 @@ class PitestPlugin implements Plugin<Project> {
 
         //Temporarily for types not supported in Gradle 4.x
         task.conventionMapping.with {
-            launchClasspath = {
-                project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
-            }
             mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
         }
     }
