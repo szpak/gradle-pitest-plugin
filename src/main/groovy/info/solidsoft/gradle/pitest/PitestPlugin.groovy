@@ -15,9 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
-import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
-
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
@@ -27,12 +24,18 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
+
+import java.util.concurrent.Callable
+
+import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
+import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 /**
  * The main class for Pitest plugin.
@@ -146,7 +149,7 @@ class PitestPlugin implements Plugin<Project> {
         task.excludedGroups.set(extension.excludedGroups)
         task.fullMutationMatrix.set(extension.fullMutationMatrix)
         task.includedTestMethods.set(extension.includedTestMethods)
-        task.sourceDirs.setFrom(extension.mainSourceSets.get()*.allSource)
+        task.sourceDirs.setFrom({ extension.mainSourceSets.get()*.allSource*.srcDirs } as Callable<Set<SourceDirectorySet>>)
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)

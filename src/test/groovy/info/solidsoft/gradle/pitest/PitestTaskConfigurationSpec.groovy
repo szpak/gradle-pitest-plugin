@@ -218,7 +218,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/198")
-    @PendingFeature //Questions posted: https://discuss.gradle.org/t/how-to-configurablefilecollection-setfrom-with-provider/35713
     void "should pass configured mainSourceSets to PIT"() {
         given:
             project.pitest.mainSourceSets = [project.sourceSets.main]

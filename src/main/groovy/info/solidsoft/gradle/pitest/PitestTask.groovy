@@ -364,7 +364,7 @@ class PitestTask extends JavaExec {
         map['excludedGroups'] = optionalCollectionAsString(excludedGroups)
         map['fullMutationMatrix'] = optionalPropertyAsString(fullMutationMatrix)
         map['includedTestMethods'] = optionalCollectionAsString(includedTestMethods)
-        map['sourceDirs'] = (getSourceDirs()*.absolutePath)?.join(',')
+        map['sourceDirs'] = (getSourceDirs().files*.absolutePath)?.join(',')
         map['detectInlinedCode'] = optionalPropertyAsString(detectInlinedCode)
         map['timestampedReports'] = optionalPropertyAsString(timestampedReports)
         map['mutableCodePaths'] = (getMutableCodePaths()*.absolutePath)?.join(',')
