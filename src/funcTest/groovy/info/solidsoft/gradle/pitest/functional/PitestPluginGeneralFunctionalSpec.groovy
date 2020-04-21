@@ -86,6 +86,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
                 pitest {
+                    timestampedReports = false  //to do not mess with file path on source code in report verification
                     useClasspathFile = true
                     mainProcessJvmArgs = ["-XX:+UnlockExperimentalVMOptions"]
                 }
@@ -97,6 +98,9 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             ExecutionResult result = runTasksSuccessfully('pitest')
         then:
             result.wasExecuted(':pitest')
+        and:
+            result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
+            result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
 
         and: "use file to pass additional classpath to PIT if enabled"  //Needed? Already tested with ProjectBuilder in PitestTaskConfigurationSpec
             result.getStandardOutput().contains(
@@ -105,6 +109,10 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
         and: "use defined mainProcessJvmArgs to run PIT main process"
             result.getStandardOutput().matches(/(?m)[\s\S]*java(.exe)* -XX:\+UnlockExperimentalVMOptions[\s\S]*/)
+
+        and: "has source code available in report"
+            File htmlFileWithReportForHelloPit = new File(projectDir, "build//reports//pitest//gradle.pitest.test.hello//HelloPit.java.html")
+            htmlFileWithReportForHelloPit.text.contains("System.out.println(&#34;Mutation to survive&#34;);")
     }
 
     private String quoteBackslashesInWindowsPath(File file) {
