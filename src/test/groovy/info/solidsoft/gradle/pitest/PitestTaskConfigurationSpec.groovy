@@ -16,7 +16,6 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileDynamic
-import org.gradle.api.Project
 import spock.lang.Issue
 
 @CompileDynamic
@@ -125,7 +124,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             configParamName          | gradleConfigValue                            || expectedPitConfigValue
             "testPlugin"             | "testng"                                     || "testng"
-            //TODO: junit5PluginVersion
+            //junit5PluginVersion tested separately
             "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
@@ -231,10 +230,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         when:
             String sourceDirs = task.taskArgumentMap()['sourceDirs']
         then:
-            sourceDirs == assembleMainSourceDirAsStringSet(project).join(",")
+            sourceDirs == assembleMainSourceDirAsStringSet().join(",")
     }
 
-    private Set<String> assembleMainSourceDirAsStringSet(Project project) {
+    private Set<String> assembleMainSourceDirAsStringSet() {
         return ["resources", "java"].collect { String dirName ->
             new File(project.projectDir, "src//main//${dirName}")
         }*.absolutePath
