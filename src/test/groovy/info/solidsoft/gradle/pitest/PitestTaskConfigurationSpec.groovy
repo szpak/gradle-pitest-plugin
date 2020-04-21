@@ -246,9 +246,9 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
-        return sourceSetNames.collect { String sourceSetName ->
+        return sourceSetNames.collectMany { String sourceSetName ->
             assembleSourceSetsClasspathByNameAsStringSet(sourceSetName)
-        }.flatten() as Set<String>
+        } as Set<String>
     }
 
     private Set<String> assembleSourceSetsClasspathByNameAsStringSet(String sourceSetName) {
