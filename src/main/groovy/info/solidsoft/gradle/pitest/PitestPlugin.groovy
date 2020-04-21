@@ -161,14 +161,14 @@ class PitestPlugin implements Plugin<Project> {
             return filteredCombinedTaskClasspath
         } as Callable<FileCollection>)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
-        task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
+        //additionalClasspathFile - separate method
         task.mutableCodePaths.setFrom({
             calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>)
         } as Callable<Set<File>>)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
-        task.defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
+        //defaultFileForHistoryData - separate method
         task.mutationThreshold.set(extension.mutationThreshold)
         task.coverageThreshold.set(extension.coverageThreshold)
         task.mutationEngine.set(extension.mutationEngine)
@@ -182,6 +182,14 @@ class PitestPlugin implements Plugin<Project> {
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
         task.features.set(extension.features)
+
+        configurePropertiesWithProblematicTypesForGradle5(task)
+    }
+
+    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
+    private void configurePropertiesWithProblematicTypesForGradle5(PitestTask task) {
+        task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
+        task.defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
     }
 
     private Set<File> calculateBaseMutableCodePaths() {
