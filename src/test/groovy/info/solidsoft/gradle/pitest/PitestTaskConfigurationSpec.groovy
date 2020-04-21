@@ -69,8 +69,13 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         and:
             new File(project.buildDir.absolutePath).mkdir() //in ProjectBuilder "build" directory is not created by default
         expect:
-            task.taskArgumentMap()['classPathFile'] == new File(project.buildDir, "pitClasspath").absolutePath
+            File createClasspathFile = new File(project.buildDir, "pitClasspath")
+            task.taskArgumentMap()['classPathFile'] == createClasspathFile.absolutePath
             !task.taskArgumentMap()['classPath']
+        and:
+            createClasspathFile.exists()
+            createClasspathFile.readLines().size() == 4
+            createClasspathFile.readLines() as Set<String> == assembleSourceSetsClasspathByNameAsStringSet(["main", "test"])
     }
 
     void "should pass features configuration to PIT"() {
@@ -237,10 +242,16 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             project.sourceSets { intTest }
             project.pitest.testSourceSets = [project.sourceSets.intTest]
         expect:
-            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet(project, "intTest").join(",")
+            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet("intTest").join(",")
     }
 
-    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(Project project, String sourceSetName) {
+    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
+        return sourceSetNames.collect { String sourceSetName ->
+            assembleSourceSetsClasspathByNameAsStringSet(sourceSetName)
+        }.flatten() as Set<String>
+    }
+
+    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(String sourceSetName) {
         return [new File(project.buildDir, "classes//java//${sourceSetName}"),
                 new File(project.buildDir, "resources//${sourceSetName}")
         ]*.absolutePath
