@@ -26,6 +26,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
@@ -38,7 +39,7 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
 /**
  * The main class for Pitest plugin.
  */
-@CompileDynamic
+@CompileStatic
 class PitestPlugin implements Plugin<Project> {
 
     public final static String DEFAULT_PITEST_VERSION = '1.5.1'
@@ -95,6 +96,7 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
+    @CompileDynamic
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
         extension.reportDir.set(new File(project.reporting.baseDir, "pitest"))
@@ -115,17 +117,17 @@ class PitestPlugin implements Plugin<Project> {
                 return extension.targetClasses.get()
             }
             if (project.getGroup()) {   //Assuming it is always a String class instance
-                return [project.getGroup() + ".*"] as Set
+                return [project.getGroup().toString() + ".*"] as Set
             }
             return null
-        })
+        } as Provider<Iterable<String>>)
         task.targetTests.set(project.providers.provider {   //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
             if (extension.targetTests.isPresent()) {    //getOrElseGet() is not available - https://github.com/gradle/gradle/issues/10520
                 return extension.targetTests.get()
             } else {
                 return task.targetClasses.getOrNull()
             }
-        })
+        } as Provider<Iterable<String>>)
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
         task.mutateStaticInits.set(extension.mutateStaticInits)
@@ -151,17 +153,17 @@ class PitestPlugin implements Plugin<Project> {
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
         task.additionalClasspath.setFrom({
-            List<FileCollection> testRuntimeClasspath = extension.testSourceSets.get()*.runtimeClasspath
+            List<FileCollection> testRuntimeClasspath = (extension.testSourceSets.get() as Set<SourceSet>)*.runtimeClasspath
             FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
             FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
+                !extension.fileExtensionsToFilter.getOrElse([]).find { extension -> file.name.endsWith(".$extension") }
             }
             return filteredCombinedTaskClasspath
         } as Callable<FileCollection>)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
         task.mutableCodePaths.setFrom({
-            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set))
+            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>)
         } as Callable<Set<File>>)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
@@ -182,13 +184,11 @@ class PitestPlugin implements Plugin<Project> {
         task.features.set(extension.features)
     }
 
-    @CompileStatic
     private Set<File> calculateBaseMutableCodePaths() {
         Set<SourceSet> sourceSets = extension.mainSourceSets.get()
         return sourceSets*.output.classesDirs.files.flatten() as Set<File>
     }
 
-    @CompileStatic
     private Set<String> calculateTasksToDependOn() {
         Set<SourceSet> testSourceSets = extension.testSourceSets.get()
         Set<String> tasksToDependOn = testSourceSets.collect { sourceSet -> sourceSet.name + "Classes" } as Set
@@ -196,7 +196,6 @@ class PitestPlugin implements Plugin<Project> {
         return tasksToDependOn
     }
 
-    @CompileStatic
     private void addPitDependencies(Configuration pitestConfiguration) {
         log.info("Using PIT: ${extension.pitestVersion.get()}")
         pitestConfiguration.dependencies.add(project.dependencies.create("org.pitest:pitest-command-line:${extension.pitestVersion.get()}"))
