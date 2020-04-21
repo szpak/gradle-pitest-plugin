@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.4.9 - Unreleased
+
+ - Fix regression in 1.4.8 related to missing source listing in PIT reports - [#198](https://github.com/szpak/gradle-pitest-plugin/issues/198)
+ - migrate remaining configuration properties to [Lazy Configuration API](https://docs.gradle.org/current/userguide/lazy_configuration.html)
+ - more corner cases tested
+
 ## 1.4.8 - 2020-04-01
 
  - Fix problem with setting `historyInputLocation` and `jvmPath` - [#189](https://github.com/szpak/gradle-pitest-plugin/issues/189)
