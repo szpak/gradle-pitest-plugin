@@ -161,7 +161,9 @@ class PitestPlugin implements Plugin<Project> {
         } as Callable<FileCollection>)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
-//        task.mutableCodePaths.set(extension.additionalMutableCodePaths)
+        task.mutableCodePaths.setFrom({
+            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set))
+        } as Callable<Set<File>>)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
@@ -179,11 +181,6 @@ class PitestPlugin implements Plugin<Project> {
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
         task.features.set(extension.features)
-
-        //Temporarily for types not supported in Gradle 4.x
-        task.conventionMapping.with {
-            mutableCodePaths = { calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths ?: []) }
-        }
     }
 
     @CompileStatic

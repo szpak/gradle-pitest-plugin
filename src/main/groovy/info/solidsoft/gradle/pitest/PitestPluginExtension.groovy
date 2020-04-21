@@ -145,7 +145,7 @@ class PitestPluginExtension {
      *
      * @since 1.1.3 (specific for Gradle plugin)
      */
-    Set<File> additionalMutableCodePaths
+    final SetProperty<File> additionalMutableCodePaths
 
     final RegularFileProperty historyInputLocation   //new in PIT 0.29
     final RegularFileProperty historyOutputLocation
@@ -256,7 +256,7 @@ class PitestPluginExtension {
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
         useClasspathFile = of.property(Boolean)
-//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
+        additionalMutableCodePaths = of.setProperty(File)   //the value is not used directly in task and can be notPresent instead of null
         historyInputLocation = of.fileProperty()
         historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)

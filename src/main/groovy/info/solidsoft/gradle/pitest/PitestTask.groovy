@@ -171,7 +171,7 @@ class PitestTask extends JavaExec {
 
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    Set<File> mutableCodePaths
+    final ConfigurableFileCollection mutableCodePaths
 
     //Workaround with getter - see https://github.com/gradle/gradle/issues/12351
     @Internal
@@ -287,7 +287,7 @@ class PitestTask extends JavaExec {
         jvmPath = of.fileProperty()
         mainProcessJvmArgs = of.listProperty(String)
         launchClasspath = of.fileCollection()
-//        mutableCodePaths = of.setProperty(File)
+        mutableCodePaths = of.fileCollection()
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
