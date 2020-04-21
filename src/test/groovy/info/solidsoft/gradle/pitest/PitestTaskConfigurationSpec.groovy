@@ -73,7 +73,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             task.taskArgumentMap()['classPathFile'] == createClasspathFile.absolutePath
             !task.taskArgumentMap()['classPath']
         and:
-            createClasspathFile.exists()
+            //TODO
             createClasspathFile.readLines().size() == 4
             createClasspathFile.readLines() as Set<String> == assembleSourceSetsClasspathByNameAsStringSet(["main", "test"])
     }
@@ -125,6 +125,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             configParamName          | gradleConfigValue                            || expectedPitConfigValue
             "testPlugin"             | "testng"                                     || "testng"
+            //TODO: junit5PluginVersion
             "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
@@ -148,23 +149,25 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "fullMutationMatrix"     | true                                         || "true"
             "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
+            //mainSourceSets and testSourceSets tested separately
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"
+            //useClasspathFile tested separately
+            //additionalMutableCodePaths tested separately
+            "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
+            "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
+            //enableDefaultIncrementalAnalysis tested separately
             "mutationThreshold"      | 90                                           || "90"
             "coverageThreshold"      | 95                                           || "95"
             "mutationEngine"         | "gregor2"                                    || "gregor2"
-            //mainSourceSets and testSourceSets tested separately
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path
             //mainProcessJvmArgs tested separately
             //pluginConfiguration tested separately
             "maxSurviving"           | 20                                           || "20"
             "useClasspathJar"        | true                                         || "true"
-            //useClasspathFile tested separately
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
             //fileExtensionsToFilter not passed to PIT, tested separately
-            "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
-            "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
     }
 
     void "should pass plugin configuration (#gradleConfigParamName) from Gradle to PIT (overridden name)"() {

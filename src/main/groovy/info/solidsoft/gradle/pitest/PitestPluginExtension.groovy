@@ -103,25 +103,21 @@ class PitestPluginExtension {
     final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
     final Property<Boolean> fullMutationMatrix  //new in PIT 1.4.3
     final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
-    final Property<Boolean> detectInlinedCode   //new in PIT 0.28
-    final Property<Boolean> timestampedReports
-    final RegularFileProperty historyInputLocation   //new in PIT 0.29
-    final RegularFileProperty historyOutputLocation
-    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
-    final Property<Integer> mutationThreshold   //new in PIT 0.30
-    final Property<Integer> coverageThreshold   //new in PIT 0.32
-    final Property<String> mutationEngine
     final SetProperty<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
     final SetProperty<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
-    final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
-    final RegularFileProperty jvmPath    //new in PIT 0.32
+    final Property<Boolean> detectInlinedCode   //new in PIT 0.28
+    final Property<Boolean> timestampedReports
 
     /**
-     * JVM arguments to use when Gradle plugin launches the main PIT process.
+     * Use classpath file instead of passing classpath in a command line
      *
-     * @since 0.33.0 (specific for Gradle plugin)
+     * Useful with very long classpath and Windows - see https://github.com/hcoles/pitest/issues/276
+     * Disabled by default.
+     *
+     * @since 1.2.0
      */
-    final ListProperty<String> mainProcessJvmArgs
+    @Incubating
+    final Property<Boolean> useClasspathFile
 
     /**
      * Additional mutableCodePaths (paths with production classes which should be mutated).<p/>
@@ -151,6 +147,22 @@ class PitestPluginExtension {
      */
     Set<File> additionalMutableCodePaths
 
+    final RegularFileProperty historyInputLocation   //new in PIT 0.29
+    final RegularFileProperty historyOutputLocation
+    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
+    final Property<Integer> mutationThreshold   //new in PIT 0.30
+    final Property<Integer> coverageThreshold   //new in PIT 0.32
+    final Property<String> mutationEngine
+    final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
+    final RegularFileProperty jvmPath    //new in PIT 0.32
+
+    /**
+     * JVM arguments to use when Gradle plugin launches the main PIT process.
+     *
+     * @since 0.33.0 (specific for Gradle plugin)
+     */
+    final ListProperty<String> mainProcessJvmArgs
+
     /**
      * Plugin configuration parameters.
      *
@@ -169,17 +181,6 @@ class PitestPluginExtension {
 
     @Incubating
     final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
-
-    /**
-     * Use classpath file instead of passing classpath in a command line
-     *
-     * Useful with very long classpath and Windows - see https://github.com/hcoles/pitest/issues/276
-     * Disabled by default.
-     *
-     * @since 1.2.0
-     */
-    @Incubating
-    final Property<Boolean> useClasspathFile
 
     /**
      * Turnes on/off features in PIT itself and its plugins.
@@ -250,24 +251,24 @@ class PitestPluginExtension {
         excludedGroups = nullSetPropertyOf(p, String)
         fullMutationMatrix = of.property(Boolean)
         includedTestMethods = nullSetPropertyOf(p, String)
+        testSourceSets = nullSetPropertyOf(p, SourceSet)
+        mainSourceSets = nullSetPropertyOf(p, SourceSet)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
+        useClasspathFile = of.property(Boolean)
+//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         historyInputLocation = of.fileProperty()
         historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
-        testSourceSets = nullSetPropertyOf(p, SourceSet)
-        mainSourceSets = nullSetPropertyOf(p, SourceSet)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
         mainProcessJvmArgs = nullListPropertyOf(p, String)
-//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
-        useClasspathFile = of.property(Boolean)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
     }
