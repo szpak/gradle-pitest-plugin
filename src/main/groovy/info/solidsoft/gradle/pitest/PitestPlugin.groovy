@@ -31,6 +31,8 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
 import org.gradle.util.GradleVersion
 
+import java.util.concurrent.Callable
+
 import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -163,21 +165,20 @@ class PitestPlugin implements Plugin<Project> {
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
+        task.additionalClasspath.setFrom({
+            List<FileCollection> testRuntimeClasspath = extension.testSourceSets.get()*.runtimeClasspath
+            FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
+            FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
+                !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
+            }
+            return filteredCombinedTaskClasspath
+        } as Callable<FileCollection>)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
         task.features.set(extension.features)
 
         //Temporarily for types not supported in Gradle 4.x
         task.conventionMapping.with {
-            additionalClasspath = {
-                List<FileCollection> testRuntimeClasspath = extension.testSourceSets.get()*.runtimeClasspath
-                FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
-                FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !extension.fileExtensionsToFilter.getOrNull().find { extension -> file.name.endsWith(".$extension") }
-                }
-
-                return filteredCombinedTaskClasspath
-            }
             launchClasspath = {
                 project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             }

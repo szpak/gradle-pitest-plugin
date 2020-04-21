@@ -161,7 +161,7 @@ class PitestTask extends JavaExec {
 
     @InputFiles
     @Classpath
-    FileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
+    final ConfigurableFileCollection additionalClasspath    //"classpath" is already defined internally in ExecTask
 
     @Input
     final Property<Boolean> useAdditionalClasspathFile
@@ -291,6 +291,7 @@ class PitestTask extends JavaExec {
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
+        additionalClasspath = of.fileCollection()
         useAdditionalClasspathFile = of.property(Boolean)
         additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
