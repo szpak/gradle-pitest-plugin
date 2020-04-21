@@ -1,7 +1,5 @@
 package info.solidsoft.gradle.pitest.functional
 
-import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
-
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import groovy.transform.CompileDynamic
@@ -17,6 +15,8 @@ import spock.lang.IgnoreIf
 import spock.util.Exceptions
 
 import java.util.regex.Pattern
+
+import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
 
 /**
  * TODO: Possible extensions:

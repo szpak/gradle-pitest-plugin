@@ -15,8 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import static info.solidsoft.gradle.pitest.PitestPlugin.PITEST_TASK_NAME
-
 import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Project
@@ -25,6 +23,8 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+
+import static info.solidsoft.gradle.pitest.PitestPlugin.PITEST_TASK_NAME
 
 /**
  * @see WithPitestTaskInitialization

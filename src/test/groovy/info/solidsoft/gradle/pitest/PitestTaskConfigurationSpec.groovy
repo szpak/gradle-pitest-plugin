@@ -18,7 +18,6 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileDynamic
 import org.gradle.api.Project
 import spock.lang.Issue
-import spock.lang.PendingFeature
 
 @CompileDynamic
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {

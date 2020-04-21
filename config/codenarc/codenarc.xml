@@ -27,7 +27,9 @@
     </ruleset-ref>
     <ruleset-ref path='rulesets/generic.xml' />
     <ruleset-ref path='rulesets/groovyism.xml' />
-    <ruleset-ref path='rulesets/imports.xml' />
+    <ruleset-ref path='rulesets/imports.xml'>
+        <exclude name="MisorderedStaticImports"/>
+    </ruleset-ref>
     <ruleset-ref path='rulesets/junit.xml'>
         <exclude name="JUnitPublicNonTestMethod" />
     </ruleset-ref>
@@ -48,6 +50,9 @@
 
     <rule class='org.codenarc.rule.formatting.SpaceAroundMapEntryColonRule'>
         <property name='characterAfterColonRegex' value='\ '/>
+    </rule>
+    <rule class="org.codenarc.rule.imports.MisorderedStaticImportsRule">
+        <property name="comesBefore" value="false"/>
     </rule>
 
 </ruleset>
