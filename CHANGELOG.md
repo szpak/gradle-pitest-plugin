@@ -3,6 +3,7 @@
 ## 1.5.0 - Unreleased
 
  - Move `pitest` configuration from root project to current project to eliminate Gradle 6+ warning - [#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)
+ - Upgrade Gradle wrapper to 6.3 (ability to build with Java 14)
 
 TODO: Describe migration
 
@@ -28,7 +29,7 @@ TODO: Describe migration
  - `additionalClasspathFile` no longer marked as `@OutputFile` for better Gradle 6+ compatibility
  - PIT 1.5.0 by default
  - Bump minimal Gradle version to 5.6 - required to fix deprecation warnings due to [#10953](https://github.com/gradle/gradle/issues/10953)
- - upgrade Gradle wrapper to 5.6.4
+ - Upgrade Gradle wrapper to 5.6.4
 
 Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
 
