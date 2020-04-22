@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.4.9 - Unreleased
+## 1.4.9 - 2020-04-22
 
  - Fix regression in 1.4.8 related to missing source listing in PIT reports - [#198](https://github.com/szpak/gradle-pitest-plugin/issues/198)
  - migrate remaining configuration properties to [Lazy Configuration API](https://docs.gradle.org/current/userguide/lazy_configuration.html)
