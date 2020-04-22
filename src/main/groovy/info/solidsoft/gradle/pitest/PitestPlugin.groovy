@@ -89,9 +89,9 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private Configuration configuration() {
-        return project.rootProject.buildscript.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
+        return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
             visible = false
-            description = "The Pitest libraries to be used for this project."
+            description = "The PIT libraries to be used for this project."
             return configuration
         }
     }
@@ -176,7 +176,7 @@ class PitestPlugin implements Plugin<Project> {
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
         task.launchClasspath.setFrom({
-            project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+            project.configurations[PITEST_CONFIGURATION_NAME]
         } as Callable<Configuration>)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)

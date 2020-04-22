@@ -6,11 +6,9 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    configurations.maybeCreate("pitest")
     dependencies {
 //        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        pitest 'org.pitest:pitest-junit5-plugin:0.12'
     }
 }
 
@@ -27,12 +25,15 @@ repositories {
     mavenCentral()
 }
 
+configurations.create("pitest")
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit5Version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     testImplementation "org.junit.platform:junit-platform-runner:$junitPlatformVersion"
 
+    pitest 'org.pitest:pitest-junit5-plugin:0.12'
 }
 
 compileKotlin {

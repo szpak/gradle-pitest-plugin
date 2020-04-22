@@ -17,14 +17,12 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
-                buildscript {
-                    repositories {
-                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
-                    }
-                    configurations.maybeCreate("pitest")
-                    dependencies {
-                        pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
-                    }
+                repositories {
+                    maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
+                }
+                configurations.create("pitest")
+                dependencies {
+                    pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
                 }
                 pitest {
                     excludedClasses = []

@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.5.0 - Unreleased
+
+ - Move `pitest` configuration from root project to current project to eliminate Gradle 6+ warning - [#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)
+
+TODO: Describe migration
+
 ## 1.4.9 - 2020-04-22
 
  - Fix regression in 1.4.8 related to missing source listing in PIT reports - [#198](https://github.com/szpak/gradle-pitest-plugin/issues/198)

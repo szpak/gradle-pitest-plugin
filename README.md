@@ -245,11 +245,18 @@ buildscript {
    repositories {
        mavenCentral()
    }
-   configurations.maybeCreate('pitest')
    dependencies {
        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.9'
-       pitest 'org.pitest:pitest-junit5-plugin:0.12'
    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations.create('pitest')
+dependencies {
+   pitest 'org.pitest:pitest-junit5-plugin:0.12'
 }
 
 pitest {
@@ -260,6 +267,7 @@ pitest {
 
 The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
+Please note. In gradle-pitest-plugin <1.5.0 the `pitest` configuration had to be created in the `buildscript` scope for the root project.
 
 ## Versions
 
