@@ -94,7 +94,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE5_VERSIONS = ["5.6.1", "5.6"]
-    private static final List<String> GRADLE6_VERSIONS = ["6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
+    private static final List<String> GRADLE6_VERSIONS = ["6.4-rc-2", "6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {

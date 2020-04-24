@@ -246,6 +246,10 @@ class PitestTask extends JavaExec {
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
     PitestTask() {
+        //setting during execution doesn't work in 6.4+:
+        //The value for task ':pitest' property 'mainClass' is final and cannot be changed any further.
+        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+
         ObjectFactory of = project.objects
 
         testPlugin = of.property(String)
@@ -325,7 +329,6 @@ class PitestTask extends JavaExec {
         //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = argumentsForPit()
         jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
-        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
         classpath = getLaunchClasspath()
         super.exec()
     }
