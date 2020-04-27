@@ -103,13 +103,18 @@ class PitestPlugin implements Plugin<Project> {
 
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
+        setupReportDirInExtensionWithProblematicTypeForGradle5()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.convention.getPlugin(JavaPluginConvention).sourceSets
         extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
+    }
+
+    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
+    private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
