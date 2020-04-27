@@ -5,7 +5,42 @@
  - Move `pitest` configuration from root project to current project to eliminate Gradle 6+ warning - [#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)
  - Upgrade Gradle wrapper to 6.3 (ability to build with Java 14)
 
-TODO: Describe migration
+**Compatibility changes**. This version finally relaxes the need to create `pitest` configuration in the root project. This was problematic especially with Android projects and also started to generate deprecation warnings in Gradle 6.
+
+The migration steps are required only in project manually adding custom PIT plugins. For example:
+
+```groovy
+buildscript {   //only in gradle-pitest-plugin <1.5.0
+    //...
+    configurations.maybeCreate('pitest')
+    dependencies {
+        pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
+    }
+}
+
+pitest {
+    testPlugin = 'custom'
+    //...
+}
+```
+
+should be replaced with:
+
+```groovy
+//only in gradle-pitest-plugin 1.5.0+
+
+//in project (not buildscript) dependencies and without needto create "pitest" configuration manually
+dependencies {
+    pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
+}
+
+pitest {
+    testPlugin = 'custom'
+    //...
+}
+```
+
+Please also note that the users of the new JUnit 5 PIT plugin [configuration mechanism](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-improved-approach-with-plugins-br-and-gradle-pitest-plugin-147) with `junit5PluginVersion` are not affected.
 
 ## 1.4.9 - 2020-04-22
 

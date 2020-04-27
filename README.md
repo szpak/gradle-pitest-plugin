@@ -241,13 +241,9 @@ For mixing JUnit 5 with other PIT plugins, you can read [this section](https://b
 To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
 
 ```groovy
-buildscript {
-   repositories {
-       mavenCentral()
-   }
-   dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.9'
-   }
+plugins {
+    id 'java'
+    id 'info.solidsoft.pitest' version '1.4.9'
 }
 
 repositories {
@@ -255,11 +251,11 @@ repositories {
 }
 
 dependencies {
-   pitest 'org.pitest:pitest-junit5-plugin:0.12'
+    pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
 }
 
 pitest {
-    testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
+    testPlugin = 'custom' //or built-in 'testng' which also has to be activated
     // ...
 }
 ```
