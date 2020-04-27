@@ -75,6 +75,8 @@ class PitestPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
+        Configuration pitestConfiguration = createConfiguration()
+
         project.plugins.withType(JavaPlugin).configureEach {
             setupExtensionWithDefaults()
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
@@ -83,12 +85,12 @@ class PitestPlugin implements Plugin<Project> {
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
-                addPitDependencies(configuration())
+                addPitDependencies(pitestConfiguration)
             }
         }
     }
 
-    private Configuration configuration() {
+    private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
             visible = false
             description = "The PIT libraries to be used for this project."

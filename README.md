@@ -254,7 +254,6 @@ repositories {
     mavenCentral()
 }
 
-configurations.create('pitest')
 dependencies {
    pitest 'org.pitest:pitest-junit5-plugin:0.12'
 }

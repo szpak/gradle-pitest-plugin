@@ -20,7 +20,6 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
                 repositories {
                     maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
                 }
-                configurations.create("pitest")
                 dependencies {
                     pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
                 }
