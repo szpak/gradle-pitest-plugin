@@ -26,9 +26,12 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.provider.Provider
+import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.util.GradleVersion
 
 import java.util.concurrent.Callable
@@ -98,13 +101,13 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        extension.reportDir.set(new File(project.reporting.baseDir, "pitest"))
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
-        extension.testSourceSets.set([project.sourceSets.test] as Set)
-        extension.mainSourceSets.set([project.sourceSets.main] as Set)
+        SourceSetContainer javaSourceSets = project.convention.getPlugin(JavaPluginConvention).sourceSets
+        extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
+        extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
     }
