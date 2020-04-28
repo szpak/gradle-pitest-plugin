@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.5.0 - Unreleased
+## 1.5.0 - 2020-04-28
 
  - Move `pitest` configuration from root project to current project to eliminate Gradle 6+ warning - [#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)
  - Upgrade Gradle wrapper to 6.3 (ability to build with Java 14)
