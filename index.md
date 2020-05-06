@@ -4,6 +4,7 @@ The plugin provides an ability to perform a [mutation testing](https://en.wikipe
 calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
+[![Plugin Portal](https://img.shields.io/maven-metadata/v?label=Plugin&color=blue&metadataUrl=https://plugins.gradle.org/m2/info/solidsoft/gradle/pitest/gradle-pitest-plugin/maven-metadata.xml)](https://plugins.gradle.org/plugin/info.solidsoft.pitest)
 [![Build Status Travis](https://travis-ci.org/szpak/gradle-pitest-plugin.svg?branch=master)](https://travis-ci.org/szpak/gradle-pitest-plugin)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
@@ -16,7 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.4.6'
+    id 'info.solidsoft.pitest' version '1.5.1'
 }
 ```
 
@@ -48,7 +49,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.1'
     }
 }
 ```
@@ -112,11 +113,24 @@ pitest {
     testSourceSets = [sourceSets.test, sourceSets.integrationTest]
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
     jvmArgs = ['-Xmx1024m']
-    useClasspathFile = true     //useful with bigger projects on Windows 
-    fileExtensionsToFilter += ['xml']
+    useClasspathFile = true     //useful with bigger projects on Windows
+    fileExtensionsToFilter.addAll('xml', 'orbit')
 }
 ```
 
+### Eliminate warning in Idea
+
+As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) Idea displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`. It is not a real problem as Gradle internally intercepts those calls and use a setter instead . Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
+
+```groovy
+    testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
+    mainSourceSets.set([sourceSets.main, sourceSets.additionalMain])
+    jvmArgs.set(['-Xmx1024m'])
+    useClasspathFile.set(true)     //useful with bigger projects on Windows
+    fileExtensionsToFilter.addAll('xml', 'orbit')
+```
+
+Similar syntax can be used also for Kotlin configuration (`build.gradle.kts`).
 
 ## Multi-module projects support
 
@@ -131,7 +145,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.1'
         (...)
     }
 }
@@ -201,28 +215,54 @@ Minimal working multi-project build is available in
 Test plugins are used to support different test frameworks than JUnit4. They are officially supported by gradle-pitest-plugin staring with version 1.1.4
 (although it was possible to use it since 1.1.0).
 
-To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
+### JUnit 5 plugin for PIT support (gradle-pitest-plugin 1.4.7+)
+
+Starting with this release the configuration required to use PIT with JUnit 5 has been simplified to the following:
 
 ```groovy
-buildscript {
-   repositories {
-       mavenCentral()
-   }
-   configurations.maybeCreate('pitest')
-   dependencies {
-       classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6'
-       pitest 'org.pitest:pitest-junit5-plugin:0.8'
-   }
+plugins {
+    id 'java'
+    id 'info.solidsoft.pitest' version '1.5.1'
 }
 
 pitest {
-    testPlugin = 'junit5' //or built-in 'testng' which also has to be activated
-    // rest of your pitest configuration
+    //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    junit5PluginVersion = '0.12'
+    // ...
 }
 ```
 
-The minimal working example is available in [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
+The minimal working example for JUhnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
 
+For mixing JUnit 5 with other PIT plugins, you can read [this section](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-approach-with-plugins-br-with-older-gradle-pitest-plugin) in my blog post.
+
+### Generic plugin support (also JUnit 5 in gradle-pitest-plugin <1.4.7)
+
+To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
+
+```groovy
+plugins {
+    id 'java'
+    id 'info.solidsoft.pitest' version '1.5.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
+}
+
+pitest {
+    testPlugin = 'custom' //or built-in 'testng' which also has to be activated
+    // ...
+}
+```
+
+The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
+
+Please note. In gradle-pitest-plugin <1.5.0 the `pitest` configuration had to be created in the `buildscript` scope for the root project.
 
 ## Versions
 
@@ -244,7 +284,7 @@ Due to incompatible changes in Gradle 4/5/6 support for the older Gradle version
 The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
-(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4. 
+(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4.
 
 See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
@@ -380,6 +420,13 @@ pitest {
     pitestVersion = '1.4.3'  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
 }
 ```
+
+### 11. I have JUnit 5 plugin and the execution fails after migration to 1.5.0+, why?
+
+gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0) finally relaxed the way how (where) the `pitest` configuration has been placed ([#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)) which also was generating deprecation warnings in Gradle 6+. This change is not backward compatible and as a result manual migration has to be made - see the [release notes](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0). This affects only project with external custom plugins.
+
+**Important**. As the JUnit 5 plugin for PIT is definitely the most popular, starting with 1.4.7 there is a simplified way how it could be configured with `junit5PluginVersion` (which is definitely **recommended**). See [my blog post](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-improved-approach-with-plugins-br-and-gradle-pitest-plugin-147) to find out how to migrate (it also solves the compatibility issue with 1.5.0+).
+
 
 ## Known issues
 
