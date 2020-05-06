@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.5.1 - Unreleased
+
+ - Fail with meaningful error message on no longer supported `pitest` configuration in `rootProject.buildscript` - [#205](https://github.com/szpak/gradle-pitest-plugin/issues/205)
+
+The only change helps people not reading the release notes to get know why their projects with the JUnit 5 PIT plugin stopped working after migration to 1.5.0+.
+
 ## 1.5.0 - 2020-04-28
 
  - Move `pitest` configuration from root project to current project to eliminate Gradle 6+ warning - [#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)

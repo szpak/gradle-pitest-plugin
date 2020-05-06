@@ -421,6 +421,13 @@ pitest {
 }
 ```
 
+### 11. I have JUnit 5 plugin and the execution fails after migration to 1.5.0+, why?
+
+gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0) finally relaxed the way how (where) the `pitest` configuration has been placed ([#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)) which also was generating deprecation warnings in Gradle 6+. This change is not backward compatible and as a result manual migration has to be made - see the [release notes](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0). This affects only project with external custom plugins.
+
+**Important**. As the JUnit 5 plugin for PIT is definitely the most popular, starting with 1.4.7 there is a simplified way how it could be configured with `junit5PluginVersion` (which is definitely **recommended**). See [my blog post](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/) to find out how to migrate (it also solves the compatibility issue with 1.5.0+).
+
+
 ## Known issues
 
  - too verbose output from PIT
