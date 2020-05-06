@@ -45,26 +45,24 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
 @CompileStatic
 class PitestPlugin implements Plugin<Project> {
 
-    public final static String DEFAULT_PITEST_VERSION = '1.5.1'
+    public static final String PLUGIN_ID = "info.solidsoft.pitest"
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
-
+    public final static String DEFAULT_PITEST_VERSION = '1.5.1'
     @Internal
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
-    public static final String PLUGIN_ID = "info.solidsoft.pitest"
 
+    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
+    private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
+    @PackageScope   //visible for testing
+    final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
 
     @SuppressWarnings("FieldName")
     private final static Logger log = Logging.getLogger(PitestPlugin)
-
-    @PackageScope   //visible for testing
-    final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
-    private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
 
     private final GradleVersionEnforcer gradleVersionEnforcer
 
