@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -81,6 +82,7 @@ class PitestPlugin implements Plugin<Project> {
         project.plugins.withType(JavaPlugin).configureEach {
             setupExtensionWithDefaults()
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
+                failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript()
                 t.description = "Run PIT analysis for java classes"
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
@@ -108,6 +110,14 @@ class PitestPlugin implements Plugin<Project> {
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
+    }
+
+    private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
+        if (project.rootProject.buildscript.configurations.findByName(PITEST_CONFIGURATION_NAME) != null) {
+            throw new GradleException("The '${PITEST_CONFIGURATION_NAME}' buildscript configuration found in the root project. " +
+                "This is no longer supported in 1.5.0+ and has to be changed to the regular (sub)project configuration. " +
+                "See the project FAQ for migration details.")
+        }
     }
 
     @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953

@@ -16,32 +16,34 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileDynamic
-import spock.lang.Specification
+import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.api.Task
+import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Issue
+import spock.lang.Specification
 
 @CompileDynamic
+@SuppressWarnings("PrivateFieldCouldBeFinal")
 class PitestPluginTest extends Specification {
+
+    private Project project = ProjectBuilder.builder().build()
 
     void "add pitest task to java project in proper group"() {
         given:
-            Project project = ProjectBuilder.builder().build()
             project.pluginManager.apply('java')   //to add SourceSets
         when:
-            project.pluginManager.apply('info.solidsoft.pitest')
+            project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
         then:
             project.plugins.hasPlugin(PitestPlugin)
-            assertThatTasksAreInGroup(project, [PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            assertThatTasksAreInGroup([PitestPlugin.PITEST_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
     void "do nothing if Java plugin is not applied but react to it becoming applied"() {
-        given:
-            Project project = ProjectBuilder.builder().build()
         expect:
             !project.plugins.hasPlugin("java")
         when:
-            project.pluginManager.apply('info.solidsoft.pitest')
+            project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
         then:
             project.tasks.withType(PitestTask).isEmpty()
         when:
@@ -50,12 +52,33 @@ class PitestPluginTest extends Specification {
             !project.tasks.withType(PitestTask).isEmpty()
     }
 
-    void assertThatTasksAreInGroup(Project project, List<String> taskNames, String group) {
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/205")
+    void "fail with meaningful error on no longer supporter pitest configuration in rootproject.buildscript "() {
+        given:
+            project.pluginManager.apply('java')
+        and:
+            project.buildscript {
+                configurations.maybeCreate(PitestPlugin.PITEST_CONFIGURATION_NAME)
+            }
+        when:
+            project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
+            forceTaskCreation()
+        then:
+            GradleException e = thrown()
+            e.cause.message.contains("no longer supported")
+            e.cause.message.contains("FAQ")
+    }
+
+    private void assertThatTasksAreInGroup(List<String> taskNames, String group) {
         taskNames.each { String taskName ->
             Task task = project.tasks[taskName]
             assert task != null
             assert task.group == group
         }
+    }
+
+    private int forceTaskCreation() {
+        project.tasks.withType(PitestTask).size()
     }
 
 }
