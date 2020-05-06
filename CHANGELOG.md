@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.5.1 - Unreleased
+## 1.5.1 - 2020-05-06
 
  - Fail with meaningful error message on no longer supported `pitest` configuration in `rootProject.buildscript` - [#205](https://github.com/szpak/gradle-pitest-plugin/issues/205)
 
