@@ -1,3 +1,6 @@
+# 0.2.4 - 2020-05-27
+- Fix Gradle 6.4 execution break while trying to change mainClass [#60](https://github.com/koral--/gradle-pitest-plugin/issue/60)
+
 # 0.2.3 - 2020-03-29
 - Update resource classpath paths [#57](https://github.com/koral--/gradle-pitest-plugin/issue/57)
 - Merge upstream changes a934028bb2efb474f441d818d3de2849de80a3a5
