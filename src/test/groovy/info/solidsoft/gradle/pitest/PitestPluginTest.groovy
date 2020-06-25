@@ -78,7 +78,7 @@ class PitestPluginTest extends Specification {
     }
 
     private int forceTaskCreation() {
-        project.tasks.withType(PitestTask).size()
+        return project.tasks.withType(PitestTask).size()
     }
 
 }
