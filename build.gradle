@@ -101,7 +101,7 @@ tasks.validateTaskProperties {
 //Workaround for error with Java 14 - https://github.com/gradle/gradle/issues/12646#issuecomment-604594943
 dependencies {
     constraints {
-        codenarc("org.codehaus.groovy:groovy:2.5.10")
+        codenarc("org.codehaus.groovy:groovy:2.5.12")
         //codenarc("org.codehaus.groovy:groovy-ant:2.5.10") --> this constraint causes NoClassDefFoundError: Lgroovy/text/TemplateEngine;
         codenarc("org.codehaus.groovy:groovy-xml:2.5.10")
     }
