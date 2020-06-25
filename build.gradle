@@ -39,14 +39,13 @@ sourceSets {
 dependencies {
     implementation localGroovy()
 
-    testImplementation('org.spockframework:spock-core:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testImplementation 'net.bytebuddy:byte-buddy:1.10.12' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
