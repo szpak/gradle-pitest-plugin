@@ -92,20 +92,18 @@ class PitestPluginExtension {
     final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
-     *
-     * Note. This parameter type was changed from String to List<String> in 0.33.0.
      */
     final ListProperty<String> jvmArgs
     final SetProperty<String> outputFormats
     final Property<Boolean> failWhenNoMutations
     final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
-    final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-    final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> includedGroups
+    final SetProperty<String> excludedGroups
     final Property<Boolean> fullMutationMatrix  //new in PIT 1.4.3
     final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
-    final SetProperty<SourceSet> testSourceSets   //specific for Gradle plugin - since 0.30.1
-    final SetProperty<SourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
-    final Property<Boolean> detectInlinedCode   //new in PIT 0.28
+    final SetProperty<SourceSet> testSourceSets   //specific for Gradle plugin
+    final SetProperty<SourceSet> mainSourceSets   //specific for Gradle plugin
+    final Property<Boolean> detectInlinedCode
     final Property<Boolean> timestampedReports
 
     /**
@@ -147,19 +145,17 @@ class PitestPluginExtension {
      */
     final SetProperty<File> additionalMutableCodePaths
 
-    final RegularFileProperty historyInputLocation   //new in PIT 0.29
+    final RegularFileProperty historyInputLocation
     final RegularFileProperty historyOutputLocation
-    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
-    final Property<Integer> mutationThreshold   //new in PIT 0.30
-    final Property<Integer> coverageThreshold   //new in PIT 0.32
+    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin
+    final Property<Integer> mutationThreshold
+    final Property<Integer> coverageThreshold
     final Property<String> mutationEngine
-    final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
-    final RegularFileProperty jvmPath    //new in PIT 0.32
+    final Property<Boolean> exportLineCoverage  //for debugging usage only
+    final RegularFileProperty jvmPath
 
     /**
      * JVM arguments to use when Gradle plugin launches the main PIT process.
-     *
-     * @since 0.33.0 (specific for Gradle plugin)
      */
     final ListProperty<String> mainProcessJvmArgs
 
@@ -172,12 +168,10 @@ class PitestPluginExtension {
      *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
      * }
      * </pre>
-     *
-     * @since 1.1.6
      */
     MapProperty<String, String> pluginConfiguration
 
-    final Property<Integer> maxSurviving    //new in PIT 1.1.10
+    final Property<Integer> maxSurviving
 
     @Incubating
     final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
@@ -297,8 +291,6 @@ class PitestPluginExtension {
      * Alias for enableDefaultIncrementalAnalysis.
      *
      * To make migration from PIT Maven plugin to PIT Gradle plugin easier.
-     *
-     * @since 1.1.10
      */
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis.set(withHistory)

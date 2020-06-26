@@ -35,8 +35,6 @@ build.dependsOn 'pitest'
 
 Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
 
-Please take into account that only versions starting with 1.1.11 are available via the [Plugin Portal](https://plugins.gradle.org/plugin/info.solidsoft.pitest).
-
 ### Generic approach
 
 "The `plugins` way" has some limitations. As the primary repository for the plugin is the [Central Repository](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22info.solidsoft.gradle.pitest%22%20AND%20a%3A%22gradle-pitest-plugin%22) (aka Maven Central) it is also possible to add the plugin to your project using "the generic way":
@@ -63,30 +61,23 @@ apply plugin: 'info.solidsoft.pitest'
 
 ## Plugin configuration
 
-The Pitest plugin has to be configured. All the [command line options](https://pitest.org/quickstart/commandline/) are
-supported. To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir` and `pitestVersion` are
-automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by an user.
+The Pitest plugin does not need to be additionally configured if you use JUnit 4. Customization is done in `pitest` block:
 
-In the past there was one mandatory parameter - `targetClasses` - which points to the classes which should be mutated.
-Starting from 0.32.0 it is only required if a [group](https://www.gradle.org/docs/current/userguide/writing_build_scripts.html#N10A34)
-for the project is not set. Otherwise value `"${project.group}.*"` is set by default (which can be overridden using `pitest.targetClasses` parameter).
-
-In case of using not default PIT version the `pitestVersion` parameter should be used to override it.
-
-The configuration in Gradle is the real Groovy code which makes all assignments very intuitive. All values expected by
-PIT should be passed as a corresponding types. There is only one important difference. For the parameters where PIT expects
-a coma separated list of strings in a Gradle configuration a list of strings should be used (see `outputFormats` in the
-following example).
 
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.4.1' //not needed when a default PIT version should be used
+    pitestVersion = '1.5.1' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
 }
 ```
+
+The configuration in Gradle is the real Groovy code which makes all assignments very intuitive. All values expected by
+PIT should be passed as a corresponding types. There is only one important difference. For the parameters where PIT expects
+a coma separated list of strings in a Gradle configuration a list of strings should be used (see `outputFormats` in the
+following example).
 
 Check PIT documentation for a [list](https://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
@@ -95,15 +86,14 @@ The expected parameter format in a plugin configuration can be taken from
 There are a few parameters specific for Gradle plugin:
 
  - `testSourceSets` - defines test source sets which should be used by PIT (by default sourceSets.test, but allows
-to add integration tests located in a different source set) (since 0.30.1)
- - `mainSourceSets` - defines main source sets which should be used by PIT (by default sourceSets.main) (since 0.30.1)
+to add integration tests located in a different source set)
+ - `mainSourceSets` - defines main source sets which should be used by PIT (by default sourceSets.main)
  - `mainProcessJvmArgs` - JVM arguments to be used when launching the main PIT process; make a note that PIT itself launches
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
-(since 0.33.0 - see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
- - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - since 1.1.4 -
-see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
- - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default - since 1.2.2)
- - `fileExtensionsToFilter` - provides ability to filter additional file extensions from PIT classpath (since 1.2.4 - see [#53](https://github.com/szpak/gradle-pitest-plugin/issues/53))
+(see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
+ - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
+ - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default)
+ - `fileExtensionsToFilter` - provides ability to filter additional file extensions from PIT classpath (see [#53](https://github.com/szpak/gradle-pitest-plugin/issues/53))
 
 For example:
 
@@ -115,6 +105,20 @@ pitest {
     jvmArgs = ['-Xmx1024m']
     useClasspathFile = true     //useful with bigger projects on Windows
     fileExtensionsToFilter.addAll('xml', 'orbit')
+}
+```
+
+### Test system properties
+
+PIT executes tests in a JVM independent from the JVM used by Gradle to execute tests. If your tests require some system properties, you have to pass them to PIT as the plugin won't do it for you:
+
+```groovy
+test {
+    systemProperty 'spring.test.constructor.autowire.mode', 'all'
+}
+
+pitest {
+    jvmArgs = ['-Dspring.test.constructor.autowire.mode=all']
 }
 ```
 
@@ -146,12 +150,10 @@ buildscript {
     }
     dependencies {
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.1'
-        (...)
     }
 }
 
 subprojects {
-    ...
     apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
 
     pitest {
@@ -164,13 +166,13 @@ subprojects {
 }
 ```
 
-Currently PIT [does not provide](https://code.google.com/p/pitestrunner/issues/detail?id=41) an aggregated report for
+Currently the plugin [does not provide](https://github.com/szpak/gradle-pitest-plugin/issues/80) an aggregated report for
 multi-module project. A report for each module has to be browsed separately. Alternatively a
 [PIT plugin for Sonar](https://github.com/SonarCommunity/sonar-pitest) can be used to get aggregated results.
 
 ## Integration tests in separate subproject
 
-Since gradle-pitest-plugin 1.1.4 it is possible to mutate code located in different subproject. Gradle internally does not rely on
+It is possible to mutate code located in different subproject. Gradle internally does not rely on
 output directory from other subproject, but builds JAR and uses classes from it. For PIT those are two different sets of class files, so
 to make it work it is required to define both `mainSourceSets` and `additionalMutableCodePaths`. For example:
 
@@ -212,8 +214,7 @@ Minimal working multi-project build is available in
 
 ## PIT test-plugins support
 
-Test plugins are used to support different test frameworks than JUnit4. They are officially supported by gradle-pitest-plugin staring with version 1.1.4
-(although it was possible to use it since 1.1.0).
+Test plugins are used to support different test frameworks than JUnit4.
 
 ### JUnit 5 plugin for PIT support (gradle-pitest-plugin 1.4.7+)
 
@@ -291,58 +292,7 @@ See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/mast
 
 ## FAQ
 
-### 1. Why have I got `java.lang.VerifyError: Expecting a stackmap frame...` when using Java 7?
-
-    It should be fixed in PIT 0.29.
-    As a workaround in older versions add `jvmArgs = '-XX:-UseSplitVerifier'` to a pitest configuration block
-
-```groovy
-pitest {
-    ...
-    //jvmArgs = '-XX:-UseSplitVerifier'     //<0.33.0
-    jvmArgs = ['-XX:-UseSplitVerifier']     //>=0.33.0
-}
-```
-
-### 2. Why have I got `GroovyCastException: Cannot cast object '-Xmx1024', '-Xms512m' with class 'java.lang.String' to class 'java.util.List'` after upgrade to version 0.33.0?
-
-To keep consistency with the new `mainProcessJvmArgs` configuration parameter and make an input format more predictable `jvmArgs` parameter type was changed from `String` to `List<String>` in gradle-pitest-plugin 0.33.0. The migration is trivial, but unfortunately I am not aware of the way to keep both parameter types active at the same time.
-
-```groovy
-pitest {
-    ...
-    //jvmArgs = '-Xmx1024 -Xms512m'     //old format
-    jvmArgs = ['-Xmx1024', '-Xms512m']  //new format
-}
-```
-
-### 3. Why my Spring Boot application doesn't work correctly with gradle-pitest-plugin 0.33.0 applied?
-
-**Update**. Spring Boot 1.1.0 is fully compatible with gradle-pitest-plugin.
-
-There ~~is~~ was an [issue](https://github.com/spring-projects/spring-boot/issues/721) with the way how spring-boot-gradle-plugin (<1.1.0) handles JavaExec tasks
-(including pitest task which in the version 0.33.0 became JavaExec task to resolve classpath issue with configured non default PIT version - see
-[issue #7](https://github.com/szpak/gradle-pitest-plugin/issues/7)).
-
-Luckily there is a workaround which allows to run PIT 0.33 (with Java 8 support) with gradle-pitest-plugin 0.32.0:
-
-```groovy
-buildscript {
-    (...)
-    dependencies {
-        classpath('info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.32.0') {
-          exclude group: 'org.pitest'
-        }
-        classpath 'org.pitest:pitest-command-line:0.33'
-    }
-}
-
-pitest {
-    pitestVersion = '0.33'
-}
-```
-
-### 4. How can I override plugin configuration from command line/system properties?
+### How can I override plugin configuration from command line/system properties?
 
 Gradle does not provide a built-in way to override plugin configuration via command line, but [gradle-override-plugin](https://github.com/nebula-plugins/gradle-override-plugin)
 can be used to do that.
@@ -356,17 +306,7 @@ Note. The mechanism should work fine for String and numeric properties, but the 
 
 For more information see project [web page](https://github.com/nebula-plugins/gradle-override-plugin).
 
-### 5. Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
-
-    Could not resolve all dependencies for configuration ':pitest'.
-    > Could not find org.pitest:pitest-command-line:1.1.0.
-      Required by:
-          :Gradle-Pitest-Example:unspecified
-
-Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
-The plugin should be applied in all subprojects which should be processed with PIT.
-
-### 6. How can I change PIT version from default to just released the newest one?
+### How can I change PIT version from default to just released the newest one?
 
 gradle-pitest-plugin by default uses a corresponsing PIT version (with the same number). The plugin is released only if there are internal changes or
 there is a need to adjust to changes in newer PIT version. There is a dedicated mechanism to allow to use the latest PIT version (e.g, a bugfix release)
@@ -381,7 +321,7 @@ pitest {
 
 In case of errors detected when the latest available version of the plugin is used with newer PIT version please raise an [issue](https://github.com/szpak/gradle-pitest-plugin/issues).
 
-### 7. How to disable placing PIT reports in time-based subfolders?
+### How to disable placing PIT reports in time-based subfolders?
 
 Placing PIT reports directly in `${PROJECT_DIR}/build/reports/pitest` can be enabled with `timestampedReports` configuration property:
 
@@ -391,7 +331,7 @@ pitest {
 }
 ```
 
-### 8. How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
+### How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
 
 Ocasionally, it may be useful to debug a gradle-pitest-plugin execution or a PIT execution itself (e.g. [NPE in PIT](https://github.com/hcoles/pitest/issues/345)) to provide sensible error report.
 
@@ -405,35 +345,29 @@ pitest {
 }
 ```
 
-### 9. Can I use gradle-pitest-plugin with my Android application?
+### Can I use gradle-pitest-plugin with my Android application?
 
 Short answer is: not directly. Due to some [incompatibilities](https://github.com/szpak/gradle-pitest-plugin/issues/31) between "standard" Java applications and Android Java applications in Gradle the plugin does not support the later. Luckily, there is an Android [fork](https://github.com/koral--/gradle-pitest-plugin/) of the plugin maintained by [Karol Wrótniak](https://github.com/koral--) which provides a modified version supporting Android applications (but on the other hand it doesn't work with standard Java applications).
 
-### 10. How to use gradle-pitest-plugin 1.3.0 with Java 11?
-
-**Update**. gradle-pitest-plugin 1.4.0 should work with Java 11 out of the box.
-
-The gradle-pitest-plugin 1.3.0 is smoke testing with Java 8, 9, 10 and 11. However, to run PIT sucessfully with Java 11, it is required to override a default PIT version defined in the plugin to 1.4.3 (or preferably to the latest one). It can be simply done in the project configuration with:
-
-```groovy
-pitest {
-    pitestVersion = '1.4.3'  //for Java 11 compatibility with gradle-pitest-plugin 1.3.0
-}
-```
-
-### 11. I have JUnit 5 plugin and the execution fails after migration to 1.5.0+, why?
+### I have JUnit 5 plugin and the execution fails after migration to 1.5.0+, why?
 
 gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0) finally relaxed the way how (where) the `pitest` configuration has been placed ([#62](https://github.com/szpak/gradle-pitest-plugin/issues/62)) which also was generating deprecation warnings in Gradle 6+. This change is not backward compatible and as a result manual migration has to be made - see the [release notes](https://github.com/szpak/gradle-pitest-plugin/releases/tag/release%2F1.5.0). This affects only project with external custom plugins.
 
 **Important**. As the JUnit 5 plugin for PIT is definitely the most popular, starting with 1.4.7 there is a simplified way how it could be configured with `junit5PluginVersion` (which is definitely **recommended**). See [my blog post](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-improved-approach-with-plugins-br-and-gradle-pitest-plugin-147) to find out how to migrate (it also solves the compatibility issue with 1.5.0+).
 
+### Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
+
+    Could not resolve all dependencies for configuration ':pitest'.
+    > Could not find org.pitest:pitest-command-line:1.1.0.
+      Required by:
+          :Gradle-Pitest-Example:unspecified
+
+Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
+The plugin should be applied in all subprojects which should be processed with PIT.
 
 ## Known issues
 
  - too verbose output from PIT
-
- - ~~0.33.0+ is not compatible with Spring Boot projects due to a [bug](https://github.com/spring-projects/spring-boot/issues/721) in spring-boot-gradle-plugin - see FAQ for a workaround~~ - works with Spring Boot 1.1.0+
-
 
 ## Development
 
