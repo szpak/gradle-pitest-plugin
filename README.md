@@ -61,7 +61,7 @@ apply plugin: 'info.solidsoft.pitest'
 
 ## Plugin configuration
 
-The Pitest plugin does not need to be additionally configured if you use JUnit 4. Customization is done in `pitest` block:
+The Pitest plugin does not need to be additionally configured if you use JUnit 4. Customization is done in the `pitest` block:
 
 
 ```groovy
@@ -82,6 +82,9 @@ following example).
 Check PIT documentation for a [list](https://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
+
+To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir` and `pitestVersion` are
+automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by an user.
 
 There are a few parameters specific for Gradle plugin:
 
@@ -355,15 +358,6 @@ gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/relea
 
 **Important**. As the JUnit 5 plugin for PIT is definitely the most popular, starting with 1.4.7 there is a simplified way how it could be configured with `junit5PluginVersion` (which is definitely **recommended**). See [my blog post](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-improved-approach-with-plugins-br-and-gradle-pitest-plugin-147) to find out how to migrate (it also solves the compatibility issue with 1.5.0+).
 
-### Why I see `Could not find org.pitest:pitest-command-line:1.1.0` error in my multiproject build?
-
-    Could not resolve all dependencies for configuration ':pitest'.
-    > Could not find org.pitest:pitest-command-line:1.1.0.
-      Required by:
-          :Gradle-Pitest-Example:unspecified
-
-Starting from version 1.0.0 for multi-project builds gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project.
-The plugin should be applied in all subprojects which should be processed with PIT.
 
 ## Known issues
 
