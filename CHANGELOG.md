@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.5.2 - Unreleased
+
+ - Add functional test with Spock 2 (using JUnit Platform)
+
 ## 1.5.1 - 2020-05-06
 
  - Fail with meaningful error message on no longer supported `pitest` configuration in `rootProject.buildscript` - [#205](https://github.com/szpak/gradle-pitest-plugin/issues/205)

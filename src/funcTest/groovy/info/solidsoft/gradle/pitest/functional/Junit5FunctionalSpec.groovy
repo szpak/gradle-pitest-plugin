@@ -40,4 +40,16 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
     }
 
+    void "should work with Spock 2 using JUnit 5 internally"() {
+        given:
+            copyResources("testProjects/junit5spock2", "")
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted('pitest')
+        and:
+            result.standardOutput.contains('--testPlugin=junit5')
+            result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
+    }
+
 }
