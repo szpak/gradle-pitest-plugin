@@ -1,8 +1,11 @@
 package pl.droidsonroids.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
+@CompileDynamic
+@SuppressWarnings("AbstractClassWithoutAbstractMethod")
 abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     void setup() {
@@ -51,8 +54,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected void writeHelloPitClass(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
-        def path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
-        def javaFile = createFile(path, baseDir)
+        String path = 'src/main/java/' + packageDotted.replace('.', '/') + '/HelloPit.java'
+        File javaFile = createFile(path, baseDir)
         javaFile << """package ${packageDotted};
 
             public class HelloPit {
@@ -65,8 +68,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     }
 
     protected void writeHelloPitTest(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
-        def path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
-        def javaFile = createFile(path, baseDir)
+        String path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
+        File javaFile = createFile(path, baseDir)
         javaFile << """package ${packageDotted};
             import org.junit.Test;
             import static org.junit.Assert.assertEquals;
@@ -92,4 +95,5 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     protected boolean isJava14Compatible() {
         return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
     }
+
 }

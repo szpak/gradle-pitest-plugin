@@ -3,6 +3,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.25.0'
     id 'groovy'
     id 'maven-publish'
+    id 'codenarc'
     id 'signing'
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.11.0'
@@ -30,28 +31,22 @@ dependencies {
     implementation localGroovy()
     implementation 'com.android.tools.build:gradle:3.6.1'
 
-    testImplementation('org.spockframework:spock-core:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-M2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testImplementation 'net.bytebuddy:byte-buddy:1.10.8' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.10.12' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:7.8.5') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:7.8.6') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-}
-
-tasks.validateTaskProperties {
-    enableStricterValidation = true
-    failOnWarning = true
 }
 
 task funcTest(type: Test) {
@@ -60,7 +55,7 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
-    systemProperty('ignoreDeprecations', 'true') //TODO remove after AGP stops using deprecated API
+    systemProperty('ignoreDeprecations', 'true') //FIXME merge remove after AGP stops using deprecated API
 }
 
 funcTest.shouldRunAfter test
@@ -90,6 +85,39 @@ tasks.withType(Test).configureEach { testTask ->
             }
         }
     }
+}
+
+tasks.validateTaskProperties {
+    enableStricterValidation = true
+    failOnWarning = true
+}
+
+codenarc {
+    toolVersion = "1.6"
+}
+
+tasks.register("codenarc") {
+    configure {
+        dependsOn tasks.withType(CodeNarc)
+    }
+}
+
+//Workaround on https://github.com/gradle/gradle/issues/12663
+tasks.withType(CodeNarc) { codeNarcTask ->
+    reports {
+        text.enabled = true
+        html.enabled = true
+    }
+    codeNarcTask.finalizedBy(project.task("print${codeNarcTask.name.capitalize()}") {
+        onlyIf {
+            codeNarcTask.state.failure != null
+        }
+        doLast {
+            logger.warn("\n****************************** CODE NARC ******************************")
+            logger.warn(codeNarcTask.reports.text.destination.text.trim())
+            logger.warn("****************************** CODE NARC ******************************\n")
+        }
+    })
 }
 
 modifyPom {

@@ -15,11 +15,13 @@
  */
 package pl.droidsonroids.gradle.pitest
 
+import groovy.transform.CompileDynamic
 import spock.lang.Issue
 
+@CompileDynamic
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
-    //public to be used also in functional tests
+    @SuppressWarnings("JUnitPublicField")   //public to be used also in functional tests
     public static final List<String> PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT = ['classPathFile',
                                                                                 'features',
                                                                                 'excludedTestClasses',
@@ -43,6 +45,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'skipFailingTests',
                                                                                 'includedGroups',
                                                                                 'excludedGroups',
+                                                                                'fullMutationMatrix',
                                                                                 'includedTestMethods',
                                                                                 'detectInlinedCode',
                                                                                 'timestampedReports',
@@ -56,67 +59,73 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'features',
                                                                                 'historyInputLocation',
                                                                                 'historyOutputLocation',
-                                                                                'pluginConfiguration'
+                                                                                'pluginConfiguration',
     ]
 
-    def "should pass additional classpath to PIT using classPathFile parameter instead of classPath if configured"() {
+    void "should pass additional classpath to PIT using classPathFile parameter instead of classPath if configured"() {
         given:
             project.pitest.useClasspathFile = true
         and:
             new File(project.buildDir.absolutePath).mkdir() //in ProjectBuilder "build" directory is not created by default
         expect:
-            task.createTaskArgumentMap()['classPathFile'] == new File(project.buildDir, "pitClasspath").absolutePath
-            !task.createTaskArgumentMap()['classPath']
+            File createClasspathFile = new File(project.buildDir, "pitClasspath")
+            task.taskArgumentMap()['classPathFile'] == createClasspathFile.absolutePath
+            !task.taskArgumentMap()['classPath']
+        and:
+            //TODO
+            createClasspathFile.readLines().size() == 4
+            createClasspathFile.readLines() as Set<String> == assembleSourceSetsClasspathByNameAsStringSet(["main", "test"])
     }
 
-    def "should pass features configuration to PIT"() {
+    void "should pass features configuration to PIT"() {
         given:
             project.pitest.features = ["-FOO", "+BAR(a[1] a[2])"]
         expect:
-            task.createTaskArgumentMap()['features'] == "-FOO,+BAR(a[1] a[2])"
+            task.taskArgumentMap()['features'] == "-FOO,+BAR(a[1] a[2])"
     }
 
-    def "should pass additional features alone if features not set in configuration"() {
+    void "should pass additional features alone if features not set in configuration"() {
         given:
             getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
         expect:
-            task.createTaskArgumentMap()['features'] == "+XYZ,-ABC"
+            task.taskArgumentMap()['features'] == "+XYZ,-ABC"
     }
 
-    def "should add additional features to those defined in configuration"() {
+    void "should add additional features to those defined in configuration"() {
         given:
             project.pitest.features = ["-FOO", "+BAR"]
             getJustOnePitestTaskOrFail().additionalFeatures = ['+XYZ', '-ABC']
         expect:
-            task.createTaskArgumentMap()['features'] == "-FOO,+BAR,+XYZ,-ABC"
+            task.taskArgumentMap()['features'] == "-FOO,+BAR,+XYZ,-ABC"
     }
 
-    def "should not pass features configuration to PIT if not set in configuration or via option"() {
+    void "should not pass features configuration to PIT if not set in configuration or via option"() {
         //Intentional duplication with generic parametrized tests to emphasis requirement
         expect:
-            task.createTaskArgumentMap()['featues'] == null
+            task.taskArgumentMap()['featues'] == null
     }
 
-    def "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
+    void "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
         expect:
-            !task.createTaskArgumentMap().containsKey(paramName)
+            !task.taskArgumentMap().containsKey(paramName)
         where:
             //It would be best to have it generated automatically based. However, mapping between task parameters and map passed to PIT is not 1-to-1
             paramName << PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
     }
 
     //TODO: Run PIT with those values to detect removed properties and typos
-    def "should pass plugin configuration (#configParamName) from Gradle to PIT"() {
+    void "should pass plugin configuration (#configParamName) from Gradle to PIT"() {
         given:
             project.pitest."${configParamName}" = gradleConfigValue
         expect:
-            task.createTaskArgumentMap()[configParamName] == expectedPitConfigValue
+            task.taskArgumentMap()[configParamName] == expectedPitConfigValue
             // TODO: Move timeoutConst to separate test
         where:
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             configParamName          | gradleConfigValue                            || expectedPitConfigValue
             "testPlugin"             | "testng"                                     || "testng"
-            "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows TODO adapt to variant directories
+            //junit5PluginVersion tested separately
+            "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
             "dependencyDistance"     | 42                                           || "42"
@@ -137,31 +146,34 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "skipFailingTests"       | true                                         || "true"
             "includedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
             "excludedGroups"         | ["Group1", "Group2"]                         || "Group1,Group2"
+            "fullMutationMatrix"     | true                                         || "true"
             "includedTestMethods"    | ["method1", "method2"]                       || "method1,method2"
+            //mainSourceSets and testSourceSets tested separately
             "detectInlinedCode"      | true                                         || "true"
             "timestampedReports"     | true                                         || "true"
+            //useClasspathFile tested separately
+            //additionalMutableCodePaths tested separately
+            "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
+            "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
+            //enableDefaultIncrementalAnalysis tested separately
             "mutationThreshold"      | 90                                           || "90"
             "coverageThreshold"      | 95                                           || "95"
             "mutationEngine"         | "gregor2"                                    || "gregor2"
-            //sourceSet x2
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path
-            //mainProcessJvmArgs?
-//            "pluginConfiguration"    | ["plugin1.key1": "v1", "plugin1.key2": "v2"] || "?"   //Tested separately
+            //mainProcessJvmArgs tested separately
+            //pluginConfiguration tested separately
             "maxSurviving"           | 20                                           || "20"
             "useClasspathJar"        | true                                         || "true"
-//            "useClasspathFile"       | true                                         || "false"    //TODO
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
-//            "fileExtensionsToFilter" | ["zip", "xxx"]                               || "*.zip,*.xxx"  //not passed to PIT
-            "historyInputLocation"   | new File("//tmp//hi")                        || new File("//tmp//hi").path
-            "historyOutputLocation"  | new File("//tmp//ho")                        || new File("//tmp//ho").path
+            //fileExtensionsToFilter not passed to PIT, tested separately
     }
 
-    def "should pass plugin configuration (#gradleConfigParamName) from Gradle to PIT (overridden name)"() {
+    void "should pass plugin configuration (#gradleConfigParamName) from Gradle to PIT (overridden name)"() {
         given:
             project.pitest."${gradleConfigParamName}" = gradleConfigValue
         expect:
-            task.createTaskArgumentMap()[pitConfigParamName ?: gradleConfigParamName] == expectedPitConfigValue
+            task.taskArgumentMap()[pitConfigParamName ?: gradleConfigParamName] == expectedPitConfigValue
         where:
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             gradleConfigParamName  | gradleConfigValue | pitConfigParamName || expectedPitConfigValue
@@ -169,45 +181,82 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
 //            "useClasspathFile" | true               | "classPathFile"     || "?"    //tested separately
     }
 
-    def "should pass plugin configuration (mutableCodePaths) from Gradle to PIT"() {
+    void "should pass plugin configuration (mutableCodePaths) from Gradle to PIT"() {
         given:
             project.pitest.additionalMutableCodePaths = [new File("//tmp//p1"), new File("//tmp//p2")]
         expect:
-            task.createTaskArgumentMap()["mutableCodePaths"].contains("${new File("//tmp//p1").path},${new File("//tmp//p2").path}")
+            task.taskArgumentMap()["mutableCodePaths"].contains("${new File("//tmp//p1").path},${new File("//tmp//p2").path}")
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
-    def "should set targetTests to targetClasses by default if not defined in configuration"() {
+    void "should set targetTests to targetClasses by default if not defined in configuration"() {
         when:
             project.pitest.targetClasses = ["myClasses.*"]
         then:
-            task.createTaskArgumentMap()['targetTests'] == "myClasses.*"
+            task.taskArgumentMap()['targetTests'] == "myClasses.*"
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/144")
-    def "should set targetTests to configuration defined value"() {
+    void "should set targetTests to configuration defined value"() {
         when:
             project.pitest.targetClasses = ["myClasses.*"]
             project.pitest.targetTests = ["myClasses.tests.*"]
         then:
-            task.createTaskArgumentMap()['targetTests'] == "myClasses.tests.*"
+            task.taskArgumentMap()['targetTests'] == "myClasses.tests.*"
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
-    def "should override explicitly defined in configuration targetTests from command line"() {
+    void "should override explicitly defined in configuration targetTests from command line"() {
         given:
             project.pitest.targetTests = ["com.foobar.*"]
             getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
         expect:
-            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
+            task.taskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
-    def "should override targetTests inferred from targetClasses from command line"() {
+    void "should override targetTests inferred from targetClasses from command line"() {
         given:
             project.pitest.targetClasses = ["com.foobar.*"]
             getJustOnePitestTaskOrFail().overriddenTargetTests = ["com.example.a.*", "com.example.b.*"]
         expect:
-            task.createTaskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
+            task.taskArgumentMap()['targetTests'] == "com.example.a.*,com.example.b.*"
     }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/198")
+    void "should pass configured mainSourceSets to PIT"() {
+        given:
+            project.pitest.mainSourceSets = [project.sourceSets.main]
+        when:
+            String sourceDirs = task.taskArgumentMap()['sourceDirs']
+        then:
+            sourceDirs == assembleMainSourceDirAsStringSet().join(",")
+    }
+
+    private Set<String> assembleMainSourceDirAsStringSet() {
+        return ["resources", "java"].collect { String dirName ->
+            new File(project.projectDir, "src//main//${dirName}")
+        }*.absolutePath
+    }
+
+    void "should consider testSourceSets in (additional) classpath"() {
+        given:
+            project.sourceSets { intTest }
+            project.pitest.testSourceSets = [project.sourceSets.intTest]
+        expect:
+            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet("intTest").join(",")
+    }
+
+    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
+        return sourceSetNames.collectMany { String sourceSetName ->
+            assembleSourceSetsClasspathByNameAsStringSet(sourceSetName)
+        } as Set<String>
+    }
+
+    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(String sourceSetName) {
+        return [new File(project.buildDir, "classes//java//${sourceSetName}"),
+                new File(project.buildDir, "resources//${sourceSetName}")
+        ]*.absolutePath
+    }
+
 }

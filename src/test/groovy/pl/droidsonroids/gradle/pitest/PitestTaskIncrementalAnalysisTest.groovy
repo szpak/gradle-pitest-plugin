@@ -15,30 +15,33 @@
  */
 package pl.droidsonroids.gradle.pitest
 
+import groovy.transform.CompileDynamic
+
+@CompileDynamic
 class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
-    def "default analysis mode disabled by default"() {
+    void "default analysis mode disabled by default"() {
         when:
-            Map<String, String> createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.taskArgumentMap()
         then:
             createdMap.get("enableDefaultIncrementalAnalysis") == null
     }
 
-    def "files for history location not set by default"() {
+    void "files for history location not set by default"() {
         when:
-            Map<String, String> createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.taskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == null
             createdMap.get('historyOutputLocation') == null
     }
 
-    def "set default files for history location in default incremental analysis mode ('#propertyName')"() {
+    void "set default files for history location in default incremental analysis mode ('#propertyName')"() {
         given:
             project.pitest."$propertyName" = true
         and:
             String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
         when:
-            Map<String, String> createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.taskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == pitHistoryDefaultFile
             createdMap.get('historyOutputLocation') == pitHistoryDefaultFile
@@ -46,7 +49,7 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
             propertyName << ['enableDefaultIncrementalAnalysis', 'withHistory']
     }
 
-    def "override files for history location when set explicit in configuration also default incremental analysis mode"() {
+    void "override files for history location when set explicit in configuration also default incremental analysis mode"() {
         given:
             project.pitest  {
                 enableDefaultIncrementalAnalysis = true
@@ -54,13 +57,13 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
                 historyOutputLocation = new File('output')
             }
         when:
-            Map<String, String> createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.taskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == task.historyInputLocation.asFile.get().path
             createdMap.get('historyOutputLocation') == task.historyOutputLocation.asFile.get().path
     }
 
-    def "given in configuration files for history location are used also not in default incremental analysis mode"() {
+    void "given in configuration files for history location are used also not in default incremental analysis mode"() {
         given:
             project.pitest {
                 enableDefaultIncrementalAnalysis = false
@@ -70,9 +73,10 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
         and:
             task = getJustOnePitestTaskOrFail()
         when:
-            Map<String, String> createdMap = task.createTaskArgumentMap()
+            Map<String, String> createdMap = task.taskArgumentMap()
         then:
             createdMap.get('historyInputLocation') == task.historyInputLocation.asFile.get().path
             createdMap.get('historyOutputLocation') == task.historyOutputLocation.asFile.get().path
     }
+
 }

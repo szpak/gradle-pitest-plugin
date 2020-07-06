@@ -1,9 +1,12 @@
 package pl.droidsonroids.gradle.pitest.functional
 
 import pl.droidsonroids.gradle.pitest.PitestPlugin
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import org.gradle.internal.jvm.Jvm
 
+@SuppressWarnings("GrMethodMayBeStatic")
+@CompileDynamic
 class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     private static final String PIT_1_3_VERSION = "1.3.1"
@@ -13,7 +16,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     private static final String MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION = "1.4.6" //not officially, but at least simple case works
     private static final String MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION = "1.4.11" //not officially, but with ASM 7.3.1
 
-    def "setup and run pitest task with PIT #pitVersion"() {
+    void "setup and run pitest task with PIT #pitVersion"() {
         given:
             buildFile << getBasicGradlePitestConfig()
         and:
@@ -38,6 +41,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
             pitVersion << getPitVersionsCompatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }
 
+    @SuppressWarnings("IfStatementCouldBeTernary")
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
         if (isJava14Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION]
@@ -45,6 +49,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         if (isJava13Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
         }
+
         if (Jvm.current().javaVersion.isJava11Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION]
         }
@@ -54,6 +59,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         if (Jvm.current().javaVersion.isJava9Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION, PIT_1_3_VERSION]
         }
-        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.0", PIT_1_3_VERSION, "1.4.0"]
+        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", PIT_1_3_VERSION, "1.4.0"]
     }
+
 }

@@ -67,9 +67,9 @@ configure(project(':itest')) {
     pitest {
         timestampedReports = false
         mainSourceSets = [project.android.sourceSets.main, project(':shared').android.sourceSets.main]
-        //Fails with IllegalArgumentException: Mutable Project State warnings were found - workaround applied
+        //Generates deprecation warning in Gradle 5.6+
         //Asked for recommendation: https://discuss.gradle.org/t/accessing-other-module-dependency-files-without-mutable-project-state-warnings/35048
 //        additionalMutableCodePaths = configurations.mutableCodeBase.files
-        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Should also work
+        additionalMutableCodePaths = project(':shared').jar.outputs.files.getFiles()  //Workaround
     }
 }
