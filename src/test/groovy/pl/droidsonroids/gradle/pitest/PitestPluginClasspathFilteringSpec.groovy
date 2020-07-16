@@ -56,7 +56,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     void "should not filter source set directory by default"() {
         given:
-            File testClassesDir = new File(new File(new File(new File(tmpProjectDir.root, 'build'), 'classes'), 'java'), 'test')
+            File testClassesDir = new File(tmpProjectDir.root, 'build/intermediates/javac/release/classes')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -153,8 +153,6 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
         then:
             noExceptionThrown()
-        and:
-            resolvedPitClasspath.contains('main')
     }
 
     void "should filter dependencies also from 'api' configuration in java-library"() {

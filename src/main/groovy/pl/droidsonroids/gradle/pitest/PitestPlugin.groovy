@@ -79,13 +79,15 @@ class PitestPlugin implements Plugin<Project> {
         extension.useClasspathFile.set(false)
 
         project.pluginManager.apply(BasePlugin)
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
+
+        if (extension.mainSourceSets.empty()) {
+            extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
+        }
+        if (extension.testSourceSets.empty()) {
+            extension.testSourceSets.set(project.android.sourceSets.test as Set<AndroidSourceSet>)
+        }
         project.afterEvaluate {
-            extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
-
-            if (extension.mainSourceSets.empty()) {
-                extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
-            }
-
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }
@@ -216,7 +218,9 @@ class PitestPlugin implements Plugin<Project> {
             excludedGroups.set(extension.excludedGroups)
             fullMutationMatrix.set(extension.fullMutationMatrix)
             includedTestMethods.set(extension.includedTestMethods)
-            sourceDirs.setFrom(extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set)
+            def javaSourceSet = extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
+            def resourcesSourceSet = extension.mainSourceSets.get()*.resources.srcDirs.flatten() as Set
+            sourceDirs.setFrom(javaSourceSet + resourcesSourceSet)
             detectInlinedCode.set(extension.detectInlinedCode)
             timestampedReports.set(extension.timestampedReports)
             additionalClasspath.setFrom({
@@ -225,7 +229,7 @@ class PitestPlugin implements Plugin<Project> {
                 }
 
                 return filteredCombinedTaskClasspath
-            } as Callable<FileCollection>)
+            } as Callable<FileCollection>, extension.testSourceSets.get()*.java.srcDirs.flatten(), extension.testSourceSets.get()*.resources.srcDirs.flatten())
             useAdditionalClasspathFile.set(extension.useClasspathFile)
             additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
             mutableCodePaths.setFrom({

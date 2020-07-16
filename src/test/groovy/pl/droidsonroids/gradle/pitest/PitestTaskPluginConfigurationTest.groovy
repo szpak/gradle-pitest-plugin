@@ -26,8 +26,7 @@ class PitestTaskPluginConfigurationTest extends BasicProjectBuilderSpec implemen
     private Project project
     private PitestTask task
 
-    @Override
-    void setup() {
+    {
         project = AndroidUtils.createSampleLibraryProject()
         project.evaluate()
         task = project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME] as PitestTask
