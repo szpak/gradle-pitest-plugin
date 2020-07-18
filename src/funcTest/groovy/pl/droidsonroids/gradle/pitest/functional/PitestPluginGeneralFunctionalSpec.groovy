@@ -19,11 +19,13 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """
-                repositories {
-                    maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
-                }
-                dependencies {
-                    pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
+                rootProject.buildscript {
+                    repositories {
+                        maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
+                    }
+                    dependencies {
+                        pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
+                    }
                 }
                 pitest {
                     excludedClasses = []
@@ -38,9 +40,9 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             writeHelloPitClass()
             writeHelloPitTest()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted(':pitest')
+            result.wasExecuted(':pitestRelease')
         and: 'plugin enabled'
             assertStdOutOrStdErrContainsGivenText(result, 'with the following plugin configuration')
         and: 'plugin parameters passed'

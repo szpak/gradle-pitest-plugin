@@ -79,15 +79,17 @@ class PitestPlugin implements Plugin<Project> {
         extension.useClasspathFile.set(false)
 
         project.pluginManager.apply(BasePlugin)
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
 
-        if (extension.mainSourceSets.empty()) {
-            extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
-        }
-        if (extension.testSourceSets.empty()) {
-            extension.testSourceSets.set(project.android.sourceSets.test as Set<AndroidSourceSet>)
-        }
         project.afterEvaluate {
+            extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
+
+            if (extension.mainSourceSets.empty()) {
+                extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
+            }
+            if (extension.testSourceSets.empty()) {
+                extension.testSourceSets.set(project.android.sourceSets.test as Set<AndroidSourceSet>)
+            }
+
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
             project.plugins.withType(LibraryPlugin) { createPitestTasks(project.android.libraryVariants) }
             project.plugins.withType(TestPlugin) { createPitestTasks(project.android.testVariants) }

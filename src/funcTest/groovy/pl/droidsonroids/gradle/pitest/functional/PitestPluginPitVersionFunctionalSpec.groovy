@@ -59,7 +59,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         if (Jvm.current().javaVersion.isJava9Compatible()) {
             return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION, PIT_1_3_VERSION]
         }
-        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", PIT_1_3_VERSION, "1.4.0"]
+        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.2.0", PIT_1_3_VERSION, "1.4.0"]
     }
 
 }
