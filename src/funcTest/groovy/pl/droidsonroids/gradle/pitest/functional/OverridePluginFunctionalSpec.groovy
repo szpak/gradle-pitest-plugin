@@ -1,16 +1,17 @@
 package pl.droidsonroids.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.GradleException
-import spock.lang.Issue
 import spock.lang.PendingFeature
 
 //Note: gradle-override-plugin has important limitations in support for collections
 //See: https://github.com/nebula-plugins/gradle-override-plugin/issues/1 or https://github.com/nebula-plugins/gradle-override-plugin/issues/3
+@CompileDynamic
 class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     @PendingFeature(exceptions = GradleException, reason = "gradle-override-plugin nor @Option don't work with DirectoryProperty")
-    def "should allow to override String configuration parameter from command line"() {
+    void "should allow to override String configuration parameter from command line"() {
         given:
             buildFile << """
                 apply plugin: 'nebula-override'
@@ -27,7 +28,7 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 group = 'gradle.pitest.test'
 
                 buildscript {
-                    repositories { 
+                    repositories {
                         jcenter()
                         google()
                     }
@@ -37,8 +38,8 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                     }
                 }
                 repositories {
-                    google() 
-                    mavenCentral() 
+                    google()
+                    mavenCentral()
                 }
                 dependencies { testImplementation 'junit:junit:4.12' }
             """.stripIndent()
@@ -50,4 +51,5 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
             fileExists('build/treports')
     }
+
 }

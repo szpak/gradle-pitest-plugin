@@ -15,4 +15,5 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
             result.wasExecuted(':itest:pitestRelease')
             result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
+
 }

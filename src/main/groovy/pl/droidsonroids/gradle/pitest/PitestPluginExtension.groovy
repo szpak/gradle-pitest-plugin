@@ -314,4 +314,5 @@ class PitestPluginExtension {
      * May by needed if you use alternative like UnMock or Robolectric.
      */
     final Property<Boolean> excludeMockableAndroidJar
+
 }

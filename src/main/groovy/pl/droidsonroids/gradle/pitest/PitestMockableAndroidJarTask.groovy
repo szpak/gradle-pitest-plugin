@@ -1,6 +1,7 @@
 package pl.droidsonroids.gradle.pitest
 
 import com.android.builder.testing.MockableJarGenerator
+import groovy.transform.CompileDynamic
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
@@ -8,6 +9,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 
+@CompileDynamic
 class PitestMockableAndroidJarTask extends DefaultTask {
     @InputFile
     @PathSensitive(PathSensitivity.RELATIVE)

@@ -15,8 +15,8 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         copyResources('AndroidManifest.xml', 'src/main/AndroidManifest.xml')
     }
 
-    def writeManifestFile() {
-        def manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
+    void writeManifestFile() {
+        File manifestFile = new File(projectDir, 'src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
         manifestFile.write('<?xml version="1.0" encoding="utf-8"?><manifest package="pl.droidsonroids.pitest.hello"/>')
     }

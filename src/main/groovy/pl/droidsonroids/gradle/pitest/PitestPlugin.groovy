@@ -23,10 +23,10 @@ import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
-import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.DefaultDomainObjectSet
@@ -98,7 +98,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void createPitestTasks(DefaultDomainObjectSet<? extends BaseVariant> variants) {
-        def globalTask = project.tasks.create(PITEST_TASK_NAME)
+        Task globalTask = project.tasks.create(PITEST_TASK_NAME)
         globalTask.with {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
@@ -108,7 +108,7 @@ class PitestPlugin implements Plugin<Project> {
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
-            def mockableAndroidJarTask
+            Task mockableAndroidJarTask
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
                 mockableAndroidJarTask = project.tasks.findByName("mockableAndroidJar")
                 configureTaskDefault(variantTask, variant, getMockableAndroidJar(project.android))
@@ -220,8 +220,8 @@ class PitestPlugin implements Plugin<Project> {
             excludedGroups.set(extension.excludedGroups)
             fullMutationMatrix.set(extension.fullMutationMatrix)
             includedTestMethods.set(extension.includedTestMethods)
-            def javaSourceSet = extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
-            def resourcesSourceSet = extension.mainSourceSets.get()*.resources.srcDirs.flatten() as Set
+            Set javaSourceSet = extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
+            Set resourcesSourceSet = extension.mainSourceSets.get()*.resources.srcDirs.flatten() as Set
             sourceDirs.setFrom(javaSourceSet + resourcesSourceSet)
             detectInlinedCode.set(extension.detectInlinedCode)
             timestampedReports.set(extension.timestampedReports)
@@ -235,9 +235,9 @@ class PitestPlugin implements Plugin<Project> {
             useAdditionalClasspathFile.set(extension.useClasspathFile)
             additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
             mutableCodePaths.setFrom({
-                def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
+                Set additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
                 additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
-                def kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
+                Task kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
                 if (kotlinCompileTask != null) {
                     additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
                 }
@@ -264,14 +264,14 @@ class PitestPlugin implements Plugin<Project> {
 
     private void addPitDependencies() {
         project.rootProject.buildscript.dependencies {
-            def pitestVersion = extension.pitestVersion.get()
+            String pitestVersion = extension.pitestVersion.get()
             log.info("Using PIT: $pitestVersion")
             pitest "org.pitest:pitest-command-line:$pitestVersion"
         }
     }
 
     private File getMockableAndroidJar(BaseExtension android) {
-        def returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
+        boolean returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
 
         String mockableAndroidJarFilename = "mockable-"
         mockableAndroidJarFilename += sanitizeSdkVersion(android.compileSdkVersion)
@@ -289,7 +289,7 @@ class PitestPlugin implements Plugin<Project> {
         return new File(mockableJarDirectory, mockableAndroidJarFilename)
     }
 
-    static def sanitizeSdkVersion(def version) {
+    static String sanitizeSdkVersion(String version) {
         return version.replaceAll('[^\\p{Alnum}.-]', '-')
     }
 
@@ -300,4 +300,5 @@ class PitestPlugin implements Plugin<Project> {
             return variant.javaCompile
         }
     }
+
 }

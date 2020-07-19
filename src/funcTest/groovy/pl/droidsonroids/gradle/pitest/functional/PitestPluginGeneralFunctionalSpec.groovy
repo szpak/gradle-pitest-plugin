@@ -7,8 +7,6 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Issue
 
-import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
-
 @CompileDynamic
 class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
