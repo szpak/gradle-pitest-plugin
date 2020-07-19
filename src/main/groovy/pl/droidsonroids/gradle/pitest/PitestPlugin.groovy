@@ -148,7 +148,7 @@ class PitestPlugin implements Plugin<Project> {
             combinedTaskClasspath.from(mockableAndroidJar)
         }
 
-        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major == 3) {
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {
                 combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
                     it.properties.dependencyProject == null
