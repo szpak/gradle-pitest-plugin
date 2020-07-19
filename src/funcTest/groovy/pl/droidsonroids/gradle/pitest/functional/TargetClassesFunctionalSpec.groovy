@@ -15,10 +15,10 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
                 
                 android {
-                    compileSdkVersion 28
+                    compileSdkVersion 29
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 28
+                        targetSdkVersion 29
                     }
                 }
             """.stripIndent()

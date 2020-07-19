@@ -29,7 +29,7 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:3.6.1'
+    implementation 'com.android.tools.build:gradle:4.0.1'
 
     testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
@@ -38,7 +38,7 @@ dependencies {
     testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.10.12' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.10.13' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)

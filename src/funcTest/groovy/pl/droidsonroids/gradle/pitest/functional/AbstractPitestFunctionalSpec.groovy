@@ -27,10 +27,10 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
                 apply plugin: 'com.android.library'
 
                 android {
-                    compileSdkVersion 28
+                    compileSdkVersion 29
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 28
+                        targetSdkVersion 29
                     }
                 }
                 group = 'gradle.pitest.test'
