@@ -150,7 +150,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         when:
-            String resolvedPitClasspath = forceClasspathResolutionAndReturnIt(task)
+            forceClasspathResolutionAndReturnIt(task)
         then:
             noExceptionThrown()
     }
@@ -159,18 +159,18 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
         given:
             project.apply(plugin: "com.android.library")   //to add 'api' configuration
         and:
-            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile('lib.so', 'api')
+            File libFile = addFileWithFileNameAsDependencyAndReturnAsFile('lib.so')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
             !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
     }
 
-    private String forceClasspathResolutionAndReturnIt(PitestTask task) {
+    private static String forceClasspathResolutionAndReturnIt(PitestTask task) {
         return task.taskArgumentMap()['classPath']
     }
 
-    private File addFileWithFileNameAsDependencyAndReturnAsFile(String depFileName, String configurationName = 'implementation') {
+    private File addFileWithFileNameAsDependencyAndReturnAsFile(String depFileName) {
         File depFile = new File(tmpProjectDir.root, depFileName)
         depFile.createNewFile()
         project.buildscript.dependencies.add('pitestTestCompile', project.files(depFile))

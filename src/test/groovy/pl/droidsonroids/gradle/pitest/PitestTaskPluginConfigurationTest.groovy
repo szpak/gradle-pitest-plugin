@@ -16,7 +16,6 @@
 package pl.droidsonroids.gradle.pitest
 
 import org.gradle.api.Project
-import spock.lang.Specification
 
 import groovy.transform.CompileDynamic
 

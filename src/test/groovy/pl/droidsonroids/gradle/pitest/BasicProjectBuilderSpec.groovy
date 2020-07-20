@@ -19,7 +19,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
@@ -50,7 +49,7 @@ class BasicProjectBuilderSpec extends Specification {
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
-        def pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
+        String  pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
         Set<Task> tasks = project.getTasksByName(pitestReleaseTaskName, false) //forces "afterEvaluate"
         assert tasks?.size() == 1 : "Expected tasks: '$pitestReleaseTaskName', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask

@@ -25,7 +25,7 @@ class PitestPluginTargetClassesTest extends Specification {
 
     private Project project
 
-    def setup() {
+    void setup() {
         project = AndroidUtils.createSampleLibraryProject()
     }
 
