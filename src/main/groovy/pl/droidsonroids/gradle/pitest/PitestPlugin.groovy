@@ -235,7 +235,7 @@ class PitestPlugin implements Plugin<Project> {
             useAdditionalClasspathFile.set(extension.useClasspathFile)
             additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
             mutableCodePaths.setFrom({
-                Set additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
+                Object additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
                 additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
                 Task kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
                 if (kotlinCompileTask != null) {
