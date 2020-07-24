@@ -15,6 +15,7 @@
  */
 package pl.droidsonroids.gradle.pitest
 
+import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -28,17 +29,18 @@ import static PitestPlugin.PITEST_TASK_NAME
  * @see WithPitestTaskInitialization
  */
 @PackageScope
-abstract class BasicProjectBuilderSpec extends Specification {
+@CompileDynamic
+class BasicProjectBuilderSpec extends Specification {
 
     @Rule
-    public TemporaryFolder tmpProjectDir = new TemporaryFolder()
+    protected TemporaryFolder tmpProjectDir = new TemporaryFolder()
 
     protected Project project
     protected PitestPluginExtension pitestConfig
 
     //TODO: There is a regression in 2.14.1 with API jar regeneration for every test - https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956
     //https://github.com/gradle/gradle/commit/3216f07b3acb4cbbb8241d8a1d50b8db9940f37e
-    def setup() {
+    protected void setup() {
         project = AndroidUtils.createSampleLibraryProject(tmpProjectDir.root)
 
         pitestConfig = project.getExtensions().getByType(PitestPluginExtension)
@@ -47,10 +49,11 @@ abstract class BasicProjectBuilderSpec extends Specification {
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
-        def pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
+        String  pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
         Set<Task> tasks = project.getTasksByName(pitestReleaseTaskName, false) //forces "afterEvaluate"
         assert tasks?.size() == 1 : "Expected tasks: '$pitestReleaseTaskName', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
         return (PitestTask)tasks[0]
     }
+
 }

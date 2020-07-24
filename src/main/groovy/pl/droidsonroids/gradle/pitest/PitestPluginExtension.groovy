@@ -92,73 +92,19 @@ class PitestPluginExtension {
     final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
-     *
-     * Note. This parameter type was changed from String to List<String> in 0.33.0.
      */
     final ListProperty<String> jvmArgs
     final SetProperty<String> outputFormats
     final Property<Boolean> failWhenNoMutations
     final Property<Boolean> skipFailingTests    //new in PIT 1.4.4 (GPP 1.4.6)
-    final SetProperty<String> includedGroups  //renamed from includedTestNGGroups in 1.0.0 - to adjust to changes in PIT
-    final SetProperty<String> excludedGroups  //renamed from excludedTestNGGroups in 1.0.0 - to adjust to changes in PIT
+    final SetProperty<String> includedGroups
+    final SetProperty<String> excludedGroups
+    final Property<Boolean> fullMutationMatrix  //new in PIT 1.4.3
     final SetProperty<String> includedTestMethods   //new in PIT 1.3.2 (GPP 1.4.6)
-    final Property<Boolean> detectInlinedCode   //new in PIT 0.28
+    final SetProperty<AndroidSourceSet> testSourceSets   //specific for Gradle plugin
+    final SetProperty<AndroidSourceSet> mainSourceSets   //specific for Gradle plugin
+    final Property<Boolean> detectInlinedCode
     final Property<Boolean> timestampedReports
-    final RegularFileProperty historyInputLocation   //new in PIT 0.29
-    final RegularFileProperty historyOutputLocation
-    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin - since 0.29.0
-    final Property<Integer> mutationThreshold   //new in PIT 0.30
-    final Property<Integer> coverageThreshold   //new in PIT 0.32
-    final Property<String> mutationEngine
-    final SetProperty<AndroidSourceSet> mainSourceSets   //specific for Gradle plugin - since 0.30.1
-    final Property<Boolean> exportLineCoverage  //new in PIT 0.32 - for debugging usage only
-    final RegularFileProperty jvmPath    //new in PIT 0.32
-
-    /**
-     * JVM arguments to use when Gradle plugin launches the main PIT process.
-     *
-     * @since 0.33.0 (specific for Gradle plugin)
-     */
-    final ListProperty<String> mainProcessJvmArgs
-
-    /**
-     * Additional mutableCodePaths (paths with production classes which should be mutated).<p/>
-     *
-     * By default all classes produced by default sourceSets (or defined via mainSourceSets property) are used as production code to mutate.
-     * In some rare cases it is required to pass additional classes, e.g. from JAR produced by another subproject. Issue #25.
-     *
-     * Samples usage ("itest" project depends on "shared" project):
-     * <pre>
-     * configure(project(':itest')) {*     dependencies {*         compile project(':shared')
-     *}*
-     *     apply plugin: "pl.droidsonroids.pitest"
-     *     //mutableCodeBase - additional configuration to resolve :shared project JAR as mutable code path for PIT
-     *     configurations { mutableCodeBase { transitive false }}*     dependencies { mutableCodeBase project(':shared') }*     pitest {*         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
-     *         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-     *}*}* </pre>
-     *
-     * @since 1.1.3 (specific for Gradle plugin)
-     */
-    Set<File> additionalMutableCodePaths
-
-    /**
-     * Plugin configuration parameters.
-     *
-     * Should be defined a map:
-     * <pre>
-     * pitest {
-     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
-     * }
-     * </pre>
-     *
-     * @since 1.1.6
-     */
-    MapProperty<String, String> pluginConfiguration
-
-    final Property<Integer> maxSurviving    //new in PIT 1.1.10
-
-    @Incubating
-    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
 
     /**
      * Use classpath file instead of passing classpath in a command line
@@ -170,6 +116,65 @@ class PitestPluginExtension {
      */
     @Incubating
     final Property<Boolean> useClasspathFile
+
+    /**
+     * Additional mutableCodePaths (paths with production classes which should be mutated).<p/>
+     *
+     * By default all classes produced by default sourceSets (or defined via mainSourceSets property) are used as production code to mutate.
+     * In some rare cases it is required to pass additional classes, e.g. from JAR produced by another subproject. Issue #25.
+     *
+     * Samples usage ("itest" project depends on "shared" project):
+     * <pre>
+     * configure(project(':itest')) {
+     *     dependencies {
+     *         compile project(':shared')
+     *     }
+     *
+     *     apply plugin: "pl.droidsonroids.pitest"
+     *     //mutableCodeBase - additional configuration to resolve :shared project JAR as mutable code path for PIT
+     *     configurations { mutableCodeBase { transitive false } }
+     *     dependencies { mutableCodeBase project(':shared') }
+     *     pitest {
+     *         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+     *         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+     *     }
+     * }
+     * </pre>
+     *
+     * @since 1.1.3 (specific for Gradle plugin)
+     */
+    final SetProperty<File> additionalMutableCodePaths
+
+    final RegularFileProperty historyInputLocation
+    final RegularFileProperty historyOutputLocation
+    final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin
+    final Property<Integer> mutationThreshold
+    final Property<Integer> coverageThreshold
+    final Property<String> mutationEngine
+    final Property<Boolean> exportLineCoverage  //for debugging usage only
+    final RegularFileProperty jvmPath
+
+    /**
+     * JVM arguments to use when Gradle plugin launches the main PIT process.
+     */
+    final ListProperty<String> mainProcessJvmArgs
+
+    /**
+     * Plugin configuration parameters.
+     *
+     * Should be defined a map:
+     * <pre>
+     * pitest {
+     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     * }
+     * </pre>
+     */
+    MapProperty<String, String> pluginConfiguration
+
+    final Property<Integer> maxSurviving
+
+    @Incubating
+    final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
 
     /**
      * Turnes on/off features in PIT itself and its plugins.
@@ -238,25 +243,26 @@ class PitestPluginExtension {
         skipFailingTests = of.property(Boolean)
         includedGroups = nullSetPropertyOf(p, String)
         excludedGroups = nullSetPropertyOf(p, String)
+        fullMutationMatrix = of.property(Boolean)
         includedTestMethods = nullSetPropertyOf(p, String)
+        testSourceSets = nullSetPropertyOf(p, AndroidSourceSet)
+        mainSourceSets = nullSetPropertyOf(p, AndroidSourceSet)
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
+        useClasspathFile = of.property(Boolean)
+        additionalMutableCodePaths = of.setProperty(File)   //the value is not used directly in task and can be notPresent instead of null
         historyInputLocation = of.fileProperty()
         historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
         mutationEngine = of.property(String)
-        mainSourceSets = nullSetPropertyOf(p, AndroidSourceSet)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
         mainProcessJvmArgs = nullListPropertyOf(p, String)
-//        additionalMutableCodePaths = nullSetPropertyOf(p, File))
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
-        useClasspathFile = of.property(Boolean)
-        useClasspathFile.set(false)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
         excludeMockableAndroidJar = of.property(Boolean)
@@ -286,23 +292,21 @@ class PitestPluginExtension {
      * Alias for enableDefaultIncrementalAnalysis.
      *
      * To make migration from PIT Maven plugin to PIT Gradle plugin easier.
-     *
-     * @since 1.1.10
      */
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
     private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.setProperty(clazz).convention(p.providers.provider({ null }))
+        return p.objects.setProperty(clazz).convention(p.providers.provider { null })
     }
 
     private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.listProperty(clazz).convention(p.providers.provider({ null }))
+        return p.objects.listProperty(clazz).convention(p.providers.provider { null })
     }
 
     private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider({ null }))
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null })
     }
 
     /**
@@ -310,4 +314,5 @@ class PitestPluginExtension {
      * May by needed if you use alternative like UnMock or Robolectric.
      */
     final Property<Boolean> excludeMockableAndroidJar
+
 }

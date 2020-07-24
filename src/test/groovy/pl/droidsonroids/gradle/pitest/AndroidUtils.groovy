@@ -1,19 +1,24 @@
 package pl.droidsonroids.gradle.pitest
 
+import groovy.transform.CompileDynamic
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
+@CompileDynamic
+@SuppressWarnings(["DuplicateNumberLiteral", "DuplicateMapLiteral"])
 class AndroidUtils {
+
     static final String PITEST_RELEASE_TASK_NAME = "${PitestPlugin.PITEST_TASK_NAME}Release"
 
-    static createSampleLibraryProject(File... rootDir) {
-        def builder = ProjectBuilder.builder()
+    static Project createSampleLibraryProject(File... rootDir) {
+        ProjectBuilder builder = ProjectBuilder.builder()
         if (rootDir.length > 0) {
             builder.withProjectDir(rootDir[0])
         }
-        def project = builder.build()
-        ClassLoader classLoader = AndroidUtils.class.classLoader
-        def resource = classLoader.getResource('lib/AndroidManifest.xml')
-        def manifestFile = project.file('src/main/AndroidManifest.xml')
+        Project project = builder.build()
+        ClassLoader classLoader = AndroidUtils.classLoader
+        URL resource = classLoader.getResource('lib/AndroidManifest.xml')
+        File manifestFile = project.file('src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
         manifestFile.write(resource.text)
         project.buildscript.repositories {
@@ -22,25 +27,25 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.library")
         project.android.with {
-            compileSdkVersion 28
+            compileSdkVersion 29
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 28
+                targetSdkVersion 29
             }
         }
         project.apply(plugin: "pl.droidsonroids.pitest")
         return project
     }
 
-    static createSampleApplicationProject(File... rootDir) {
-        def builder = ProjectBuilder.builder()
+    static Project createSampleApplicationProject(File... rootDir) {
+        ProjectBuilder builder = ProjectBuilder.builder()
         if (rootDir.length > 0) {
             builder.withProjectDir(rootDir[0])
         }
-        def project = builder.build()
-        ClassLoader classLoader = AndroidUtils.class.classLoader
-        def resource = classLoader.getResource('app/AndroidManifest.xml')
-        def manifestFile = project.file('src/main/AndroidManifest.xml')
+        Project project = builder.build()
+        ClassLoader classLoader = AndroidUtils.classLoader
+        URL resource = classLoader.getResource('app/AndroidManifest.xml')
+        File manifestFile = project.file('src/main/AndroidManifest.xml')
         manifestFile.parentFile.mkdirs()
         manifestFile.write(resource.text)
         project.buildscript.repositories {
@@ -49,10 +54,10 @@ class AndroidUtils {
         }
         project.apply(plugin: "com.android.application")
         project.android.with {
-            compileSdkVersion 28
+            compileSdkVersion 29
             defaultConfig {
                 minSdkVersion 10
-                targetSdkVersion 28
+                targetSdkVersion 29
             }
             buildTypes {
                 release { }
@@ -80,4 +85,5 @@ class AndroidUtils {
         project.apply(plugin: "pl.droidsonroids.pitest")
         return project
     }
+
 }

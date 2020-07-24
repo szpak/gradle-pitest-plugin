@@ -1,32 +1,35 @@
 package pl.droidsonroids.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 
+@CompileDynamic
 class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "report error when no targetClasses parameter is defined"() {
+    void "report error when no targetClasses parameter is defined"() {
         given:
-            buildFile << """
+        buildFile << """
                 apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 repositories {
                     google()
                 }
-                
+
                 android {
-                    compileSdkVersion 28
+                    compileSdkVersion 29
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 28
+                        targetSdkVersion 29
                     }
                 }
             """.stripIndent()
         and:
-            writeHelloWorld('gradle.pitest.test.hello')
+        writeHelloWorld('gradle.pitest.test.hello')
         when:
-            ExecutionResult result = runTasksWithFailure('pitestRelease')
+        ExecutionResult result = runTasksWithFailure('pitestRelease')
         then:
-            assertStdOutOrStdErrContainsGivenText(result,"No value has been specified for property 'targetClasses'")
+        assertStdOutOrStdErrContainsGivenText(result, "No value has been specified for property 'targetClasses'")
     }
+
 }

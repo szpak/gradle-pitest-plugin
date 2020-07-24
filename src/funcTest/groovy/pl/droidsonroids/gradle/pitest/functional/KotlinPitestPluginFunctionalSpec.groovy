@@ -1,12 +1,14 @@
 package pl.droidsonroids.gradle.pitest.functional
 
+import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 
 import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
 
+@CompileDynamic
 class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    def "setup and run simple build on pitest infrastructure with kotlin plugin"() {
+    void "setup and run simple build on pitest infrastructure with kotlin plugin"() {
         given:
             buildFile << """
                 apply plugin: 'pl.droidsonroids.pitest'
@@ -19,16 +21,16 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                         jcenter()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20"
-                        classpath 'com.android.tools.build:gradle:3.3.0'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72"
+                        classpath 'com.android.tools.build:gradle:4.0.1'
                     }
                 }
 
                 android {
-                    compileSdkVersion 28
+                    compileSdkVersion 29
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 28
+                        targetSdkVersion 29
                     }
                     lintOptions {
                         //ignore missing lint database
@@ -66,7 +68,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':test')
     }
 
-    def "should run mutation analysis with Android Gradle plugin 3"() {
+    void "should run mutation analysis with Android Gradle plugin 3"() {
         when:
             copyResources("testProjects/simpleKotlin", "")
         then:
@@ -78,7 +80,7 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
 
-    def "should run mutation analysis with Android Gradle plugin 2"() {
+    void "should run mutation analysis with Android Gradle plugin 2"() {
         when:
             copyResources("testProjects/simpleKotlin", "")
         then:
@@ -89,4 +91,5 @@ class KotlinPitestPluginFunctionalSpec extends AbstractPitestFunctionalSpec {
             result.wasExecuted(':pitestRelease')
             result.standardOutput.contains('Generated 3 mutations Killed 3 (100%)')
     }
+
 }

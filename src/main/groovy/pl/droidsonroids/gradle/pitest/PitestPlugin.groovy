@@ -23,16 +23,23 @@ import com.android.build.gradle.api.AndroidSourceSet
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
+import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.DefaultDomainObjectSet
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.provider.Provider
+import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.util.VersionNumber
+
+import java.util.concurrent.Callable
 
 import static com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
@@ -40,16 +47,19 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
 /**
  * The main class for Pitest plugin.
  */
+@CompileDynamic
 class PitestPlugin implements Plugin<Project> {
-    public final static String DEFAULT_PITEST_VERSION = '1.5.0'
+
+    public final static String DEFAULT_PITEST_VERSION = '1.5.1'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
-    public final static PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
+    public final static String PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
 
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
+    @SuppressWarnings("FieldName")
     private final static Logger log = Logging.getLogger(PitestPlugin)
     private final static VersionNumber ANDROID_GRADLE_PLUGIN_VERSION_NUMBER = VersionNumber.parse(ANDROID_GRADLE_PLUGIN_VERSION)
 
@@ -61,6 +71,18 @@ class PitestPlugin implements Plugin<Project> {
     private Project project
     private PitestPluginExtension extension
 
+    static String sanitizeSdkVersion(String version) {
+        return version.replaceAll('[^\\p{Alnum}.-]', '-')
+    }
+
+    static JavaCompile getJavaCompileTask(BaseVariant variant) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER >= VersionNumber.parse("3.3")) {
+            return variant.javaCompileProvider.get()
+        } else {
+            return variant.javaCompile
+        }
+    }
+
     void apply(Project project) {
         this.project = project
         createConfigurations()
@@ -71,11 +93,15 @@ class PitestPlugin implements Plugin<Project> {
         extension.useClasspathFile.set(false)
 
         project.pluginManager.apply(BasePlugin)
+
         project.afterEvaluate {
-            extension.reportDir.set(new File("${project.reporting.baseDir.path}/pitest"))
+            extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
 
             if (extension.mainSourceSets.empty()) {
                 extension.mainSourceSets.set(project.android.sourceSets.main as Set<AndroidSourceSet>)
+            }
+            if (extension.testSourceSets.empty()) {
+                extension.testSourceSets.set(project.android.sourceSets.test as Set<AndroidSourceSet>)
             }
 
             project.plugins.withType(AppPlugin) { createPitestTasks(project.android.applicationVariants) }
@@ -85,8 +111,9 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
+    @SuppressWarnings("BuilderMethodWithSideEffects")
     private void createPitestTasks(DefaultDomainObjectSet<? extends BaseVariant> variants) {
-        def globalTask = project.tasks.create(PITEST_TASK_NAME)
+        Task globalTask = project.tasks.create(PITEST_TASK_NAME)
         globalTask.with {
             description = "Run PIT analysis for java classes, for all build variants"
             group = PITEST_TASK_GROUP
@@ -96,12 +123,12 @@ class PitestPlugin implements Plugin<Project> {
         variants.all { BaseVariant variant ->
             PitestTask variantTask = project.tasks.create("${PITEST_TASK_NAME}${variant.name.capitalize()}", PitestTask)
 
-            def mockableAndroidJarTask
+            Task mockableAndroidJarTask
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER < new VersionNumber(3, 2, 0, null)) {
                 mockableAndroidJarTask = project.tasks.findByName("mockableAndroidJar")
                 configureTaskDefault(variantTask, variant, getMockableAndroidJar(project.android))
             } else {
-                mockableAndroidJarTask = project.tasks.maybeCreate("pitestMockableAndroidJar", PitestMockableAndroidJarTask.class)
+                mockableAndroidJarTask = project.tasks.maybeCreate("pitestMockableAndroidJar", PitestMockableAndroidJarTask)
                 configureTaskDefault(variantTask, variant, mockableAndroidJarTask.outputJar)
             }
 
@@ -119,15 +146,17 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
+    @SuppressWarnings("BuilderMethodWithSideEffects")
     private void createConfigurations() {
-        [PITEST_CONFIGURATION_NAME, PITEST_TEST_COMPILE_CONFIGURATION_NAME].each {
-            project.rootProject.buildscript.configurations.maybeCreate(it).with {
+        [PITEST_CONFIGURATION_NAME, PITEST_TEST_COMPILE_CONFIGURATION_NAME].each { configuration ->
+            project.rootProject.buildscript.configurations.maybeCreate(configuration).with {
                 visible = false
-                description = "The Pitest libraries to be used for this project."
+                description = "The PIT libraries to be used for this project."
             }
         }
     }
 
+    @SuppressWarnings(["Instanceof", "UnnecessarySetter", "DuplicateNumberLiteral"])
     private void configureTaskDefault(PitestTask task, BaseVariant variant, File mockableAndroidJar) {
         FileCollection combinedTaskClasspath = project.files()
 
@@ -136,13 +165,13 @@ class PitestPlugin implements Plugin<Project> {
             combinedTaskClasspath.from(mockableAndroidJar)
         }
 
-        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
+        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major == 3) {
             if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {
-                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive {
-                    it.properties.dependencyProject == null
+                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive { configuration ->
+                    configuration.properties.dependencyProject == null
                 })
-                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive {
-                    it.properties.dependencyProject == null
+                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive { configuration ->
+                    configuration.properties.dependencyProject == null
                 })
             } else if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 4) {
                 combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"])
@@ -177,8 +206,7 @@ class PitestPlugin implements Plugin<Project> {
                     return [project.getGroup() + ".*"] as Set
                 }
                 return null
-            }
-            )
+            } as Provider<Iterable<String>>)
             targetTests.set(project.providers.provider {
                 //unless explicitly configured use targetClasses - https://github.com/szpak/gradle-pitest-plugin/issues/144
                 if (extension.targetTests.isPresent()) {
@@ -187,7 +215,7 @@ class PitestPlugin implements Plugin<Project> {
                 } else {
                     return targetClasses.getOrNull()
                 }
-            })
+            } as Provider<Iterable<String>>)
             dependencyDistance.set(extension.dependencyDistance)
             threads.set(extension.threads)
             mutateStaticInits.set(extension.mutateStaticInits)
@@ -207,10 +235,33 @@ class PitestPlugin implements Plugin<Project> {
             skipFailingTests.set(extension.skipFailingTests)
             includedGroups.set(extension.includedGroups)
             excludedGroups.set(extension.excludedGroups)
+            fullMutationMatrix.set(extension.fullMutationMatrix)
             includedTestMethods.set(extension.includedTestMethods)
-//        sourceDirs.set(project.providers.provider() { extension.mainSourceSets*.allSource.srcDirs.flatten() as Set })
+            Set javaSourceSet = extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
+            Set resourcesSourceSet = extension.mainSourceSets.get()*.resources.srcDirs.flatten() as Set
+            sourceDirs.setFrom(javaSourceSet + resourcesSourceSet)
             detectInlinedCode.set(extension.detectInlinedCode)
             timestampedReports.set(extension.timestampedReports)
+            additionalClasspath.setFrom({
+                FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
+                    !extension.fileExtensionsToFilter.getOrElse([]).find { extension -> file.name.endsWith(".$extension") }
+                }
+
+                return filteredCombinedTaskClasspath
+            } as Callable<FileCollection>, extension.testSourceSets.get()*.java.srcDirs.flatten(), extension.testSourceSets.get()*.resources.srcDirs.flatten())
+            useAdditionalClasspathFile.set(extension.useClasspathFile)
+            additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
+            mutableCodePaths.setFrom({
+                Object additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
+                additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
+                Task kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
+                if (kotlinCompileTask != null) {
+                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
+                }
+                additionalMutableCodePaths
+            } as Callable<Set<File>>)
+            historyInputLocation.set(extension.historyInputLocation)
+            historyOutputLocation.set(extension.historyOutputLocation)
             enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
             mutationThreshold.set(extension.mutationThreshold)
             coverageThreshold.set(extension.coverageThreshold)
@@ -218,60 +269,27 @@ class PitestPlugin implements Plugin<Project> {
             exportLineCoverage.set(extension.exportLineCoverage)
             jvmPath.set(extension.jvmPath)
             mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
-//        mutableCodePaths.set(extension.additionalMutableCodePaths)
-            historyInputLocation.set(extension.historyInputLocation)
-            historyOutputLocation.set(extension.historyOutputLocation)
+            launchClasspath.setFrom({
+                project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+            } as Callable<Configuration>)
             pluginConfiguration.set(extension.pluginConfiguration)
             maxSurviving.set(extension.maxSurviving)
             useClasspathJar.set(extension.useClasspathJar)
-            useAdditionalClasspathFile.set(extension.useClasspathFile)
             features.set(extension.features)
-            task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
-            task.features.set(extension.features)
-        }
-
-        task.conventionMapping.with {
-            additionalClasspath = {
-                FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                    !extension.fileExtensionsToFilter.getOrNull().find { file.name.endsWith(".$it") }
-                }
-
-                return filteredCombinedTaskClasspath
-            }
-            additionalClasspathFile = { new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME) }
-            launchClasspath = {
-                project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
-            }
-            sourceDirs = {
-                extension.mainSourceSets.get()*.java.srcDirs.flatten() as Set
-            }
-            mutableCodePaths = {
-                def additionalMutableCodePaths = extension.additionalMutableCodePaths ?: [] as Set
-                additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
-                def kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
-                if (kotlinCompileTask != null) {
-                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
-                }
-                additionalMutableCodePaths
-            }
-
-            reportDir = { extension.reportDir }
-            historyInputLocation = { extension.historyInputLocation }
-            historyOutputLocation = { extension.historyOutputLocation }
-            defaultFileForHistoryData = { new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME) }
         }
     }
 
     private void addPitDependencies() {
         project.rootProject.buildscript.dependencies {
-            def pitestVersion = extension.pitestVersion.get()
+            String pitestVersion = extension.pitestVersion.get()
             log.info("Using PIT: $pitestVersion")
             pitest "org.pitest:pitest-command-line:$pitestVersion"
         }
     }
 
+    @SuppressWarnings("DuplicateNumberLiteral")
     private File getMockableAndroidJar(BaseExtension android) {
-        def returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
+        boolean returnDefaultValues = android.testOptions.unitTests.returnDefaultValues
 
         String mockableAndroidJarFilename = "mockable-"
         mockableAndroidJarFilename += sanitizeSdkVersion(android.compileSdkVersion)
@@ -289,15 +307,4 @@ class PitestPlugin implements Plugin<Project> {
         return new File(mockableJarDirectory, mockableAndroidJarFilename)
     }
 
-    static def sanitizeSdkVersion(def version) {
-        return version.replaceAll('[^\\p{Alnum}.-]', '-')
-    }
-
-    static JavaCompile getJavaCompileTask(BaseVariant variant) {
-        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER >= VersionNumber.parse("3.3")) {
-            return variant.javaCompileProvider.get()
-        } else {
-            return variant.javaCompile
-        }
-    }
 }
