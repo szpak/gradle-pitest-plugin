@@ -56,4 +56,5 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         }
         return [MINIMAL_SUPPORTED_PIT_VERSION]
     }
+
 }
