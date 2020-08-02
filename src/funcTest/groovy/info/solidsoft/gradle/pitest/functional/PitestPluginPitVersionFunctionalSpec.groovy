@@ -9,9 +9,7 @@ import org.gradle.internal.jvm.Jvm
 @CompileDynamic
 class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final String PIT_1_3_VERSION = "1.3.1"
-    private static final String MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION = "1.2.3"  //https://github.com/hcoles/pitest/issues/380
-    private static final String MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION = "1.4.0"
+    private static final String MINIMAL_SUPPORTED_PIT_VERSION = "1.4.0"  //minimal PIT version that required Java 8 - May 2018
     private static final String MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION = "1.4.2" //in fact 1.4.1, but 1.4.2 is also Java 12 compatible
     private static final String MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION = "1.4.6" //not officially, but at least simple case works
     private static final String MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION = "1.4.11" //not officially, but with ASM 7.3.1
@@ -41,25 +39,21 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
             pitVersion << getPitVersionsCompatibleWithCurrentJavaVersion().unique() //be aware that unique() is available since Groovy 2.4.0
     }
 
-    @SuppressWarnings("IfStatementCouldBeTernary")
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
-        if (isJava14Compatible()) {
-            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION]
-        }
-        if (isJava13Compatible()) {
-            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
-        }
-
-        if (Jvm.current().javaVersion.isJava11Compatible()) {
-            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION]
-        }
-        if (Jvm.current().javaVersion.isJava10Compatible()) {
-            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA10_COMPATIBLE_PIT_VERSION]
-        }
-        if (Jvm.current().javaVersion.isJava9Compatible()) {
-            return [PitestPlugin.DEFAULT_PITEST_VERSION, MINIMAL_JAVA9_COMPATIBLE_PIT_VERSION, PIT_1_3_VERSION]
-        }
-        return [PitestPlugin.DEFAULT_PITEST_VERSION, "1.1.5", "1.2.0", PIT_1_3_VERSION, "1.4.0"]
+        return [getMinimalPitVersionCompatibleWithCurrentJavaVersion(), PitestPlugin.DEFAULT_PITEST_VERSION]
     }
 
+    @SuppressWarnings("IfStatementCouldBeTernary")
+    private String getMinimalPitVersionCompatibleWithCurrentJavaVersion() {
+        if (isJava14Compatible()) {
+            return [MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION]
+        }
+        if (isJava13Compatible()) {
+            return [MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
+        }
+        if (Jvm.current().javaVersion.isJava11Compatible()) {
+            return [MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION]
+        }
+        return [MINIMAL_SUPPORTED_PIT_VERSION]
+    }
 }
