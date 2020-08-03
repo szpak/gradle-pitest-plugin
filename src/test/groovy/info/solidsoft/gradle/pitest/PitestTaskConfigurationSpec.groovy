@@ -244,7 +244,11 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             project.sourceSets { intTest }
             project.pitest.testSourceSets = [project.sourceSets.intTest]
         expect:
-            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet("intTest").join(",")
+            task.taskArgumentMap()['classPath'] ==
+                (
+                    assembleSourceSetsClasspathByNameAsStringSet("intTest") +
+                    [new File(project.buildDir, "classes/java/main").absolutePath]
+                ).join(",")
     }
 
     private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
@@ -254,8 +258,8 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     private Set<String> assembleSourceSetsClasspathByNameAsStringSet(String sourceSetName) {
-        return [new File(project.buildDir, "classes//java//${sourceSetName}"),
-                new File(project.buildDir, "resources//${sourceSetName}")
+        return [new File(project.buildDir, "classes/java/${sourceSetName}"),
+                new File(project.buildDir, "resources/${sourceSetName}")
         ]*.absolutePath
     }
 
