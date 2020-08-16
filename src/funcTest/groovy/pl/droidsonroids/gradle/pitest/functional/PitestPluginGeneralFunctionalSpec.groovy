@@ -114,6 +114,49 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             htmlFileWithReportForHelloPit.text.contains("System.out.println(&#34;Mutation to survive&#34;);")
     }
 
+    void "allow override report directory"() {
+        given:
+        buildFile << """
+                apply plugin: 'com.android.library'
+                apply plugin: 'pl.droidsonroids.pitest'
+
+                android {
+                    compileSdkVersion 29
+                    defaultConfig {
+                        minSdkVersion 10
+                        targetSdkVersion 29
+                    }
+                }
+                group = 'gradle.pitest.test'
+
+                buildscript {
+                    repositories {
+                        jcenter()
+                        google()
+                    }
+                    dependencies {
+                        classpath 'com.android.tools.build:gradle:4.0.1'
+                    }
+                }
+                repositories {
+                    google()
+                    mavenCentral()
+                }
+                dependencies { testImplementation 'junit:junit:4.12' }
+
+                pitest {
+                    reportDir = file("build/pitest-reports")
+                }
+            """.stripIndent()
+        and:
+        writeHelloWorld('gradle.pitest.test.hello')
+        when:
+        ExecutionResult result = runTasksSuccessfully('pitestRelease')
+        then:
+        result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
+        fileExists('build/pitest-reports')
+    }
+
     private String quoteBackslashesInWindowsPath(File file) {
         //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
         return file.absolutePath.replaceAll('\\\\', '\\\\\\\\')
