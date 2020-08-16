@@ -1,6 +1,6 @@
 plugins {
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'com.github.ben-manes.versions' version '0.25.0'
+    id 'com.github.ben-manes.versions' version '0.29.0'
     id 'groovy'
     id 'maven-publish'
     id 'codenarc'
@@ -38,7 +38,7 @@ dependencies {
     testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.10.13' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.10.14' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
