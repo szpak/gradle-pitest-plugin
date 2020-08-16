@@ -24,10 +24,10 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                 apply plugin: 'com.android.application'
 
                 android {
-                    compileSdkVersion 29
+                    compileSdkVersion 30
                     defaultConfig {
                         minSdkVersion 10
-                        targetSdkVersion 29
+                        targetSdkVersion 30
                     }
                     testOptions {
                         unitTests.returnDefaultValues = true
