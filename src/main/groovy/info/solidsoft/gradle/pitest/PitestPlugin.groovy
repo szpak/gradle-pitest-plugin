@@ -170,19 +170,20 @@ class PitestPlugin implements Plugin<Project> {
         task.sourceDirs.setFrom(extension.mainSourceSets.map { mainSourceSet -> mainSourceSet*.allSource*.srcDirs })
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
+        Callable<Set<File>> allMutableCodePaths = {
+            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>)
+        }
         task.additionalClasspath.setFrom({
             List<FileCollection> testRuntimeClasspath = (extension.testSourceSets.get() as Set<SourceSet>)*.runtimeClasspath
             FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
             FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
                 !extension.fileExtensionsToFilter.getOrElse([]).find { extension -> file.name.endsWith(".$extension") }
-            }
+            } + project.files(allMutableCodePaths)
             return filteredCombinedTaskClasspath
         } as Callable<FileCollection>)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         //additionalClasspathFile - separate method
-        task.mutableCodePaths.setFrom({
-            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>)
-        } as Callable<Set<File>>)
+        task.mutableCodePaths.setFrom(allMutableCodePaths)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)

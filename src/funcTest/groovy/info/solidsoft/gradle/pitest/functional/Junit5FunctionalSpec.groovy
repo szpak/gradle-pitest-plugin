@@ -11,8 +11,10 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             copyResources("testProjects/junit5kotlin", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasks('pitest')
         then:
+            !result.standardError.contains("Build failed with an exception")
+            !result.failure
             result.wasExecuted('pitest')
             result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
@@ -21,8 +23,10 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             copyResources("testProjects/junit5kotlin", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest', '-b', 'build.gradle.kts')
+            ExecutionResult result = runTasks('pitest', '-b', 'build.gradle.kts')
         then:
+            !result.standardError.contains("Build failed with an exception")
+            !result.failure
             result.wasExecuted('pitest')
             result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
@@ -32,8 +36,10 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
         given:
             copyResources("testProjects/junit5simple", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasks('pitest')
         then:
+            !result.standardError.contains("Build failed with an exception")
+            !result.failure
             result.wasExecuted('pitest')
         and:
             result.standardOutput.contains('--testPlugin=junit5')

@@ -233,30 +233,37 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             sourceDirs == assembleMainSourceDirAsStringSet().join(",")
     }
 
-    private Set<String> assembleMainSourceDirAsStringSet() {
-        return ["resources", "java"].collect { String dirName ->
-            new File(project.projectDir, "src//main//${dirName}")
-        }*.absolutePath
-    }
-
     void "should consider testSourceSets in (additional) classpath"() {
         given:
             project.sourceSets { intTest }
             project.pitest.testSourceSets = [project.sourceSets.intTest]
         expect:
-            task.taskArgumentMap()['classPath'] == assembleSourceSetsClasspathByNameAsStringSet("intTest").join(",")
+            task.taskArgumentMap()['classPath'].split(",") as Set ==
+                [
+                    sourceSetBuiltJavaClasses("intTest"),
+                    sourceSetBuiltResources("intTest"),
+                    sourceSetBuiltJavaClasses("main")
+                ] as Set
     }
 
     private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
         return sourceSetNames.collectMany { String sourceSetName ->
-            assembleSourceSetsClasspathByNameAsStringSet(sourceSetName)
+            [sourceSetBuiltJavaClasses(sourceSetName), sourceSetBuiltResources(sourceSetName)]
         } as Set<String>
     }
 
-    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(String sourceSetName) {
-        return [new File(project.buildDir, "classes//java//${sourceSetName}"),
-                new File(project.buildDir, "resources//${sourceSetName}")
-        ]*.absolutePath
+    private Set<String> assembleMainSourceDirAsStringSet() {
+        return ["resources", "java"].collect { String dirName ->
+            new File(project.projectDir, "src/main/${dirName}")
+        }*.absolutePath
+    }
+
+    private String sourceSetBuiltJavaClasses(String sourceSetName) {
+        return new File(project.buildDir, "classes/java/${sourceSetName}").absolutePath
+    }
+
+    private String sourceSetBuiltResources(String sourceSetName) {
+        return new File(project.buildDir, "resources/${sourceSetName}").absolutePath
     }
 
 }
