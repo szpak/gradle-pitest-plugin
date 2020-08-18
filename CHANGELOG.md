@@ -1,3 +1,8 @@
+# 0.2.5 - 2020-08-19
+- Merge upstream changes 16873cb7a67b2b21287ba65c0ac89c7266f2d659
+- Add compatiblity witn Anroid Gradle Plugin 4 [#64](https://github.com/koral--/gradle-pitest-plugin/issue/64)
+- Fix report directory parameter handling [#63](https://github.com/koral--/gradle-pitest-plugin/issue/63)
+
 # 0.2.4 - 2020-05-27
 - Fix Gradle 6.4 execution break while trying to change mainClass [#60](https://github.com/koral--/gradle-pitest-plugin/issue/60)
 
