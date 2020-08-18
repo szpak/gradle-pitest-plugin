@@ -74,7 +74,13 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         and:
             //TODO
             createClasspathFile.readLines().size() == 4
-            createClasspathFile.readLines() as Set<String> == assembleSourceSetsClasspathByNameAsStringSet(["main", "test"])
+            createClasspathFile.readLines() as Set ==
+                [
+                    sourceSetBuiltJavaClasses("main"),
+                    sourceSetBuiltResources("main"),
+                    sourceSetBuiltJavaClasses("test"),
+                    sourceSetBuiltResources("test")
+                ] as Set
     }
 
     void "should pass features configuration to PIT"() {
@@ -244,12 +250,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                     sourceSetBuiltResources("intTest"),
                     sourceSetBuiltJavaClasses("main")
                 ] as Set
-    }
-
-    private Set<String> assembleSourceSetsClasspathByNameAsStringSet(List<String> sourceSetNames) {
-        return sourceSetNames.collectMany { String sourceSetName ->
-            [sourceSetBuiltJavaClasses(sourceSetName), sourceSetBuiltResources(sourceSetName)]
-        } as Set<String>
     }
 
     private Set<String> assembleMainSourceDirAsStringSet() {
