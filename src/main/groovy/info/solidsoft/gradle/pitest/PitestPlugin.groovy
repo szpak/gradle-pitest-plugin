@@ -51,7 +51,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.5.1'
+    public final static String DEFAULT_PITEST_VERSION = '1.5.2'
     @Internal
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
 
