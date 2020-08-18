@@ -7,32 +7,34 @@ which supports Android gradle projects.
 
 ```groovy
 plugins {
-  id 'pl.droidsonroids.pitest' version '0.2.4'
+  id 'pl.droidsonroids.pitest' version '0.2.5'
+}
+```
+
+```kotlin
+plugins {
+  id("pl.droidsonroids.pitest") version "0.2.5"
 }
 ```
 
 ## With Maven central repository
-```groovy
+```kotlin
 buildscript {
   repositories {
     mavenCentral()
     google()
-    // If you're using a version of Gradle lower than 4.1, you must instead use:
-    // maven {
-    //     url 'https://maven.google.com'
-    // }
-    // An alternative URL is 'https://dl.google.com/dl/android/maven2/'    
   }
   dependencies {
-    classpath 'pl.droidsonroids.gradle:gradle-pitest-plugin:0.2.4'
+    classpath "pl.droidsonroids.gradle:gradle-pitest-plugin:0.2.5"
   }
 }
 
-apply plugin: 'com.android.application'
-//or apply plugin: 'com.android.library'
-//or apply plugin: 'com.android.test'
-
-apply plugin: 'pl.droidsonroids.pitest'
+plugins {
+  id("com.android.application")
+  //or id("com.android.library")
+  //or id("com.android.test")
+  id("pl.droidsonroids.pitest")
+}
 ```
 
 # Usage
