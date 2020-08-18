@@ -6,6 +6,7 @@
  - PIT 1.5.2 by default
  - Add functional test with Spock 2 (using JUnit Platform)
  - Bump minimal supported PIT version to 1.4.0 - the first version which required Java 8 (May 2018)
+ - Upgrade Gradle wrapper to 6.6
 
 ## 1.5.1 - 2020-05-06
 
