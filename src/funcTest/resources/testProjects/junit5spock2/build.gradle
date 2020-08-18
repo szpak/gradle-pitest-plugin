@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'info.solidsoft.pitest'
+
+/*
+//Local/current version of the plugin should be put on a classpath earlier to override that plugin version
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:X.Y.Z-SNAPSHOT'
+    }
+}
+*/
+
+repositories {
+    mavenCentral()
+}
+
+group = "pitest.test"
+
+dependencies {
+    testImplementation 'org.spockframework:spock-core:2.0-M3-groovy-2.5'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+pitest {
+//    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
+    junit5PluginVersion = "0.12"
+}

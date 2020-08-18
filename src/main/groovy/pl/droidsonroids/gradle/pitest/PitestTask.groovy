@@ -326,7 +326,6 @@ class PitestTask extends JavaExec {
 
     @Override
     void exec() {
-        //Workaround for compatibility with Gradle <4.0 due to setArgs(List) and setJvmArgs(List) added in Gradle 4.0
         args = argumentsForPit()
         jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         classpath = getLaunchClasspath()

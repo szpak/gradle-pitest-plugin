@@ -16,7 +16,6 @@
 package pl.droidsonroids.gradle.pitest
 
 import groovy.transform.CompileDynamic
-import spock.lang.Ignore
 import spock.lang.Issue
 
 @CompileDynamic
@@ -234,15 +233,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         return ["java", "resources"].collect { String dirName ->
             new File(project.projectDir, "src//main//${dirName}")
         }*.absolutePath
-    }
-
-    @Ignore("TODO move to funcTest")
-    void "should consider testSourceSets in (additional) classpath"() {
-        given:
-            project.android.sourceSets.test.java.srcDir("intTest")
-            project.pitest.testSourceSets = [project.android.sourceSets.test]
-        expect:
-            task.taskArgumentMap()['classPath'].find(".*/intTest") != null
     }
 
 }
