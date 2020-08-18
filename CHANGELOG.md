@@ -2,6 +2,7 @@
 
 ## 1.5.2 - Unreleased
 
+ - Support java-test-fixtures plugin - [#223](https://github.com/szpak/gradle-pitest-plugin/pull/223) - PR by [Piotr Kubowicz](https://github.com/pkubowicz)
  - Add functional test with Spock 2 (using JUnit Platform)
  - Bump minimal supported PIT version to 1.4.0 - the first version which required Java 8 (May 2018)
 
