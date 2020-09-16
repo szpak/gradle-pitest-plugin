@@ -50,7 +50,7 @@ matrix:
       env: PITEST_REGRESSION_TESTS=quick
     - jdk: openjdk11
       env: PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
-    - jdk: openjdk14
+    - jdk: openjdk15
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
     - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
       before_install:
