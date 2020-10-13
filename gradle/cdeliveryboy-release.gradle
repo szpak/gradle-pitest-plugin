@@ -116,3 +116,36 @@ if (hasProperty('changelogSync')) {
     }
     ciBuild.dependsOn syncChangelog
 }
+
+
+//Some workarounds on CDeliveryBoy limitations - #3 and #13 (see below)
+
+//Note. Referring non built-in types in external build script is problematic: https://github.com/gradle/gradle/issues/1262
+//Note2. Task dependency removal is problematic due to: https://github.com/gradle/gradle/pull/6143/
+["uploadArchives", "createRepository", "pointUploadArchivesToExplicitRepository"].each { String taskName ->
+    tasks.named(taskName).configure {
+        onlyIf {
+            boolean onlyIfValue = resolveOnlyIfValueForUploadTasks()
+            if (!onlyIfValue) {
+                logger.lifecycle("Task disabled due to environment settings for ciBuild")
+            }
+            return onlyIfValue
+        }
+    }
+}
+
+boolean resolveOnlyIfValueForUploadTasks() {
+    return !isSnapshotBuildWithSkipReleaseOnCI() && !isExtraBuildOfReleaseTagOnCI()
+}
+//Workaround on https://github.com/szpak/CDeliveryBoy/issues/3 - do not upload snapshots from other Java versions on CI server
+boolean isSnapshotBuildWithSkipReleaseOnCI() {
+    return (project.version as String).endsWith("-SNAPSHOT") && System.env.SKIP_RELEASE == "true" && isCiBuildTaskCalled()
+}
+//Workaround on https://github.com/szpak/CDeliveryBoy/issues/13 - do not upload artifacts on extra build on CI server (e.g. from cron) of release tag
+boolean isExtraBuildOfReleaseTagOnCI() {
+    return !(project.version as String).endsWith("-SNAPSHOT") && !ciBuild.inReleaseMode && isCiBuildTaskCalled()
+}
+boolean isCiBuildTaskCalled() {
+    //It covers only basic (idiomatic) case that "ciBuild" task has been called directly. Examining taskGraph would be better, however, more problematic due to late preparation.
+    return gradle.startParameter.taskNames.contains("ciBuild")
+}
