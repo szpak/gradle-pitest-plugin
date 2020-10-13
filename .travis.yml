@@ -26,10 +26,12 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
   - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl/
   - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl-accessors/
-  - rm -fr $HOME/.gradle/caches/jars-*/
+  - rm -f  $HOME/.gradle/caches/jars-*/*.lock
+  - rm -f  $HOME/.gradle/caches/jars-*/*/proj.jar
   - rm -f  $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
   - rm -f  $HOME/.gradle/caches/*/fileContent/fileContent.lock
   - rm -f  $HOME/.gradle/caches/*/generated-gradle-jars/generated-gradle-jars.lock
+  - rm -f  $HOME/.gradle/caches/*/executionHistory/executionHistory.lock
   - rm -f  $HOME/.gradle/caches/journal-1/file-access.bin
   - rm -f  $HOME/.gradle/caches/journal-1/journal-1.lock
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
