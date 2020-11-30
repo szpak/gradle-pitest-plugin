@@ -1,0 +1,44 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3-SNAPSHOT'
+    }
+}
+
+apply plugin: "info.solidsoft.pitest.aggregator"
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation 'junit:junit:4.12'
+    }
+
+    version = '1.0'
+    group = 'pitest.sample.multimodule'
+}
+
+[":shared", ":for-report"].each { subprojectName ->
+    configure(project(subprojectName)) {
+        apply plugin: "info.solidsoft.pitest"
+
+        dependencies {
+            implementation 'org.slf4j:slf4j-api:1.7.25'
+            implementation 'org.slf4j:slf4j-nop:1.7.25'
+        }
+
+        pitest {
+            outputFormats = ["HTML","XML"]
+            timestampedReports = false
+            exportLineCoverage = true
+        }
+    }
+}

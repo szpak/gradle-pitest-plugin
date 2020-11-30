@@ -34,6 +34,7 @@ sourceSets {
 
 dependencies {
     implementation localGroovy()
+    implementation "org.pitest:pitest-aggregator:1.5.2"
 
     testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
