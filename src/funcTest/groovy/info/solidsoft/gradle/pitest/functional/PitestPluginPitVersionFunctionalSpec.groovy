@@ -27,11 +27,14 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
             writeHelloPitClass()
             writeHelloPitTest()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
+            ExecutionResult result = runTasks('pitest')
         then:
+            !result.standardError.contains("Build failed with an exception")
+            !result.failure
             result.wasExecuted(':pitest')
         and:
             result.standardOutput.contains("Using PIT: ${pitVersion}")
+            result.standardOutput.contains("pitest-${pitVersion}.jar")
         and:
             result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
             result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
@@ -46,15 +49,15 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     @SuppressWarnings("IfStatementCouldBeTernary")
     private String getMinimalPitVersionCompatibleWithCurrentJavaVersion() {
         if (isJava14Compatible()) {
-            return [MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION]
+            return MINIMAL_JAVA14_COMPATIBLE_PIT_VERSION
         }
         if (isJava13Compatible()) {
-            return [MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION]
+            return MINIMAL_JAVA13_COMPATIBLE_PIT_VERSION
         }
         if (Jvm.current().javaVersion.isJava11Compatible()) {
-            return [MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION]
+            return MINIMAL_JAVA11_COMPATIBLE_PIT_VERSION
         }
-        return [MINIMAL_SUPPORTED_PIT_VERSION]
+        return MINIMAL_SUPPORTED_PIT_VERSION
     }
 
 }
