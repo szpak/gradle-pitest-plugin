@@ -1,5 +1,10 @@
 # gradle-pitest-plugin changelog
 
+## next
+
+ - PIT 1.6.1 by default
+ - support new configuration property `testStrengthThreshold` of PIT 1.6.1
+
 ## 1.5.2 - 2020-08-18
 
  - Support java-test-fixtures plugin - [#223](https://github.com/szpak/gradle-pitest-plugin/pull/223) - PR by [Piotr Kubowicz](https://github.com/pkubowicz)

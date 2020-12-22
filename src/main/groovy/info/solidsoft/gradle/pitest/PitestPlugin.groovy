@@ -51,7 +51,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.5.2'
+    public final static String DEFAULT_PITEST_VERSION = '1.6.1'
     @Internal
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
 
@@ -190,6 +190,7 @@ class PitestPlugin implements Plugin<Project> {
         //defaultFileForHistoryData - separate method
         task.mutationThreshold.set(extension.mutationThreshold)
         task.coverageThreshold.set(extension.coverageThreshold)
+        task.testStrengthThreshold.set(extension.testStrengthThreshold)
         task.mutationEngine.set(extension.mutationEngine)
         task.exportLineCoverage.set(extension.exportLineCoverage)
         task.jvmPath.set(extension.jvmPath)
