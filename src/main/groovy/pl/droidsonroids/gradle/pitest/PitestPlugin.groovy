@@ -154,7 +154,7 @@ class PitestPlugin implements Plugin<Project> {
     @SuppressWarnings("BuilderMethodWithSideEffects")
     private void createConfigurations() {
         [PITEST_CONFIGURATION_NAME, PITEST_TEST_COMPILE_CONFIGURATION_NAME].each { configuration ->
-            project.rootProject.buildscript.configurations.maybeCreate(configuration).with {
+            project.buildscript.configurations.maybeCreate(configuration).with {
                 visible = false
                 description = "The PIT libraries to be used for this project."
             }
@@ -275,7 +275,7 @@ class PitestPlugin implements Plugin<Project> {
             jvmPath.set(pitestExtension.jvmPath)
             mainProcessJvmArgs.set(pitestExtension.mainProcessJvmArgs)
             launchClasspath.setFrom({
-                project.rootProject.buildscript.configurations[PITEST_CONFIGURATION_NAME]
+                project.buildscript.configurations[PITEST_CONFIGURATION_NAME]
             } as Callable<Configuration>)
             pluginConfiguration.set(pitestExtension.pluginConfiguration)
             maxSurviving.set(pitestExtension.maxSurviving)
