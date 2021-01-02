@@ -1,12 +1,12 @@
 plugins {
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'com.github.ben-manes.versions' version '0.29.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
     id 'groovy'
     id 'maven-publish'
     id 'codenarc'
     id 'signing'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'com.gradle.plugin-publish' version '0.12.0'
 }
 
 sourceCompatibility = 1.8
@@ -25,7 +25,7 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:4.0.1'
+    implementation 'com.android.tools.build:gradle:4.1.1'
 
     testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
@@ -34,13 +34,13 @@ dependencies {
     testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.10.14' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.10.19' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:7.8.6') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:7.9.4') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
