@@ -11,7 +11,6 @@ import pl.droidsonroids.robolectric.RobolectricTest;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class StringHolderWithContextTest extends RobolectricTest {
 	private Context _context = RuntimeEnvironment.application;
 
