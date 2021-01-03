@@ -165,7 +165,7 @@ class PitestPlugin implements Plugin<Project> {
     private void configureTaskDefault(PitestTask task, BaseVariant variant, File mockableAndroidJar) {
         FileCollection combinedTaskClasspath = project.files()
 
-        combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
+        combinedTaskClasspath.from(project.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
         if (!pitestExtension.excludeMockableAndroidJar.getOrElse(false)) {
             combinedTaskClasspath.from(mockableAndroidJar)
         }
@@ -285,7 +285,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies() {
-        project.rootProject.buildscript.dependencies {
+        project.buildscript.dependencies {
             String pitestVersion = pitestExtension.pitestVersion.get()
             log.info("Using PIT: $pitestVersion")
             pitest "org.pitest:pitest-command-line:$pitestVersion"
@@ -302,10 +302,12 @@ class PitestPlugin implements Plugin<Project> {
             mockableAndroidJarFilename += '.default-values'
         }
 
-        File mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
+        final File mockableJarDirectory
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             mockableAndroidJarFilename += '.v3'
             mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
+        } else {
+            mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
         }
         mockableAndroidJarFilename += '.jar'
 

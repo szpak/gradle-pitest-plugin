@@ -2,13 +2,10 @@ package pl.droidsonroids.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
-import org.gradle.api.GradleException
-import spock.lang.PendingFeature
 
 @CompileDynamic
 class ExternalLibrariesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    @PendingFeature(exceptions = GradleException, reason = "To investigate")
     void "should work with kotlin and junit5"() {
         given:
         copyResources("testProjects/junit5kotlin", "")

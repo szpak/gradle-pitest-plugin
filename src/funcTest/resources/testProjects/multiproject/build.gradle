@@ -12,8 +12,6 @@ buildscript {
 }
 
 subprojects {
-    apply plugin: 'pl.droidsonroids.pitest'
-
     repositories {
         google()
         mavenCentral()
@@ -43,7 +41,15 @@ configure(project(":shared")) {
 }
 
 configure(project(':itest')) {
+    buildscript {
+        repositories {
+            google()
+            mavenCentral()
+            jcenter()
+        }
+    }
     apply plugin: 'com.android.application'
+    apply plugin: 'pl.droidsonroids.pitest'
 
     android {
         compileSdkVersion 30
