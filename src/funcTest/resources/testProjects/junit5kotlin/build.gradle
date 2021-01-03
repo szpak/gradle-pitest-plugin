@@ -8,9 +8,12 @@ buildscript {
         jcenter()
     }
     configurations.maybeCreate("pitest")
+    configurations.maybeCreate("pitestTestCompile")
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.0.0"
+        pitest "org.pitest:pitest-junit5-plugin:0.12"
+        pitestTestCompile "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     }
 }
 
