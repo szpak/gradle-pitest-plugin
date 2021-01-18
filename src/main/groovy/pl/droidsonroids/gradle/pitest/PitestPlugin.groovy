@@ -56,6 +56,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
     public final static String PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
 
+    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
@@ -289,6 +290,19 @@ class PitestPlugin implements Plugin<Project> {
             String pitestVersion = pitestExtension.pitestVersion.get()
             log.info("Using PIT: $pitestVersion")
             pitest "org.pitest:pitest-command-line:$pitestVersion"
+            if (pitestExtension.junit5PluginVersion.isPresent()) {
+                if (!pitestExtension.testPlugin.isPresent()) {
+                    log.info("Implicitly using JUnit 5 plugin for PIT with version defined in 'junit5PluginVersion'")
+                    pitestExtension.testPlugin.set(PITEST_JUNIT5_PLUGIN_NAME)
+                }
+                if (pitestExtension.testPlugin.isPresent() && pitestExtension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
+                    log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${pitestExtension.testPlugin.get()}'")
+                }
+
+                String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${pitestExtension.junit5PluginVersion.get()}"
+                log.info("Adding dependency: ${junit5PluginDependencyAsString}")
+                pitest project.dependencies.create(junit5PluginDependencyAsString)
+            }
         }
     }
 

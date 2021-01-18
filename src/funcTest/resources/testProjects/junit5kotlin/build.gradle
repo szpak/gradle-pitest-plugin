@@ -12,7 +12,6 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.0.0"
-        pitest "org.pitest:pitest-junit5-plugin:0.12"
         pitestTestCompile "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     }
 }
@@ -39,7 +38,7 @@ dependencies {
 }
 
 pitest {
-    testPlugin = "junit5"
+    junit5PluginVersion = "0.12"
     avoidCallsTo = ["kotlin.jvm.internal"]
     mutators = ["STRONGER"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"

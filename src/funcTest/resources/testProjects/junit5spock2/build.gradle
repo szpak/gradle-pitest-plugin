@@ -10,7 +10,6 @@ buildscript {
     configurations.maybeCreate("pitest")
     configurations.maybeCreate("pitestTestCompile")
     dependencies {
-        pitest "org.pitest:pitest-junit5-plugin:0.12"
         pitestTestCompile "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     }
 }
@@ -42,7 +41,7 @@ android {
 }
 
 pitest {
-    testPlugin = "junit5"
+    junit5PluginVersion = "0.12"
     targetClasses = ['pitest.test.*']
     verbose = true
 }
