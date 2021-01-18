@@ -8,10 +8,6 @@ buildscript {
         mavenCentral()
     }
     configurations.maybeCreate("pitest")
-    configurations.maybeCreate("pitestTestCompile")
-    dependencies {
-        pitestTestCompile "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
-    }
 }
 
 

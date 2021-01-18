@@ -25,6 +25,7 @@ import com.android.build.gradle.internal.api.TestedVariant
 import com.android.builder.model.AndroidProject
 import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
+import kotlin.Deprecated
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -160,6 +161,9 @@ class PitestPlugin implements Plugin<Project> {
                 description = "The PIT libraries to be used for this project."
             }
         }
+        project.configurations {
+            pitestRuntimeOnly.extendsFrom testRuntimeOnly
+        }
     }
 
     @SuppressWarnings(["Instanceof", "UnnecessarySetter", "DuplicateNumberLiteral"])
@@ -187,6 +191,7 @@ class PitestPlugin implements Plugin<Project> {
             combinedTaskClasspath.from(project.configurations["compile"])
             combinedTaskClasspath.from(project.configurations["testCompile"])
         }
+        combinedTaskClasspath.from(project.configurations["pitestRuntimeOnly"])
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
         combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}/out"))
