@@ -48,7 +48,7 @@ dependencies {
     funcTestImplementation sourceSets.test.output
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:7.9.4') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:7.10.2') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
