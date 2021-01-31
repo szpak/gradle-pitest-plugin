@@ -322,7 +322,7 @@ class PitestPlugin implements Plugin<Project> {
             mockableAndroidJarFilename += '.default-values'
         }
 
-        final File mockableJarDirectory
+        File mockableJarDirectory
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             mockableAndroidJarFilename += '.v3'
             mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
