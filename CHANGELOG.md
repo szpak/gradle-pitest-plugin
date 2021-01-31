@@ -1,3 +1,8 @@
+# 0.2.6 - 2021-01-31
+- Update dependency versions
+- Move pitest configuration from root project to subproject [#72](https://github.com/koral--/gradle-pitest-plugin/issue/72)
+- Fix integration with Junit5 [pitest-junit5-plugin#53](https://github.com/pitest/pitest-junit5-plugin/issues/53)
+
 # 0.2.5 - 2020-08-19
 - Merge upstream changes 16873cb7a67b2b21287ba65c0ac89c7266f2d659
 - Add compatiblity witn Anroid Gradle Plugin 4 [#64](https://github.com/koral--/gradle-pitest-plugin/issue/64)
@@ -35,11 +40,11 @@
 - Change info.solidsoft  package name [#42](https://github.com/koral--/gradle-pitest-plugin/issues/42)
 - Fixed missing Android Mockable JAR with AGP 3.2+ [#41](https://github.com/koral--/gradle-pitest-plugin/issues/41)
 
-# 0.1.7 - 2018-08-25 
+# 0.1.7 - 2018-08-25
 - Merged upstream changes bbca1adac89e6ac00d12303ba2e87ac7068d5d47
 - Replaced deprecated FileCollection#add() with #from() - [#37](https://github.com/koral--/gradle-pitest-plugin/issues/37)
 - Changed mockable Android JAR classpath entry order - [#30](https://github.com/koral--/gradle-pitest-plugin/issues/30)
-- Android Gradle Plugin dependency updated to 3.1.4 
+- Android Gradle Plugin dependency updated to 3.1.4
 
 # 0.1.6 - 2018-07-22
 - Android Gradle Plugin dependency updated to 3.1.2
@@ -107,5 +112,5 @@
 
 # 0.0.1 - 2016-07-05
  - Initial release
- 
+
 [Changelog of source project](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md)
