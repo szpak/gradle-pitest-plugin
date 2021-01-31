@@ -56,6 +56,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
     public final static String PITEST_TEST_COMPILE_CONFIGURATION_NAME = 'pitestTestCompile'
 
+    private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
 
@@ -159,44 +160,50 @@ class PitestPlugin implements Plugin<Project> {
                 description = "The PIT libraries to be used for this project."
             }
         }
+        project.configurations {
+            pitestRuntimeOnly.extendsFrom testRuntimeOnly
+        }
     }
 
     @SuppressWarnings(["Instanceof", "UnnecessarySetter", "DuplicateNumberLiteral"])
     private void configureTaskDefault(PitestTask task, BaseVariant variant, File mockableAndroidJar) {
         FileCollection combinedTaskClasspath = project.files()
 
-        combinedTaskClasspath.from(project.rootProject.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
-        if (!pitestExtension.excludeMockableAndroidJar.getOrElse(false)) {
-            combinedTaskClasspath.from(mockableAndroidJar)
-        }
-
-        if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major == 3) {
-            if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {
-                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"].copyRecursive { configuration ->
-                    configuration.properties.dependencyProject == null
-                })
-                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive { configuration ->
-                    configuration.properties.dependencyProject == null
-                })
-            } else if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 4) {
-                combinedTaskClasspath.from(project.configurations["${variant.name}CompileClasspath"])
-                combinedTaskClasspath.from(project.configurations["${variant.name}UnitTestCompileClasspath"])
+        combinedTaskClasspath.with {
+            from(project.buildscript.configurations[PITEST_TEST_COMPILE_CONFIGURATION_NAME])
+            if (!pitestExtension.excludeMockableAndroidJar.getOrElse(false)) {
+                from(mockableAndroidJar)
             }
-        } else {
-            combinedTaskClasspath.from(project.configurations["compile"])
-            combinedTaskClasspath.from(project.configurations["testCompile"])
+
+            if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major == 3) {
+                if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 3) {
+                    from(project.configurations["${variant.name}CompileClasspath"].copyRecursive { configuration ->
+                        configuration.properties.dependencyProject == null
+                    })
+                    from(project.configurations["${variant.name}UnitTestCompileClasspath"].copyRecursive { configuration ->
+                        configuration.properties.dependencyProject == null
+                    })
+                } else if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.minor < 4) {
+                    from(project.configurations["${variant.name}CompileClasspath"])
+                    from(project.configurations["${variant.name}UnitTestCompileClasspath"])
+                }
+            } else {
+                from(project.configurations["compile"])
+                from(project.configurations["testCompile"])
+            }
+            from(project.configurations["pitestRuntimeOnly"])
+            from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
+            from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
+            from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}/out"))
+            from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}UnitTest/out"))
+            from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
+            if (variant instanceof TestedVariant) {
+                from(getJavaCompileTask(variant.unitTestVariant).classpath)
+                from(project.files(getJavaCompileTask(variant.unitTestVariant).destinationDir))
+            }
+            from(getJavaCompileTask(variant).classpath)
+            from(project.files(getJavaCompileTask(variant).destinationDir))
         }
-        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/${variant.dirName}"))
-        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/sourceFolderJavaResources/test/${variant.dirName}"))
-        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}/out"))
-        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}UnitTest/out"))
-        combinedTaskClasspath.from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
-        if (variant instanceof TestedVariant) {
-            combinedTaskClasspath.from(getJavaCompileTask(variant.unitTestVariant).classpath)
-            combinedTaskClasspath.from(project.files(getJavaCompileTask(variant.unitTestVariant).destinationDir))
-        }
-        combinedTaskClasspath.from(getJavaCompileTask(variant).classpath)
-        combinedTaskClasspath.from(project.files(getJavaCompileTask(variant).destinationDir))
 
         task.with {
             defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
@@ -285,10 +292,23 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies() {
-        project.rootProject.buildscript.dependencies {
+        project.buildscript.dependencies {
             String pitestVersion = pitestExtension.pitestVersion.get()
             log.info("Using PIT: $pitestVersion")
             pitest "org.pitest:pitest-command-line:$pitestVersion"
+            if (pitestExtension.junit5PluginVersion.isPresent()) {
+                if (!pitestExtension.testPlugin.isPresent()) {
+                    log.info("Implicitly using JUnit 5 plugin for PIT with version defined in 'junit5PluginVersion'")
+                    pitestExtension.testPlugin.set(PITEST_JUNIT5_PLUGIN_NAME)
+                }
+                if (pitestExtension.testPlugin.isPresent() && pitestExtension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
+                    log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${pitestExtension.testPlugin.get()}'")
+                }
+
+                String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${pitestExtension.junit5PluginVersion.get()}"
+                log.info("Adding dependency: ${junit5PluginDependencyAsString}")
+                pitest project.dependencies.create(junit5PluginDependencyAsString)
+            }
         }
     }
 
@@ -302,10 +322,12 @@ class PitestPlugin implements Plugin<Project> {
             mockableAndroidJarFilename += '.default-values'
         }
 
-        File mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
+        File mockableJarDirectory
         if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major >= 3) {
             mockableAndroidJarFilename += '.v3'
             mockableJarDirectory = new File(project.buildDir, AndroidProject.FD_GENERATED)
+        } else {
+            mockableJarDirectory = new File(project.rootProject.buildDir, AndroidProject.FD_GENERATED)
         }
         mockableAndroidJarFilename += '.jar'
 

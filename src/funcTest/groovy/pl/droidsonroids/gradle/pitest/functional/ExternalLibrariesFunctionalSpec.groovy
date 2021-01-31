@@ -2,23 +2,20 @@ package pl.droidsonroids.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
-import org.gradle.api.GradleException
-import spock.lang.PendingFeature
 
 @CompileDynamic
 class ExternalLibrariesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    @PendingFeature(exceptions = GradleException, reason = "To investigate")
     void "should work with kotlin and junit5"() {
         given:
-            copyResources("testProjects/junit5kotlin", "")
+        copyResources("testProjects/junit5kotlin", "")
         and:
-            writeManifestFile()
+        writeManifestFile()
         when:
-            ExecutionResult result = runTasksSuccessfully('pitestRelease')
+        ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-            result.wasExecuted('pitestRelease')
-            result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
+        result.wasExecuted('pitestRelease')
+        result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
 
     void "should not fail with tests using Robolectric"() {
@@ -39,6 +36,18 @@ class ExternalLibrariesFunctionalSpec extends AbstractPitestFunctionalSpec {
         then:
         result.wasExecuted('pitestRelease')
         result.standardOutput.contains('Generated 3 mutations Killed 0 (0%)')
+    }
+
+    void "should work with Spock 2 using JUnit 5 internally"() {
+        given:
+        copyResources("testProjects/junit5spock2", "")
+        when:
+        ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+        result.wasExecuted('pitest')
+        and:
+        result.standardOutput.contains('--testPlugin=junit5')
+        result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
     }
 
 }

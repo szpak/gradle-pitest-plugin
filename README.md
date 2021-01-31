@@ -1,6 +1,6 @@
 # Experimental Gradle plugin for PIT Mutation Testing in Android projects
 This is a fork of [gradle-pitest-plugin](https://github.com/szpak/gradle-pitest-plugin)
-which supports Android gradle projects. 
+which supports Android gradle projects.
 
 # Applying plugin in `build.gradle`
 ## With [Gradle plugin portal](https://plugins.gradle.org/plugin/pl.droidsonroids.pitest)
@@ -38,7 +38,7 @@ plugins {
 ```
 
 # Usage
-`pitest<variant>` tasks will be created for each build variant 
+`pitest<variant>` tasks will be created for each build variant
 (eg. `pitestProDebug` for `pro` product flavor and `debug` build type).
 Additionally `pitest` task will run tasks for all variants.
 
