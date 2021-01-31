@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
         jcenter()
     }
-    configurations.maybeCreate("pitest")
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.0.0"
