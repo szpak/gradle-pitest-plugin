@@ -168,10 +168,36 @@ subprojects {
     }
 }
 ```
+It is possible to aggregate pitest report for multi-module project using plugin `info.solidsoft.pitest.aggregator` and
+task `pitestReportAggregate`. Root project must be properly configured to use `pitestReportAggregate` :
 
-Currently the plugin [does not provide](https://github.com/szpak/gradle-pitest-plugin/issues/80) an aggregated report for
-multi-module project. A report for each module has to be browsed separately. Alternatively a
-[PIT plugin for Sonar](https://github.com/SonarCommunity/sonar-pitest) can be used to get aggregated results.
+
+```groovy
+//in root project configuration
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+    }
+}
+
+apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
+
+subprojects {
+    apply plugin: 'info.solidsoft.pitest'
+
+    pitest {
+        // export mutations.xml and line coverage for aggregation
+        outputFormats = ["XML"]
+        exportLineCoverage = true
+        ...
+    }
+}
+```
+After execution command `pitest pitestReportAggregate` aggregated report created by PIT will be placed in
+`${PROJECT_DIR}/build/reports/pitest` directory.
 
 ## Integration tests in separate subproject
 

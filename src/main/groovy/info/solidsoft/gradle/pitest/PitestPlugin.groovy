@@ -49,6 +49,7 @@ class PitestPlugin implements Plugin<Project> {
     public static final String PLUGIN_ID = "info.solidsoft.pitest"
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
+    public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     public final static String DEFAULT_PITEST_VERSION = '1.5.2'
@@ -122,7 +123,7 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
     private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, "pitest"))
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc

@@ -34,6 +34,7 @@ sourceSets {
 
 dependencies {
     implementation localGroovy()
+    compileOnly "org.pitest:pitest-aggregator:1.5.2"    //TODO: Sanity check task to verify using DEFAULT_PITEST_VERSION?
 
     testImplementation('org.spockframework:spock-core:2.0-M4-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
