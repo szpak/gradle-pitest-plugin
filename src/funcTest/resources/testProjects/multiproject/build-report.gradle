@@ -9,6 +9,9 @@ buildscript {
     }
 }
 
+repositories {  //in root project for pitest-aggregator.jar
+    mavenCentral()
+}
 apply plugin: "info.solidsoft.pitest.aggregator"
 
 subprojects {
