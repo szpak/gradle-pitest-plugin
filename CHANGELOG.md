@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.6.0 - Unreleased
+
+ - Report aggregation for multi-project builds - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
+ - Regression tests also with Gradle 7 (milestone)
+ - Upgrade Gradle wrapper to 6.8.3
+
 ## 1.5.2 - 2020-08-18
 
  - Support java-test-fixtures plugin - [#223](https://github.com/szpak/gradle-pitest-plugin/pull/223) - PR by [Piotr Kubowicz](https://github.com/pkubowicz)
@@ -43,7 +49,7 @@ should be replaced with:
 ```groovy
 //only in gradle-pitest-plugin 1.5.0+
 
-//in project (not buildscript) dependencies and without needto create "pitest" configuration manually
+//in project (not buildscript) dependencies and without need to create "pitest" configuration manually
 dependencies {
     pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
 }
