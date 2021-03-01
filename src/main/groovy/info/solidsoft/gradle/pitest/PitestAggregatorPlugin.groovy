@@ -1,6 +1,7 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
 import org.gradle.api.Incubating
 import org.gradle.api.Plugin
@@ -25,6 +26,8 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     public static final String PLUGIN_ID = "info.solidsoft.pitest.aggregator"
     public static final String PITEST_REPORT_AGGREGATE_TASK_NAME = "pitestReportAggregate"
+    //visibility for testing
+    @PackageScope static final String PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME = "pitestReport"
 
     private static final String MUTATION_FILE_NAME = "mutations.xml"
     private static final String LINE_COVERAGE_FILE_NAME = "linecoverage.xml"
@@ -41,7 +44,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         this.project = project
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
 
-        Configuration pitestReportConfiguration = project.configurations.create('pitestReport').with { configuration ->
+        Configuration pitestReportConfiguration = project.configurations.create(PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME).with { configuration ->
             attributes.attribute(Usage.USAGE_ATTRIBUTE, (Usage) project.objects.named(Usage, Usage.JAVA_RUNTIME))
             visible = false
             canBeConsumed = false
