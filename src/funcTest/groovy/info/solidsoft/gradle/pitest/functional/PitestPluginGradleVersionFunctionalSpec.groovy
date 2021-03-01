@@ -84,9 +84,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             }
     }
 
-    //To prevent failure when Spock for Groovy 2.4 is run with Groovy 2.3 delivered with Gradle <2.8
+    //To prevent failure when Spock for Groovy 2.5 is run with Groovy 3.0 delivered with Gradle 7+
     //Spock is not needed in this artificial project - just the test classpath leaks to Gradle instance started by Nebula
-    private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile(".*spock-core-1\\..*.jar")
+    private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile(".*spock-core-2\\..*.jar")
     private static final Predicate<URL> FILTER_SPOCK_JAR = { URL url ->
         return !url.toExternalForm().matches(SPOCK_JAR_PATTERN)
     } as Predicate<URL>
@@ -95,7 +95,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE5_VERSIONS = ["5.6"]
     private static final List<String> GRADLE6_VERSIONS = ["6.8.3", "6.7", "6.6", "6.5", "6.4", "6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first()]
+    private static final List<String> GRADLE7_VERSIONS = ["7.0-milestone-2"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -107,7 +108,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             case "quick":
                 return GRADLE_LATEST_VERSIONS
             case "full":
-                return GRADLE5_VERSIONS + GRADLE6_VERSIONS
+                return GRADLE5_VERSIONS + GRADLE6_VERSIONS + GRADLE7_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
                         "Assuming 'latestOnly'.")
