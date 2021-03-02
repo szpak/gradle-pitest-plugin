@@ -6,6 +6,7 @@
  - PIT 1.6.3 by default
  - Regression tests also with Gradle 7 (milestone)
  - Upgrade Gradle wrapper to 6.8.3
+ - Remove deprecated `mutateStaticInits` and `includeJarFiles`
 
 ## 1.5.2 - 2020-08-18
 

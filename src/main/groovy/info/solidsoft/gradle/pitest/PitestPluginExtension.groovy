@@ -69,10 +69,6 @@ class PitestPluginExtension {
     final SetProperty<String> targetTests
     final Property<Integer> dependencyDistance
     final Property<Integer> threads
-    @Deprecated //PIT doesn't know it
-    final Property<Boolean> mutateStaticInits
-    @Deprecated //removed in PIT 0.33
-    final Property<Boolean> includeJarFiles
     final SetProperty<String> mutators
     final SetProperty<String> excludedMethods
     final SetProperty<String> excludedClasses
@@ -227,8 +223,6 @@ class PitestPluginExtension {
         targetTests = nullSetPropertyOf(p, String)
         dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
-        mutateStaticInits = of.property(Boolean)
-        includeJarFiles = of.property(Boolean)
         mutators = nullSetPropertyOf(p, String)
         excludedMethods = nullSetPropertyOf(p, String)
         excludedClasses = nullSetPropertyOf(p, String)

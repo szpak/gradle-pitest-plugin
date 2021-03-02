@@ -149,8 +149,6 @@ class PitestPlugin implements Plugin<Project> {
         } as Provider<Iterable<String>>)
         task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
-        task.mutateStaticInits.set(extension.mutateStaticInits)
-        task.includeJarFiles.set(extension.includeJarFiles)
         task.mutators.set(extension.mutators)
         task.excludedMethods.set(extension.excludedMethods)
         task.excludedClasses.set(extension.excludedClasses)

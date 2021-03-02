@@ -28,8 +28,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'testPlugin',
                                                                                 'dependencyDistance',
                                                                                 'threads',
-                                                                                'mutateStaticInits',
-                                                                                'includeJarFiles',
                                                                                 "mutators",
                                                                                 'excludedMethods',
                                                                                 'excludedClasses',
@@ -136,8 +134,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
             "dependencyDistance"     | 42                                           || "42"
             "threads"                | 42                                           || "42"
-            "mutateStaticInits"      | true                                         || "true" //???
-            "includeJarFiles"        | false                                        || "false"
             "mutators"               | ["MUTATOR_X", "MUTATOR_Y"]                   || "MUTATOR_X,MUTATOR_Y"
             "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"
             "excludedClasses"        | ["classX", "foo.classY"]                     || "classX,foo.classY"

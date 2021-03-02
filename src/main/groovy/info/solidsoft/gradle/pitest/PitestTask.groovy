@@ -72,14 +72,6 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    final Property<Boolean> mutateStaticInits
-
-    @Input
-    @Optional
-    final Property<Boolean> includeJarFiles
-
-    @Input
-    @Optional
     final SetProperty<String> mutators
 
     @Input
@@ -258,8 +250,6 @@ class PitestTask extends JavaExec {
         targetTests = of.setProperty(String)
         dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
-        mutateStaticInits = of.property(Boolean)
-        includeJarFiles = of.property(Boolean)
         mutators = of.setProperty(String)
         excludedMethods = of.setProperty(String)
         excludedClasses = of.setProperty(String)
@@ -348,8 +338,6 @@ class PitestTask extends JavaExec {
         map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
         map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
         map['threads'] = optionalPropertyAsString(threads)
-        map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
-        map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
         map["mutators"] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
         map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
