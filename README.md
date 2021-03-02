@@ -196,8 +196,8 @@ subprojects {
     }
 }
 ```
-After execution command `pitest pitestReportAggregate` aggregated report created by PIT will be placed in
-`${PROJECT_DIR}/build/reports/pitest` directory.
+
+After the `pitest pitestReportAggregate` tasks execution, the aggregated report will be placed in the `${PROJECT_DIR}/build/reports/pitest` directory.
 
 ## Integration tests in separate subproject
 

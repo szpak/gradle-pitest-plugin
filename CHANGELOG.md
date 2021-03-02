@@ -2,11 +2,41 @@
 
 ## 1.6.0 - Unreleased
 
- - Report aggregation for multi-project builds - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
+ - **Report aggregation for multi-project builds** - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
  - PIT 1.6.3 by default
  - Regression tests also with Gradle 7 (milestone)
  - Upgrade Gradle wrapper to 6.8.3
  - Remove deprecated `mutateStaticInits` and `includeJarFiles`
+
+Sample configuration for the new report aggregation feature:
+
+```groovy
+//in root project configuration
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:...'
+    }
+}
+
+apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
+
+subprojects {
+    apply plugin: 'info.solidsoft.pitest'
+
+    pitest {
+        // export mutations.xml and line coverage for aggregation
+        outputFormats = ["XML"]
+        exportLineCoverage = true
+        ...
+    }
+}
+```
+
+After the `pitest pitestReportAggregate` tasks execution, the aggregated report will be placed in the `${PROJECT_DIR}/build/reports/pitest` directory.
+
 
 ## 1.5.2 - 2020-08-18
 
