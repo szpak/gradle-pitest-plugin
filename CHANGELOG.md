@@ -3,6 +3,7 @@
 ## 1.6.0 - Unreleased
 
  - Report aggregation for multi-project builds - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
+ - PIT 1.6.3 by default
  - Regression tests also with Gradle 7 (milestone)
  - Upgrade Gradle wrapper to 6.8.3
 
