@@ -24,6 +24,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 
@@ -296,16 +297,16 @@ class PitestPluginExtension {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
-    private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.setProperty(clazz).convention(p.providers.provider { null })
+    private static <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.setProperty(clazz).convention(p.providers.provider { null } as Provider)   //coercion due to "red" warning in Idea
     }
 
-    private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.listProperty(clazz).convention(p.providers.provider { null })
+    private static <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.listProperty(clazz).convention(p.providers.provider { null } as Provider)
     }
 
-    private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null })
+    private static <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null } as Provider)
     }
 
 }
