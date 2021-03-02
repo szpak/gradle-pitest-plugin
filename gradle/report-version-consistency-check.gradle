@@ -5,9 +5,10 @@ def validatePitestVersionProvider = tasks.register("validatePitestVersion") {
     configure {
 //        check.dependsOn(it)   //Doesn't work
 
-        //TODO: Always not up-to-date anyway
         inputs.files(sourceSets.main.output)
         inputs.file("build.gradle")
+        inputs.file("gradle//report-version-consistency-check.gradle")
+        outputs.files(file("$buildDir/dummyVersionValidationOutput.txt")) //just to not be always up-to-date
 
         Action<Void> validationAction = {
             logger.info("Configured 'pitestAggregatorVersion': {}", pitestAggregatorVersion)
