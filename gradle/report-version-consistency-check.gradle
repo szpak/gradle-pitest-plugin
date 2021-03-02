@@ -1,0 +1,34 @@
+//Dummy task to check pitest-report compile only dependency version consistency with default runtime pitest.jar version
+//Please note, this is a helper task to detect forbade old version, not "malicious" actions.
+
+def validatePitestVersionProvider = tasks.register("validatePitestVersion") {
+    configure {
+//        check.dependsOn(it)   //Doesn't work
+
+        //TODO: Always not up-to-date anyway
+        inputs.files(sourceSets.main.output)
+        inputs.file("build.gradle")
+
+        Action<Void> validationAction = {
+            logger.info("Configured 'pitestAggregatorVersion': {}", pitestAggregatorVersion)
+            File groovyMainSrcDir = file(sourceSets.main.groovy.srcDirs[0])
+            List<String> linesWithVersionConstant = []
+            groovyMainSrcDir.eachFileRecurse(groovy.io.FileType.FILES) { file ->
+                if (file.name == "PitestPlugin.groovy") {
+                    linesWithVersionConstant += file.text.readLines()
+                        .findAll { it.contains("String DEFAULT_PITEST_VERSION =") }
+                        .each { logger.info("Line with version constant: {}", it) }
+                }
+            }
+            int matchingSize = linesWithVersionConstant.findAll { it.contains("$pitestAggregatorVersion") }.size()
+            int totalSize = linesWithVersionConstant.size()
+            if (totalSize != 1 || totalSize != matchingSize) {
+                throw new GradleException("Pitest version validation failed (found $matchingSize matching occurrences of total $totalSize). " +
+                    "Ensure 'ext.pitestAggregatorVersion' ($pitestAggregatorVersion) in build.gradle is equal to 'DEFAULT_PITEST_VERSION' in PitestPlugin. Found lines:\n" +
+                    "${linesWithVersionConstant.join('\n')}")
+            }
+        }
+        setActions([validationAction])
+    }
+}
+check.dependsOn(validatePitestVersionProvider)

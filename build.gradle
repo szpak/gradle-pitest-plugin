@@ -2,6 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'codenarc'
 apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
+apply from: "$rootDir/gradle/report-version-consistency-check.gradle"
 apply plugin: "com.github.ben-manes.versions"
 
 buildscript {
@@ -23,6 +24,8 @@ buildscript {
 
 sourceCompatibility = 1.8
 
+ext.pitestAggregatorVersion = "1.5.2"   //Must be equal to default PIT version in PitestPlugin
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -34,7 +37,7 @@ sourceSets {
 
 dependencies {
     implementation localGroovy()
-    compileOnly "org.pitest:pitest-aggregator:1.5.2"    //TODO: Sanity check task to verify using DEFAULT_PITEST_VERSION?
+    compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
     testImplementation('org.spockframework:spock-core:2.0-M4-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
