@@ -11,6 +11,8 @@ install:
   - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
   - git config user.email "szpak-ci@users.noreply.github.com"
   - git config user.name "Szpak CI Bot"
+  # With Gradle 7 and aggressive Travis cache rebuilt prevention it fails with: Could not load compiled classes for build file '...build.gradle' from cache in acceptance tests
+  - echo "org.gradle.caching=false" >> $HOME/.gradle/gradle.properties
   # Chandler for release notes synchronization
   - ruby --version
   - rvm install 2.4.1
