@@ -50,7 +50,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         then:
             fileExists('build.gradle')
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all')
+            ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all', '--no-build-cache')
         then:
             result.wasExecuted(':pitest')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
