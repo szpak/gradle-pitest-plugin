@@ -34,6 +34,7 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
   - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl/
   - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl-accessors/
+  - rm -fr $HOME/.gradle/caches/7.*/
   - rm -f  $HOME/.gradle/caches/jars-*/*.lock
   - rm -f  $HOME/.gradle/caches/jars-*/*/proj.jar
   - rm -f  $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
