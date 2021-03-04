@@ -191,6 +191,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Integer> testStrengthThreshold
+
+    @Input
+    @Optional
     final Property<String> mutationEngine
 
     @Input
@@ -276,6 +280,7 @@ class PitestTask extends JavaExec {
         defaultFileForHistoryData = of.fileProperty()
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
@@ -361,6 +366,7 @@ class PitestTask extends JavaExec {
         map['mutableCodePaths'] = (getMutableCodePaths()*.absolutePath)?.join(',')
         map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
         map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
+        map['testStrengthThreshold'] = optionalPropertyAsString(testStrengthThreshold)
         map['mutationEngine'] = mutationEngine.getOrNull()
         map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath

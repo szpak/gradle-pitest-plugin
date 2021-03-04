@@ -147,6 +147,7 @@ class PitestPluginExtension {
     final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin
     final Property<Integer> mutationThreshold
     final Property<Integer> coverageThreshold
+    final Property<Integer> testStrengthThreshold
     final Property<String> mutationEngine
     final Property<Boolean> exportLineCoverage  //for debugging usage only
     final RegularFileProperty jvmPath
@@ -251,6 +252,7 @@ class PitestPluginExtension {
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()

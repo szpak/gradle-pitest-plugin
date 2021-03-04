@@ -49,6 +49,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'timestampedReports',
                                                                                 'mutationThreshold',
                                                                                 'coverageThreshold',
+                                                                                'testStrengthThreshold',
                                                                                 'mutationEngine',
                                                                                 'exportLineCoverage',
                                                                                 'jvmPath',
@@ -160,6 +161,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //enableDefaultIncrementalAnalysis tested separately
             "mutationThreshold"      | 90                                           || "90"
             "coverageThreshold"      | 95                                           || "95"
+            "testStrengthThreshold"  | 95                                           || "95"
             "mutationEngine"         | "gregor2"                                    || "gregor2"
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path

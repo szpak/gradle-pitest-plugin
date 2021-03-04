@@ -189,6 +189,7 @@ class PitestPlugin implements Plugin<Project> {
         //defaultFileForHistoryData - separate method
         task.mutationThreshold.set(extension.mutationThreshold)
         task.coverageThreshold.set(extension.coverageThreshold)
+        task.testStrengthThreshold.set(extension.testStrengthThreshold)
         task.mutationEngine.set(extension.mutationEngine)
         task.exportLineCoverage.set(extension.exportLineCoverage)
         task.jvmPath.set(extension.jvmPath)
