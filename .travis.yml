@@ -22,32 +22,9 @@ install:
 script:
   - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
 
-before_cache:
-  - rm -fr $HOME/.gradle/caches/*/executionHistory/
-  - rm -fr $HOME/.gradle/caches/*/file-changes/
-  - rm -fr $HOME/.gradle/caches/*/fileContent/
-  - rm -fr $HOME/.gradle/caches/*/fileHashes/
-  - rm -fr $HOME/.gradle/caches/*/javaCompile/
-  - rm -fr $HOME/.gradle/caches/*/md-rule/
-  - rm -fr $HOME/.gradle/caches/*/md-supplier/
-  - rm -fr $HOME/.gradle/caches/*/scripts/
-  - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
-  - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl/
-  - rm -fr $HOME/.gradle/caches/*/gradle-kotlin-dsl-accessors/
-  - rm -f  $HOME/.gradle/caches/jars-*/*.lock
-  - rm -f  $HOME/.gradle/caches/jars-*/*/proj.jar
-  - rm -f  $HOME/.gradle/caches/*/javaCompile/javaCompile.lock
-  - rm -f  $HOME/.gradle/caches/*/fileContent/fileContent.lock
-  - rm -f  $HOME/.gradle/caches/*/generated-gradle-jars/generated-gradle-jars.lock
-  - rm -f  $HOME/.gradle/caches/*/executionHistory/executionHistory.lock
-  - rm -f  $HOME/.gradle/caches/journal-1/file-access.bin
-  - rm -f  $HOME/.gradle/caches/journal-1/journal-1.lock
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -f  $HOME/.gradle/caches/modules-2/metadata-*/*.bin
 cache:
   directories:
     - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
 
 env:
   global:
