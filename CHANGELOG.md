@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.6.0 - Unreleased
+## 1.6.0 - 2021-03-04
 
  - **Report aggregation for multi-project builds** - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
  - Support new configuration property `testStrengthThreshold` (PIT 1.6.1+) - [#247](https://github.com/szpak/gradle-pitest-plugin/pull/247) - PR by [Michael Hönnig](https://github.com/mhoennig)
