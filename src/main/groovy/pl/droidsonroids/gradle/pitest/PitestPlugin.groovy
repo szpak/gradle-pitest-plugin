@@ -198,8 +198,10 @@ class PitestPlugin implements Plugin<Project> {
             from(project.files("${project.buildDir}/intermediates/java_res/${variant.dirName}UnitTest/out"))
             from(project.files("${project.buildDir}/intermediates/unitTestConfig/test/${variant.dirName}"))
             if (variant instanceof TestedVariant) {
-                from(getJavaCompileTask(variant.unitTestVariant).classpath)
-                from(project.files(getJavaCompileTask(variant.unitTestVariant).destinationDir))
+                variant.unitTestVariant?.with { unitTestVariant ->
+                    from(getJavaCompileTask(unitTestVariant).classpath)
+                    from(project.files(getJavaCompileTask(unitTestVariant).destinationDir))
+                }
             }
             from(getJavaCompileTask(variant).classpath)
             from(project.files(getJavaCompileTask(variant).destinationDir))
