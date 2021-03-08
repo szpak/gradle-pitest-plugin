@@ -1,3 +1,7 @@
+# 0.2.7 - 2021-03-09
+- Update dependency versions
+- Handle the case where unit test variant does not exist [#75](https://github.com/koral--/gradle-pitest-plugin/issue/75)
+
 # 0.2.6 - 2021-01-31
 - Update dependency versions
 - Move pitest configuration from root project to subproject [#72](https://github.com/koral--/gradle-pitest-plugin/issue/72)
@@ -5,7 +9,7 @@
 
 # 0.2.5 - 2020-08-19
 - Merge upstream changes 16873cb7a67b2b21287ba65c0ac89c7266f2d659
-- Add compatiblity witn Anroid Gradle Plugin 4 [#64](https://github.com/koral--/gradle-pitest-plugin/issue/64)
+- Add compatibility with Android Gradle Plugin 4 [#64](https://github.com/koral--/gradle-pitest-plugin/issue/64)
 - Fix report directory parameter handling [#63](https://github.com/koral--/gradle-pitest-plugin/issue/63)
 
 # 0.2.4 - 2020-05-27
