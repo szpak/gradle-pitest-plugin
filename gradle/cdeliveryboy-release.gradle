@@ -25,6 +25,8 @@ scmVersion {
                            replacement: { currentVersion, context -> /classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:$currentVersion'/ }]
         pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ 'info\.solidsoft\.pitest'\ version\ '$previousVersion'/ },
                            replacement: { currentVersion, context -> /id 'info.solidsoft.pitest' version '$currentVersion'/ }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /pitestVersion\ =\ '$previousVersion'/ },
+                           replacement: { currentVersion, context -> /pitestVersion\ =\ '$currentVersion'/ }]
         pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
                            replacement: { currentVersion, context -> /## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}/ }]
     }
