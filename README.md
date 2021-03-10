@@ -67,7 +67,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.5.2' //not needed when a default PIT version should be used
+    pitestVersion = '1.6.0' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
