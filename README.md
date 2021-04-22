@@ -192,6 +192,7 @@ subprojects {
         // export mutations.xml and line coverage for aggregation
         outputFormats = ["XML"]
         exportLineCoverage = true
+        timestampedReports = false
         ...
     }
 }
