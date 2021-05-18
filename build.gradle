@@ -43,7 +43,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-M4-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.0-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     testImplementation 'net.bytebuddy:byte-buddy:1.10.21' //for Spying in Spock
