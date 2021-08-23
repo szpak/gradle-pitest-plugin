@@ -35,8 +35,8 @@ android {
 }
 
 ext {
-    junitVersion = '4.12'
-    robolectricVersion = '4.2.1'
+    junitVersion = '4.13.2'
+    robolectricVersion = '4.6.1'
     supportLibVersion = '27.1.0'
 }
 
@@ -52,7 +52,6 @@ dependencies {
 repositories {
     google()
     mavenCentral()
-    jcenter()
 }
 
 pitest {

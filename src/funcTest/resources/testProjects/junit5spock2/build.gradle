@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'pl.droidsonroids.pitest'
 
 buildscript {
-    ext.junit5Version = '5.7.0'
+    ext.junit5Version = '5.7.1'
 
     repositories {
         mavenCentral()
@@ -17,7 +17,7 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testImplementation 'org.spockframework:spock-core:2.0-M3-groovy-2.5'
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit5Version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
 }
@@ -36,7 +36,7 @@ android {
 }
 
 pitest {
-    junit5PluginVersion = "0.12"
+    junit5PluginVersion = "0.14"
     targetClasses = ['pitest.test.*']
     verbose = true
 }

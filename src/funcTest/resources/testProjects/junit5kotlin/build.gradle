@@ -1,16 +1,15 @@
 buildscript {
-    ext.kotlin_version = '1.4.20'
-    ext.junit5Version = '5.7.0'
+    ext.kotlin_version = '1.5.21'
+    ext.junit5Version = '5.7.1'
 
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.0.0"
+        classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1"
     }
 }
 
@@ -26,7 +25,6 @@ sourceCompatibility = 1.8
 repositories {
     google()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -36,7 +34,7 @@ dependencies {
 }
 
 pitest {
-    junit5PluginVersion = "0.12"
+    junit5PluginVersion = "0.14"
     avoidCallsTo = ["kotlin.jvm.internal"]
     mutators = ["STRONGER"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"

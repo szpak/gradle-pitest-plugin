@@ -187,7 +187,7 @@ class PitestPlugin implements Plugin<Project> {
                     from(project.configurations["${variant.name}CompileClasspath"])
                     from(project.configurations["${variant.name}UnitTestCompileClasspath"])
                 }
-            } else {
+            } else if (ANDROID_GRADLE_PLUGIN_VERSION_NUMBER.major == 4) {
                 from(project.configurations["compile"])
                 from(project.configurations["testCompile"])
             }

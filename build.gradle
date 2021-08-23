@@ -1,12 +1,15 @@
+import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.api.internal.project.ProjectInternal
+
 plugins {
-    id 'com.bmuschko.nexus' version '2.3.1'
-    id 'com.github.ben-manes.versions' version '0.38.0'
+    id 'com.github.ben-manes.versions' version '0.39.0'
     id 'groovy'
     id 'maven-publish'
     id 'codenarc'
     id 'signing'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.13.0'
+    id 'com.gradle.plugin-publish' version '0.15.0'
+    id 'com.vanniktech.maven.publish' version '0.13.0'
 }
 
 sourceCompatibility = 1.8
@@ -15,7 +18,6 @@ repositories {
     mavenCentral()
     mavenLocal()
     google()
-    jcenter()
 }
 
 sourceSets {
@@ -25,16 +27,16 @@ sourceSets {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:4.1.2'
+    implementation 'com.android.tools.build:gradle:7.0.0'
 
-    testImplementation('org.spockframework:spock-core:2.0-M3-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-M3-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.0-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.10.21' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.11.12' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
@@ -43,6 +45,12 @@ dependencies {
     funcTestImplementation('com.netflix.nebula:nebula-test:8.1.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+    def toolingApiBuildersJar = (project as ProjectInternal).services.get(ModuleRegistry.class)
+        .getModule("gradle-tooling-api-builders")
+        .classpath
+        .asFiles
+        .first()
+    testRuntimeOnly(files(toolingApiBuildersJar))
 }
 
 task funcTest(type: Test) {
@@ -51,13 +59,12 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
-    systemProperty('ignoreDeprecations', 'true') //FIXME merge remove after AGP stops using deprecated API
+    systemProperty('ignoreDeprecations', 'true') //FIXME remove after AGP stops using deprecated API
 }
 
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
 check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
-uploadArchives.dependsOn funcTest, check
 publishPlugins.dependsOn funcTest, check
 
 task testReport(type: TestReport) {
@@ -81,11 +88,6 @@ tasks.withType(Test).configureEach { testTask ->
             }
         }
     }
-}
-
-tasks.validateTaskProperties {
-    enableStricterValidation = true
-    failOnWarning = true
 }
 
 codenarc {
@@ -116,71 +118,18 @@ tasks.withType(CodeNarc) { codeNarcTask ->
     })
 }
 
-modifyPom {
-    project {
-        name POM_NAME
-        description POM_DESCRIPTION
-        url POM_URL
-
-        scm {
-            connection POM_SCM_CONNECTION_URL
-            developerConnection POM_SCM_CONNECTION_URL
-            url POM_URL
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'szpak'
-                name 'Marcin Zajączkowski'
-                email 'mszpak ATT wp DOTT pl'
-                roles {
-                    role 'despot'
-                    role 'developer'
-                }
-            }
-            developer {
-                id 'koral'
-                name 'Karol Wrótniak'
-                email 'karol.wrotniak@droidsonroids.pl'
-                roles {
-                    role 'developer'
-                }
-            }
-        }
-    }
-}
-
 pluginBundle {
     website = POM_URL
     vcsUrl = POM_URL
     tags = ['pitest', 'android', 'mutation testing']
     description = POM_DESCRIPTION
-    version = VERSION
+    version = VERSION_NAME
     group = GROUP
 
     plugins {
         pitest {
             id = 'pl.droidsonroids.pitest'
             displayName = POM_NAME
-        }
-    }
-}
-
-publishing {
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
         }
     }
 }

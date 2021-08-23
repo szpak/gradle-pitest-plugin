@@ -9,11 +9,18 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
     void "report error when no targetClasses parameter is defined"() {
         given:
         buildFile << """
+                buildscript {
+                    repositories {
+                        google()
+                        mavenCentral()
+                    }
+                }
                 apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
 
                 repositories {
                     google()
+                    mavenCentral()
                 }
 
                 android {
@@ -27,9 +34,9 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
         and:
         writeHelloWorld('gradle.pitest.test.hello')
         when:
-        ExecutionResult result = runTasksWithFailure('pitestRelease')
+        ExecutionResult result = runTasks('pitestRelease')
         then:
-        assertStdOutOrStdErrContainsGivenText(result, "No value has been specified for property 'targetClasses'")
+        assertStdOutOrStdErrContainsGivenText(result, "Assign a value to 'targetClasses'.")
     }
 
 }

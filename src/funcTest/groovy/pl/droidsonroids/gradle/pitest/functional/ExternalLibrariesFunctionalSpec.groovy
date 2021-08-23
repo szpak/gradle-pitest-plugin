@@ -35,7 +35,7 @@ class ExternalLibrariesFunctionalSpec extends AbstractPitestFunctionalSpec {
         ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
         result.wasExecuted('pitestRelease')
-        result.standardOutput.contains('Generated 3 mutations Killed 0 (0%)')
+        result.standardOutput.contains('Generated 5 mutations Killed 0 (0%)')
     }
 
     void "should work with Spock 2 using JUnit 5 internally"() {

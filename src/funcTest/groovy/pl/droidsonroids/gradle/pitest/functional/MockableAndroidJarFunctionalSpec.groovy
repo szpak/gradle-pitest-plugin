@@ -12,11 +12,11 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                 buildscript {
                     repositories {
                         google()
-                        jcenter()
+                        mavenCentral()
                     }
                     dependencies {
-                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72"
-                        classpath 'com.android.tools.build:gradle:4.0.1'
+                        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21"
+                        classpath 'com.android.tools.build:gradle:7.0.0'
                     }
                 }
 
@@ -49,7 +49,7 @@ class MockableAndroidJarFunctionalSpec extends AbstractPitestFunctionalSpec {
                 group = "pitest.test"
 
                 dependencies {
-                    testImplementation 'junit:junit:4.12'
+                    testImplementation 'junit:junit:4.13.2'
                 }
                 """.stripIndent()
         and:

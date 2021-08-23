@@ -1,3 +1,7 @@
+# 0.2.8 - 2021-08-22
+- Update dependency versions
+- Fix compatibility with Android Gradle Plugin 7 [#77](https://github.com/koral--/gradle-pitest-plugin/issue/77)
+
 # 0.2.7 - 2021-03-09
 - Update dependency versions
 - Handle the case where unit test variant does not exist [#75](https://github.com/koral--/gradle-pitest-plugin/issue/75)

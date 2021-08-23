@@ -3,7 +3,6 @@ buildscript {
         mavenLocal()
         mavenCentral()
         google()
-        jcenter()
     }
     dependencies {
         //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
@@ -15,7 +14,6 @@ subprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 
     version = '1.0'
@@ -35,8 +33,8 @@ configure(project(":shared")) {
     }
 
     dependencies {
-        api 'org.slf4j:slf4j-api:1.7.25'
-        testImplementation 'junit:junit:4.12'
+        api 'org.slf4j:slf4j-api:1.7.32'
+        testImplementation 'junit:junit:4.13.2'
     }
 }
 
@@ -45,7 +43,6 @@ configure(project(':itest')) {
         repositories {
             google()
             mavenCentral()
-            jcenter()
         }
     }
     apply plugin: 'com.android.application'
@@ -60,7 +57,7 @@ configure(project(':itest')) {
     }
     dependencies {
         implementation project(':shared')
-        testImplementation 'junit:junit:4.12'
+        testImplementation 'junit:junit:4.13.2'
     }
 
     //Additional configuration to resolve :shared project JAR as mutable code path for PIT
