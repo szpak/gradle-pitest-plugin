@@ -201,6 +201,7 @@ class PitestPlugin implements Plugin<Project> {
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
         task.features.set(extension.features)
+        task.printReportUri.set(extension.printReportUri)
 
         configurePropertiesWithProblematicTypesForGradle5(task)
     }

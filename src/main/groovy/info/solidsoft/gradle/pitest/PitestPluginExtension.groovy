@@ -212,6 +212,12 @@ class PitestPluginExtension {
     @Incubating
     final ListProperty<String> fileExtensionsToFilter
 
+    /**
+     * Controls when the report URI will be printed. Valid values are: 'never', 'on-failure' (default),
+     * or 'always'
+     */
+    final Property<String> printReportUri
+
     PitestPluginExtension(Project project) {
         ObjectFactory of = project.objects
         Project p = project
@@ -262,6 +268,7 @@ class PitestPluginExtension {
         useClasspathJar = of.property(Boolean)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
+        printReportUri = of.property(String)
     }
 
     void setReportDir(File reportDir) {

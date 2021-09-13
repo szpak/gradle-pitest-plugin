@@ -38,6 +38,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
+import org.gradle.process.ExecResult
 
 /**
  * Gradle task implementation for Pitest.
@@ -241,6 +242,10 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
+    @Input
+    @Optional
+    final Property<String> printReportUri
+
     PitestTask() {
         //setting during execution doesn't work in 6.4+:
         //The value for task ':pitest' property 'mainClass' is final and cannot be changed any further.
@@ -294,6 +299,7 @@ class PitestTask extends JavaExec {
         useAdditionalClasspathFile = of.property(Boolean)
         additionalClasspathFile = of.fileProperty()
         features = of.listProperty(String)
+        printReportUri = of.property(String)
     }
 
     @Input
@@ -319,12 +325,61 @@ class PitestTask extends JavaExec {
         return jvmPath.isPresent() ? jvmPath.asFile.get().absolutePath : null
     }
 
+    @SuppressWarnings('UnnecessarySetter')
     @Override
     void exec() {
         args = argumentsForPit()
         jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         classpath = getLaunchClasspath()
+
+        /*
+         * As it's up to Pitest to write the report somewhere in the report dir if
+         * timestamped reports are allowed, it is necessary to figure out which one
+         * is the latest one.
+         */
+        Set<File> previousReportDirs = []
+        if (timestampedReports.getOrElse(true)) {
+            previousReportDirs = listTimestampedReportDirs(getReportDir().asFile.get())
+        }
+
+        setIgnoreExitValue(true)
         super.exec()
+        ExecResult execResult = getExecutionResult().get()
+
+        printReportUriIfNecessary(execResult.exitValue, previousReportDirs)
+
+        execResult.assertNormalExitValue()
+    }
+
+    private void printReportUriIfNecessary(int exitValue, Set<File> previousReportDirs) {
+        String printReportUri = this.printReportUri.getOrElse('on-failure')
+
+        if ((exitValue != 0 &&
+                printReportUri in ['on-failure', 'always'])
+                || printReportUri in ['always']) {
+            File indexFile = resolveReportIndexFile(previousReportDirs)
+
+            if (indexFile.exists()) {
+                getLogger().warn('See the Pitest report at: ' +
+                        new URI('file', '', indexFile.toURI().getPath(), (String) null, (String) null))
+            }
+        }
+    }
+
+    private File resolveReportIndexFile(Set<File> previousReportDirs) {
+        File actualReportDir
+
+        if (timestampedReports.getOrElse(true)) {
+            actualReportDir = (listTimestampedReportDirs(getReportDir().asFile.get()) - previousReportDirs).first()
+        } else {
+            actualReportDir = getReportDir().asFile.get()
+        }
+
+        return new File(actualReportDir, 'index.html')
+    }
+
+    private static Set<File> listTimestampedReportDirs(File reportDir) {
+        return reportDir.listFiles().findAll { file -> file.isDirectory() }.toSet()
     }
 
     private List<String> argumentsForPit() {
