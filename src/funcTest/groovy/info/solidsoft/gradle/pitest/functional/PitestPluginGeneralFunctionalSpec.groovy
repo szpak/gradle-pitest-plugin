@@ -5,7 +5,6 @@ import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Ignore
 import spock.lang.Issue
 
 @CompileDynamic
@@ -14,14 +13,13 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
     @Rule
     protected TemporaryFolder tmpDir = new TemporaryFolder()
 
-    @Ignore("Bintray is no longer available")
-    @Issue("https://github.com/hcoles/pitest-plugins/pull/4")
     void "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
             buildFile << getBasicGradlePitestConfig()
+            copyResources("testRepos", "")  //Custom artifacts due to: https://github.com/hcoles/pitest-plugins/pull/4
             buildFile << """
                 repositories {
-                    maven { url "https://dl.bintray.com/szpak/pitest-plugins/" }
+                    maven { url "./customPluginRepo/" }
                 }
                 dependencies {
                     pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
