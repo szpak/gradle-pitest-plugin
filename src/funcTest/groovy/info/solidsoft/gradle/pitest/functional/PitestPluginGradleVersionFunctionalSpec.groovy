@@ -13,6 +13,7 @@ import org.gradle.util.GradleVersion
 import org.spockframework.runtime.extension.builtin.PreconditionContext
 import spock.lang.IgnoreIf
 import spock.util.Exceptions
+import spock.util.environment.RestoreSystemProperties
 
 import java.util.regex.Pattern
 
@@ -41,10 +42,16 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
+    @RestoreSystemProperties
     void "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
+        and:
+            //TODO: Until fixed: https://github.com/szpak/gradle-pitest-plugin/pull/289
+            if (requestedGradleVersion.toString().startsWith("7.")) {
+                System.setProperty("ignoreDeprecations", "true")
+            }
         when:
             copyResources("testProjects/simple1", "")
         then:
@@ -94,8 +101,8 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE5_VERSIONS = ["5.6"]
-    private static final List<String> GRADLE6_VERSIONS = ["6.8.3", "6.7", "6.6", "6.5", "6.4", "6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = ["7.0-milestone-2"]
+    private static final List<String> GRADLE6_VERSIONS = ["6.9.1", "6.8.3", "6.7", "6.6", "6.5", "6.4", "6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
+    private static final List<String> GRADLE7_VERSIONS = ["7.2", "7.1.1", "7.0.2"]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first()]
 
     private List<String> resolveRequestedGradleVersions() {
