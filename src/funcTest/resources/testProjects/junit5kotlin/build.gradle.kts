@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junit5Version = "5.6.1"
-val junitPlatformVersion = "1.6.1"
+val junit5Version = "5.7.0"
+val junitPlatformVersion = "1.7.0"
 
 //"plugins {}" cannot be simply used as there is problem with resolving build plugins with classpath modifications made by nebula-test
 buildscript {
@@ -42,7 +42,7 @@ tasks.withType<KotlinCompile> {
 }
 
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-    junit5PluginVersion.set("0.12")
+    junit5PluginVersion.set("0.14")
     avoidCallsTo.set(setOf("kotlin.jvm.internal"))
     mutators.set(setOf("STRONGER"))
     targetClasses.set(setOf("pitest.test.*"))  //by default "${project.group}.*"

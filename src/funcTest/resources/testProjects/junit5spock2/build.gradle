@@ -22,7 +22,7 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testImplementation 'org.spockframework:spock-core:2.0-M3-groovy-2.5'
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-2.5'
 }
 
 test {
@@ -31,5 +31,5 @@ test {
 
 pitest {
 //    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
-    junit5PluginVersion = "0.12"
+    junit5PluginVersion = "0.14"
 }
