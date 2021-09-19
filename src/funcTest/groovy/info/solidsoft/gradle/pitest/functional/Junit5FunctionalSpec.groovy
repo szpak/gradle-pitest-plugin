@@ -58,4 +58,21 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
     }
 
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/249")
+    void "should store and reuse Gradle configuration cache"() {
+        given:
+            copyResources("testProjects/junit5simple", "")
+        when:
+            ExecutionResult result = runTasks('pitest', '--configuration-cache')
+            ExecutionResult result2 = runTasks('pitest', '--configuration-cache')
+        then:
+            !result.failure
+            result.wasExecuted('pitest')
+            !result2.failure
+            result2.wasExecuted('pitest')
+        and:
+            result.standardOutput.contains('Configuration cache entry stored')
+            result2.standardOutput.contains('Reusing configuration cache.')
+    }
+
 }

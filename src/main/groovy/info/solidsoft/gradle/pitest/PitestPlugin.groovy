@@ -175,8 +175,9 @@ class PitestPlugin implements Plugin<Project> {
         task.additionalClasspath.setFrom({
             List<FileCollection> testRuntimeClasspath = (extension.testSourceSets.get() as Set<SourceSet>)*.runtimeClasspath
             FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
+            List<String> fileExtensionsToFilter = extension.fileExtensionsToFilter.getOrElse([])
             FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                !extension.fileExtensionsToFilter.getOrElse([]).find { extension -> file.name.endsWith(".$extension") }
+                !fileExtensionsToFilter.find { extension -> file.name.endsWith(".$extension") }
             } + project.files(allMutableCodePaths)
             return filteredCombinedTaskClasspath
         } as Callable<FileCollection>)
