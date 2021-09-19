@@ -2,8 +2,8 @@
 
 ## 1.7.0 - Unreleased
 
- - Support for Gradle configuration cache - [#293](https://github.com/szpak/gradle-pitest-plugin/pull/293) - PR by [David Burstrom](https://github.com/davidburstrom)
- - Turn on cacheability for PitestTask - [#295](https://github.com/szpak/gradle-pitest-plugin/pull/295) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Support for Gradle configuration cache - [#249](https://github.com/szpak/gradle-pitest-plugin/issues/249) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Turn on cacheability for PitestTask - [#67](https://github.com/szpak/gradle-pitest-plugin/issues/67) - PR by [David Burstrom](https://github.com/davidburstrom)
  - Upgrade Gradle wrapper to 6.9.1
  - Switch CI from defunc travis-ci.org to travis-ci.com
 
