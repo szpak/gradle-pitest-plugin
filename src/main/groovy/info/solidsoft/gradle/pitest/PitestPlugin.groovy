@@ -53,8 +53,8 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
     public final static String DEFAULT_PITEST_VERSION = '1.6.3'
-    @Internal
-    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("5.6") //public as used also in regression tests
+    @Internal   //6.4 due to main -> mainClass change to avoid deprecation warning in Gradle 7.x - https://github.com/szpak/gradle-pitest-plugin/pull/289
+    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("6.4") //public as used also in regression tests
 
     private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']

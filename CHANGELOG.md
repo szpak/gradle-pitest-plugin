@@ -4,9 +4,10 @@
 
  - Support for Gradle configuration cache - [#249](https://github.com/szpak/gradle-pitest-plugin/issues/249) - PR by [David Burstrom](https://github.com/davidburstrom)
  - Turn on cacheability for PitestTask - [#67](https://github.com/szpak/gradle-pitest-plugin/issues/67) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Fix deprecation warnings in Gradle 7 - [#283](https://github.com/szpak/gradle-pitest-plugin/issues/283) - PR by [Mike Duigou](https://github.com/bondolo)
+ - Bump minimal supported Gradle version to 6.4 - required to fix deprecation warnings in Gradle 7
  - Upgrade Gradle wrapper to 6.9.1
- - Switch CI from defunc travis-ci.org to travis-ci.com
-
+ - Switch CI from defunct travis-ci.org to travis-ci.com
 
 ## 1.6.0 - 2021-03-04
 
