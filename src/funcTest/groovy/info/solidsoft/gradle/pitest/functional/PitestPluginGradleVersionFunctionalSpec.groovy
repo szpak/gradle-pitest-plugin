@@ -31,20 +31,11 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //6.3+, but plugin requires 6.4 - https://github.com/gradle/gradle/issues/10248
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
-    //https://docs.gradle.org/6.7/release-notes.html
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA15_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.7")
-    //https://docs.gradle.org/7.0/release-notes.html
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA16_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("7.0.2")
-    //TODO: 7.0, 7.1, 7.2? Determine once testing with Java 17 using toolchain is unlocked - https://github.com/szpak/gradle-pitest-plugin/issues/298
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA17_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("7.0.2")
-
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
-        (JavaVersion.VERSION_15): MINIMAL_SUPPORTED_JAVA15_COMPATIBLE_GRADLE_VERSION,
-        (JavaVersion.VERSION_16): MINIMAL_SUPPORTED_JAVA16_COMPATIBLE_GRADLE_VERSION,
-        (JavaVersion.VERSION_17): MINIMAL_SUPPORTED_JAVA17_COMPATIBLE_GRADLE_VERSION,
-    ].withDefault { MINIMAL_SUPPORTED_JAVA17_COMPATIBLE_GRADLE_VERSION }
+        (JavaVersion.VERSION_15): GradleVersion.version("6.7"),   //https://docs.gradle.org/6.7/release-notes.html
+        (JavaVersion.VERSION_16): GradleVersion.version("7.0.2"),   //https://docs.gradle.org/7.0/release-notes.html
+        (JavaVersion.VERSION_17): GradleVersion.version("7.0.2"),   //TODO: 7.0, 7.1, 7.2? Determine once testing with Java 17 using toolchain is unlocked - https://github.com/szpak/gradle-pitest-plugin/issues/298
+    ].withDefault { GradleVersion.version(GRADLE7_VERSIONS.first()) }
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -102,7 +93,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE6_VERSIONS = ["6.9.1", "6.8.3", "6.7", "6.6", "6.5", MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION.version]
+    private static final List<String> GRADLE6_VERSIONS = ["6.9.1", "6.8.3", "6.7", "6.6", "6.5", PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
     private static final List<String> GRADLE7_VERSIONS = ["7.2", "7.1.1", "7.0.2"]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(), PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 
