@@ -157,7 +157,6 @@ class PitestPlugin implements Plugin<Project> {
         task.verbose.set(extension.verbose)
         task.timeoutFactor.set(extension.timeoutFactor)
         task.timeoutConstInMillis.set(extension.timeoutConstInMillis)
-        task.maxMutationsPerClass.set(extension.maxMutationsPerClass)
         task.childProcessJvmArgs.set(extension.jvmArgs)
         task.outputFormats.set(extension.outputFormats)
         task.failWhenNoMutations.set(extension.failWhenNoMutations)

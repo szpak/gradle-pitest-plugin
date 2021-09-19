@@ -106,10 +106,6 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    final Property<Integer> maxMutationsPerClass
-
-    @Input
-    @Optional
     final ListProperty<String> childProcessJvmArgs
 
     @Input
@@ -262,7 +258,6 @@ class PitestTask extends JavaExec {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         childProcessJvmArgs = of.listProperty(String)
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
@@ -351,7 +346,6 @@ class PitestTask extends JavaExec {
         map['verbose'] = optionalPropertyAsString(verbose)
         map['timeoutFactor'] = optionalPropertyAsString(timeoutFactor)
         map['timeoutConst'] = optionalPropertyAsString(timeoutConstInMillis)
-        map['maxMutationsPerClass'] = optionalPropertyAsString(maxMutationsPerClass)
         map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
         map['outputFormats'] = optionalCollectionAsString(outputFormats)
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)

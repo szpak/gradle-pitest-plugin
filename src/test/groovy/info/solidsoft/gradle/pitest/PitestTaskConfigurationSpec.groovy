@@ -36,7 +36,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'verbose',
                                                                                 'timeoutFactor',
                                                                                 'timeoutConst',
-                                                                                'maxMutationsPerClass',
                                                                                 'jvmArgs',
                                                                                 'outputFormats',
                                                                                 'failWhenNoMutations',
@@ -142,7 +141,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "avoidCallsTo"           | ["callX", "foo.callY"]                       || "callX,foo.callY"
             "verbose"                | true                                         || "true"
             "timeoutFactor"          | 1.25                                         || "1.25"
-            "maxMutationsPerClass"   | 25                                           || "25"
             "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
             "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
             "failWhenNoMutations"    | false                                        || "false"
