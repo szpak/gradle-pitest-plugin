@@ -1,5 +1,13 @@
 # gradle-pitest-plugin changelog
 
+## 1.7.0 - Unreleased
+
+ - Support for Gradle configuration cache - [#293](https://github.com/szpak/gradle-pitest-plugin/pull/293) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Turn on cacheability for PitestTask - [#295](https://github.com/szpak/gradle-pitest-plugin/pull/295) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Upgrade Gradle wrapper to 6.9.1
+ - Switch CI from defunc travis-ci.org to travis-ci.com
+
+
 ## 1.6.0 - 2021-03-04
 
  - **Report aggregation for multi-project builds** - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
