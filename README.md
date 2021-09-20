@@ -406,12 +406,12 @@ There are also basic functional tests written using [nebula-test](https://github
 
 ## Support
 
-[gradle-pitest-plugin](https://gradle-pitest-plugin.solidsoft.info/) was written by Marcin Zajączkowski with a help from [contributors](https://github.com/szpak/gradle-pitest-plugin/graphs/contributors).
+[gradle-pitest-plugin](https://gradle-pitest-plugin.solidsoft.info/) has been written by Marcin Zajączkowski with a help from [contributors](https://github.com/szpak/gradle-pitest-plugin/graphs/contributors).
 The author can be contacted directly via email: mszpak ATT wp DOTT pl.
-There is also Marcin's blog available: [Solid Soft](https://blog.solidsoft.info) - working code is not enough.
+There is also Marcin's blog available: [Solid Soft](https://blog.solidsoft.pl) - Working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
-However it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
+However, it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
