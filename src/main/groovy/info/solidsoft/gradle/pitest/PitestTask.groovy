@@ -27,6 +27,7 @@ import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -43,6 +44,7 @@ import org.gradle.api.tasks.options.Option
  * Gradle task implementation for Pitest.
  */
 @CompileStatic
+@CacheableTask
 @SuppressWarnings("UnstableApiUsage")   //@Option
 class PitestTask extends JavaExec {
 
@@ -101,10 +103,6 @@ class PitestTask extends JavaExec {
     @Input
     @Optional
     final Property<Integer> timeoutConstInMillis
-
-    @Input
-    @Optional
-    final Property<Integer> maxMutationsPerClass
 
     @Input
     @Optional
@@ -242,9 +240,7 @@ class PitestTask extends JavaExec {
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
     PitestTask() {
-        //setting during execution doesn't work in 6.4+:
-        //The value for task ':pitest' property 'mainClass' is final and cannot be changed any further.
-        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+        getMainClass().set("org.pitest.mutationtest.commandline.MutationCoverageReport")
 
         ObjectFactory of = project.objects
 
@@ -262,7 +258,6 @@ class PitestTask extends JavaExec {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         childProcessJvmArgs = of.listProperty(String)
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
@@ -351,7 +346,6 @@ class PitestTask extends JavaExec {
         map['verbose'] = optionalPropertyAsString(verbose)
         map['timeoutFactor'] = optionalPropertyAsString(timeoutFactor)
         map['timeoutConst'] = optionalPropertyAsString(timeoutConstInMillis)
-        map['maxMutationsPerClass'] = optionalPropertyAsString(maxMutationsPerClass)
         map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
         map['outputFormats'] = optionalCollectionAsString(outputFormats)
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)

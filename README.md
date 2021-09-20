@@ -258,12 +258,14 @@ plugins {
 
 pitest {
     //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-    junit5PluginVersion = '0.12'
+    junit5PluginVersion = '0.15'    //or 0.14 for Junit Jupiter 5.7 (JUnit Platform 1.7)
     // ...
 }
 ```
 
-The minimal working example for JUhnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
+**Please note**. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
+
+The minimal working example for JUnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
 
 For mixing JUnit 5 with other PIT plugins, you can read [this section](https://blog.solidsoft.pl/2020/02/27/pit-junit-5-and-gradle-with-just-one-extra-line-of-configuration/#modern-approach-with-plugins-br-with-older-gradle-pitest-plugin) in my blog post.
 
@@ -303,19 +305,16 @@ in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
-gradle-pitest-plugin 1.3.x by default uses PIT 1.3.x, 1.2.x uses PIT 1.2.x, etc.
+If not stated otherwise, gradle-pitest-plugin 1.7.x by default uses PIT 1.7.x, 1.6.x uses PIT 1.6.x, etc.
 
-Starting with version 1.4.7 gradle-pitest-plugin requires Gradle 5.6. The latest version with the Gradle 4.x support is 1.4.0.
-The current version was automatically smoke tested with Gradle 5.6.1 and 6.4 under Java 8.
-Tests with Java 9 - 13 are limited to the compatible versions of Gradle and PIT.
+Starting with version 1.7.0 gradle-pitest-plugin requires Gradle 6.4. The latest version with the Gradle 5.x (5.6+) support is 1.6.0.
+The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.2 under Java 8.
+Tests with Java 9 - 15 are limited to the compatible versions of Gradle and PIT.
 
-Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0 (thanks to using PIT 1.4.3).
-
-Due to incompatible changes in Gradle 4/5/6 support for the older Gradle versions have been limited/removed.
-The latest version which supports Gradle 2 and 3 is gradle-pitest-plugin 1.3.0. Gradle 1.x (1.6+) was supported by gradle-pitest-plugin 1.1.4.
+Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0. The experimental support for Java 17 can be tested with 1.7.0+.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
-(as a JDK used for running a Gradle build). The latest version with Java 7 compatible binaries is 1.2.4.
+(as a JDK used for running a Gradle build). However, having Java 17 LTS released, support for JDK <11 can be deprecated "soon" (see [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)).
 
 See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
@@ -407,12 +406,12 @@ There are also basic functional tests written using [nebula-test](https://github
 
 ## Support
 
-[gradle-pitest-plugin](https://gradle-pitest-plugin.solidsoft.info/) was written by Marcin Zajączkowski with a help from [contributors](https://github.com/szpak/gradle-pitest-plugin/graphs/contributors).
+[gradle-pitest-plugin](https://gradle-pitest-plugin.solidsoft.info/) has been written by Marcin Zajączkowski with a help from [contributors](https://github.com/szpak/gradle-pitest-plugin/graphs/contributors).
 The author can be contacted directly via email: mszpak ATT wp DOTT pl.
-There is also Marcin's blog available: [Solid Soft](https://blog.solidsoft.info) - working code is not enough.
+There is also Marcin's blog available: [Solid Soft](https://blog.solidsoft.pl) - Working code is not enough.
 
 The plugin surely has some bugs and missing features. They can be reported using an [issue tracker](https://github.com/szpak/gradle-pitest-plugin/issues).
-However it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
+However, it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 

@@ -86,7 +86,6 @@ class PitestPluginExtension {
     final Property<Boolean> verbose
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
-    final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
      */
@@ -232,7 +231,6 @@ class PitestPluginExtension {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)

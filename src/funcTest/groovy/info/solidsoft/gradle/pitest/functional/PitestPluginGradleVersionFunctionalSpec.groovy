@@ -8,6 +8,7 @@ import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
 import org.spockframework.runtime.extension.builtin.PreconditionContext
@@ -30,12 +31,18 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    //4.8, but plugin requires 5.6
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION = PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
-    //6.0+ - https://github.com/gradle/gradle/issues/8681#issuecomment-532507276
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.0.1")
-    //6.3+ - https://github.com/gradle/gradle/issues/10248
-    private static final GradleVersion MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.3")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("7.2")
+
+    //Baased on https://docs.gradle.org/current/userguide/compatibility.html
+    private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
+        (JavaVersion.VERSION_15): GradleVersion.version("6.7"),
+        (JavaVersion.VERSION_16): GradleVersion.version("7.0.2"),
+        (JavaVersion.VERSION_17): GradleVersion.version("7.0.2"),   //TODO: 7.2? Determine once testing with Java 17 using toolchain is unlocked - https://github.com/szpak/gradle-pitest-plugin/issues/298
+    ].withDefault { requestedVersion ->
+        return requestedVersion < JavaVersion.VERSION_15
+            ? PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
+            : LATEST_KNOWN_GRADLE_VERSION
+    }
 
     void setup() {
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
@@ -93,10 +100,11 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
 
     //TODO: Extract regression tests control mechanism to a separate class (or even better trait) when needed in some other place
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
-    private static final List<String> GRADLE5_VERSIONS = ["5.6"]
-    private static final List<String> GRADLE6_VERSIONS = ["6.8.3", "6.7", "6.6", "6.5", "6.4", "6.3", "6.2.1", "6.1.1", MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = ["7.0-milestone-2"]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE5_VERSIONS.first(), GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first()]
+    private static final List<String> GRADLE6_VERSIONS = ["6.9.1", "6.8.3", "6.7", "6.6", "6.5",
+                                                          PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
+    private static final List<String> GRADLE7_VERSIONS = ["7.2", "7.1.1", "7.0.2"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(),
+                                                                PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 
     private List<String> resolveRequestedGradleVersions() {
         String regressionTestsLevel = System.getenv(REGRESSION_TESTS_ENV_NAME)
@@ -108,25 +116,17 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             case "quick":
                 return GRADLE_LATEST_VERSIONS
             case "full":
-                return GRADLE5_VERSIONS + GRADLE6_VERSIONS + GRADLE7_VERSIONS
+                return GRADLE6_VERSIONS + GRADLE7_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
-                        "Assuming 'latestOnly'.")
+                    "Assuming 'latestOnly'.")
                 return GRADLE_LATEST_VERSIONS
         }
     }
 
-    //Jvm class from Spock doesn't work with Java 9 stable releases - otherwise @IgnoreIf could be used - TODO: check with Spock 1.2
     @SuppressWarnings("ConfusingTernary")
     private List<String> applyJavaCompatibilityAdjustment(List<String> requestedGradleVersions) {
-        if (!Jvm.current().javaVersion.isJava9Compatible()) {
-            //All supported versions should be Java 8 compatible
-            return requestedGradleVersions
-        }
-        GradleVersion minimalCompatibleGradleVersion =
-            !isJava14Compatible() ? MINIMAL_SUPPORTED_JAVA13_COMPATIBLE_GRADLE_VERSION :
-            !isJava13Compatible() ? MINIMAL_SUPPORTED_JAVA12_COMPATIBLE_GRADLE_VERSION :
-                MINIMAL_SUPPORTED_JAVA14_COMPATIBLE_GRADLE_VERSION
+        GradleVersion minimalCompatibleGradleVersion = MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION.get(Jvm.current().javaVersion)
         return leaveJavaXCompatibleGradleVersionsOnly(requestedGradleVersions, minimalCompatibleGradleVersion)
     }
 

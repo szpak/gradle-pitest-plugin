@@ -1,5 +1,25 @@
 # gradle-pitest-plugin changelog
 
+## 1.7.0 - Unreleased
+
+ - Support for Gradle configuration cache - [#249](https://github.com/szpak/gradle-pitest-plugin/issues/249) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - Turn on cacheability for `PitestTask` - [#67](https://github.com/szpak/gradle-pitest-plugin/issues/67) - PR by [David Burstrom](https://github.com/davidburstrom)
+ - PIT 1.7.0 by default
+ - Fix deprecation warnings in Gradle 7 - [#283](https://github.com/szpak/gradle-pitest-plugin/issues/283) - PR by [Mike Duigou](https://github.com/bondolo)
+ - Bump minimal supported Gradle version to 6.4 - required to fix deprecation warnings in Gradle 7
+ - Remove unused `maxMutationsPerClass` configuration parameter - [#266](https://github.com/szpak/gradle-pitest-plugin/issues/266)
+ - Regression tests for JUnit Jupiter 5.8 (with JUnit Platform 1.8) and pitest-junit5-plugin 0.15
+ - Upgrade Gradle wrapper to 6.9.1
+ - Switch CI from defunct travis-ci.org to travis-ci.com
+
+**Compatibility notes**:
+1. Gradle 6.4+ is required (to fix deprecation warnings in Gradle 7)
+2. Not directly related with this plugin, but keep in mind that JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires <=0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as `NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'` - see [#300](https://github.com/szpak/gradle-pitest-plugin/issues/300)).
+3. Due to the internal changes in PIT 1.7.0 ([#630](https://github.com/hcoles/pitest/pull/930)):
+   - all history files should be deleted before upgrading
+   - the names of the remove conditionals mutators have changed slightly (it might be needed to update their names in `build.gradle`, if activated explicitly)
+
+
 ## 1.6.0 - 2021-03-04
 
  - **Report aggregation for multi-project builds** - [#243](https://github.com/szpak/gradle-pitest-plugin/pull/243) - PR by [Mike Safonov](https://github.com/MikeSafonov)
