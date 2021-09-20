@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.7.0 - Unreleased
+## 1.7.0 - 2021-09-20
 
  - Support for Gradle configuration cache - [#249](https://github.com/szpak/gradle-pitest-plugin/issues/249) - PR by [David Burstrom](https://github.com/davidburstrom)
  - Turn on cacheability for `PitestTask` - [#67](https://github.com/szpak/gradle-pitest-plugin/issues/67) - PR by [David Burstrom](https://github.com/davidburstrom)
