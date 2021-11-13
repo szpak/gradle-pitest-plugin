@@ -8,8 +8,8 @@ plugins {
     id 'codenarc'
     id 'signing'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.15.0'
-    id 'com.vanniktech.maven.publish' version '0.13.0'
+    id 'com.gradle.plugin-publish' version '0.17.0'
+    id 'com.vanniktech.maven.publish' version '0.18.0'
 }
 
 sourceCompatibility = 1.8
@@ -25,24 +25,23 @@ sourceSets {
 }
 
 dependencies {
-    implementation gradleApi()
     implementation localGroovy()
-    implementation 'com.android.tools.build:gradle:7.0.0'
+    implementation 'com.android.tools.build:gradle:7.0.3'
 
-    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0') {
+    testImplementation('org.spockframework:spock-core:2.1-M2-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-groovy-3.0') {
+    testImplementation('org.spockframework:spock-junit4:2.1-M2-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.11.12' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.12.1' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output
     //to make production plugin classes visible in functional tests (it's not in testImplementation configuration)
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:8.1.0') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:10.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     def toolingApiBuildersJar = (project as ProjectInternal).services.get(ModuleRegistry.class)
