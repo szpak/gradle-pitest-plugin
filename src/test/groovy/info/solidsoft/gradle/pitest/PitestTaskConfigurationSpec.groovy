@@ -134,7 +134,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
             "dependencyDistance"     | 42                                           || "42"
             "threads"                | 42                                           || "42"
-            "mutators"               | ["MUTATOR_X", "MUTATOR_Y"]                   || "MUTATOR_X,MUTATOR_Y"
+            "mutators"               | ["MUTATOR_X", "MUTATOR_Y", "-MUTATOR_Z"]     || "MUTATOR_X,MUTATOR_Y,-MUTATOR_Z"
             "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"
             "excludedClasses"        | ["classX", "foo.classY"]                     || "classX,foo.classY"
             "excludedTestClasses"    | ["classX", "foo.classY"]                     || "classX,foo.classY"
