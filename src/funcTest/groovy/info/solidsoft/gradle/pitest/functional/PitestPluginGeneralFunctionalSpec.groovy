@@ -79,6 +79,93 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             historyOutputLocation.size()
     }
 
+    void "report URI is not printed if test suite is not green"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+        and:
+            writeHelloPitClass()
+            writeFailingPitTest()
+        when:
+            ExecutionResult result = runTasksWithFailure('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            !result.getStandardOutput().contains('index.html')
+    }
+
+    void "timestamped report URI is printed if pitest run fails due to unmet thresholds"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    mutationThreshold = 101
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksWithFailure('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().find(/pitest.[0-9]{12}.index\.html/)
+    }
+
+    void "timestamped report URI is not printed if turned off and pitest run fails due to unmet thresholds"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    mutationThreshold = 101
+                    printReportUri = 'never'
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksWithFailure('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            !result.getStandardOutput().find(/pitest.[0-9]{12}.index\.html/)
+    }
+
+    void "timestamped report URI is printed if always requested and pitest run passes"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    printReportUri = 'always'
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().find(/pitest.[0-9]{12}.index\.html/)
+    }
+
+    void "non-timestamped report URI is printed if always requested and pitest run passes"() {
+        given:
+            buildFile << getBasicGradlePitestConfig()
+            buildFile << """
+                pitest {
+                    printReportUri = 'always'
+                    timestampedReports = false
+                }
+            """.stripIndent()
+        and:
+            writeHelloPitClass()
+            writeHelloPitTest()
+        when:
+            ExecutionResult result = runTasksSuccessfully('pitest')
+        then:
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().contains(quoteBackslashesInWindowsPath(new File('reports/pitest/index.html')))
+    }
+
     void "pass additional configured parameters that cannot be test with ProjectBuilder"() {
         given:
             buildFile << getBasicGradlePitestConfig()
@@ -136,7 +223,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     private String quoteBackslashesInWindowsPath(File file) {
         //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
-        return file.absolutePath.replaceAll('\\\\', '\\\\\\\\')
+        return file.toString().replaceAll('\\\\', '\\\\\\\\')
     }
 
 }

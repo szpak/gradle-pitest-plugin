@@ -67,6 +67,21 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         """.stripIndent()
     }
 
+    protected void writeFailingPitTest(String packageDotted = 'gradle.pitest.test.hello', File baseDir = getProjectDir()) {
+        String path = 'src/test/java/' + packageDotted.replace('.', '/') + '/HelloPitTest.java'
+        File javaFile = createFile(path, baseDir)
+        javaFile << """package ${packageDotted};
+            import org.junit.Test;
+            import static org.junit.Assert.assertEquals;
+
+            public class HelloPitTest {
+                @Test public void shouldReturnInputNumber() {
+                    assertEquals(1, new HelloPit().returnInputNumber(5));
+                }
+            }
+        """.stripIndent()
+    }
+
     protected void assertStdOutOrStdErrContainsGivenText(ExecutionResult result, String textToContain) {
         //TODO: Simplify if possible - standardOutput for Gradle <5 and standardError for Gradle 5+
         assert result.standardOutput.contains(textToContain) || result.standardError.contains(textToContain)
