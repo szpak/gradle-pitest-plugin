@@ -22,10 +22,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.MapProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.SetProperty
+import org.gradle.api.provider.*
 
 /**
  * Extension class with configurable parameters for Pitest plugin.
@@ -68,10 +65,6 @@ class PitestPluginExtension {
     final SetProperty<String> targetTests
     final Property<Integer> dependencyDistance
     final Property<Integer> threads
-    @Deprecated //PIT doesn't know it
-    final Property<Boolean> mutateStaticInits
-    @Deprecated //removed in PIT 0.33
-    final Property<Boolean> includeJarFiles
     final SetProperty<String> mutators
     final SetProperty<String> excludedMethods
     final SetProperty<String> excludedClasses
@@ -89,7 +82,6 @@ class PitestPluginExtension {
     final Property<Boolean> verbose
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
-    final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
      */
@@ -150,6 +142,7 @@ class PitestPluginExtension {
     final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin
     final Property<Integer> mutationThreshold
     final Property<Integer> coverageThreshold
+    final Property<Integer> testStrengthThreshold
     final Property<String> mutationEngine
     final Property<Boolean> exportLineCoverage  //for debugging usage only
     final RegularFileProperty jvmPath
@@ -226,8 +219,6 @@ class PitestPluginExtension {
         targetTests = nullSetPropertyOf(p, String)
         dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
-        mutateStaticInits = of.property(Boolean)
-        includeJarFiles = of.property(Boolean)
         mutators = nullSetPropertyOf(p, String)
         excludedMethods = nullSetPropertyOf(p, String)
         excludedClasses = nullSetPropertyOf(p, String)
@@ -236,7 +227,6 @@ class PitestPluginExtension {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)
@@ -256,6 +246,7 @@ class PitestPluginExtension {
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
@@ -297,16 +288,17 @@ class PitestPluginExtension {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
-    private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.setProperty(clazz).convention(p.providers.provider { null })
+    private static <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.setProperty(clazz).convention(p.providers.provider { null } as Provider)
+        //coercion due to "red" warning in Idea
     }
 
-    private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.listProperty(clazz).convention(p.providers.provider { null })
+    private static <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.listProperty(clazz).convention(p.providers.provider { null } as Provider)
     }
 
-    private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null })
+    private static <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null } as Provider)
     }
 
     /**

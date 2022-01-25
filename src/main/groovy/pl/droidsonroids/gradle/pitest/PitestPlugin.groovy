@@ -50,7 +50,7 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_
 @CompileDynamic
 class PitestPlugin implements Plugin<Project> {
 
-    public final static String DEFAULT_PITEST_VERSION = '1.5.1'
+    public final static String DEFAULT_PITEST_VERSION = '1.7.0'
     public final static String PITEST_TASK_GROUP = VERIFICATION_GROUP
     public final static String PITEST_TASK_NAME = "pitest"
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
@@ -68,6 +68,8 @@ class PitestPlugin implements Plugin<Project> {
     //visible for testing
     final static String PIT_HISTORY_DEFAULT_FILE_NAME = 'pitHistory.txt'
     private final static String PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME = "pitClasspath"
+    public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
+    public static final String PLUGIN_ID = 'pl.droidsonroids.pitest'
 
     private Project project
     private PitestPluginExtension pitestExtension
@@ -232,8 +234,6 @@ class PitestPlugin implements Plugin<Project> {
             } as Provider<Iterable<String>>)
             dependencyDistance.set(pitestExtension.dependencyDistance)
             threads.set(pitestExtension.threads)
-            mutateStaticInits.set(pitestExtension.mutateStaticInits)
-            includeJarFiles.set(pitestExtension.includeJarFiles)
             mutators.set(pitestExtension.mutators)
             excludedMethods.set(pitestExtension.excludedMethods)
             excludedClasses.set(pitestExtension.excludedClasses)
@@ -242,7 +242,6 @@ class PitestPlugin implements Plugin<Project> {
             verbose.set(pitestExtension.verbose)
             timeoutFactor.set(pitestExtension.timeoutFactor)
             timeoutConstInMillis.set(pitestExtension.timeoutConstInMillis)
-            maxMutationsPerClass.set(pitestExtension.maxMutationsPerClass)
             childProcessJvmArgs.set(pitestExtension.jvmArgs)
             outputFormats.set(pitestExtension.outputFormats)
             failWhenNoMutations.set(pitestExtension.failWhenNoMutations)
@@ -279,6 +278,7 @@ class PitestPlugin implements Plugin<Project> {
             enableDefaultIncrementalAnalysis.set(pitestExtension.enableDefaultIncrementalAnalysis)
             mutationThreshold.set(pitestExtension.mutationThreshold)
             coverageThreshold.set(pitestExtension.coverageThreshold)
+            testStrengthThreshold.set(pitestExtension.testStrengthThreshold)
             mutationEngine.set(pitestExtension.mutationEngine)
             exportLineCoverage.set(pitestExtension.exportLineCoverage)
             jvmPath.set(pitestExtension.jvmPath)

@@ -28,8 +28,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'testPlugin',
                                                                                 'dependencyDistance',
                                                                                 'threads',
-                                                                                'mutateStaticInits',
-                                                                                'includeJarFiles',
                                                                                 "mutators",
                                                                                 'excludedMethods',
                                                                                 'excludedClasses',
@@ -38,7 +36,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'verbose',
                                                                                 'timeoutFactor',
                                                                                 'timeoutConst',
-                                                                                'maxMutationsPerClass',
                                                                                 'jvmArgs',
                                                                                 'outputFormats',
                                                                                 'failWhenNoMutations',
@@ -51,6 +48,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'timestampedReports',
                                                                                 'mutationThreshold',
                                                                                 'coverageThreshold',
+                                                                                'testStrengthThreshold',
                                                                                 'mutationEngine',
                                                                                 'exportLineCoverage',
                                                                                 'jvmPath',
@@ -126,16 +124,13 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
             "dependencyDistance"     | 42                                           || "42"
             "threads"                | 42                                           || "42"
-            "mutateStaticInits"      | true                                         || "true" //???
-            "includeJarFiles"        | false                                        || "false"
-            "mutators"               | ["MUTATOR_X", "MUTATOR_Y"]                   || "MUTATOR_X,MUTATOR_Y"
+        "mutators"              | ["MUTATOR_X", "MUTATOR_Y", "-MUTATOR_Z"] || "MUTATOR_X,MUTATOR_Y,-MUTATOR_Z"
             "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"
             "excludedClasses"        | ["classX", "foo.classY"]                     || "classX,foo.classY"
             "excludedTestClasses"    | ["classX", "foo.classY"]                     || "classX,foo.classY"
             "avoidCallsTo"           | ["callX", "foo.callY"]                       || "callX,foo.callY"
             "verbose"                | true                                         || "true"
             "timeoutFactor"          | 1.25                                         || "1.25"
-            "maxMutationsPerClass"   | 25                                           || "25"
             "jvmArgs"                | ["-Xmx250m", "-Xms100m"]                     || "-Xmx250m,-Xms100m"
             "outputFormats"          | ["HTML", "CSV"]                              || "HTML,CSV"
             "failWhenNoMutations"    | false                                        || "false"
@@ -154,6 +149,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //enableDefaultIncrementalAnalysis tested separately
             "mutationThreshold"      | 90                                           || "90"
             "coverageThreshold"      | 95                                           || "95"
+        "testStrengthThreshold" | 95                                       || "95"
             "mutationEngine"         | "gregor2"                                    || "gregor2"
             "exportLineCoverage"     | true                                         || "true"
             "jvmPath"                | new File("//opt//jvm15//")                   || new File("//opt//jvm15//").path

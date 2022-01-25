@@ -1,0 +1,3 @@
+include "shared", "for-report"
+
+rootProject.buildFileName = "build-report.gradle"

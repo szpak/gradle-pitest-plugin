@@ -22,28 +22,17 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.MapProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
-import org.gradle.api.tasks.Classpath
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.provider.*
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
 
 /**
  * Gradle task implementation for Pitest.
  */
 @CompileStatic
-@SuppressWarnings("UnstableApiUsage")   //@Option
+@CacheableTask
+@SuppressWarnings("UnstableApiUsage")
+//@Option
 class PitestTask extends JavaExec {
 
     @Input
@@ -69,14 +58,6 @@ class PitestTask extends JavaExec {
     @Input
     @Optional
     final Property<Integer> threads
-
-    @Input
-    @Optional
-    final Property<Boolean> mutateStaticInits
-
-    @Input
-    @Optional
-    final Property<Boolean> includeJarFiles
 
     @Input
     @Optional
@@ -109,10 +90,6 @@ class PitestTask extends JavaExec {
     @Input
     @Optional
     final Property<Integer> timeoutConstInMillis
-
-    @Input
-    @Optional
-    final Property<Integer> maxMutationsPerClass
 
     @Input
     @Optional
@@ -199,6 +176,10 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Integer> testStrengthThreshold
+
+    @Input
+    @Optional
     final Property<String> mutationEngine
 
     @Input
@@ -246,9 +227,7 @@ class PitestTask extends JavaExec {
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
     PitestTask() {
-        //setting during execution doesn't work in 6.4+:
-        //The value for task ':pitest' property 'mainClass' is final and cannot be changed any further.
-        main = "org.pitest.mutationtest.commandline.MutationCoverageReport"
+        getMainClass().set("org.pitest.mutationtest.commandline.MutationCoverageReport")
 
         ObjectFactory of = project.objects
 
@@ -258,8 +237,6 @@ class PitestTask extends JavaExec {
         targetTests = of.setProperty(String)
         dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
-        mutateStaticInits = of.property(Boolean)
-        includeJarFiles = of.property(Boolean)
         mutators = of.setProperty(String)
         excludedMethods = of.setProperty(String)
         excludedClasses = of.setProperty(String)
@@ -268,7 +245,6 @@ class PitestTask extends JavaExec {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         childProcessJvmArgs = of.listProperty(String)
         outputFormats = of.setProperty(String)
         failWhenNoMutations = of.property(Boolean)
@@ -286,6 +262,7 @@ class PitestTask extends JavaExec {
         defaultFileForHistoryData = of.fileProperty()
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
@@ -348,8 +325,6 @@ class PitestTask extends JavaExec {
         map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
         map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
         map['threads'] = optionalPropertyAsString(threads)
-        map['mutateStaticInits'] = optionalPropertyAsString(mutateStaticInits)
-        map['includeJarFiles'] = optionalPropertyAsString(includeJarFiles)
         map["mutators"] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
         map['excludedClasses'] = optionalCollectionAsString(excludedClasses)
@@ -358,7 +333,6 @@ class PitestTask extends JavaExec {
         map['verbose'] = optionalPropertyAsString(verbose)
         map['timeoutFactor'] = optionalPropertyAsString(timeoutFactor)
         map['timeoutConst'] = optionalPropertyAsString(timeoutConstInMillis)
-        map['maxMutationsPerClass'] = optionalPropertyAsString(maxMutationsPerClass)
         map['jvmArgs'] = optionalCollectionAsString(childProcessJvmArgs)
         map['outputFormats'] = optionalCollectionAsString(outputFormats)
         map['failWhenNoMutations'] = optionalPropertyAsString(failWhenNoMutations)
@@ -373,6 +347,7 @@ class PitestTask extends JavaExec {
         map['mutableCodePaths'] = (getMutableCodePaths()*.absolutePath)?.join(',')
         map['mutationThreshold'] = optionalPropertyAsString(mutationThreshold)
         map['coverageThreshold'] = optionalPropertyAsString(coverageThreshold)
+        map['testStrengthThreshold'] = optionalPropertyAsString(testStrengthThreshold)
         map['mutationEngine'] = mutationEngine.getOrNull()
         map['exportLineCoverage'] = optionalPropertyAsString(exportLineCoverage)
         map['includeLaunchClasspath'] = Boolean.FALSE.toString()   //code to analyse is passed via classPath

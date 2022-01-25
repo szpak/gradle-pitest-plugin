@@ -10,9 +10,14 @@
         <exclude name="PublicMethodsBeforeNonPublicMethods" />
         <exclude name="IfStatementCouldBeTernary" />
         <exclude name="TrailingComma" />
+        <exclude name="StaticMethodsBeforeInstanceMethods" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/design.xml'>
         <exclude name="ReturnsNullInsteadOfEmptyCollection" />
+        <!-- Method can implement not all methods from interface and for that be abstract - TODO: Return upstream -->
+        <exclude name="AbstractClassWithoutAbstractMethod" />
+        <!-- AggregateReportTask constructor has to be public due to @Inject used by Gradle -->
+        <exclude name="AbstractClassWithPublicConstructor" />
     </ruleset-ref>
     <ruleset-ref path='rulesets/dry.xml'>
         <exclude name='DuplicateStringLiteral' />
