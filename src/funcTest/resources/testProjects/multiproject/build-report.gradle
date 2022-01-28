@@ -18,7 +18,7 @@ repositories {  //in root project for pitest-aggregator.jar
 apply plugin: "pl.droidsonroids.pitest.aggregator"
 
 [":shared", ":for-report"].each { subprojectName ->
-    configure(project(subprojectName)) {
+    configure(project(subprojectName)) { subproject ->
         buildscript {
             repositories {
                 mavenLocal()
@@ -52,7 +52,7 @@ apply plugin: "pl.droidsonroids.pitest.aggregator"
             outputFormats = ["HTML", "XML"]
             timestampedReports = false
             exportLineCoverage = true
-            mainSourceSets = [android.sourceSets.main]
+            targetClasses = ['pitest.**']
         }
     }
 }
