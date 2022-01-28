@@ -35,63 +35,63 @@ class PitestPluginTest extends Specification {
 
     void "add pitest tasks to android library project in proper group"() {
         when:
-        Project project = AndroidUtils.createSampleLibraryProject()
-        project.evaluate()
+            Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
         then:
-        project.plugins.hasPlugin(PitestPlugin)
-        List<String> tasks = [AndroidUtils.PITEST_RELEASE_TASK_NAME, "${PitestPlugin.PITEST_TASK_NAME}Debug"]
-        assertThatTasksAreInGroup(project, tasks, PitestPlugin.PITEST_TASK_GROUP)
+            project.plugins.hasPlugin(PitestPlugin)
+            List<String> tasks = [AndroidUtils.PITEST_RELEASE_TASK_NAME, "${PitestPlugin.PITEST_TASK_NAME}Debug"]
+            assertThatTasksAreInGroup(project, tasks, PitestPlugin.PITEST_TASK_GROUP)
     }
 
     void "apply pitest plugin without android plugin applied"() {
         given:
-        Project project = ProjectBuilder.builder().build()
+            Project project = ProjectBuilder.builder().build()
         expect:
-        !project.plugins.hasPlugin("com.android.application") &&
+            !project.plugins.hasPlugin("com.android.application") &&
                 !project.plugins.hasPlugin("com.android.library") &&
                 !project.plugins.hasPlugin("com.android.test")
         when:
-        project.apply(plugin: "pl.droidsonroids.pitest")
-        project.evaluate()
+            project.apply(plugin: "pl.droidsonroids.pitest")
+            project.evaluate()
         then:
-        thrown(GradleException)
+            thrown(GradleException)
     }
 
     @SuppressWarnings("ImplicitClosureParameter")
     void "depend on the Android task that copies resources to the build directory (for robolectric, etc)"() {
         when:
-        Project project = AndroidUtils.createSampleLibraryProject()
-        project.evaluate()
+            Project project = AndroidUtils.createSampleLibraryProject()
+            project.evaluate()
         then:
-        assert project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME].getDependsOn().find { it == 'compileReleaseUnitTestSources' }
-        assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Debug"].getDependsOn().find { it == 'compileDebugUnitTestSources' }
+            assert project.tasks[AndroidUtils.PITEST_RELEASE_TASK_NAME].getDependsOn().find { it == 'compileReleaseUnitTestSources' }
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}Debug"].getDependsOn().find { it == 'compileDebugUnitTestSources' }
     }
 
     @SuppressWarnings("ImplicitClosureParameter")
     void "depend on the Android application task that copies resources to the build directory (for robolectric, etc)"() {
         when:
-        Project project = AndroidUtils.createSampleApplicationProject()
-        project.evaluate()
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
         then:
-        assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].getDependsOn().find { it == 'compileFreeBlueReleaseUnitTestSources' }
+            assert project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].getDependsOn().find { it == 'compileFreeBlueReleaseUnitTestSources' }
     }
 
     @SuppressWarnings("ImplicitClosureParameter")
     void "combined task classpath contains correct variant paths for flavored application projects"() {
         when:
-        Project project = AndroidUtils.createSampleApplicationProject()
-        project.evaluate()
+            Project project = AndroidUtils.createSampleApplicationProject()
+            project.evaluate()
         then:
-        Object classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].additionalClasspath.files
-        assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/freeBlue/release') }
-        assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/freeBlue/release') }
+            Object classpath = project.tasks["${PitestPlugin.PITEST_TASK_NAME}FreeBlueRelease"].additionalClasspath.files
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/freeBlue/release') }
+            assert classpath.find { it.toString().endsWith('sourceFolderJavaResources/test/freeBlue/release') }
     }
 
     void "strange sdk versions get properly sanitized"() {
         when:
-        String version = PitestPlugin.sanitizeSdkVersion('strange version (0)')
+            String version = PitestPlugin.sanitizeSdkVersion('strange version (0)')
         then:
-        assert version == 'strange-version--0-'
+            assert version == 'strange-version--0-'
     }
 
 }

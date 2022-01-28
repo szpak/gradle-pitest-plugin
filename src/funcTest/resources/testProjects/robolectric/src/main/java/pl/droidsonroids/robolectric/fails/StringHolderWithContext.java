@@ -4,13 +4,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 public class StringHolderWithContext {
-	private final String _test;
+    private final String _test;
 
-	public StringHolderWithContext(@NonNull Context context) {
-		_test = "Test string";
-	}
+    public StringHolderWithContext(@NonNull Context context) {
+        _test = "Test string";
+    }
 
-	public String getTest() {
-		return _test;
-	}
+    public String getTest() {
+        return _test;
+    }
 }

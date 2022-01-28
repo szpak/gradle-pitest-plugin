@@ -8,7 +8,7 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     void "report error when no targetClasses parameter is defined"() {
         given:
-        buildFile << """
+            buildFile << """
                 buildscript {
                     repositories {
                         google()
@@ -32,11 +32,11 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-        writeHelloWorld('gradle.pitest.test.hello')
+            writeHelloWorld('gradle.pitest.test.hello')
         when:
-        ExecutionResult result = runTasks('pitestRelease')
+            ExecutionResult result = runTasks('pitestRelease')
         then:
-        assertStdOutOrStdErrContainsGivenText(result, "Assign a value to 'targetClasses'.")
+            assertStdOutOrStdErrContainsGivenText(result, "Assign a value to 'targetClasses'.")
     }
 
 }

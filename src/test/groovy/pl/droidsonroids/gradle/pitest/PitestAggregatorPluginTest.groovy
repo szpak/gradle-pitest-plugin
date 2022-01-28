@@ -14,37 +14,37 @@ class PitestAggregatorPluginTest extends Specification {
 
     void "add aggregate report task to project in proper group"() {
         when:
-        project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
+            project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
         then:
-        project.plugins.hasPlugin(PitestAggregatorPlugin)
-        assertThatTasksAreInGroup([PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
+            project.plugins.hasPlugin(PitestAggregatorPlugin)
+            assertThatTasksAreInGroup([PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_TASK_NAME], PitestPlugin.PITEST_TASK_GROUP)
     }
 
     void "use default pitest version by default"() {
         when:
-        project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
+            project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
         and:
-        triggerEvaluateForAggregateTask()
+            triggerEvaluateForAggregateTask()
         then:
-        project.configurations.named("pitestReport").get().dependencies.find { dep ->
-            dep.version == PitestPlugin.DEFAULT_PITEST_VERSION
-        }
+            project.configurations.named("pitestReport").get().dependencies.find { dep ->
+                dep.version == PitestPlugin.DEFAULT_PITEST_VERSION
+            }
     }
 
     void "use pitest version defined in main configuration in the same project"() {
         given:
-        String testPitestVersion = "1.0.99"
-        project.pluginManager.apply("java")
-        project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
-        project.extensions.findByType(PitestPluginExtension).pitestVersion.set(testPitestVersion)
+            String testPitestVersion = "1.0.99"
+            project.pluginManager.apply("java")
+            project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
+            project.extensions.findByType(PitestPluginExtension).pitestVersion.set(testPitestVersion)
         when:
-        project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
+            project.pluginManager.apply(PitestAggregatorPlugin.PLUGIN_ID)
         and:
-        triggerEvaluateForAggregateTask()
+            triggerEvaluateForAggregateTask()
         then:
-        project.configurations.named(PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME).get().dependencies.find { dep ->
-            dep.version == testPitestVersion
-        }
+            project.configurations.named(PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME).get().dependencies.find { dep ->
+                dep.version == testPitestVersion
+            }
     }
 
 //    void "use pitest version from subproject project configuration"() {}    //TODO: Can be implemented with ProjectBuilder? withParent()?

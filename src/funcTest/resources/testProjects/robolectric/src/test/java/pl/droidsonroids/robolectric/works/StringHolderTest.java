@@ -11,11 +11,11 @@ import pl.droidsonroids.robolectric.RobolectricTest;
 import static org.junit.Assert.assertEquals;
 
 public class StringHolderTest extends RobolectricTest {
-	private Context _context = RuntimeEnvironment.application;
+    private Context _context = RuntimeEnvironment.application;
 
-	@Test
-	public void Test() {
-		StringHolder stringHolder = new StringHolder(_context);
-		assertEquals("Wrong test string", "Test string", stringHolder.getTest());
-	}
+    @Test
+    public void Test() {
+        StringHolder stringHolder = new StringHolder(_context);
+        assertEquals("Wrong test string", "Test string", stringHolder.getTest());
+    }
 }

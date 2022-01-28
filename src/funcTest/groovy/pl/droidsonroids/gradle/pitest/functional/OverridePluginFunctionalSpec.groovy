@@ -45,19 +45,19 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 dependencies { testImplementation 'junit:junit:4.13.2' }
             """.stripIndent()
         and:
-        writeHelloWorld('gradle.pitest.test.hello')
+            writeHelloWorld('gradle.pitest.test.hello')
         when:
-        ExecutionResult result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease', '-Doverride.pitest.reportDir=build/treports')
         then:
-        result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
-        fileExists('build/treports')
+            result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
+            fileExists('build/treports')
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/139")
     @PendingFeature(exceptions = GradleException, reason = "Not implemented yet due to Gradle limitations described in linked issue")
     void "should allow to define features from command line and override those from configuration"() {
         given:
-        buildFile << """
+            buildFile << """
                 ${getBasicGradlePitestConfig()}
 
                 pitest {
@@ -66,19 +66,19 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         when:
-        ExecutionResult result = runTasksSuccessfully('pitest', '--timestampedReports=false',
-            '--features=+EXPORT', '--features=-FINFINC')
+            ExecutionResult result = runTasksSuccessfully('pitest', '--timestampedReports=false',
+                '--features=+EXPORT', '--features=-FINFINC')
         then:
-        result.standardOutput.contains("--timestampedReports=false")
+            result.standardOutput.contains("--timestampedReports=false")
         and:
-        result.standardOutput.contains("--features=+EXPORT,-FINFINC")
+            result.standardOutput.contains("--features=+EXPORT,-FINFINC")
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/143")
     void "should allow to add features from command line to those from configuration and override selected tests"() {
         given:
-        final String overriddenTargetTests = "com.foo.*"
-        buildFile << """
+            final String overriddenTargetTests = "com.foo.*"
+            buildFile << """
                 ${getBasicGradlePitestConfig()}
 
                 pitest {
@@ -88,11 +88,11 @@ class OverridePluginFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         when:
-        ExecutionResult result = runTasksSuccessfully('pitestRelease', '--additionalFeatures=+EXPORT', "--targetTests=$overriddenTargetTests")
+            ExecutionResult result = runTasksSuccessfully('pitestRelease', '--additionalFeatures=+EXPORT', "--targetTests=$overriddenTargetTests")
         then:
-        result.standardOutput.contains("--features=-FINFINC,+EXPORT")
+            result.standardOutput.contains("--features=-FINFINC,+EXPORT")
         and:
-        result.standardOutput.contains("--targetTests=$overriddenTargetTests")
+            result.standardOutput.contains("--targetTests=$overriddenTargetTests")
     }
 
 }

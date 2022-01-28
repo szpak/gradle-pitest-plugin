@@ -51,7 +51,7 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
 
     void "override files for history location when set explicit in configuration also default incremental analysis mode"() {
         given:
-            project.pitest  {
+            project.pitest {
                 enableDefaultIncrementalAnalysis = true
                 historyInputLocation = new File('input')
                 historyOutputLocation = new File('output')

@@ -1,0 +1,22 @@
+version: v1.0
+name: Android
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Gradle
+    task:
+      jobs:
+        - name: Build
+          commands:
+            - checkout
+            - sem-version java 17
+            - 'wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O ~/android-commandline-tools.zip'
+            - mkdir -p ~/android-sdk/
+            - unzip ~/android-commandline-tools.zip -d ~/android-sdk/cmdline-tools/
+            - mv ~/android-sdk/cmdline-tools/cmdline-tools/ ~/android-sdk/cmdline-tools/latest
+            - 'export PATH=$PATH:~/android-sdk/cmdline-tools/latest/bin'
+            - export ANDROID_SDK_ROOT=~/android-sdk
+            - yes | sdkmanager --licenses
+            - ./gradlew check funcTest test --no-parallel --no-daemon

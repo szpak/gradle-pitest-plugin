@@ -17,9 +17,9 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
     @Ignore("Bintray not accessible")
     void "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
-        buildFile << getBasicGradlePitestConfig()
-        copyResources("testRepos", "")  //Custom artifacts due to: https://github.com/hcoles/pitest-plugins/pull/4
-        buildFile << """
+            buildFile << getBasicGradlePitestConfig()
+            copyResources("testRepos", "")  //Custom artifacts due to: https://github.com/hcoles/pitest-plugins/pull/4
+            buildFile << """
                 rootProject.buildscript {
                     repositories {
                         maven { url "./customPluginRepo/" }
@@ -119,7 +119,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
     void "allow override report directory"() {
         given:
-        buildFile << """
+            buildFile << """
                 apply plugin: 'com.android.library'
                 apply plugin: 'pl.droidsonroids.pitest'
 
@@ -152,33 +152,33 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
                 }
             """.stripIndent()
         and:
-        writeHelloWorld('gradle.pitest.test.hello')
+            writeHelloWorld('gradle.pitest.test.hello')
         when:
-        ExecutionResult result = runTasksSuccessfully('pitestRelease')
+            ExecutionResult result = runTasksSuccessfully('pitestRelease')
         then:
-        result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
-        fileExists('build/pitest-reports')
+            result.standardOutput.contains('Generated 1 mutations Killed 0 (0%)')
+            fileExists('build/pitest-reports')
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/67")
     void "reuses cached output"() {
         given:
-        buildFile << getBasicGradlePitestConfig()
+            buildFile << getBasicGradlePitestConfig()
         and:
-        writeHelloPitClass()
-        writeHelloPitTest()
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
-        ExecutionResult result = runTasksSuccessfully('pitest', '--build-cache')
-        ExecutionResult result2 = runTasksSuccessfully('clean', 'pitest', '--build-cache')
+            ExecutionResult result = runTasksSuccessfully('pitest', '--build-cache')
+            ExecutionResult result2 = runTasksSuccessfully('clean', 'pitest', '--build-cache')
         then:
-        result.wasExecuted(':pitest')
-        result.getStandardOutput().contains("Build cache key for task ':pitestDebug' is")
+            result.wasExecuted(':pitest')
+            result.getStandardOutput().contains("Build cache key for task ':pitestDebug' is")
 //            //TODO: It's flaky - build cache for TestKit executions seems to be also cached
 //            //      Tests in Gradle itself have similar problem: https://github.com/gradle/gradle/blob/5ec3f672ed600a86280be490395d70b7bc634862/subprojects/core/src/integTest/groovy/org/gradle/api/tasks/CachedTaskIntegrationTest.groovy#L118-L132
 //            result.getStandardOutput().contains("Stored cache entry for task ':pitest'")
         and:
-        result2.wasExecuted(':pitest')
-        result2.getStandardOutput().contains("Task :pitestDebug FROM-CACHE")
+            result2.wasExecuted(':pitest')
+            result2.getStandardOutput().contains("Task :pitestDebug FROM-CACHE")
     }
 
     private String quoteBackslashesInWindowsPath(File file) {

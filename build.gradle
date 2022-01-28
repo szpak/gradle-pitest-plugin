@@ -61,6 +61,8 @@ task funcTest(type: Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
+    forkEvery 1
+    systemProperty('org.gradle.daemon', 'false')
     systemProperty('ignoreDeprecations', 'true') //FIXME remove after AGP stops using deprecated API
 }
 

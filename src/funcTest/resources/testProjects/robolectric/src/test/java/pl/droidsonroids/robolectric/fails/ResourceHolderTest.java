@@ -11,11 +11,11 @@ import pl.droidsonroids.robolectric.RobolectricTest;
 import static org.junit.Assert.assertEquals;
 
 public class ResourceHolderTest extends RobolectricTest {
-	private Context _context = RuntimeEnvironment.application;
+    private Context _context = RuntimeEnvironment.application;
 
-	@Test
-	public void Test() {
-		ResourceHolder resourceHolder = new ResourceHolder(_context);
-		assertEquals("Wrong test string", _context.getString(R.string.test), resourceHolder.getTest());
-	}
+    @Test
+    public void Test() {
+        ResourceHolder resourceHolder = new ResourceHolder(_context);
+        assertEquals("Wrong test string", _context.getString(R.string.test), resourceHolder.getTest());
+    }
 }

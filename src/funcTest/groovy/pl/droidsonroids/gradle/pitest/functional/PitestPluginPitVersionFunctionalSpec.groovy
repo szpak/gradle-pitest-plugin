@@ -15,30 +15,30 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
 
     void "setup and run pitest task with PIT #pitVersion"() {
         given:
-        buildFile << getBasicGradlePitestConfig()
+            buildFile << getBasicGradlePitestConfig()
         and:
-        buildFile << """
+            buildFile << """
                 pitest {
                     pitestVersion = '$pitVersion'
                 }
             """.stripIndent()
         and:
-        writeHelloPitClass()
-        writeHelloPitTest()
+            writeHelloPitClass()
+            writeHelloPitTest()
         when:
-        ExecutionResult result = runTasks('pitest')
+            ExecutionResult result = runTasks('pitest')
         then:
-        !result.standardError.contains("Build failed with an exception")
-        !result.failure
-        result.wasExecuted(':pitest')
+            !result.standardError.contains("Build failed with an exception")
+            !result.failure
+            result.wasExecuted(':pitest')
         and:
-        result.standardOutput.contains("Using PIT: ${pitVersion}")
-        result.standardOutput.contains("pitest-${pitVersion}.jar")
+            result.standardOutput.contains("Using PIT: ${pitVersion}")
+            result.standardOutput.contains("pitest-${pitVersion}.jar")
         and:
-        result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
-        result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
+            result.standardOutput.contains('Generated 2 mutations Killed 1 (50%)')
+            result.standardOutput.contains('Ran 2 tests (1 tests per mutation)')
         where:
-        pitVersion << getPitVersionsCompatibleWithCurrentJavaVersion().unique()
+            pitVersion << getPitVersionsCompatibleWithCurrentJavaVersion().unique()
     }
 
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
