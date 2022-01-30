@@ -1,3 +1,7 @@
+# 0.2.9 - 2022-01-30
+- Update dependency versions
+- Merge upstream changes 9efe3a585bc1307470102147d75fb9a0a29fae72
+
 # 0.2.8 - 2021-08-22
 - Update dependency versions
 - Fix compatibility with Android Gradle Plugin 7 [#77](https://github.com/koral--/gradle-pitest-plugin/issue/77)

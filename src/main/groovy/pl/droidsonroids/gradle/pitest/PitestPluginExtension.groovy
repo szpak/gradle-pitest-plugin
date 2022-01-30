@@ -25,6 +25,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 
 /**
@@ -68,10 +69,6 @@ class PitestPluginExtension {
     final SetProperty<String> targetTests
     final Property<Integer> dependencyDistance
     final Property<Integer> threads
-    @Deprecated //PIT doesn't know it
-    final Property<Boolean> mutateStaticInits
-    @Deprecated //removed in PIT 0.33
-    final Property<Boolean> includeJarFiles
     final SetProperty<String> mutators
     final SetProperty<String> excludedMethods
     final SetProperty<String> excludedClasses
@@ -79,8 +76,7 @@ class PitestPluginExtension {
     /**
      * A list of test classes which should be excluded when mutating.
      *
-     * @since 1.3.0
-     * @see #excludedClasses
+     * @since 1.3.0* @see #excludedClasses
      * @see #excludedMethods
      */
     @Incubating
@@ -89,7 +85,6 @@ class PitestPluginExtension {
     final Property<Boolean> verbose
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
-    final Property<Integer> maxMutationsPerClass
     /**
      * JVM arguments to use when PIT launches child processes
      */
@@ -125,21 +120,13 @@ class PitestPluginExtension {
      *
      * Samples usage ("itest" project depends on "shared" project):
      * <pre>
-     * configure(project(':itest')) {
-     *     dependencies {
-     *         compile project(':shared')
-     *     }
-     *
+     * configure(project(':itest')) {*     dependencies {*         compile project(':shared')
+     *}*
      *     apply plugin: "pl.droidsonroids.pitest"
      *     //mutableCodeBase - additional configuration to resolve :shared project JAR as mutable code path for PIT
-     *     configurations { mutableCodeBase { transitive false } }
-     *     dependencies { mutableCodeBase project(':shared') }
-     *     pitest {
-     *         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
+     *     configurations { mutableCodeBase { transitive false }}*     dependencies { mutableCodeBase project(':shared') }*     pitest {*         mainSourceSets = [project.sourceSets.main, project(':shared').sourceSets.main]
      *         additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-     *     }
-     * }
-     * </pre>
+     *}*}* </pre>
      *
      * @since 1.1.3 (specific for Gradle plugin)
      */
@@ -150,6 +137,7 @@ class PitestPluginExtension {
     final Property<Boolean> enableDefaultIncrementalAnalysis    //specific for Gradle plugin
     final Property<Integer> mutationThreshold
     final Property<Integer> coverageThreshold
+    final Property<Integer> testStrengthThreshold
     final Property<String> mutationEngine
     final Property<Boolean> exportLineCoverage  //for debugging usage only
     final RegularFileProperty jvmPath
@@ -164,10 +152,8 @@ class PitestPluginExtension {
      *
      * Should be defined a map:
      * <pre>
-     * pitest {
-     *     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
-     * }
-     * </pre>
+     * pitest {*     pluginConfiguration = ["plugin1.key1": "value1", "plugin1.key2": "value2"]
+     *}* </pre>
      */
     MapProperty<String, String> pluginConfiguration
 
@@ -192,10 +178,8 @@ class PitestPluginExtension {
      * PIT fails on not Java specific file passed on a classpath (e.g. native libraries). Native libraries ('*.so', '*.dll', '*.dylib')
      * and '*.pom' files are filtered by default, but a developer can add extra extensions to the list:
      * <pre>
-     * pitest {
-     *     fileExtensionsToFilter += ['xml', 'orbit']
-     * }
-     * </pre>
+     * pitest {*     fileExtensionsToFilter += ['xml', 'orbit']
+     *}* </pre>
      *
      * Rationale: https://github.com/szpak/gradle-pitest-plugin/issues/53
      *
@@ -203,10 +187,8 @@ class PitestPluginExtension {
      *
      * <b>Please note</b>. Starting with 1.4.6 due to Gradle limitations only the new syntax with addAll()/addAll([] is possible (instead of "+="):
      *
-     * pitest {
-     *     fileExtensionsToFilter.addAll('xml', 'orbit')
-     * }
-     *
+     * pitest {*     fileExtensionsToFilter.addAll('xml', 'orbit')
+     *}*
      * More information: https://github.com/gradle/gradle/issues/10475
      *
      * @since 1.2.4
@@ -222,12 +204,11 @@ class PitestPluginExtension {
         testPlugin = of.property(String)
         junit5PluginVersion = of.property(String)
         reportDir = of.directoryProperty()
-        targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
+        targetClasses = nullSetPropertyOf(p, String)
+        //null instead of empty collection to distinguish on optional parameters
         targetTests = nullSetPropertyOf(p, String)
         dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
-        mutateStaticInits = of.property(Boolean)
-        includeJarFiles = of.property(Boolean)
         mutators = nullSetPropertyOf(p, String)
         excludedMethods = nullSetPropertyOf(p, String)
         excludedClasses = nullSetPropertyOf(p, String)
@@ -236,7 +217,6 @@ class PitestPluginExtension {
         verbose = of.property(Boolean)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
-        maxMutationsPerClass = of.property(Integer)
         jvmArgs = nullListPropertyOf(p, String)
         outputFormats = nullSetPropertyOf(p, String)
         failWhenNoMutations = of.property(Boolean)
@@ -250,12 +230,14 @@ class PitestPluginExtension {
         detectInlinedCode = of.property(Boolean)
         timestampedReports = of.property(Boolean)
         useClasspathFile = of.property(Boolean)
-        additionalMutableCodePaths = of.setProperty(File)   //the value is not used directly in task and can be notPresent instead of null
+        additionalMutableCodePaths = of.setProperty(File)
+        //the value is not used directly in task and can be notPresent instead of null
         historyInputLocation = of.fileProperty()
         historyOutputLocation = of.fileProperty()
         enableDefaultIncrementalAnalysis = of.property(Boolean)
         mutationThreshold = of.property(Integer)
         coverageThreshold = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
         mutationEngine = of.property(String)
         exportLineCoverage = of.property(Boolean)
         jvmPath = of.fileProperty()
@@ -297,16 +279,17 @@ class PitestPluginExtension {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
     }
 
-    private <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.setProperty(clazz).convention(p.providers.provider { null })
+    private static <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.setProperty(clazz).convention(p.providers.provider { null } as Provider)
+        //coercion due to "red" warning in Idea
     }
 
-    private <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
-        return p.objects.listProperty(clazz).convention(p.providers.provider { null })
+    private static <T> ListProperty<T> nullListPropertyOf(Project p, Class<T> clazz) {
+        return p.objects.listProperty(clazz).convention(p.providers.provider { null } as Provider)
     }
 
-    private <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
-        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null })
+    private static <K, V> MapProperty<K, V> nullMapPropertyOf(Project p, Class<K> keyClazz, Class<V> valueClazz) {
+        return p.objects.mapProperty(keyClazz, valueClazz).convention(p.providers.provider { null } as Provider)
     }
 
     /**

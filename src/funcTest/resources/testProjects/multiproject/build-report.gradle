@@ -1,0 +1,58 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        //Local/current version of the plugin should be put on a classpath earlier to override that plugin version
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.3-SNAPSHOT'
+    }
+}
+
+repositories {  //in root project for pitest-aggregator.jar
+    mavenCentral()
+    google()
+}
+
+apply plugin: "pl.droidsonroids.pitest.aggregator"
+
+[":shared", ":for-report"].each { subprojectName ->
+    configure(project(subprojectName)) { subproject ->
+        buildscript {
+            repositories {
+                mavenLocal()
+                mavenCentral()
+                google()
+            }
+        }
+        repositories {
+            google()
+            mavenCentral()
+        }
+
+        apply plugin: 'com.android.library'
+        apply plugin: 'pl.droidsonroids.pitest'
+
+        android {
+            compileSdkVersion 30
+            defaultConfig {
+                minSdkVersion 10
+                targetSdkVersion 30
+            }
+
+        }
+
+        dependencies {
+            api 'org.slf4j:slf4j-api:1.7.32'
+            testImplementation 'junit:junit:4.13.2'
+        }
+
+        pitest {
+            outputFormats = ["HTML", "XML"]
+            timestampedReports = false
+            exportLineCoverage = true
+            targetClasses = ['pitest.**']
+        }
+    }
+}

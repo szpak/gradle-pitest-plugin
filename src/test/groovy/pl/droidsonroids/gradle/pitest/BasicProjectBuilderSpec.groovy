@@ -49,11 +49,12 @@ class BasicProjectBuilderSpec extends Specification {
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
-        String  pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
-        Set<Task> tasks = project.getTasksByName(pitestReleaseTaskName, false) //forces "afterEvaluate"
-        assert tasks?.size() == 1 : "Expected tasks: '$pitestReleaseTaskName', All tasks: ${project.tasks}"
+        String pitestReleaseTaskName = "${PITEST_TASK_NAME}Release"
+        Set<Task> tasks = project.getTasksByName(pitestReleaseTaskName, false)
+        //forces "afterEvaluate"
+        assert tasks?.size() == 1: "Expected tasks: '$pitestReleaseTaskName', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
-        return (PitestTask)tasks[0]
+        return (PitestTask) tasks[0]
     }
 
 }

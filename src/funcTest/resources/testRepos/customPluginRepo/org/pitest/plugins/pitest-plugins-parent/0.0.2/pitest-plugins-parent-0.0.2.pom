@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.pitest.plugins</groupId>
+    
+    <!--Must set name for plugins to work correctly with Mojo -->
+    <organization><name>org.pitest.plugins</name></organization>
+
+    <artifactId>pitest-plugins-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.2</version>
+    <name>pitest-plugins-parent</name>
+    <url>http://pitest.org</url>
+    <description>Example plugins for pitest mutation testing system</description>
+    <scm>
+        <url>https://github.com/hcoles/pitest-plugins</url>
+        <connection>scm:git:git@github.com:hcoles/pitest-plugins.git</connection>
+        <developerConnection>scm:git:git@github.com:hcoles/pitest-plugins.git</developerConnection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <issueManagement>
+        <url>https://github.com/hcoles/pitest/issues</url>
+        <system>GitHub</system>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>henry</id>
+            <name>Henry Coles</name>
+            <email>henry@pitest.org</email>
+        </developer>
+    </developers>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    
+    <modules>
+        <module>pitest-high-isolation-plugin</module>
+        <module>pitest-all-tests-plugin</module>
+        <module>pitest-plugin-configuration-reporter-plugin</module>
+    </modules>
+    
+       <profiles>  
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- common dependencies used in all subprojects -->
+    <dependencies>
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+	<dependency>
+	    <groupId>org.easytesting</groupId>
+	    <artifactId>fest-assert-core</artifactId>
+	    <version>2.0M7</version>
+	    <scope>test</scope>
+	</dependency>
+    </dependencies>
+
+    <build>
+        <!-- specification of versions of all plugins used in any module
+        also common configuration is specified there
+        (but module-specific stuff is specified in other pom.xml files) -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                    <dependencies>
+	                    <dependency>
+	                        <groupId>org.apache.maven.surefire</groupId>
+	                        <artifactId>surefire-junit47</artifactId>
+	                        <version>${surefire.version}</version>
+	                    </dependency>
+	                </dependencies>
+                    <configuration>
+                        <testNGArtifactName>none:none</testNGArtifactName>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
+
+    <!-- versions of libraries which are used in different projects or which are used for few artifacts -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <asm.version>5.0.2</asm.version>
+        <ant.version>1.8.3</ant.version>
+        <hamcrest.version>1.3.RC2</hamcrest.version>
+        <junit.version>4.10</junit.version>
+        <surefire.version>2.16</surefire.version>
+
+    </properties>
+
+</project>
