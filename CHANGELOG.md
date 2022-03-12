@@ -2,6 +2,7 @@
 
 ## 1.7.1 - Unreleased
 
+ - PIT 1.7.4 by default
  - Upgrade Gradle wrapper to 6.9.2
 
 ## 1.7.0 - 2021-09-20
