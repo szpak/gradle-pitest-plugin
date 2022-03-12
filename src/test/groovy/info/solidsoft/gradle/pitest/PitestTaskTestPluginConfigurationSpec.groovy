@@ -17,17 +17,15 @@ class PitestTaskTestPluginConfigurationSpec extends BasicProjectBuilderSpec {
         expect:
             task.taskArgumentMap()['testPlugin'] == null
         where:
-            pitVersion       | testPlugin | junit5PluginVersion
-            "1.6.7"          | "junit5"   | null
-            "1.6.8-SNAPSHOT" | "junit5"   | null
-            "1.7.0"          | "junit5"   | null
-            "2.0.0"          | "junit5"   | null
-            "2.0"            | "junit5"   | null
-            "1.6.7"          | null       | "0.23"
-            "1.6.8-SNAPSHOT" | null       | "0.23"
-            "1.7.0"          | null       | "0.23"
-            "2.0.0"          | null       | "0.23"
-            "2.0"            | null       | "0.23"
+            //Trick by Vampire: https://github.com/spockframework/spock/issues/1062#issuecomment-562807555 - is it more readable (see similar example below)?
+            [pitVersion, testPlugin, junit5PluginVersion] << [
+                ["1.6.7", "1.6.8-SNAPSHOT", "1.7.0", "2.0.0", "2.0"],
+                [
+                    ["junit5", null],
+                    [null, "0.23"],
+
+                ]
+            ].combinations()*.flatten()
     }
 
     void "should pass testPlugin for backward compatibility for PIT <1.6.7 (#pitVersion, #testPlugin, #junit5PluginVersion)"() {
