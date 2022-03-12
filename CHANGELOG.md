@@ -4,6 +4,7 @@
 
  - PIT 1.7.4 by default
  - Upgrade Gradle wrapper to 6.9.2
+ - Test for exclusion of certain mutators - [#303](https://github.com/szpak/gradle-pitest-plugin/pull/303) - PR by [Narendra Pathai](https://github.com/npathai)
 
 ## 1.7.0 - 2021-09-20
 
