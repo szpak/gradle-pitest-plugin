@@ -10,6 +10,7 @@
 
 **Compatibility notes**:
 1. The `testPlugin` configuration parameter is deprecated and should not be used. In fact, starting with 1.6.7 it is no longer used (it is enough to add the PIT plugin as a buildscript dependency or just set `junit5PluginVersion` to use the JUnit 5 plugin). In addition, that property is planned to be removed in PIT 1.8.0.
+2. Using `junit5PluginVersion` no longer internally set `testPlugin` property. For using with old PIT (<1.6.7) it is required to set it explicitly in configuration.
 
 
 ## 1.7.0 - 2021-09-20

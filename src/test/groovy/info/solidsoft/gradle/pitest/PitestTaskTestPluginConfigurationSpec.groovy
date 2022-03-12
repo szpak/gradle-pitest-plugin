@@ -44,9 +44,23 @@ class PitestTaskTestPluginConfigurationSpec extends BasicProjectBuilderSpec {
             "1.0.0"          | "junit5"   | null
             "1.6.6"          | "junit5"   | null
             "1.6.6-SNAPSHOT" | "junit5"   | null
-            "1.0.0"          | null       | "0.23"
-            "1.6.6"          | null       | "0.23"
-            "1.6.6-SNAPSHOT" | null       | "0.23"
+            "1.0.0"          | "junit5"   | "0.23"
+            "1.6.6"          | "junit5"   | "0.23"
+            "1.6.6-SNAPSHOT" | "junit5"   | "0.23"
+    }
+
+    void "should automatically set testPlugin if junit5PluginVersion is used for any version"() {
+        given:
+            project.pitest.pitestVersion = pitVersion
+            project.pitest.junit5PluginVersion = "0.23"
+        and:
+            PitestTask task = getJustOnePitestTaskOrFail()
+        expect:
+            project.pitest.testPlugin.getOrNull() == null
+        and:
+            task.taskArgumentMap()['testPlugin'] == null
+        where:
+            pitVersion << ["1.0.0", "1.8.0"]
     }
 
     void "should not fail for unrecognised PIT version and assume newer one"() {
