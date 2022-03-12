@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.7.4 - Unreleased
+## 1.7.4 - 2022-03-12
 
  - Do not pass `--testPlugin` for PIT 1.6.7+ for forward compatibility - [#277](https://github.com/szpak/gradle-pitest-plugin/issues/277)
  - Deprecate `testPlugin` configuration parameter (not needed in [PIT 1.6.7+](https://github.com/hcoles/pitest/pull/900), to be removed in PIT 1.8.0) - [#277](https://github.com/szpak/gradle-pitest-plugin/issues/277)
