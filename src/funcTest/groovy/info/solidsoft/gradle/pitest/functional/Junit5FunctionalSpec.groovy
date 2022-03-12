@@ -42,7 +42,6 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             !result.failure
             result.wasExecuted('pitest')
         and:
-            result.standardOutput.contains('--testPlugin=junit5')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
         and:
             result.standardOutput.contains("pitest-junit5-plugin-${expectedJunitPluginVersion}.jar")
@@ -66,7 +65,6 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             !result.failure
             result.wasExecuted('pitest')
         and:
-            result.standardOutput.contains('--testPlugin=junit5')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
     }
 

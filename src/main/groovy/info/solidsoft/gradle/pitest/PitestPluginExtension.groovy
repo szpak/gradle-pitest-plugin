@@ -42,12 +42,17 @@ class PitestPluginExtension {
     /**
      * Specifies what test plugin to use.
      *
-     * Prior to 1.3.0 this was autodetected, now it has to be specified. The junit plugin is used by default.
+     * Prior to 1.3.0 this was auto detected. Up to 1.6.8 it has to be specified. With 1.6.7+ is not needed anymore (test plugins are auto detected)
+     * and it is deprecated in PIT. To be removed in 1.8.0.
      *
      * For using with JUnit 5 please see: junit5PluginVersion
      *
+     * Related issue: https://github.com/szpak/gradle-pitest-plugin/issues/277
+     *
      * @since 1.3.0
+     * @deprecated Not needed with PIT 1.6.7+, to be removed in PIT 1.8.0.
      */
+    @Deprecated
     final Property<String> testPlugin
 
     /**

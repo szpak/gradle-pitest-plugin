@@ -1,10 +1,16 @@
 # gradle-pitest-plugin changelog
 
-## 1.7.1 - Unreleased
+## 1.7.4 - Unreleased
 
+ - Do not pass `--testPlugin` for PIT 1.6.7+ for forward compatibility - [#277](https://github.com/szpak/gradle-pitest-plugin/issues/277)
+ - Deprecate `testPlugin` configuration parameter (not needed in [PIT 1.6.7+](https://github.com/hcoles/pitest/pull/900), to be removed in PIT 1.8.0) - [#277](https://github.com/szpak/gradle-pitest-plugin/issues/277)
  - PIT 1.7.4 by default
  - Upgrade Gradle wrapper to 6.9.2
  - Test for exclusion of certain mutators - [#303](https://github.com/szpak/gradle-pitest-plugin/pull/303) - PR by [Narendra Pathai](https://github.com/npathai)
+
+**Compatibility notes**:
+1. The `testPlugin` configuration parameter is deprecated and should not be used. In fact, starting with 1.6.7 it is no longer used (it is enough to add the PIT plugin as a buildscript dependency or just set `junit5PluginVersion` to use the JUnit 5 plugin). In addition, that property is planned to be removed in PIT 1.8.0.
+
 
 ## 1.7.0 - 2021-09-20
 

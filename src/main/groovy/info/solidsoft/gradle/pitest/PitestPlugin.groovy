@@ -90,6 +90,7 @@ class PitestPlugin implements Plugin<Project> {
                 t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
                 addPitDependencies(pitestConfiguration)
+                suppressPassingDeprecatedTestPluginForNewerPitVersions(t)
             }
         }
     }
@@ -243,6 +244,21 @@ class PitestPlugin implements Plugin<Project> {
             String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
             log.info("Adding dependency: ${junit5PluginDependencyAsString}")
             pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
+        }
+    }
+
+    private void suppressPassingDeprecatedTestPluginForNewerPitVersions(PitestTask pitestTask) {
+        String configuredPitVersion = extension.pitestVersion.get()
+        try {
+            final GradleVersion minimalPitVersionNotNeedingTestPluginProperty = GradleVersion.version("1.6.7")
+            if (GradleVersion.version(configuredPitVersion) >= minimalPitVersionNotNeedingTestPluginProperty) {
+                log.info("Passing '--testPlugin' to PIT disabled for PIT 1.6.7+. See https://github.com/szpak/gradle-pitest-plugin/issues/277")
+                pitestTask.testPlugin.set((String)null)
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("Error during PIT versions comparison. Is '$configuredPitVersion' really valid? If yes, please report this incident. " +
+                "Assuming PIT version is newer than 1.6.7.")
+            log.warn("Original exception: ${e.class.name}:${e.message}")
         }
     }
 

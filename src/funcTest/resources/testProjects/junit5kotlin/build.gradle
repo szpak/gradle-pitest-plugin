@@ -42,7 +42,7 @@ compileTestKotlin {
 }
 
 pitest {
-    testPlugin = "junit5"
+//    testPlugin = "junit5" //no longer needed with PIT 1.6.7+
     avoidCallsTo = ["kotlin.jvm.internal"]
     mutators = ["STRONGER"]
     targetClasses = ['pitest.test.*']  //by default "${project.group}.*"

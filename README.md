@@ -271,7 +271,7 @@ For mixing JUnit 5 with other PIT plugins, you can read [this section](https://b
 
 ### Generic plugin support (also JUnit 5 in gradle-pitest-plugin <1.4.7)
 
-To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
+To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure. For example:
 
 ```groovy
 plugins {
@@ -286,16 +286,12 @@ repositories {
 dependencies {
     pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
 }
-
-pitest {
-    testPlugin = 'custom' //or built-in 'testng' which also has to be activated
-    // ...
-}
 ```
 
 The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 Please note. In gradle-pitest-plugin <1.5.0 the `pitest` configuration had to be created in the `buildscript` scope for the root project.
+Please note. Starting with PIT 1.6.7 it is no longer needed to set `testPlugin` configuration parameter. It is also deprecated in the Gradle plugin.
 
 ## Versions
 

@@ -31,7 +31,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("7.2")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("7.4.1")
 
     //Baased on https://docs.gradle.org/current/userguide/compatibility.html
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
@@ -102,7 +102,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE6_VERSIONS = ["6.9.1", "6.8.3", "6.7", "6.6", "6.5",
                                                           PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = ["7.2", "7.1.1", "7.0.2"]
+    private static final List<String> GRADLE7_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "7.3.3", "7.2", "7.1.1", "7.0.2"]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(),
                                                                 PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 

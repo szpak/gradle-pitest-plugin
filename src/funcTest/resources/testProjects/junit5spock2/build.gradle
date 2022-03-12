@@ -30,6 +30,5 @@ test {
 }
 
 pitest {
-//    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
     junit5PluginVersion = "0.14"
 }

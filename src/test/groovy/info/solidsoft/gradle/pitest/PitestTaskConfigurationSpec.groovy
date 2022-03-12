@@ -18,6 +18,8 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileDynamic
 import spock.lang.Issue
 
+//TODO: Think if task initialization with WithPitestTaskInitialization is not performed to early
+//      (see PitestTaskTestPluginConfigurationSpec for corner case with login in PitestPlugin)
 @CompileDynamic
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
@@ -127,8 +129,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         where:
             //pitConfigParamName value taken from gradleConfigParamName if set to null
             configParamName          | gradleConfigValue                            || expectedPitConfigValue
-            "testPlugin"             | "testng"                                     || "testng"
-            //junit5PluginVersion tested separately
+            //testPlugin and junit5PluginVersion tested separately
             "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
