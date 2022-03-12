@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.7.1 - Unreleased
+
+ - Upgrade Gradle wrapper to 6.9.2
+
 ## 1.7.0 - 2021-09-20
 
  - Support for Gradle configuration cache - [#249](https://github.com/szpak/gradle-pitest-plugin/issues/249) - PR by [David Burstrom](https://github.com/davidburstrom)
