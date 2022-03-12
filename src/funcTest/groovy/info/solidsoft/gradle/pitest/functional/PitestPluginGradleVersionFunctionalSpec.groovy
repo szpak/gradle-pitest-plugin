@@ -73,7 +73,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     @IgnoreIf({ new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
     void "should fail with meaningful error message with too old Gradle version"() {
         given:
-            gradleVersion = "5.5.1"
+            gradleVersion = "6.0"   //TODO: With 5.5.1 it fails with "ClassNotFoundException: org.gradle.api.file.FileSystemLocationProperty" anyway after removing compatibility hack
         and:
             assert PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION > GradleVersion.version(gradleVersion)
         when:
