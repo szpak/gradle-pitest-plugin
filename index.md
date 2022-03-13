@@ -17,7 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.7.0'
+    id 'info.solidsoft.pitest' version '1.7.4'
 }
 ```
 
@@ -47,7 +47,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
     }
 }
 ```
@@ -67,7 +67,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.7.0' //not needed when a default PIT version should be used
+    pitestVersion = '1.7.4' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -152,7 +152,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
     }
 }
 
@@ -179,7 +179,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
     }
 }
 
@@ -253,7 +253,7 @@ Starting with this release the configuration required to use PIT with JUnit 5 ha
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.7.0'
+    id 'info.solidsoft.pitest' version '1.7.4'
 }
 
 pitest {
@@ -271,12 +271,12 @@ For mixing JUnit 5 with other PIT plugins, you can read [this section](https://b
 
 ### Generic plugin support (also JUnit 5 in gradle-pitest-plugin <1.4.7)
 
-To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure and also set the `testPlugin` property. For example:
+To enable PIT plugins, it is enough to add it to the pitest configuration in the buildscript closure. For example:
 
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.7.0'
+    id 'info.solidsoft.pitest' version '1.7.4'
 }
 
 repositories {
@@ -286,16 +286,12 @@ repositories {
 dependencies {
     pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
 }
-
-pitest {
-    testPlugin = 'custom' //or built-in 'testng' which also has to be activated
-    // ...
-}
 ```
 
 The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
 Please note. In gradle-pitest-plugin <1.5.0 the `pitest` configuration had to be created in the `buildscript` scope for the root project.
+Please note. Starting with PIT 1.6.7 it is no longer needed to set `testPlugin` configuration parameter. It is also deprecated in the Gradle plugin.
 
 ## Versions
 
@@ -414,6 +410,7 @@ The plugin surely has some bugs and missing features. They can be reported using
 However, it is often a better idea to send a questions to the [PIT mailing list](https://groups.google.com/group/pitusers) first.
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
+
 
 <div id="statcounter" style="width:100%; text-align:center">
 <!-- StatCounter -->
