@@ -82,6 +82,7 @@ class PitestPlugin implements Plugin<Project> {
 
         project.plugins.withType(JavaPlugin).configureEach {
             setupExtensionWithDefaults()
+            addPitDependencies(pitestConfiguration)
             project.tasks.register(PITEST_TASK_NAME, PitestTask) { t ->
                 failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript()
                 t.description = "Run PIT analysis for java classes"
@@ -89,7 +90,6 @@ class PitestPlugin implements Plugin<Project> {
                 configureTaskDefault(t)
                 t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
-                addPitDependencies(pitestConfiguration)
                 suppressPassingDeprecatedTestPluginForNewerPitVersions(t)
             }
         }
@@ -217,21 +217,25 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addPitDependencies(Configuration pitestConfiguration) {
-        log.info("Using PIT: ${extension.pitestVersion.get()}")
-        pitestConfiguration.dependencies.add(project.dependencies.create("org.pitest:pitest-command-line:${extension.pitestVersion.get()}"))
+        pitestConfiguration.withDependencies { dependencies ->
+            log.info("Using PIT: ${extension.pitestVersion.get()}")
+            dependencies.add(project.dependencies.create("org.pitest:pitest-command-line:${extension.pitestVersion.get()}"))
+        }
 
         addPitJUnit5PluginIfRequested(pitestConfiguration)
     }
 
     private void addPitJUnit5PluginIfRequested(Configuration pitestConfiguration) {
-        if (extension.junit5PluginVersion.isPresent()) {
-            if (extension.testPlugin.isPresent() && extension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
-                log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${extension.testPlugin.get()}'")
-            }
+        pitestConfiguration.withDependencies { dependencies ->
+            if (extension.junit5PluginVersion.isPresent()) {
+                if (extension.testPlugin.isPresent() && extension.testPlugin.get() != PITEST_JUNIT5_PLUGIN_NAME) {
+                    log.warn("Specified 'junit5PluginVersion', but other plugin is configured in 'testPlugin' for PIT: '${extension.testPlugin.get()}'")
+                }
 
-            String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
-            log.info("Adding JUnit 5 plugin for PIT as dependency: ${junit5PluginDependencyAsString}")
-            pitestConfiguration.dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
+                String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
+                log.info("Adding JUnit 5 plugin for PIT as dependency: ${junit5PluginDependencyAsString}")
+                dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
+            }
         }
     }
 

@@ -52,13 +52,13 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             return configuration
         }
 
+        addPitAggregateReportDependency(pitestReportConfiguration)
         project.tasks.register(PITEST_REPORT_AGGREGATE_TASK_NAME, AggregateReportTask) { t ->
             t.description = "Aggregate PIT reports"
             t.group = PitestPlugin.PITEST_TASK_GROUP
             configureTaskDefaults(t)
             //shouldRunAfter should be enough, but it fails in functional tests as :pitestReportAggregate is executed before :pitest tasks from subprojects
             t.mustRunAfter(project.allprojects.collect { Project p -> p.tasks.withType(PitestTask) })
-            addPitAggregateReportDependency(pitestReportConfiguration)
             t.pitestReportClasspath.from(pitestReportConfiguration)
         }
     }
@@ -79,14 +79,16 @@ class PitestAggregatorPlugin implements Plugin<Project> {
     }
 
     private void addPitAggregateReportDependency(Configuration pitestReportConfiguration) {
-        Optional<PitestPluginExtension> maybeExtension = Optional.ofNullable(project.extensions.findByType(PitestPluginExtension))
-            .map { extension -> Optional.of(extension) }   //Optional::of with Groovy 3
-            .orElseGet { findPitestExtensionInSubprojects(project) }
-        String pitestVersion = maybeExtension
-            .map { extension -> extension.pitestVersion.get() }
-            .orElse(PitestPlugin.DEFAULT_PITEST_VERSION)
+        pitestReportConfiguration.withDependencies { dependencies ->
+            Optional<PitestPluginExtension> maybeExtension = Optional.ofNullable(project.extensions.findByType(PitestPluginExtension))
+                .map { extension -> Optional.of(extension) }   //Optional::of with Groovy 3
+                .orElseGet { findPitestExtensionInSubprojects(project) }
+            String pitestVersion = maybeExtension
+                .map { extension -> extension.pitestVersion.get() }
+                .orElse(PitestPlugin.DEFAULT_PITEST_VERSION)
 
-        pitestReportConfiguration.dependencies.add(project.dependencies.create("org.pitest:pitest-aggregator:$pitestVersion"))
+            dependencies.add(project.dependencies.create("org.pitest:pitest-aggregator:$pitestVersion"))
+        }
     }
 
     private File getReportBaseDirectory() {
