@@ -293,19 +293,19 @@ class PitestTask extends JavaExec {
 
     @Input
     String getAdditionalClasspathFilePath() {
-        return additionalClasspathFile.asFile.get().absolutePath
+        return additionalClasspathFile.asFile.get().relativePath(project.rootProject.rootDir)
     }
 
     @Input
     @Optional
     String getHistoryInputLocationPath() {
         //?. operator doesn't work with Gradle Providers
-        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().absolutePath : null
+        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().relativePath(project.rootProject.rootDir) : null
     }
 
     @Input
     String getDefaultFileForHistoryDataPath() {
-        return defaultFileForHistoryData.asFile.get().absolutePath
+        return defaultFileForHistoryData.asFile.get().relativePath(project.rootProject.rootDir)
     }
 
     @Input
