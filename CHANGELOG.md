@@ -2,6 +2,7 @@
 
 ## 1.9.0 - Unreleased
 
+ - Add pitest dependencies only during configuration resolution - [#313](https://github.com/szpak/gradle-pitest-plugin/issues/313) - PR by [Ian O'Malley](https://github.com/omalleyian)
  - Improve build cache hit cache with relative path - [#315](https://github.com/szpak/gradle-pitest-plugin/issues/315) - PR by [Siddardha Bezawada](https://github.com/SidB3)
 
 ## 1.7.4 - 2022-03-12
