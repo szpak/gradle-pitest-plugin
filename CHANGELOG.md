@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.9.0 - Unreleased
+
+ - Improve build cache hit cache with relative path - [#315](https://github.com/szpak/gradle-pitest-plugin/issues/315) - PR by [Siddardha Bezawada](https://github.com/SidB3)
+
 ## 1.7.4 - 2022-03-12
 
  - Do not pass `--testPlugin` for PIT 1.6.7+ for forward compatibility - [#277](https://github.com/szpak/gradle-pitest-plugin/issues/277)
