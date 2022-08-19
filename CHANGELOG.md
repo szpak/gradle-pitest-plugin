@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.9.0 - Unreleased
+## 1.9.0 - 2022-08-19
 
  - PIT 1.9.4 by default (requires pitest-junit5-plugin 1.0.0!)
  - Deprecate support for JDK 8 - [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)
