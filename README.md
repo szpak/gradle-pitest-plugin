@@ -258,12 +258,12 @@ plugins {
 
 pitest {
     //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-    junit5PluginVersion = '0.15'    //or 0.14 for Junit Jupiter 5.7 (JUnit Platform 1.7)
+    junit5PluginVersion = '1.0.0'    //or 0.15 for PIT <1.9.0
     // ...
 }
 ```
 
-**Please note**. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
+**Please note**. PIT 1.9.0 requires pitest-junit5-plugin 1.0.0+. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
 
 The minimal working example for JUnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
 
@@ -301,16 +301,16 @@ in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
-If not stated otherwise, gradle-pitest-plugin 1.7.x by default uses PIT 1.7.x, 1.6.x uses PIT 1.6.x, etc.
+If not stated otherwise, gradle-pitest-plugin 1.9.x by default uses PIT 1.9.x, 1.7.x uses PIT 1.7.x, etc.
 
 Starting with version 1.7.0 gradle-pitest-plugin requires Gradle 6.4. The latest version with the Gradle 5.x (5.6+) support is 1.6.0.
-The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.2 under Java 8.
-Tests with Java 9 - 15 are limited to the compatible versions of Gradle and PIT.
+The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.4.2 under Java 11.
+Tests with Java 11+ are limited to the compatible versions of Gradle and PIT.
 
-Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0. The experimental support for Java 17 can be tested with 1.7.0+.
+The experimental support for Java 17 can be tested with 1.7.0+.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
-(as a JDK used for running a Gradle build). However, having Java 17 LTS released, support for JDK <11 can be deprecated "soon" (see [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)).
+(as a JDK used for running a Gradle build). However, having Java 17 LTS released in September 2021, starting with gradle-pitest-plugin 1.9.0, support for JDK <11 is deprecated (see [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)).
 
 See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
