@@ -40,6 +40,8 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
 
+import java.nio.charset.Charset
+
 /**
  * Gradle task implementation for Pitest.
  */
@@ -225,6 +227,14 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Charset> inputEncoding
+
+    @Input
+    @Optional
+    final Property<Charset> outputEncoding
+
+    @Input
+    @Optional
     final ListProperty<String> features
 
     @Incubating
@@ -285,6 +295,8 @@ class PitestTask extends JavaExec {
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
+        inputEncoding = of.property(Charset)
+        outputEncoding = of.property(Charset)
         additionalClasspath = of.fileCollection()
         useAdditionalClasspathFile = of.property(Boolean)
         additionalClasspathFile = of.fileProperty()
@@ -367,6 +379,8 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
+        map['inputEncoding'] = optionalPropertyAsString(inputEncoding)
+        map['outputEncoding'] = optionalPropertyAsString(outputEncoding)
         map['features'] = (features.getOrElse([]) + (additionalFeatures ?: []))?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())

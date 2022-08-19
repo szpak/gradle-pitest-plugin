@@ -201,6 +201,8 @@ class PitestPlugin implements Plugin<Project> {
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
+        task.inputEncoding.set(extension.inputCharset)
+        task.outputEncoding.set(extension.outputCharset)
         task.features.set(extension.features)
     }
 

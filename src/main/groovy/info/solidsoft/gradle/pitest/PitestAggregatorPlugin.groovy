@@ -13,6 +13,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.TaskCollection
 
+import java.util.function.Consumer
 import java.util.stream.Collectors
 
 /**
@@ -64,7 +65,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
     }
 
     private void configureTaskDefaults(AggregateReportTask aggregateReportTask) {
-        aggregateReportTask.with {
+        aggregateReportTask.with { task ->
             reportDir.set(new File(getReportBaseDirectory(), PitestPlugin.PITEST_REPORT_DIRECTORY_NAME))
             reportFile.set(reportDir.file("index.html"))
 
@@ -75,20 +76,28 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             Set<Project> projectsWithPitest = getProjectsWithPitestPlugin()
             mutationFiles.from = collectMutationFiles(projectsWithPitest)
             lineCoverageFiles.from = collectLineCoverageFiles(projectsWithPitest)
+
+            findPluginExtension().ifPresent({ PitestPluginExtension extension ->
+                inputCharset.set(extension.inputCharset)
+                outputCharset.set(extension.outputCharset)
+            } as Consumer<PitestPluginExtension>)   //Simplify with Groovy 3+
         }
     }
 
     private void addPitAggregateReportDependency(Configuration pitestReportConfiguration) {
         pitestReportConfiguration.withDependencies { dependencies ->
-            Optional<PitestPluginExtension> maybeExtension = Optional.ofNullable(project.extensions.findByType(PitestPluginExtension))
-                .map { extension -> Optional.of(extension) }   //Optional::of with Groovy 3
-                .orElseGet { findPitestExtensionInSubprojects(project) }
-            String pitestVersion = maybeExtension
+            String pitestVersion = findPluginExtension()
                 .map { extension -> extension.pitestVersion.get() }
                 .orElse(PitestPlugin.DEFAULT_PITEST_VERSION)
 
             dependencies.add(project.dependencies.create("org.pitest:pitest-aggregator:$pitestVersion"))
         }
+    }
+
+    private Optional<PitestPluginExtension> findPluginExtension() {
+        return Optional.ofNullable(project.extensions.findByType(PitestPluginExtension))
+            .map { extension -> Optional.of(extension) }   //Optional::of with Groovy 3
+            .orElseGet { findPitestExtensionInSubprojects(project) }
     }
 
     private File getReportBaseDirectory() {
