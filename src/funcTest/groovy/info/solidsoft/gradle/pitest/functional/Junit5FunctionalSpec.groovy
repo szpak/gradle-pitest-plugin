@@ -48,9 +48,9 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains("junit-jupiter-api-${expectedJUnitJupiterVersion}.jar")
             result.standardOutput.contains("junit-platform-commons-${expectedJUnitPlatformVersion}.jar")
         where:
-            buildFileName                     || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
-            'build.gradle'                    || "0.15"                     | "5.8.0"                     | "1.8.0"
-            'build-junit-platform-5.7.gradle' || "0.14"                     | "5.7.0"                     | "1.7.0"
+            buildFileName                             || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
+            'build.gradle'                            || "1.0.0"                    | "5.8.0"                     | "1.8.0"
+            'build-pit-1.8-junit-platform-5.7.gradle' || "0.14"                     | "5.7.0"                     | "1.7.0"
 
             description = "plugin $expectedJunitPluginVersion, junit $expectedJUnitJupiterVersion, platform $expectedJUnitPlatformVersion"
     }

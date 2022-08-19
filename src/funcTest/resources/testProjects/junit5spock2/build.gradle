@@ -30,5 +30,5 @@ test {
 }
 
 pitest {
-    junit5PluginVersion = "0.14"
+    junit5PluginVersion = "1.0.0"
 }

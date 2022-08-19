@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
 //    //Not needed, 'junit5PluginVersion' should implicitly add it in requested version
-//    pitest 'org.pitest:pitest-junit5-plugin:0.12'
+//    pitest 'org.pitest:pitest-junit5-plugin:1.0.0'
 }
 
 group = "pitest.test"
@@ -34,5 +34,5 @@ test {
 }
 
 pitest {
-    junit5PluginVersion = "0.15"
+    junit5PluginVersion = "1.0.0"
 }

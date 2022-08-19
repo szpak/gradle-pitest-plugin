@@ -42,7 +42,7 @@ tasks.withType<KotlinCompile> {
 }
 
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-    junit5PluginVersion.set("0.14")
+    junit5PluginVersion.set("1.0.0")
     avoidCallsTo.set(setOf("kotlin.jvm.internal"))
     mutators.set(setOf("STRONGER"))
     targetClasses.set(setOf("pitest.test.*"))  //by default "${project.group}.*"
