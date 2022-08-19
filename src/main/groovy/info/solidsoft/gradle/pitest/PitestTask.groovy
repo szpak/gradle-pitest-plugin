@@ -40,6 +40,8 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
 
+import java.nio.charset.Charset
+
 /**
  * Gradle task implementation for Pitest.
  */
@@ -63,10 +65,6 @@ class PitestTask extends JavaExec {
     @Input
     @Optional
     final SetProperty<String> targetTests
-
-    @Input
-    @Optional
-    final Property<Integer> dependencyDistance
 
     @Input
     @Optional
@@ -225,6 +223,14 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
+    final Property<Charset> inputEncoding
+
+    @Input
+    @Optional
+    final Property<Charset> outputEncoding
+
+    @Input
+    @Optional
     final ListProperty<String> features
 
     @Incubating
@@ -248,7 +254,6 @@ class PitestTask extends JavaExec {
         reportDir = of.directoryProperty()
         targetClasses = of.setProperty(String)
         targetTests = of.setProperty(String)
-        dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
         mutators = of.setProperty(String)
         excludedMethods = of.setProperty(String)
@@ -285,6 +290,8 @@ class PitestTask extends JavaExec {
         pluginConfiguration = of.mapProperty(String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
+        inputEncoding = of.property(Charset)
+        outputEncoding = of.property(Charset)
         additionalClasspath = of.fileCollection()
         useAdditionalClasspathFile = of.property(Boolean)
         additionalClasspathFile = of.fileProperty()
@@ -293,19 +300,19 @@ class PitestTask extends JavaExec {
 
     @Input
     String getAdditionalClasspathFilePath() {
-        return additionalClasspathFile.asFile.get().absolutePath
+        return additionalClasspathFile.asFile.get().relativePath(project.rootProject.rootDir)
     }
 
     @Input
     @Optional
     String getHistoryInputLocationPath() {
         //?. operator doesn't work with Gradle Providers
-        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().absolutePath : null
+        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().relativePath(project.rootProject.rootDir) : null
     }
 
     @Input
     String getDefaultFileForHistoryDataPath() {
-        return defaultFileForHistoryData.asFile.get().absolutePath
+        return defaultFileForHistoryData.asFile.get().relativePath(project.rootProject.rootDir)
     }
 
     @Input
@@ -336,7 +343,6 @@ class PitestTask extends JavaExec {
         map['reportDir'] = reportDir.getOrNull()?.toString()
         map['targetClasses'] = targetClasses.get().join(',')
         map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
-        map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
         map['threads'] = optionalPropertyAsString(threads)
         map["mutators"] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
@@ -367,6 +373,8 @@ class PitestTask extends JavaExec {
         map['jvmPath'] = getJvmPath()?.getOrNull()?.asFile?.absolutePath
         map['maxSurviving'] = optionalPropertyAsString(maxSurviving)
         map['useClasspathJar'] = optionalPropertyAsString(useClasspathJar)
+        map['inputEncoding'] = optionalPropertyAsString(inputEncoding)
+        map['outputEncoding'] = optionalPropertyAsString(outputEncoding)
         map['features'] = (features.getOrElse([]) + (additionalFeatures ?: []))?.join(',')
         map.putAll(prepareMapWithClasspathConfiguration())
         map.putAll(prepareMapWithIncrementalAnalysisConfiguration())

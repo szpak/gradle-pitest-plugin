@@ -34,6 +34,7 @@ test {
 }
 
 pitest {
+    pitestVersion = "1.8.1" //PIT 1.9.0 required junit5PluginVersion 1.0.0+ which doesn't support older JUnit Platform 1.7
 //    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
     junit5PluginVersion = "0.14"
 }

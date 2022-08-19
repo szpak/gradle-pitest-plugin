@@ -7,8 +7,11 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
@@ -19,6 +22,7 @@ import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 
 import javax.inject.Inject
+import java.nio.charset.Charset
 
 /**
  * Task to aggregate pitest report
@@ -60,6 +64,14 @@ abstract class AggregateReportTask extends DefaultTask {
     @Classpath
     abstract ConfigurableFileCollection getPitestReportClasspath()
 
+    @Input
+    @Optional
+    final Property<Charset> inputCharset
+
+    @Input
+    @Optional
+    final Property<Charset> outputCharset
+
     @Inject
     abstract WorkerExecutor getWorkerExecutor()
 
@@ -71,6 +83,8 @@ abstract class AggregateReportTask extends DefaultTask {
         additionalClasspath = of.fileCollection()
         mutationFiles = of.fileCollection()
         lineCoverageFiles = of.fileCollection()
+        inputCharset = of.property(Charset)
+        outputCharset = of.property(Charset)
     }
 
     @TaskAction
@@ -87,6 +101,8 @@ abstract class AggregateReportTask extends DefaultTask {
             parameters.additionalClasspath.from(additionalClasspath)
             parameters.mutationFiles.from(mutationFiles)
             parameters.lineCoverageFiles.from(lineCoverageFiles)
+            parameters.inputCharset.set(this.inputCharset)
+            parameters.outputCharset.set(this.outputCharset)
         }
     }
 

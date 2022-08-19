@@ -49,6 +49,8 @@ class PitestAggregatorPluginTest extends Specification {
 
 //    void "use pitest version from subproject project configuration"() {}    //TODO: Can be implemented with ProjectBuilder? withParent()?
 
+//    void "use configured charset in aggregation"() {} //TODO: Can be tested in "unit" way?
+
     private void assertThatTasksAreInGroup(List<String> taskNames, String group) {
         taskNames.each { String taskName ->
             Task task = project.tasks[taskName]

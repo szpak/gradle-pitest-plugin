@@ -18,6 +18,8 @@ package info.solidsoft.gradle.pitest
 import groovy.transform.CompileDynamic
 import spock.lang.Issue
 
+import java.nio.charset.Charset
+
 //TODO: Think if task initialization with WithPitestTaskInitialization is not performed to early
 //      (see PitestTaskTestPluginConfigurationSpec for corner case with login in PitestPlugin)
 @CompileDynamic
@@ -28,7 +30,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'features',
                                                                                 'excludedTestClasses',
                                                                                 'testPlugin',
-                                                                                'dependencyDistance',
                                                                                 'threads',
                                                                                 "mutators",
                                                                                 'excludedMethods',
@@ -56,6 +57,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'jvmPath',
                                                                                 'maxSurviving',
                                                                                 'useClasspathJar',
+                                                                                'inputCharset',
+                                                                                'outputCharset',
+                                                                                'inputEncoding',
+                                                                                'outputEncoding',
                                                                                 'features',
                                                                                 'historyInputLocation',
                                                                                 'historyOutputLocation',
@@ -133,7 +138,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
-            "dependencyDistance"     | 42                                           || "42"
             "threads"                | 42                                           || "42"
             "mutators"               | ["MUTATOR_X", "MUTATOR_Y", "-MUTATOR_Z"]     || "MUTATOR_X,MUTATOR_Y,-MUTATOR_Z"
             "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"
@@ -168,6 +172,9 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             //pluginConfiguration tested separately
             "maxSurviving"           | 20                                           || "20"
             "useClasspathJar"        | true                                         || "true"
+            //inputCharset and outputCharset tested separately - they set inputEncoding and outputEncoding in PIT
+            "inputEncoding"          | Charset.forName("ISO-8859-2")                || "ISO-8859-2"
+            "outputEncoding"         | Charset.forName("ISO-8859-1")                || "ISO-8859-1"
             "features"               | ["-FOO", "+BAR(a[1] a[2])"]                  || "-FOO,+BAR(a[1] a[2])"
             //fileExtensionsToFilter not passed to PIT, tested separately
     }
@@ -247,6 +254,18 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                     sourceSetBuiltResources("intTest"),
                     sourceSetBuiltJavaClasses("main")
                 ] as Set
+    }
+
+    void "should set input/output encoding in PIT for input/output charset"() {
+        given:
+            String inputEncodingAsString = "ISO-8859-2"
+            String outputEncodingAsString = "ISO-8859-1"
+        and:
+            project.pitest.inputCharset = Charset.forName(inputEncodingAsString)
+            project.pitest.outputCharset = Charset.forName(outputEncodingAsString)
+        expect:
+            task.taskArgumentMap()['inputEncoding'] == inputEncodingAsString
+            task.taskArgumentMap()['outputEncoding'] == outputEncodingAsString
     }
 
     private Set<String> assembleMainSourceDirAsStringSet() {

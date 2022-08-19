@@ -52,7 +52,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.7.4'
+    public final static String DEFAULT_PITEST_VERSION = '1.9.4'
     @Internal   //6.4 due to main -> mainClass change to avoid deprecation warning in Gradle 7.x - https://github.com/szpak/gradle-pitest-plugin/pull/289
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("6.4") //public as used also in regression tests
 
@@ -148,7 +148,6 @@ class PitestPlugin implements Plugin<Project> {
                 return task.targetClasses.getOrNull()
             }
         } as Provider<Iterable<String>>)
-        task.dependencyDistance.set(extension.dependencyDistance)
         task.threads.set(extension.threads)
         task.mutators.set(extension.mutators)
         task.excludedMethods.set(extension.excludedMethods)
@@ -201,6 +200,8 @@ class PitestPlugin implements Plugin<Project> {
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
+        task.inputEncoding.set(extension.inputCharset)
+        task.outputEncoding.set(extension.outputCharset)
         task.features.set(extension.features)
     }
 

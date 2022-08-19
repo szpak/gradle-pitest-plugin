@@ -18,13 +18,13 @@ buildscript {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0' //override version for more reliable releasing from Travis
         classpath 'com.gradle.publish:plugin-publish-plugin:0.16.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.39.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.42.0'
     }
 }
 
 sourceCompatibility = 1.8
 
-ext.pitestAggregatorVersion = "1.7.4"   //Must be equal to default PIT version in PitestPlugin
+ext.pitestAggregatorVersion = "1.9.4"   //Must be equal to default PIT version in PitestPlugin
 
 repositories {
     mavenCentral()
@@ -39,11 +39,11 @@ dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
-    testImplementation('org.spockframework:spock-core:2.0-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.2-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.0-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.2-M3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
     testImplementation 'net.bytebuddy:byte-buddy:1.11.16' //for Spying in Spock

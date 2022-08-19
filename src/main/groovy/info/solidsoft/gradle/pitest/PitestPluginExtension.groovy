@@ -28,6 +28,8 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 
+import java.nio.charset.Charset
+
 /**
  * Extension class with configurable parameters for Pitest plugin.
  *
@@ -72,7 +74,6 @@ class PitestPluginExtension {
 
     final SetProperty<String> targetClasses
     final SetProperty<String> targetTests
-    final Property<Integer> dependencyDistance
     final Property<Integer> threads
     final SetProperty<String> mutators
     final SetProperty<String> excludedMethods
@@ -178,8 +179,11 @@ class PitestPluginExtension {
     @Incubating
     final Property<Boolean> useClasspathJar //new in PIT 1.4.2 (GPP 1.4.6)
 
+    final Property<Charset> inputCharset    //new in PIT 1.8.1 as inputEncoding (GPP 1.9.0)
+    final Property<Charset> outputCharset   //new in PIT 1.8.1 as outputEncoding (GPP 1.9.0)
+
     /**
-     * Turnes on/off features in PIT itself and its plugins.
+     * Turns on/off features in PIT itself and its plugins.
      *
      * Some details: https://github.com/hcoles/pitest/releases/tag/pitest-parent-1.2.1
      *
@@ -226,7 +230,6 @@ class PitestPluginExtension {
         reportDir = of.directoryProperty()
         targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
         targetTests = nullSetPropertyOf(p, String)
-        dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
         mutators = nullSetPropertyOf(p, String)
         excludedMethods = nullSetPropertyOf(p, String)
@@ -263,6 +266,8 @@ class PitestPluginExtension {
         pluginConfiguration = nullMapPropertyOf(p, String, String)
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
+        inputCharset = of.property(Charset)
+        outputCharset = of.property(Charset)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
     }
@@ -294,6 +299,16 @@ class PitestPluginExtension {
      */
     void setWithHistory(Boolean withHistory) {
         this.enableDefaultIncrementalAnalysis.set(withHistory)
+    }
+
+    @Deprecated //Alias for inputCharset to keep naming compatibility with PIT
+    void setInputEncoding(Charset inputCharset) {
+        this.inputCharset.set(inputCharset)
+    }
+
+    @Deprecated //Alias for outputCharset to keep naming compatibility with PIT
+    void setOutputEncoding(Charset outputCharset) {
+        this.outputCharset.set(outputCharset)
     }
 
     private static <T> SetProperty<T> nullSetPropertyOf(Project p, Class<T> clazz) {

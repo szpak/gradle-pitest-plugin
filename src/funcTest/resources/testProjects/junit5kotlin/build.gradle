@@ -31,7 +31,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     testImplementation "org.junit.platform:junit-platform-runner:$junitPlatformVersion"
 
-    pitest 'org.pitest:pitest-junit5-plugin:0.14'
+    pitest 'org.pitest:pitest-junit5-plugin:1.0.0'
 }
 
 compileKotlin {
