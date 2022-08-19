@@ -6,6 +6,8 @@
  - Support for `inputEncoding` and `outputEncoding` (named in plugin `inputCharset` and `outputCharset`) - [#310](https://github.com/szpak/gradle-pitest-plugin/issues/310)
  - Add pitest dependencies only during configuration resolution - [#313](https://github.com/szpak/gradle-pitest-plugin/issues/313) - PR by [Ian O'Malley](https://github.com/omalleyian)
  - Improve build cache hit cache with relative path - [#315](https://github.com/szpak/gradle-pitest-plugin/issues/315) - PR by [Siddardha Bezawada](https://github.com/SidB3)
+ - Remove (optional) `dependencyDistance` configuration parameter removed in PIT 1.9.0
+
 
 **Compatibility notes** Due to the plugin API changes in PIT 1.9.0, the new pitest-junit5-plugin 1.0.0 is required (other PIT plugins - if used - also need to be upgraded).
 

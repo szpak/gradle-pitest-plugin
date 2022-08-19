@@ -74,7 +74,6 @@ class PitestPluginExtension {
 
     final SetProperty<String> targetClasses
     final SetProperty<String> targetTests
-    final Property<Integer> dependencyDistance
     final Property<Integer> threads
     final SetProperty<String> mutators
     final SetProperty<String> excludedMethods
@@ -231,7 +230,6 @@ class PitestPluginExtension {
         reportDir = of.directoryProperty()
         targetClasses = nullSetPropertyOf(p, String)    //null instead of empty collection to distinguish on optional parameters
         targetTests = nullSetPropertyOf(p, String)
-        dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
         mutators = nullSetPropertyOf(p, String)
         excludedMethods = nullSetPropertyOf(p, String)

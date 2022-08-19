@@ -30,7 +30,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'features',
                                                                                 'excludedTestClasses',
                                                                                 'testPlugin',
-                                                                                'dependencyDistance',
                                                                                 'threads',
                                                                                 "mutators",
                                                                                 'excludedMethods',
@@ -139,7 +138,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             "reportDir"              | new File("//tmp//foo")                       || new File("//tmp//foo").path    //due to issues on Windows
             "targetClasses"          | ["a", "b"]                                   || "a,b"
             "targetTests"            | ["t1", "t2"]                                 || "t1,t2"
-            "dependencyDistance"     | 42                                           || "42"
             "threads"                | 42                                           || "42"
             "mutators"               | ["MUTATOR_X", "MUTATOR_Y", "-MUTATOR_Z"]     || "MUTATOR_X,MUTATOR_Y,-MUTATOR_Z"
             "excludedMethods"        | ["methodX", "methodY"]                       || "methodX,methodY"

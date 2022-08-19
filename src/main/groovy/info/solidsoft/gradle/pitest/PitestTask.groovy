@@ -68,10 +68,6 @@ class PitestTask extends JavaExec {
 
     @Input
     @Optional
-    final Property<Integer> dependencyDistance
-
-    @Input
-    @Optional
     final Property<Integer> threads
 
     @Input
@@ -258,7 +254,6 @@ class PitestTask extends JavaExec {
         reportDir = of.directoryProperty()
         targetClasses = of.setProperty(String)
         targetTests = of.setProperty(String)
-        dependencyDistance = of.property(Integer)
         threads = of.property(Integer)
         mutators = of.setProperty(String)
         excludedMethods = of.setProperty(String)
@@ -348,7 +343,6 @@ class PitestTask extends JavaExec {
         map['reportDir'] = reportDir.getOrNull()?.toString()
         map['targetClasses'] = targetClasses.get().join(',')
         map['targetTests'] = overriddenTargetTests ? overriddenTargetTests.join(',') : optionalCollectionAsString(targetTests)
-        map['dependencyDistance'] = optionalPropertyAsString(dependencyDistance)
         map['threads'] = optionalPropertyAsString(threads)
         map["mutators"] = optionalCollectionAsString(mutators)
         map['excludedMethods'] = optionalCollectionAsString(excludedMethods)
