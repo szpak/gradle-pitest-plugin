@@ -34,10 +34,8 @@ env:
   - secure: FZfezOymfoKWQf+DHb6OU2Vk1cY8Cz0ic3+ZtPKoWRrp8bijkSIA8jjfzwKNbJ1qyRthTY7tv/k83dbrOl3xDBeT6yzXslceraWLww/cp/+FGM6M3XG6dLqZlSaKH8bbPL94p7NiPCn+7mSuirur1H9Lf4lD6VeAOmxtstowPic=
 matrix:
   include:
-    - jdk: openjdk8
-      env: PITEST_REGRESSION_TESTS=quick
     - jdk: openjdk11
-      env: PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
+      env: PITEST_REGRESSION_TESTS=quick
     - jdk: openjdk15
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
     - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
