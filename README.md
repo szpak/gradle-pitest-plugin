@@ -141,23 +141,19 @@ Similar syntax can be used also for Kotlin configuration (`build.gradle.kts`).
 
 ## Multi-module projects support
 
-gradle-pitest-plugin can be used in multi-module projects. The gradle-pitest-plugin dependency should be added to the buildscript configuration in
-the root project while the plugin has to be applied in all subprojects which should be processed with PIT. A sample snippet from build.gradle located
-for the root project:
+gradle-pitest-plugin can be used in [multi-module projects](src/funcTest/resources/testProjects/multiproject/build.gradle).
+The gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project while the plugin has to be applied in
+all subprojects which should be processed with PIT. A sample snippet from build.gradle located for the root project:
 
 ```groovy
 //in root project configuration
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0'
-    }
+plugins {
+    id 'info.solidsoft.pitest' version '1.9.0' apply false
 }
 
 subprojects {
-    apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
+    apply plugin: 'java'
+    apply plugin: 'info.solidsoft.pitest'
 
     pitest {
         threads = 4
@@ -174,18 +170,14 @@ task `pitestReportAggregate`. Root project must be properly configured to use `p
 
 ```groovy
 //in root project configuration
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0'
-    }
+plugins {
+    id 'info.solidsoft.pitest' version '1.9.0' apply false
 }
 
 apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
 
 subprojects {
+    apply plugin: 'java'
     apply plugin: 'info.solidsoft.pitest'
 
     pitest {
