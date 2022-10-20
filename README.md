@@ -7,13 +7,13 @@ which supports Android gradle projects.
 
 ```groovy
 plugins {
-  id 'pl.droidsonroids.pitest' version '0.2.9'
+  id 'pl.droidsonroids.pitest' version '0.2.10'
 }
 ```
 
 ```kotlin
 plugins {
-  id("pl.droidsonroids.pitest") version "0.2.9"
+  id("pl.droidsonroids.pitest") version "0.2.10"
 }
 ```
 
@@ -25,7 +25,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath("pl.droidsonroids.gradle:gradle-pitest-plugin:0.2.9")
+    classpath("pl.droidsonroids.gradle:gradle-pitest-plugin:0.2.10")
   }
 }
 

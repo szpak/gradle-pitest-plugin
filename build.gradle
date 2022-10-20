@@ -148,6 +148,7 @@ gradlePlugin {
         pitestAggregator {
             id = 'pl.droidsonroids.pitest.aggregator'
             implementationClass = 'pl.droidsonroids.gradle.pitest.PitestAggregatorPlugin'
+            displayName = 'Android Gradle pitest aggregator plugin'
         }
     }
 }
