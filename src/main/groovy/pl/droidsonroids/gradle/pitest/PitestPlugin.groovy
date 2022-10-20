@@ -202,11 +202,11 @@ class PitestPlugin implements Plugin<Project> {
             if (variant instanceof TestedVariant) {
                 variant.unitTestVariant?.with { unitTestVariant ->
                     from(getJavaCompileTask(unitTestVariant).classpath)
-                    from(project.files(getJavaCompileTask(unitTestVariant).destinationDir))
+                    from(project.files(getJavaCompileTask(unitTestVariant).destinationDirectory.asFile))
                 }
             }
             from(getJavaCompileTask(variant).classpath)
-            from(project.files(getJavaCompileTask(variant).destinationDir))
+            from(project.files(getJavaCompileTask(variant).destinationDirectory.asFile))
         }
 
         task.with {
@@ -266,10 +266,10 @@ class PitestPlugin implements Plugin<Project> {
             additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
             mutableCodePaths.setFrom({
                 Object additionalMutableCodePaths = pitestExtension.additionalMutableCodePaths ?: [] as Set
-                additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDir)
+                additionalMutableCodePaths.add(getJavaCompileTask(variant).destinationDirectory.asFile)
                 Task kotlinCompileTask = project.tasks.findByName("compile${variant.name.capitalize()}Kotlin")
                 if (kotlinCompileTask != null) {
-                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDir)
+                    additionalMutableCodePaths.add(kotlinCompileTask.destinationDirectory.asFile)
                 }
                 additionalMutableCodePaths
             } as Callable<Set<File>>)
