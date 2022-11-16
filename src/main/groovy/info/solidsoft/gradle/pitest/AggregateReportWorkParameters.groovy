@@ -20,5 +20,8 @@ interface AggregateReportWorkParameters extends WorkParameters {
     ConfigurableFileCollection getLineCoverageFiles()
     Property<Charset> getInputCharset()
     Property<Charset> getOutputCharset()
+    Property<Integer> getAggregatedTestStrengthThreshold()
+    Property<Integer> getAggregatedMutationThreshold()
+    Property<Integer> getAggregatedMaxSurviving()
 
 }
