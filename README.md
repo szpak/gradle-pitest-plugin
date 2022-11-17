@@ -84,7 +84,7 @@ The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
 
 To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir` and `pitestVersion` are
-automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by an user.
+automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by a user.
 
 There are a few parameters specific for Gradle plugin:
 

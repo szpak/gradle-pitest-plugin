@@ -113,7 +113,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     void "should not pass features configuration to PIT if not set in configuration or via option"() {
         //Intentional duplication with generic parametrized tests to emphasis requirement
         expect:
-            task.taskArgumentMap()['featues'] == null
+            task.taskArgumentMap()['features'] == null
     }
 
     void "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
