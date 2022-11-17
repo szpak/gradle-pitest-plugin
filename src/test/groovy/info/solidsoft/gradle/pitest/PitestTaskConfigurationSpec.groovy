@@ -124,6 +124,19 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
             paramName << PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
     }
 
+    void "should pass to PIT parameter 'verbosity' by default if not set explicitly"() {
+        expect:
+        task.taskArgumentMap().containsKey('verbosity')
+        task.taskArgumentMap().get('verbosity').is('NO_SPINNER')
+    }
+
+    void "should pass to PIT parameter 'verbosity' if set explicitly"() {
+        given:
+        project.pitest.verbosity = 'QUIET_WITH_PROGRESS'
+        expect:
+        task.taskArgumentMap().get('verbosity').is('QUIET_WITH_PROGRESS')
+    }
+
     //TODO: Run PIT with those values to detect removed properties and typos
     void "should pass plugin configuration (#configParamName) from Gradle to PIT"() {
         given:

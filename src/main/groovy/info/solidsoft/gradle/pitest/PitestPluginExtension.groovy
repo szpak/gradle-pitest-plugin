@@ -90,6 +90,7 @@ class PitestPluginExtension {
     final SetProperty<String> excludedTestClasses
     final SetProperty<String> avoidCallsTo
     final Property<Boolean> verbose
+    final Property<String> verbosity
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
     /**
@@ -237,6 +238,7 @@ class PitestPluginExtension {
         excludedTestClasses = nullSetPropertyOf(p, String)
         avoidCallsTo = nullSetPropertyOf(p, String)
         verbose = of.property(Boolean)
+        verbosity = of.property(String)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
         jvmArgs = nullListPropertyOf(p, String)
