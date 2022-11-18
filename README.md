@@ -77,14 +77,14 @@ pitest {
 The configuration in Gradle is the real Groovy code which makes all assignments very intuitive. All values expected by
 PIT should be passed as a corresponding types. There is only one important difference. For the parameters where PIT expects
 a coma separated list of strings in a Gradle configuration a list of strings should be used (see `outputFormats` in the
-following example).
+example above).
 
 Check PIT documentation for a [list](https://pitest.org/quickstart/commandline/) of all available command line parameters.
 The expected parameter format in a plugin configuration can be taken from
 [PitestPluginExtension](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/main/groovy/info/solidsoft/gradle/pitest/PitestPluginExtension.groovy).
 
-To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir` and `pitestVersion` are
-automatically set by a plugin. In addition `sourceDirs`, `reportDir` and `pitestVersion` can be overridden by a user.
+To make life easier `taskClasspath`, `mutableCodePaths`, `sourceDirs`, `reportDir`, `verbosity` and `pitestVersion` are
+automatically set by the plugin. In addition `sourceDirs`, `reportDir`, `verbosity` and `pitestVersion` can be overridden by a user.
 
 There are a few parameters specific for Gradle plugin:
 
@@ -113,7 +113,7 @@ pitest {
 
 ### Test system properties
 
-PIT executes tests in a JVM independent from the JVM used by Gradle to execute tests. If your tests require some system properties, you have to pass them to PIT as the plugin won't do it for you:
+PIT executes tests in a JVM independent of the JVM used by Gradle to execute tests. If your tests require some system properties, you have to pass them to PIT as the plugin won't do it for you:
 
 ```groovy
 test {
@@ -127,7 +127,7 @@ pitest {
 
 ### Eliminate warning in Idea
 
-As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) Idea displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`. It is not a real problem as Gradle internally intercepts those calls and use a setter instead . Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
+As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) IntelliJ IDEA displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`. It is not a real problem as Gradle internally intercepts those calls and use a setter instead . Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
 
 ```groovy
     testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
@@ -287,7 +287,7 @@ Please note. Starting with PIT 1.6.7 it is no longer needed to set `testPlugin` 
 
 ## Versions
 
-Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this a the latest released version
+Every gradle-pitest-plugin version by default uses a predefined PIT version. Usually this the latest released version
 of PIT available at the time of releasing a plugin version. It can be overridden by using `pitestVersion` parameter
 in a `pitest` configuration closure.
 
@@ -318,16 +318,16 @@ After [applied](https://github.com/nebula-plugins/gradle-override-plugin) gradle
 
     ./gradlew pitest -Doverride.pitest.reportDir=build/pitReport -Doverride.pitest.threads=8
 
-Note. The mechanism should work fine for String and numeric properties, but the are limitations with support of
+Note. The mechanism should work fine for String and numeric properties, but there are limitations with support of
 [Lists/Sets/Maps](https://github.com/nebula-plugins/gradle-override-plugin/issues/3) and [Boolean values](https://github.com/nebula-plugins/gradle-override-plugin/issues/1).
 
 For more information see project [web page](https://github.com/nebula-plugins/gradle-override-plugin).
 
 ### How can I change PIT version from default to just released the newest one?
 
-gradle-pitest-plugin by default uses a corresponsing PIT version (with the same number). The plugin is released only if there are internal changes or
+gradle-pitest-plugin by default uses a corresponding PIT version (with the same number). The plugin is released only if there are internal changes or
 there is a need to adjust to changes in newer PIT version. There is a dedicated mechanism to allow to use the latest PIT version (e.g, a bugfix release)
-or to downgrade PIT in case of detected issues. To override a defalt version it is enough to set `pitestVersion` property in the `pitest` configuration
+or to downgrade PIT in case of detected issues. To override a default version it is enough to set `pitestVersion` property in the `pitest` configuration
 closure.
 
 ```groovy
@@ -350,7 +350,7 @@ pitest {
 
 ### How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
 
-Ocasionally, it may be useful to debug a gradle-pitest-plugin execution or a PIT execution itself (e.g. [NPE in PIT](https://github.com/hcoles/pitest/issues/345)) to provide sensible error report.
+Occasionally, it may be useful to debug a gradle-pitest-plugin execution or a PIT execution itself (e.g. [NPE in PIT](https://github.com/hcoles/pitest/issues/345)) to provide sensible error report.
 
 The gradle-pitest-plugin execution can be remotely debugged with adding `-Dorg.gradle.debug=true` to the command line.
 
@@ -375,7 +375,7 @@ gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/relea
 
 ## Known issues
 
- - too verbose output from PIT
+ - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1)
 
 ## Development
 
