@@ -48,7 +48,6 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                                                                                 'fullMutationMatrix',
                                                                                 'includedTestMethods',
                                                                                 'detectInlinedCode',
-                                                                                'timestampedReports',
                                                                                 'mutationThreshold',
                                                                                 'coverageThreshold',
                                                                                 'testStrengthThreshold',

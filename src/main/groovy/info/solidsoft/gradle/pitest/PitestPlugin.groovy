@@ -111,6 +111,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
+        extension.timestampedReports.set(false)
         extension.useClasspathFile.set(false)
     }
 
