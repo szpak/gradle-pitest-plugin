@@ -9,15 +9,15 @@ import javax.inject.Inject
 @CompileStatic
 class ReportAggregatorProperties {
 
-    final Property<Integer> aggregatedTestStrengthThreshold
-    final Property<Integer> aggregatedMutationThreshold
-    final Property<Integer> aggregatedMaxSurviving
+    final Property<Integer> testStrengthThreshold
+    final Property<Integer> mutationThreshold
+    final Property<Integer> maxSurviving
 
     @Inject
     ReportAggregatorProperties(ObjectFactory objects) {
-        aggregatedTestStrengthThreshold = objects.property(Integer)
-        aggregatedMutationThreshold = objects.property(Integer)
-        aggregatedMaxSurviving = objects.property(Integer)
+        testStrengthThreshold = objects.property(Integer)
+        mutationThreshold = objects.property(Integer)
+        maxSurviving = objects.property(Integer)
     }
 
 }

@@ -74,15 +74,15 @@ abstract class AggregateReportTask extends DefaultTask {
 
     @Input
     @Optional
-    final Property<Integer> aggregatedTestStrengthThreshold
+    final Property<Integer> testStrengthThreshold
 
     @Input
     @Optional
-    final Property<Integer> aggregatedMutationThreshold
+    final Property<Integer> mutationThreshold
 
     @Input
     @Optional
-    final Property<Integer> aggregatedMaxSurviving
+    final Property<Integer> maxSurviving
 
     @Inject
     abstract WorkerExecutor getWorkerExecutor()
@@ -97,9 +97,9 @@ abstract class AggregateReportTask extends DefaultTask {
         lineCoverageFiles = of.fileCollection()
         inputCharset = of.property(Charset)
         outputCharset = of.property(Charset)
-        aggregatedTestStrengthThreshold = of.property(Integer)
-        aggregatedMutationThreshold = of.property(Integer)
-        aggregatedMaxSurviving = of.property(Integer)
+        testStrengthThreshold = of.property(Integer)
+        mutationThreshold = of.property(Integer)
+        maxSurviving = of.property(Integer)
     }
 
     @TaskAction
@@ -118,9 +118,9 @@ abstract class AggregateReportTask extends DefaultTask {
             parameters.lineCoverageFiles.from(lineCoverageFiles)
             parameters.inputCharset.set(this.inputCharset)
             parameters.outputCharset.set(this.outputCharset)
-            parameters.aggregatedTestStrengthThreshold.set(this.aggregatedTestStrengthThreshold)
-            parameters.aggregatedMutationThreshold.set(this.aggregatedMutationThreshold)
-            parameters.aggregatedMaxSurviving.set(this.aggregatedMaxSurviving)
+            parameters.testStrengthThreshold.set(this.testStrengthThreshold)
+            parameters.mutationThreshold.set(this.mutationThreshold)
+            parameters.maxSurviving.set(this.maxSurviving)
         }
     }
 

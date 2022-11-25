@@ -39,7 +39,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
 
         log.info("Aggregated report ${parameters.reportFile.asFile.get().absolutePath}")
 
-        consumeIfPropertyIsSet(parameters.aggregatedTestStrengthThreshold) { threshold ->
+        consumeIfPropertyIsSet(parameters.testStrengthThreshold) { threshold ->
             if (aggregationResult.testStrength < threshold) {
                 throw new GradleException(
                     "Aggregated test strength score of ${aggregationResult.testStrength} " +
@@ -48,7 +48,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
             }
         }
 
-        consumeIfPropertyIsSet(parameters.aggregatedMutationThreshold) { threshold ->
+        consumeIfPropertyIsSet(parameters.mutationThreshold) { threshold ->
             if (aggregationResult.mutationCoverage < threshold) {
                 throw new GradleException(
                     "Aggregated mutation score of ${aggregationResult.mutationCoverage} " +
@@ -57,7 +57,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
             }
         }
 
-        consumeIfPropertyIsSet(parameters.aggregatedMaxSurviving) { threshold ->
+        consumeIfPropertyIsSet(parameters.maxSurviving) { threshold ->
             if (aggregationResult.mutationsSurvived > threshold) {
                 throw new GradleException(
                     "Had ${aggregationResult.mutationsSurvived} " +
