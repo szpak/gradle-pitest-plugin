@@ -1,5 +1,14 @@
 # gradle-pitest-plugin changelog
 
+## 1.9.11 - Unreleased
+
+ - Support for `verbosity` flag, "spinner" disabled by default - [#267](https://github.com/szpak/gradle-pitest-plugin/issues/267)
+ - Minimal supported PIT version is 1.7.1 (due to "verbosity" flag used by default)
+ - Deprecated `verbose` flag - `verbosity` is much more versatile, especially when used from the Gradle plugin
+
+**Compatibility notes**. Due to the usage of the "verbosity" flag by default, the minimal supported PIT version is 1.7.1 (released 2021-09-29)
+
+
 ## 1.9.0 - 2022-08-19
 
  - PIT 1.9.4 by default (requires pitest-junit5-plugin 1.0.0!)

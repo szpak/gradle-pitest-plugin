@@ -126,15 +126,15 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
 
     void "should pass to PIT parameter 'verbosity' by default if not set explicitly"() {
         expect:
-        task.taskArgumentMap().containsKey('verbosity')
-        task.taskArgumentMap().get('verbosity').is('NO_SPINNER')
+            task.taskArgumentMap().containsKey('verbosity')
+            task.taskArgumentMap().get('verbosity').is('NO_SPINNER')
     }
 
     void "should pass to PIT parameter 'verbosity' if set explicitly"() {
         given:
-        project.pitest.verbosity = 'QUIET_WITH_PROGRESS'
+            project.pitest.verbosity = 'QUIET_WITH_PROGRESS'
         expect:
-        task.taskArgumentMap().get('verbosity').is('QUIET_WITH_PROGRESS')
+            task.taskArgumentMap().get('verbosity').is('QUIET_WITH_PROGRESS')
     }
 
     //TODO: Run PIT with those values to detect removed properties and typos

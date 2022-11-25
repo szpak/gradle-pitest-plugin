@@ -293,7 +293,7 @@ in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
-If not stated otherwise, gradle-pitest-plugin 1.9.x by default uses PIT 1.9.x, 1.7.x uses PIT 1.7.x, etc.
+If not stated otherwise, gradle-pitest-plugin 1.9.x by default uses PIT 1.9.x, 1.7.x uses PIT 1.7.x, etc. The minimal supported PIT version is 1.7.1.
 
 Starting with version 1.7.0 gradle-pitest-plugin requires Gradle 6.4. The latest version with the Gradle 5.x (5.6+) support is 1.6.0.
 The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.4.2 under Java 11.

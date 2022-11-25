@@ -39,11 +39,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     }
 
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
-        return [getMinimalPitVersionCompatibleWithCurrentJavaVersion(), PitestPlugin.DEFAULT_PITEST_VERSION]
-    }
-
-    private String getMinimalPitVersionCompatibleWithCurrentJavaVersion() {
-        return MINIMAL_SUPPORTED_PIT_VERSION
+        return [MINIMAL_SUPPORTED_PIT_VERSION, PitestPlugin.DEFAULT_PITEST_VERSION]
     }
 
 }

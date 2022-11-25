@@ -94,8 +94,12 @@ class PitestPluginExtension {
      * <p>If false, the value of verbosity is used to determine the verbosity of the output.</p>
      * <p>Disabled by default.</p>
      *
+     * <p><b>Note:</b> This property is marked as deprecated as - in the majority of cases - it doesn't make sense to use it, if PIT is called using the Gradle
+     * plugin. Use #verosity instead.</p>
+     *
      * @see #verbosity
      */
+    @Deprecated //since GPP 1.9.11
     final Property<Boolean> verbose
 
     /**
@@ -112,9 +116,9 @@ class PitestPluginExtension {
      * <p><b>Note:</b> verbose must be set to false (which is the default) for this to have an effect.</p>
      *
      * @see #verbose
-     * @since 1.9.1
+     * @since 1.9.11
      */
-    final Property<String> verbosity //new in PIT 1.7.1 (GPP 1.9.1)
+    final Property<String> verbosity //new in PIT 1.7.1 (GPP 1.9.11)
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
     /**
