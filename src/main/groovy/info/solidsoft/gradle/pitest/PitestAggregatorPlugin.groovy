@@ -80,6 +80,9 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             findPluginExtension().ifPresent({ PitestPluginExtension extension ->
                 inputCharset.set(extension.inputCharset)
                 outputCharset.set(extension.outputCharset)
+                aggregatedTestStrengthThreshold.set(extension.reportAggregatorProperties.aggregatedTestStrengthThreshold)
+                aggregatedMutationThreshold.set(extension.reportAggregatorProperties.aggregatedMutationThreshold)
+                aggregatedMaxSurviving.set(extension.reportAggregatorProperties.aggregatedMaxSurviving)
             } as Consumer<PitestPluginExtension>)   //Simplify with Groovy 3+
         }
     }

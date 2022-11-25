@@ -42,6 +42,11 @@ subprojects {
             outputFormats = ["HTML","XML"]
             timestampedReports = false
             exportLineCoverage = true
+            reportAggregator {
+                aggregatedTestStrengthThreshold.set(50)
+                aggregatedMutationThreshold.set(40)
+                aggregatedMaxSurviving.set(3)
+            }
         }
     }
 }

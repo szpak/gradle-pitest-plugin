@@ -16,6 +16,7 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -249,6 +250,8 @@ class PitestPluginExtension {
     @Incubating
     final ListProperty<String> fileExtensionsToFilter
 
+    final ReportAggregatorProperties reportAggregatorProperties
+
     PitestPluginExtension(Project project) {
         ObjectFactory of = project.objects
         Project p = project
@@ -300,6 +303,11 @@ class PitestPluginExtension {
         outputCharset = of.property(Charset)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
+        reportAggregatorProperties = new ReportAggregatorProperties(of)
+    }
+
+    void reportAggregator(Action<? super ReportAggregatorProperties> action) {
+        action.execute(reportAggregatorProperties)
     }
 
     void setReportDir(File reportDir) {
