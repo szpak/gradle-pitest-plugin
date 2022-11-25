@@ -4,7 +4,7 @@
 
  - Support for thresholds in aggregated metrics (requires PIT 1.9.9+) - [#319](https://github.com/szpak/gradle-pitest-plugin/issues/319) - PR by [pfoerd](https://github.com/Pfoerd)
  - Support for `verbosity` flag, "spinner" disabled by default - [#267](https://github.com/szpak/gradle-pitest-plugin/issues/267) - PR by [Carsten Otto](https://github.com/C-Otto)
- - PIT 1.9.10 by default
+ - PIT 1.9.11 by default
  - Minimal supported PIT version is 1.7.1 (due to "verbosity" flag used by default)
  - Deprecated `verbose` flag - `verbosity` is much more versatile, especially when used from the Gradle plugin
 
