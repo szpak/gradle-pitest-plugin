@@ -17,7 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
-    id 'info.solidsoft.pitest' version '1.7.4'
+    id 'info.solidsoft.pitest' version '1.9.0'
 }
 ```
 
@@ -47,7 +47,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0'
     }
 }
 ```
@@ -67,7 +67,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.7.4' //not needed when a default PIT version should be used
+    pitestVersion = '1.9.0' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -141,23 +141,19 @@ Similar syntax can be used also for Kotlin configuration (`build.gradle.kts`).
 
 ## Multi-module projects support
 
-gradle-pitest-plugin can be used in multi-module projects. The gradle-pitest-plugin dependency should be added to the buildscript configuration in
-the root project while the plugin has to be applied in all subprojects which should be processed with PIT. A sample snippet from build.gradle located
-for the root project:
+gradle-pitest-plugin can be used in [multi-module projects](src/funcTest/resources/testProjects/multiproject/build.gradle).
+The gradle-pitest-plugin dependency should be added to the buildscript configuration in the root project while the plugin has to be applied in
+all subprojects which should be processed with PIT. A sample snippet from build.gradle located for the root project:
 
 ```groovy
 //in root project configuration
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
-    }
+plugins {
+    id 'info.solidsoft.pitest' version '1.9.0' apply false
 }
 
 subprojects {
-    apply plugin: 'info.solidsoft.pitest'   //'pitest' for plugin versions <1.1.0
+    apply plugin: 'java'
+    apply plugin: 'info.solidsoft.pitest'
 
     pitest {
         threads = 4
@@ -174,18 +170,14 @@ task `pitestReportAggregate`. Root project must be properly configured to use `p
 
 ```groovy
 //in root project configuration
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
-    }
+plugins {
+    id 'info.solidsoft.pitest' version '1.9.0' apply false
 }
 
 apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
 
 subprojects {
+    apply plugin: 'java'
     apply plugin: 'info.solidsoft.pitest'
 
     pitest {
@@ -253,17 +245,17 @@ Starting with this release the configuration required to use PIT with JUnit 5 ha
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.7.4'
+    id 'info.solidsoft.pitest' version '1.9.0'
 }
 
 pitest {
     //adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
-    junit5PluginVersion = '0.15'    //or 0.14 for Junit Jupiter 5.7 (JUnit Platform 1.7)
+    junit5PluginVersion = '1.0.0'    //or 0.15 for PIT <1.9.0
     // ...
 }
 ```
 
-**Please note**. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
+**Please note**. PIT 1.9.0 requires pitest-junit5-plugin 1.0.0+. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
 
 The minimal working example for JUnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
 
@@ -276,7 +268,7 @@ To enable PIT plugins, it is enough to add it to the pitest configuration in the
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.7.4'
+    id 'info.solidsoft.pitest' version '1.9.0'
 }
 
 repositories {
@@ -301,16 +293,16 @@ in a `pitest` configuration closure.
 
 Please be aware that in some cases there could be some issues when using non default PIT versions.
 
-If not stated otherwise, gradle-pitest-plugin 1.7.x by default uses PIT 1.7.x, 1.6.x uses PIT 1.6.x, etc.
+If not stated otherwise, gradle-pitest-plugin 1.9.x by default uses PIT 1.9.x, 1.7.x uses PIT 1.7.x, etc.
 
 Starting with version 1.7.0 gradle-pitest-plugin requires Gradle 6.4. The latest version with the Gradle 5.x (5.6+) support is 1.6.0.
-The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.2 under Java 8.
-Tests with Java 9 - 15 are limited to the compatible versions of Gradle and PIT.
+The current version was automatically smoke tested with Gradle 6.4, 6.9.1 and 7.4.2 under Java 11.
+Tests with Java 11+ are limited to the compatible versions of Gradle and PIT.
 
-Java 11 is officially supported starting with gradle-pitest-plugin 1.4.0. The experimental support for Java 17 can be tested with 1.7.0+.
+The experimental support for Java 17 can be tested with 1.7.0+.
 
 Starting with the version 1.3.0 the produced binaries [require](https://github.com/szpak/gradle-pitest-plugin/issues/70#issuecomment-360989155) Java 8
-(as a JDK used for running a Gradle build). However, having Java 17 LTS released, support for JDK <11 can be deprecated "soon" (see [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)).
+(as a JDK used for running a Gradle build). However, having Java 17 LTS released in September 2021, starting with gradle-pitest-plugin 1.9.0, support for JDK <11 is deprecated (see [#299](https://github.com/szpak/gradle-pitest-plugin/issues/299)).
 
 See the [changelog file](https://github.com/szpak/gradle-pitest-plugin/blob/master/CHANGELOG.md) for more detailed list of changes in the plugin itself.
 
