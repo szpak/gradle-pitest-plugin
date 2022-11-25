@@ -112,6 +112,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
+        extension.verbosity.set("NO_SPINNER")
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
@@ -155,6 +156,7 @@ class PitestPlugin implements Plugin<Project> {
         task.excludedTestClasses.set(extension.excludedTestClasses)
         task.avoidCallsTo.set(extension.avoidCallsTo)
         task.verbose.set(extension.verbose)
+        task.verbosity.set(extension.verbosity)
         task.timeoutFactor.set(extension.timeoutFactor)
         task.timeoutConstInMillis.set(extension.timeoutConstInMillis)
         task.childProcessJvmArgs.set(extension.jvmArgs)
