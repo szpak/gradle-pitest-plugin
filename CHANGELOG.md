@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.9.11 - Unreleased
+## 1.9.11 - 2022-11-27
 
  - Support for thresholds in aggregated metrics (requires PIT 1.9.9+) - [#319](https://github.com/szpak/gradle-pitest-plugin/issues/319) - PR by [pfoerd](https://github.com/Pfoerd)
  - Support for `verbosity` flag, "spinner" disabled by default - [#267](https://github.com/szpak/gradle-pitest-plugin/issues/267) - PR by [Carsten Otto](https://github.com/C-Otto)
