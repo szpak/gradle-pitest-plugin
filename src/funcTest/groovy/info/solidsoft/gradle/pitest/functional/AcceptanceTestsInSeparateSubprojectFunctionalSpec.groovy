@@ -44,9 +44,11 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
             assertHtmlContains("<th>Number of Classes</th>")
             assertHtmlContains("<th>Line Coverage</th>")
             assertHtmlContains("<th>Mutation Coverage</th>")
+            assertHtmlContains("<th>Test Strength</th>")
             assertHtmlContains("<td>2</td>")
             assertHtmlContains("<td>95% ")
             assertHtmlContains("<td>40% ")
+            assertHtmlContains("<td>50% ")
             assertHtmlContains("<td><a href=\"./pitest.sample.multimodule.forreport/index.html\">pitest.sample.multimodule.forreport</a></td>")
             assertHtmlContains("<td><a href=\"./pitest.sample.multimodule.shared/index.html\">pitest.sample.multimodule.shared</a></td>")
     }

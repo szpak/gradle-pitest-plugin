@@ -16,6 +16,7 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -89,7 +90,36 @@ class PitestPluginExtension {
     @Incubating
     final SetProperty<String> excludedTestClasses
     final SetProperty<String> avoidCallsTo
+    /**
+     * <p>If true, verbose logging is enabled (capture minion output, show the spinner, only log at detailed level).</p>
+     * <p>If false, the value of verbosity is used to determine the verbosity of the output.</p>
+     * <p>Disabled by default.</p>
+     *
+     * <p><b>Note:</b> This property is marked as deprecated as - in the majority of cases - it doesn't make sense to use it, if PIT is called using the Gradle
+     * plugin. Use #verosity instead.</p>
+     *
+     * @see #verbosity
+     */
+    @Deprecated //since GPP 1.9.11
     final Property<Boolean> verbose
+
+    /**
+     * Determines the verbosity of the output. Possible values:
+     * <ul>
+     * <li>QUIET (no capture of minion output, no spinner, only log severe errors)</li>
+     * <li>QUIET_WITH_PROGRESS (no capture of minion output, show the spinner, only log severe errors)</li>
+     * <li>DEFAULT (no capture of minion output, show the spinner, only log at info level)</li>
+     * <li>NO_SPINNER (no capture of minion output, no spinner, only log at info level)</li>
+     * <li>VERBOSE_NO_SPINNER (capture minion output, no spinner, only log at detailed level)</li>
+     * <li>VERBOSE (capture minion output, show the spinner, only log at detailed level)</li>
+     * </ul>
+     * <p>The default value used by the plugin is NO_SPINNER (not DEFAULT, despite the name).</p>
+     * <p><b>Note:</b> verbose must be set to false (which is the default) for this to have an effect.</p>
+     *
+     * @see #verbose
+     * @since 1.9.11
+     */
+    final Property<String> verbosity //new in PIT 1.7.1 (GPP 1.9.11)
     final Property<BigDecimal> timeoutFactor
     final Property<Integer> timeoutConstInMillis
     /**
@@ -220,6 +250,8 @@ class PitestPluginExtension {
     @Incubating
     final ListProperty<String> fileExtensionsToFilter
 
+    final ReportAggregatorProperties reportAggregatorProperties
+
     PitestPluginExtension(Project project) {
         ObjectFactory of = project.objects
         Project p = project
@@ -237,6 +269,7 @@ class PitestPluginExtension {
         excludedTestClasses = nullSetPropertyOf(p, String)
         avoidCallsTo = nullSetPropertyOf(p, String)
         verbose = of.property(Boolean)
+        verbosity = of.property(String)
         timeoutFactor = of.property(BigDecimal)
         timeoutConstInMillis = of.property(Integer)
         jvmArgs = nullListPropertyOf(p, String)
@@ -270,6 +303,11 @@ class PitestPluginExtension {
         outputCharset = of.property(Charset)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
+        reportAggregatorProperties = new ReportAggregatorProperties(of)
+    }
+
+    void reportAggregator(Action<? super ReportAggregatorProperties> action) {
+        action.execute(reportAggregatorProperties)
     }
 
     void setReportDir(File reportDir) {

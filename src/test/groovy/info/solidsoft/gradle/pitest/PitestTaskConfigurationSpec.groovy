@@ -113,7 +113,7 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     void "should not pass features configuration to PIT if not set in configuration or via option"() {
         //Intentional duplication with generic parametrized tests to emphasis requirement
         expect:
-            task.taskArgumentMap()['featues'] == null
+            task.taskArgumentMap()['features'] == null
     }
 
     void "should not pass to PIT parameter '#paramName' by default if not set explicitly"() {
@@ -122,6 +122,19 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         where:
             //It would be best to have it generated automatically based. However, mapping between task parameters and map passed to PIT is not 1-to-1
             paramName << PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
+    }
+
+    void "should pass to PIT parameter 'verbosity' by default if not set explicitly"() {
+        expect:
+            task.taskArgumentMap().containsKey('verbosity')
+            task.taskArgumentMap().get('verbosity').is('NO_SPINNER')
+    }
+
+    void "should pass to PIT parameter 'verbosity' if set explicitly"() {
+        given:
+            project.pitest.verbosity = 'QUIET_WITH_PROGRESS'
+        expect:
+            task.taskArgumentMap().get('verbosity').is('QUIET_WITH_PROGRESS')
     }
 
     //TODO: Run PIT with those values to detect removed properties and typos

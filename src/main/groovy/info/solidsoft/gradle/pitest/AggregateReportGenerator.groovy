@@ -2,9 +2,11 @@ package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.gradle.api.GradleException
 import org.gradle.api.Incubating
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
+import org.pitest.aggregate.AggregationResult
 import org.pitest.aggregate.ReportAggregator
 import org.pitest.mutationtest.config.DirectoryResultOutputStrategy
 import org.pitest.mutationtest.config.UndatedReportDirCreationStrategy
@@ -33,9 +35,36 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
             parameters.reportDir.asFile.get().absolutePath,
             new UndatedReportDirCreationStrategy()))
             .build()
-        aggregator.aggregateReport()
+        AggregationResult aggregationResult = aggregator.aggregateReport()
 
         log.info("Aggregated report ${parameters.reportFile.asFile.get().absolutePath}")
+
+        consumeIfPropertyIsSet(parameters.testStrengthThreshold) { threshold ->
+            if (aggregationResult.testStrength < threshold) {
+                throw new GradleException(
+                    "Aggregated test strength score of ${aggregationResult.testStrength} " +
+                        "is below threshold of $threshold"
+                )
+            }
+        }
+
+        consumeIfPropertyIsSet(parameters.mutationThreshold) { threshold ->
+            if (aggregationResult.mutationCoverage < threshold) {
+                throw new GradleException(
+                    "Aggregated mutation score of ${aggregationResult.mutationCoverage} " +
+                        "is below threshold of $threshold"
+                )
+            }
+        }
+
+        consumeIfPropertyIsSet(parameters.maxSurviving) { threshold ->
+            if (aggregationResult.mutationsSurvived > threshold) {
+                throw new GradleException(
+                    "Had ${aggregationResult.mutationsSurvived} " +
+                        "surviving mutants, but only $threshold survivors allowed"
+                )
+            }
+        }
     }
 
     private static <T> void consumeIfPropertyIsSet(Property<T> property, Consumer<T> applyPropertyCode) {

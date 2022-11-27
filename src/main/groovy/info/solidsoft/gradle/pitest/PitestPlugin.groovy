@@ -52,7 +52,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.9.4'
+    public final static String DEFAULT_PITEST_VERSION = '1.9.11'
     @Internal   //6.4 due to main -> mainClass change to avoid deprecation warning in Gradle 7.x - https://github.com/szpak/gradle-pitest-plugin/pull/289
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("6.4") //public as used also in regression tests
 
@@ -112,6 +112,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
+        extension.verbosity.set("NO_SPINNER")
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
@@ -155,6 +156,7 @@ class PitestPlugin implements Plugin<Project> {
         task.excludedTestClasses.set(extension.excludedTestClasses)
         task.avoidCallsTo.set(extension.avoidCallsTo)
         task.verbose.set(extension.verbose)
+        task.verbosity.set(extension.verbosity)
         task.timeoutFactor.set(extension.timeoutFactor)
         task.timeoutConstInMillis.set(extension.timeoutConstInMillis)
         task.childProcessJvmArgs.set(extension.jvmArgs)

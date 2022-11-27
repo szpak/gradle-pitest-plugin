@@ -42,6 +42,11 @@ subprojects {
             outputFormats = ["HTML","XML"]
             timestampedReports = false
             exportLineCoverage = true
+            reportAggregator {
+                testStrengthThreshold.set(50)   //simpler Groovy syntax (testStrengthThreshold = 50) does not seem to be supported for nested properties
+                mutationThreshold.set(40)
+                maxSurviving.set(3)
+            }
         }
     }
 }
