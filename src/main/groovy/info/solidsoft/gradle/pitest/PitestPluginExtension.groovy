@@ -96,7 +96,7 @@ class PitestPluginExtension {
      * <p>Disabled by default.</p>
      *
      * <p><b>Note:</b> This property is marked as deprecated as - in the majority of cases - it doesn't make sense to use it, if PIT is called using the Gradle
-     * plugin. Use #verosity instead.</p>
+     * plugin. Use #verbosity instead.</p>
      *
      * @see #verbosity
      */
