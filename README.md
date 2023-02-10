@@ -17,6 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 
 ```groovy
 plugins {
+    id 'java' //or 'java-library' - depending on your needs
     id 'info.solidsoft.pitest' version '1.9.11'
 }
 ```
@@ -55,6 +56,7 @@ buildscript {
 Apply the plugin:
 
 ```groovy
+apply plugin: 'java' //or 'java-library' - depending on your needs
 apply plugin: 'info.solidsoft.pitest'
 ```
 
