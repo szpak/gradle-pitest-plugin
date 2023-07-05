@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.14.0 - Unreleased
+
+ - Remove deprecated Project.getConvention() usage (in Gradle 8.2+) - [#343](https://github.com/szpak/gradle-pitest-plugin/issues/343)
+ - Basic regression testing with Gradle up to 8.2
+
+
 ## 1.9.11 - 2022-11-27
 
  - Support for thresholds in aggregated metrics (requires PIT 1.9.9+) - [#319](https://github.com/szpak/gradle-pitest-plugin/issues/319) - PR by [pfoerd](https://github.com/Pfoerd)

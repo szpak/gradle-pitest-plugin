@@ -31,9 +31,9 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("7.6")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("8.2")
 
-    //Baased on https://docs.gradle.org/current/userguide/compatibility.html
+    //Based on https://docs.gradle.org/current/userguide/compatibility.html
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
         (JavaVersion.VERSION_15): GradleVersion.version("6.7"),
         (JavaVersion.VERSION_16): GradleVersion.version("7.0.2"),
@@ -102,8 +102,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE6_VERSIONS = ["6.9.2", "6.8.3", "6.7", "6.6", "6.5",
                                                           PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(),
+    private static final List<String> GRADLE7_VERSIONS = ["7.6.2", "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
+    private static final List<String> GRADLE8_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "8.1.1", "8.0.2"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(), GRADLE8_VERSIONS.first(),
                                                                 PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 
     @SuppressWarnings('GroovyFallthrough')
@@ -117,7 +118,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             case "quick":
                 return GRADLE_LATEST_VERSIONS
             case "full":
-                return GRADLE6_VERSIONS + GRADLE7_VERSIONS
+                return GRADLE6_VERSIONS + GRADLE7_VERSIONS + GRADLE8_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
                     "Assuming 'latestOnly'.")
