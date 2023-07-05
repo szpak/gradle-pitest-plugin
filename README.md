@@ -22,6 +22,17 @@ plugins {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+plugins {
+    id("java") //or "java-library" - depending on your needs
+    id("info.solidsoft.pitest") version "1.9.11"
+}
+```
+</details>
+
 Call Gradle with pitest task:
 
     gradle pitest
@@ -34,7 +45,17 @@ Optionally make it depend on build:
 build.dependsOn 'pitest'
 ```
 
-Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise Gradle will resolve `pitest` to the configuration and not the task.
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+tasks.build {
+    dependsOn("pitest")
+}
+```
+</details>
+
+Note that when making `pitest` depend on another task, it must be referred to by name. Otherwise, Gradle will resolve `pitest` to the configuration and not the task.
 
 ### Generic approach
 
@@ -53,12 +74,40 @@ buildscript {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+        //Needed only for SNAPSHOT versions
+        //maven {
+        //    url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        //}
+    }
+    dependencies {
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.11")
+    }
+}
+```
+</details>
+
 Apply the plugin:
 
 ```groovy
 apply plugin: 'java' //or 'java-library' - depending on your needs
 apply plugin: 'info.solidsoft.pitest'
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+apply(plugin = "java") //or "java-library" - depending on your needs
+apply(plugin = "info.solidsoft.pitest")
+```
+</details>
 
 
 ## Plugin configuration
@@ -75,6 +124,20 @@ pitest {
     timestampedReports = false
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+pitest {
+    targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
+    pitestVersion.set("1.9.11") //not needed when a default PIT version should be used
+    threads.set(4)
+    outputFormats.set(setOf("XML", "HTML"))
+    timestampedReports.set(false)
+}
+```
+</details>
 
 The configuration in Gradle is the real Groovy code which makes all assignments very intuitive. All values expected by
 PIT should be passed as a corresponding types. There is only one important difference. For the parameters where PIT expects
@@ -113,6 +176,21 @@ pitest {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+pitest {
+    ...
+    testSourceSets.set(listOf(sourceSets.test.get(), sourceSets.getByName("integrationTest")))
+    mainSourceSets.set(listOf(sourceSets.main.get(), sourceSets.getByName("additionalMain")))
+    jvmArgs.set(listOf("-Xmx1024m"))
+    useClasspathFile.set(true) //useful with bigger projects on Windows
+    fileExtensionsToFilter.addAll("xml", "orbit")
+}
+```
+</details>
+
 ### Test system properties
 
 PIT executes tests in a JVM independent of the JVM used by Gradle to execute tests. If your tests require some system properties, you have to pass them to PIT as the plugin won't do it for you:
@@ -127,9 +205,25 @@ pitest {
 }
 ```
 
-### Eliminate warning in Idea
+<details>
+<summary>with Kotlin DSL</summary>
 
-As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) IntelliJ IDEA displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`. It is not a real problem as Gradle internally intercepts those calls and use a setter instead . Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
+```kotlin
+tasks.test {
+    systemProperty("spring.test.constructor.autowire.mode", "all")
+}
+
+pitest {
+    jvmArgs.set(listOf("-Dspring.test.constructor.autowire.mode=all"))
+}
+```
+</details>
+
+### Eliminate warning in IDEA (Groovy-only)
+
+As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) IntelliJ IDEA displays warnings about setting final fields (of [lazy configuration](https://docs.gradle.org/current/userguide/lazy_configuration.html)) in `build.gradle`.
+It is not a real problem as Gradle internally intercepts those calls and use a setter instead.
+Nevertheless, people which prefer to have no (less) warnings at the cost of less readable code can use setters instead, e.g:
 
 ```groovy
     testSourceSets.set([sourceSets.test, sourceSets.integrationTest])
@@ -138,8 +232,6 @@ As reported in [#170](https://github.com/szpak/gradle-pitest-plugin/pull/170) In
     useClasspathFile.set(true)     //useful with bigger projects on Windows
     fileExtensionsToFilter.addAll('xml', 'orbit')
 ```
-
-Similar syntax can be used also for Kotlin configuration (`build.gradle.kts`).
 
 ## Multi-module projects support
 
@@ -166,6 +258,31 @@ subprojects {
     }
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+//in root project configuration
+plugins {
+    id("info.solidsoft.pitest") version "1.9.11"
+}
+
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "info.solidsoft.pitest")
+
+    pitest {
+        threads.set(4)
+
+        if (project.name in setOf("module-without-any-test")) {
+            failWhenNoMutations.set(false)
+        }
+    }
+}
+```
+</details>
+
 It is possible to aggregate pitest report for multi-module project using plugin `info.solidsoft.pitest.aggregator` and
 task `pitestReportAggregate`. Root project must be properly configured to use `pitestReportAggregate` :
 
