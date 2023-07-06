@@ -27,8 +27,6 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.Internal
@@ -108,23 +106,12 @@ class PitestPlugin implements Plugin<Project> {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
         setupReportDirInExtensionWithProblematicTypeForGradle5()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
-        SourceSetContainer javaSourceSets = getSourceSetContainer()
+        SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
         extension.verbosity.set("NO_SPINNER")
-    }
-
-    @CompileDynamic //Remove once only Gradle 7.1+ are supported
-    private SourceSetContainer getSourceSetContainer() {
-        GradleVersion minimalVersionWithSourceSetsInJavaPluginExtension = GradleVersion.version("7.1")
-
-        if (GradleVersion.current() < minimalVersionWithSourceSetsInJavaPluginExtension) {
-            return project.convention.getPlugin(JavaPluginConvention).sourceSets
-        } else {
-            return project.extensions.getByType(JavaPluginExtension).sourceSets
-        }
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
