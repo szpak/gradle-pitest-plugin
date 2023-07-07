@@ -2,6 +2,7 @@ package info.solidsoft.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
+import spock.lang.Ignore
 import spock.lang.Issue
 
 @CompileDynamic
@@ -83,6 +84,20 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
         and:
             result.standardOutput.contains('Configuration cache entry stored')
             result2.standardOutput.contains('Reusing configuration cache.')
+    }
+
+    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
+    @Ignore("This requires Gradle 8.1, and its Groovy is too modern for Spock 2.3-groovy-2.5, and Gradle 6.9.2 is too old for 2.3-groovy-3.0.")
+    void "should not reference project data at execution time"() {
+        given:
+            gradleVersion = "8.1"
+            copyResources("testProjects/junit5simple", "")
+        when:
+            ExecutionResult result = runTasks('pitest', '--configuration-cache', '--rerun-tasks')
+        then:
+            !result.standardError.contains('invocation of \'Task.project\' at execution time is unsupported.')
+            !result.failure
+            result.wasExecuted('pitest')
     }
 
 }

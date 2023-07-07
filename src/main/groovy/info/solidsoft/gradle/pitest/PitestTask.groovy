@@ -249,10 +249,14 @@ class PitestTask extends JavaExec {
     @Optional
     List<String> overriddenTargetTests  //should be Set<String> or SetProperty but it's not supported in Gradle as of 5.6.1
 
+    @Internal
+    File rootDir
+
     PitestTask() {
         getMainClass().set("org.pitest.mutationtest.commandline.MutationCoverageReport")
 
         ObjectFactory of = project.objects
+        rootDir = project.rootDir
 
         testPlugin = of.property(String)
         reportDir = of.directoryProperty()
@@ -305,19 +309,19 @@ class PitestTask extends JavaExec {
 
     @Input
     String getAdditionalClasspathFilePath() {
-        return additionalClasspathFile.asFile.get().relativePath(project.rootProject.rootDir)
+        return additionalClasspathFile.asFile.get().relativePath(rootDir)
     }
 
     @Input
     @Optional
     String getHistoryInputLocationPath() {
         //?. operator doesn't work with Gradle Providers
-        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().relativePath(project.rootProject.rootDir) : null
+        return historyInputLocation.isPresent() ? historyInputLocation.asFile.get().relativePath(rootDir) : null
     }
 
     @Input
     String getDefaultFileForHistoryDataPath() {
-        return defaultFileForHistoryData.asFile.get().relativePath(project.rootProject.rootDir)
+        return defaultFileForHistoryData.asFile.get().relativePath(rootDir)
     }
 
     @Input
