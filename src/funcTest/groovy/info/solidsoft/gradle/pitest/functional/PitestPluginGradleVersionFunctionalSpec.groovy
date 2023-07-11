@@ -3,6 +3,7 @@ package info.solidsoft.gradle.pitest.functional
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import groovy.transform.CompileDynamic
+import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
@@ -94,7 +95,9 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     //To prevent failure when Spock for Groovy 2.5 is run with Groovy 3.0 delivered with Gradle 7+
     //Spock is not needed in this artificial project - just the test classpath leaks to Gradle instance started by Nebula
     private static final Pattern SPOCK_JAR_PATTERN = Pattern.compile(".*spock-core-2\\..*.jar")
-    private static final Predicate<URL> FILTER_SPOCK_JAR = { URL url ->
+    @SuppressWarnings('JUnitPublicProperty')
+    @PackageScope
+    static final Predicate<URL> FILTER_SPOCK_JAR = { URL url ->
         return !url.toExternalForm().matches(SPOCK_JAR_PATTERN)
     } as Predicate<URL>
 

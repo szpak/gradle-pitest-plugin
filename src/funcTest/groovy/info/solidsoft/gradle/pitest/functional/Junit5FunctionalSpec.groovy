@@ -1,8 +1,9 @@
 package info.solidsoft.gradle.pitest.functional
 
+import com.google.common.base.Predicates
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
-import spock.lang.Ignore
+import nebula.test.functional.GradleRunner
 import spock.lang.Issue
 
 @CompileDynamic
@@ -87,10 +88,11 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
-    @Ignore("This requires Gradle 8.1, and its Groovy is too modern for Spock 2.3-groovy-2.5, and Gradle 6.9.2 is too old for 2.3-groovy-3.0.")
-    void "should not reference project data at execution time"() {
+    void "should not reference project data at execution time (causing InvalidUserCodeException in Gradle 8.1+)"() {
         given:
             gradleVersion = "8.1"
+            classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, PitestPluginGradleVersionFunctionalSpec.FILTER_SPOCK_JAR)
+        and:
             copyResources("testProjects/junit5simple", "")
         when:
             ExecutionResult result = runTasks('pitest', '--configuration-cache', '--rerun-tasks')
