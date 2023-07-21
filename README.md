@@ -173,7 +173,7 @@ to add integration tests located in a different source set)
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
  - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
- - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default)
+ - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, enabled by default)
  - `fileExtensionsToFilter` - provides ability to filter additional file extensions from PIT classpath (see [#53](https://github.com/szpak/gradle-pitest-plugin/issues/53))
 
 For example:
