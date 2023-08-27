@@ -314,6 +314,43 @@ subprojects {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+//in root project configuration
+plugins {
+    id("info.solidsoft.pitest") version "1.9.11"
+}
+
+apply(plugin = "info.solidsoft.pitest.aggregator")
+val pitestOutputFormats = setOf("XML")
+
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "info.solidsoft.pitest")
+
+    pitest {
+        outputFormats.set(pitestOutputFormats)
+        timestampedReports.set(false)
+        exportLineCoverage.set(true)
+    }
+}
+
+pitest {
+    outputFormats.set(pitestOutputFormats)
+    timestampedReports.set(false)
+    exportLineCoverage.set(true)
+
+    reportAggregator {
+        testStrengthThreshold.set(50)
+        mutationThreshold.set(40)
+        maxSurviving.set(3)
+    }
+}
+```
+</details>
+
 After the `pitest pitestReportAggregate` tasks execution, the aggregated report will be placed in the `${PROJECT_DIR}/build/reports/pitest` directory.
 
 ## Integration tests in separate subproject
