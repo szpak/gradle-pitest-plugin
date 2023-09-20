@@ -33,7 +33,8 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains('Generated 2 mutations Killed 2 (100%)')
     }
 
-    @Issue(["https://github.com/szpak/gradle-pitest-plugin/issues/177", "https://github.com/szpak/gradle-pitest-plugin/issues/300"])
+    @Issue(["https://github.com/szpak/gradle-pitest-plugin/issues/177", "https://github.com/szpak/gradle-pitest-plugin/issues/300",
+        "https://github.com/szpak/gradle-pitest-plugin/issues/337"])
     void "should work with junit5 without explicitly adding dependency (#description)"() {
         given:
             copyResources("testProjects/junit5simple", "")
@@ -51,7 +52,8 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains("junit-platform-commons-${expectedJUnitPlatformVersion}.jar")
         where:
             buildFileName                             || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
-            'build.gradle'                            || "1.0.0"                    | "5.8.0"                     | "1.8.0"
+            'build.gradle'                            || "1.2.0"                    | "5.10.0"                    | "1.10.0"
+            'build-pit-plugin-1.0.0-junit-5.8.gradle' || "1.0.0"                    | "5.8.0"                     | "1.8.0"
             'build-pit-1.8-junit-platform-5.7.gradle' || "0.14"                     | "5.7.0"                     | "1.7.0"
 
             description = "plugin $expectedJunitPluginVersion, junit $expectedJUnitJupiterVersion, platform $expectedJUnitPlatformVersion"
