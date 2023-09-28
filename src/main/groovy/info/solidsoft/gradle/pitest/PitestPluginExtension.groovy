@@ -250,6 +250,23 @@ class PitestPluginExtension {
     @Incubating
     final ListProperty<String> fileExtensionsToFilter
 
+    /**
+     * Adds 'junit-platform-launcher' automatically to the 'testRuntimeOnly' configuration.
+     *
+     * Starting with PIT 1.14.0 (with pitest-junit-plugin 1.2.0+) that dependency is no longer shaded and has to be explicitly added to avoid:
+     * "Minion exited abnormally due to UNKNOWN_ERROR" or "NoClassDefFoundError: org.junit.platform.launcher.core.LauncherFactory".
+     * This feature is enabled by default if junit-platform is found on the testImplementation classes.
+     *
+     * PLEASE NOTE. This feature is experimental and might not work as expected in some corner cases. In that situation, just disable it and add
+     * required dependency 'junit-platform-launcher' in a proper version to 'testRuntimeOnly' manually.
+     *
+     * More information: https://github.com/szpak/gradle-pitest-plugin/issues/337
+     *
+     * @since 1.14.0
+     */
+    @Incubating
+    final Property<Boolean> addJUnitPlatformLauncher
+
     final ReportAggregatorProperties reportAggregatorProperties
 
     PitestPluginExtension(Project project) {
@@ -303,6 +320,7 @@ class PitestPluginExtension {
         outputCharset = of.property(Charset)
         features = nullListPropertyOf(p, String)
         fileExtensionsToFilter = nullListPropertyOf(p, String)
+        addJUnitPlatformLauncher = of.property(Boolean)
         reportAggregatorProperties = new ReportAggregatorProperties(of)
     }
 
