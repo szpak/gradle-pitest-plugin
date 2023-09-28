@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.15.0 - Unreleased
+## 1.15.0 - 2023-09-28
 
  - Automatically add `junit-platform-launcher` dependency to `testRuntimeOnly` for JUnit Platform projects - [#337](https://github.com/szpak/gradle-pitest-plugin/issues/337) - help from [Björn Kautler](https://github.com/Vampire)
  - Remove deprecated `Project.getConvention()` usage (in Gradle 8.2+) - [#343](https://github.com/szpak/gradle-pitest-plugin/issues/343)
