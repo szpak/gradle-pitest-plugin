@@ -2,8 +2,18 @@
 
 ## 1.14.0 - Unreleased
 
- - Remove deprecated Project.getConvention() usage (in Gradle 8.2+) - [#343](https://github.com/szpak/gradle-pitest-plugin/issues/343)
+ - Automatically add `junit-platform-launcher` dependency to `testRuntimeOnly` for JUnit Platform projects - [#337](https://github.com/szpak/gradle-pitest-plugin/issues/337) - help from [Björn Kautler](https://github.com/Vampire)
+ - Remove deprecated `Project.getConvention()` usage (in Gradle 8.2+) - [#343](https://github.com/szpak/gradle-pitest-plugin/issues/343)
+ - PIT 1.14.4 by default
  - Basic regression testing with Gradle up to 8.2
+
+**Compatibility notes**
+Starting with PIT 1.14.0 (with pitest-junit-plugin 1.2.0+) `junit-platform-launcher` is no longer shaded and has to be explicitly added to avoid:
+"Minion exited abnormally due to UNKNOWN_ERROR" or "NoClassDefFoundError: org.junit.platform.launcher.core.LauncherFactory".
+
+As an experimental (incubating) feature, `junit-platform-launcher` is automatically added to the `testRuntimeOnly` configuration for the JUnit Platform projects.
+
+**PLEASE NOTE**. This feature is experimental and might not work as expected in some corner cases. In that situation, just disable it with `addJUnitPlatformLauncher = false` and add the required dependency 'junit-platform-launcher' in a proper version to 'testRuntimeOnly' manually. More information: https://github.com/szpak/gradle-pitest-plugin/issues/337
 
 
 ## 1.9.11 - 2022-11-27

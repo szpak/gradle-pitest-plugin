@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.3.61'
-    ext.junit5Version = '5.7.0'
-    ext.junitPlatformVersion = '1.7.0'
+    ext.junit5Version = '5.10.0'
+    ext.junitPlatformVersion = '1.10.0'
 
     repositories {
         mavenCentral()
@@ -31,7 +31,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     testImplementation "org.junit.platform:junit-platform-runner:$junitPlatformVersion"
 
-    pitest 'org.pitest:pitest-junit5-plugin:1.0.0'
+    pitest 'org.pitest:pitest-junit5-plugin:1.2.0'
 }
 
 compileKotlin {
