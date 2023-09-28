@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -248,46 +249,48 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addJUnitPlatformLauncherDependencyIfNeeded() {
-        Configuration testImplementation = project.configurations.findByName("testImplementation")
-        testImplementation.withDependencies { directDependencies ->
-            if (!extension.addJUnitPlatformLauncher.isPresent() || !extension.addJUnitPlatformLauncher.get()) {
-                log.info("'addJUnitPlatformLauncher' feature explicitly disabled in configuration. " +
-                    "Add junit-platform-launcher manually or expect 'Minion exited abnormally due to UNKNOWN_ERROR' or 'NoClassDefFoundError'")
-                return
+        project.configurations.named("testImplementation").configure { testImplementation ->
+            testImplementation.withDependencies { directDependencies ->
+                if (!extension.addJUnitPlatformLauncher.isPresent() || !extension.addJUnitPlatformLauncher.get()) {
+                    log.info("'addJUnitPlatformLauncher' feature explicitly disabled in configuration. " +
+                        "Add junit-platform-launcher manually or expect 'Minion exited abnormally due to UNKNOWN_ERROR' or 'NoClassDefFoundError'")
+                    return
+                }
+
+                //Note: For simplicity, adding also for older pitest-junit5-plugin versions (<1.2.0), which is not needed
+
+                final String orgJUnitPlatformGroup = "org.junit.platform"
+
+                log.debug("Direct ${testImplementation.name} dependencies (${directDependencies.size()}): ${directDependencies}")
+
+                //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
+                Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
+                directDependencies.each { directDependency ->
+                    tmpTestImplementation.dependencies.add(directDependency)
+                }
+
+                ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
+                Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
+                log.debug("All resolved components ${testImplementation.name} (${allResolvedComponents.size()}): ${allResolvedComponents}")
+
+                ResolvedComponentResult foundJunitPlatformComponent = allResolvedComponents.find { ResolvedComponentResult componentResult ->
+                    ModuleVersionIdentifier moduleVersion = componentResult.moduleVersion
+                    return moduleVersion.group == orgJUnitPlatformGroup &&
+                        (moduleVersion.name == "junit-platform-engine" || moduleVersion.name == "junit-platform-commons")
+                }
+
+                if (!foundJunitPlatformComponent) {
+                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementation.name}, junit-platform-launcher will not be added")
+                    return
+                }
+
+                String junitPlatformLauncherDependencyAsString = "${orgJUnitPlatformGroup}:junit-platform-launcher:${foundJunitPlatformComponent.moduleVersion.version}"
+                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementation.name}, " +
+                    "adding junit-platform-launcher (${junitPlatformLauncherDependencyAsString}) to testRuntimeOnly")
+                project.configurations.named("testRuntimeOnly").configure({ Configuration testRuntimeOnly ->
+                    testRuntimeOnly.dependencies.add(project.dependencies.create(junitPlatformLauncherDependencyAsString))
+                } as Action<Configuration>)
             }
-
-            //Note: For simplicity, adding also for older pitest-junit5-plugin versions (<1.2.0), which is not needed
-
-            final String orgJUnitPlatformGroup = "org.junit.platform"
-
-            log.debug("Direct ${testImplementation.name} dependencies (${directDependencies.size()}): ${directDependencies}")
-
-            //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
-            Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
-            directDependencies.each { directDependency ->
-                tmpTestImplementation.dependencies.add(directDependency)
-            }
-
-            ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
-            Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
-            log.debug("All resolved components ${testImplementation.name} (${allResolvedComponents.size()}): ${allResolvedComponents}")
-
-            ResolvedComponentResult foundJunitPlatformComponent = allResolvedComponents.find { ResolvedComponentResult componentResult ->
-                ModuleVersionIdentifier moduleVersion = componentResult.moduleVersion
-                return moduleVersion.group == orgJUnitPlatformGroup &&
-                    (moduleVersion.name == "junit-platform-engine" || moduleVersion.name == "junit-platform-commons")
-            }
-
-            if (!foundJunitPlatformComponent) {
-                log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementation.name}, junit-platform-launcher will not be added")
-                return
-            }
-
-            String junitPlatformLauncherDependencyAsString = "${orgJUnitPlatformGroup}:junit-platform-launcher:${foundJunitPlatformComponent.moduleVersion.version}"
-            log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementation.name}, " +
-                "adding junit-platform-launcher (${junitPlatformLauncherDependencyAsString}) to testRuntimeOnly")
-            project.configurations.findByName("testRuntimeOnly").dependencies.add(
-                project.dependencies.create(junitPlatformLauncherDependencyAsString))
         }
     }
 
