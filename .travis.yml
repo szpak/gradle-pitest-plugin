@@ -33,10 +33,8 @@ env:
   global:
   - secure: HfMYoa5jyF43g33PZZYOqPDu53z5//MdKRBy3C7EVxK8akje833YFJUARPJtfi0VR6Moa+JhUGkkDLFxQc2f4kL+q0NO39ULfkFLgOcPYHETNw8u2N8SGvksv0qUSNDnOImHqUkUZ8I8PlHzP3u/pclU4d4gfs/m3aoOm1pYeEc=
   - secure: bszdL2Ib7xbHHNuCPKq0sj4mxH2GDPcyFKSKfyGGqpupcaZfsYQtuuxDtVFhkW1Uh+BcEJ8XhS/iXHJrgLwirz0/tgbDm2cz2nUxR5fkcmTm50Rep3QfoDeYMMq9mkuCw6B9Vz/M4eEamSBfgxpqPGA96yhtBG8KklFLWc/6++o=
-  - secure: VqF/aEXsmRj2d8azHFEAop5J8U57RP3B8w3p3LfDhdbXz/xOhXVBbm4CVZqeddKUAi7QFNjUi8ry+k8MbuFbzG0of0Pwg/fqWpRqpr+QdhUWiiVnlH42G2jqzgRxQRqyN7vjjPaEBA84PM0L8rlVUqx57s8ePCIuEAhvZ4urtFQ=
   - secure: Oco34JI8O6pDISUjogUuqGFYRmrI6m3wZkrzMbj3dwjQ3gna1q7S5FmZWVbQelkufJ5jP1V7Ny7QjeqGX4yDsaj+gt1QF/nbZvWRnOXu3gastspEfZrPEziOngfIH4//urUaFqikdPdqmvXqLvCvtW7TaWDvN3NDb1Rx1w8kiYg=
   - secure: cyJye89u5k+Ct13HC95LME72pdsXmtmWJIR3x4MxQfvFG/Q1Uz3FtnSj7oJH5xJ9oH3bzHd0k5sB38u1g2LTIov/Em+dSVBIGgcs49nMSlbVye0Ilt7A1x0c/7LidxKT/DiWu4jgFcf8VyEdd9LVQXBaO12sLsk6nk6RjTUKnU8=
-  - secure: FZfezOymfoKWQf+DHb6OU2Vk1cY8Cz0ic3+ZtPKoWRrp8bijkSIA8jjfzwKNbJ1qyRthTY7tv/k83dbrOl3xDBeT6yzXslceraWLww/cp/+FGM6M3XG6dLqZlSaKH8bbPL94p7NiPCn+7mSuirur1H9Lf4lD6VeAOmxtstowPic=
 matrix:
   include:
     - jdk: openjdk11
