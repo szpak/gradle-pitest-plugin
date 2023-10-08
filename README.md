@@ -28,7 +28,7 @@ plugins {
 ```kotlin
 plugins {
     id("java") //or "java-library" - depending on your needs
-    id("info.solidsoft.pitest") version "1.9.11"
+    id("info.solidsoft.pitest") version "1.15.0"
 }
 ```
 </details>
@@ -87,7 +87,7 @@ buildscript {
         //}
     }
     dependencies {
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.11")
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.15.0")
     }
 }
 ```
@@ -131,7 +131,7 @@ pitest {
 ```kotlin
 pitest {
     targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
-    pitestVersion.set("1.9.11") //not needed when a default PIT version should be used
+    pitestVersion.set("1.15.0") //not needed when a default PIT version should be used
     threads.set(4)
     outputFormats.set(setOf("XML", "HTML"))
     timestampedReports.set(false)
@@ -265,7 +265,7 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.9.11"
+    id("info.solidsoft.pitest") version "1.15.0"
 }
 
 subprojects {
@@ -320,32 +320,24 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.9.11"
+    id("info.solidsoft.pitest") version "1.15.0"
 }
-
 apply(plugin = "info.solidsoft.pitest.aggregator")
-val pitestOutputFormats = setOf("XML")
 
 subprojects {
     apply(plugin = "java")
     apply(plugin = "info.solidsoft.pitest")
 
     pitest {
-        outputFormats.set(pitestOutputFormats)
+        outputFormats.set(setOf("XML"))
         timestampedReports.set(false)
         exportLineCoverage.set(true)
-    }
-}
-
-pitest {
-    outputFormats.set(pitestOutputFormats)
-    timestampedReports.set(false)
-    exportLineCoverage.set(true)
-
-    reportAggregator {
-        testStrengthThreshold.set(50)
-        mutationThreshold.set(40)
-        maxSurviving.set(3)
+        ...
+        reportAggregator {
+            testStrengthThreshold.set(50)
+            mutationThreshold.set(40)
+            maxSurviving.set(3)
+        }
     }
 }
 ```
@@ -375,6 +367,26 @@ configure(project(':itest')) {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+configure(listOf(project(":itest"))) {
+    apply(plugin = "info.solidsoft.pitest")
+    dependencies {
+        implementation(project(":shared"))
+    }
+
+    val mutableCodeBase by configurations.creating { isTransitive = false }
+    dependencies { mutableCodeBase(project(":shared")) }
+    pitest {
+        mainSourceSets.set(listOf(project.sourceSets.main.get(), project(":shared").sourceSets.main.get()))
+        additionalMutableCodePaths.set(listOf(mutableCodeBase.singleFile))
+    }
+}
+```
+</details>
+
 The above is the way recommended by the [Gradle team](http://forums.gradle.org/gradle/topics/how-to-get-file-path-to-binary-jar-produced-by-subproject#reply_15315782),
 but in specific cases the simpler solution should also work:
 
@@ -391,6 +403,24 @@ configure(project(':itest')) {
     }
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+configure(listOf(project(":itest"))) {
+    apply(plugin = "info.solidsoft.pitest")
+    dependencies {
+        implementation(project(":shared"))
+    }
+
+    pitest {
+        mainSourceSets.set(listOf(project.sourceSets.main.get(), project(":shared").sourceSets.main.get()))
+        additionalMutableCodePaths.set(project(":shared").task("jar").outputs.files)
+    }
+}
+```
+</details>
 
 Minimal working multi-project build is available in
 [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/tree/master/src/funcTest/resources/testProjects/multiproject).
@@ -416,6 +446,22 @@ pitest {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+plugins {
+    id("java")
+    id("info.solidsoft.pitest") version "1.15.0"
+}
+
+pitest {
+    // adds dependency to org.pitest:pitest-junit5-plugin and sets "testPlugin" to "junit5"
+    junit5PluginVersion.set("1.0.0")
+}
+```
+</details>
+
 **Please note**. PIT 1.9.0 requires pitest-junit5-plugin 1.0.0+. JUnit Jupiter 5.8 (JUnit Platform 1.8) requires pitest-junit5-plugin 0.15+, while 5.7 (1.7) requires 0.14. Set right plugin version for JUnit 5 version used in your project to avoid runtime errors (such as [`NoSuchMethodError: 'java.util.Optional org.junit.platform.commons.util.AnnotationUtils.findAnnotation(java.lang.Class, java.lang.Class, boolean)'](https://github.com/szpak/gradle-pitest-plugin/issues/300))).
 
 The minimal working example for JUnit 5 is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/resources/testProjects/junit5simple/build.gradle).
@@ -440,6 +486,25 @@ dependencies {
     pitest 'org.example.pit.plugins:pitest-custom-plugin:0.42'
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+plugins {
+    id("java")
+    id("info.solidsoft.pitest") version "1.15.0"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    pitest("org.example.pit.plugins:pitest-custom-plugin:0.42")
+}
+```
+</details>
 
 The minimal working example is available in the [functional tests suite](https://github.com/szpak/gradle-pitest-plugin/blob/master/src/funcTest/groovy/info/solidsoft/gradle/pitest/functional/PitestPluginFunctional1Spec.groovy#L69-91).
 
@@ -497,6 +562,16 @@ pitest {
 }
 ```
 
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+pitest {
+    pitestVersion.set("2.8.1-the.greatest.one")
+}
+```
+</details>
+
 In case of errors detected when the latest available version of the plugin is used with newer PIT version please raise an [issue](https://github.com/szpak/gradle-pitest-plugin/issues).
 
 ### How to disable placing PIT reports in time-based subfolders?
@@ -508,6 +583,16 @@ pitest {
     timestampedReports = false
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+pitest {
+    timestampedReports.set(false)
+}
+```
+</details>
 
 ### How can I debug a gradle-pitest-plugin execution or a PIT process execution itself in a Gradle build?
 
@@ -522,6 +607,16 @@ pitest {
     mainProcessJvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
 }
 ```
+
+<details>
+<summary>with Kotlin DSL</summary>
+
+```kotlin
+pitest {
+    mainProcessJvmArgs.set(listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"))
+}
+```
+</details>
 
 ### Can I use gradle-pitest-plugin with my Android application?
 
