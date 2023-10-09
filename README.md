@@ -128,6 +128,17 @@ pitest {
 <details>
 <summary>with Kotlin DSL</summary>
 
+Idiomatic and more portable configuration:
+```kotlin
+pitest {
+    targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
+    pitestVersion.set("1.15.0") //not needed when a default PIT version should be used
+    threads.set(4)
+    outputFormats.set(setOf("XML", "HTML"))
+    timestampedReports.set(false)
+}
+```
+
 Starting from **Gradle 8.1** [simple property assignment](https://docs.gradle.org/8.4/release-notes.html#simple-property-assignment-in-kotlin-dsl-is-now-stable)
 can be used for configuring plugin (instead of the `set()` method):
 ```kotlin
