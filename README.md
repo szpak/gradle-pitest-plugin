@@ -128,13 +128,15 @@ pitest {
 <details>
 <summary>with Kotlin DSL</summary>
 
+Starting from **Gradle 8.1** [simple property assignment](https://docs.gradle.org/8.4/release-notes.html#simple-property-assignment-in-kotlin-dsl-is-now-stable)
+can be used for configuring plugin (instead of the `set()` method):
 ```kotlin
 pitest {
-    targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
-    pitestVersion.set("1.15.0") //not needed when a default PIT version should be used
-    threads.set(4)
-    outputFormats.set(setOf("XML", "HTML"))
-    timestampedReports.set(false)
+    targetClasses = setOf("our.base.package.*") //by default "${project.group}.*"
+    pitestVersion = "1.15.0" //not needed when a default PIT version should be used
+    threads = 4
+    outputFormats = setOf("XML", "HTML")
+    timestampedReports = false
 }
 ```
 </details>
@@ -355,7 +357,7 @@ to make it work it is required to define both `mainSourceSets` and `additionalMu
 configure(project(':itest')) {
     apply plugin: 'info.solidsoft.pitest'
     dependencies {
-        compile project(':shared')
+        implementation project(':shared')
     }
 
     configurations { mutableCodeBase { transitive false } }
@@ -394,7 +396,7 @@ but in specific cases the simpler solution should also work:
 configure(project(':itest')) {
     apply plugin: 'info.solidsoft.pitest'
     dependencies {
-        compile project(':shared')
+        implementation project(':shared')
     }
 
     pitest {
