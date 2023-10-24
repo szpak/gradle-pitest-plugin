@@ -104,7 +104,7 @@ abstract class AggregateReportTask extends DefaultTask {
 
     @TaskAction
     void aggregate() {
-        logger.info("Aggregating pitest reports")
+        logger.info("Aggregating pitest reports (mutationFiles: {}, lineCoverageFiles: {})", mutationFiles.elements.getOrNull(), lineCoverageFiles.elements.getOrNull())
 
         WorkQueue workQueue = getWorkerExecutor().classLoaderIsolation { workerSpec ->
             workerSpec.getClasspath().from(getPitestReportClasspath())

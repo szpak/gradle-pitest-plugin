@@ -19,15 +19,18 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ModuleVersionIdentifier
+import org.gradle.api.artifacts.result.ResolutionResult
+import org.gradle.api.artifacts.result.ResolvedComponentResult
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.Internal
@@ -52,7 +55,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.9.11'
+    public final static String DEFAULT_PITEST_VERSION = '1.15.0'
     @Internal   //6.4 due to main -> mainClass change to avoid deprecation warning in Gradle 7.x - https://github.com/szpak/gradle-pitest-plugin/pull/289
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("6.4") //public as used also in regression tests
 
@@ -107,12 +110,13 @@ class PitestPlugin implements Plugin<Project> {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
         setupReportDirInExtensionWithProblematicTypeForGradle5()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
-        SourceSetContainer javaSourceSets = project.convention.getPlugin(JavaPluginConvention).sourceSets
+        SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
         extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
         extension.verbosity.set("NO_SPINNER")
+        extension.addJUnitPlatformLauncher.set(true)
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
@@ -238,6 +242,54 @@ class PitestPlugin implements Plugin<Project> {
                 String junit5PluginDependencyAsString = "org.pitest:pitest-junit5-plugin:${extension.junit5PluginVersion.get()}"
                 log.info("Adding JUnit 5 plugin for PIT as dependency: ${junit5PluginDependencyAsString}")
                 dependencies.add(project.dependencies.create(junit5PluginDependencyAsString))
+            }
+        }
+
+        addJUnitPlatformLauncherDependencyIfNeeded()
+    }
+
+    private void addJUnitPlatformLauncherDependencyIfNeeded() {
+        project.configurations.named("testImplementation").configure { testImplementation ->
+            testImplementation.withDependencies { directDependencies ->
+                if (!extension.addJUnitPlatformLauncher.isPresent() || !extension.addJUnitPlatformLauncher.get()) {
+                    log.info("'addJUnitPlatformLauncher' feature explicitly disabled in configuration. " +
+                        "Add junit-platform-launcher manually or expect 'Minion exited abnormally due to UNKNOWN_ERROR' or 'NoClassDefFoundError'")
+                    return
+                }
+
+                //Note: For simplicity, adding also for older pitest-junit5-plugin versions (<1.2.0), which is not needed
+
+                final String orgJUnitPlatformGroup = "org.junit.platform"
+
+                log.debug("Direct ${testImplementation.name} dependencies (${directDependencies.size()}): ${directDependencies}")
+
+                //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
+                Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
+                directDependencies.each { directDependency ->
+                    tmpTestImplementation.dependencies.add(directDependency)
+                }
+
+                ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
+                Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
+                log.debug("All resolved components ${testImplementation.name} (${allResolvedComponents.size()}): ${allResolvedComponents}")
+
+                ResolvedComponentResult foundJunitPlatformComponent = allResolvedComponents.find { ResolvedComponentResult componentResult ->
+                    ModuleVersionIdentifier moduleVersion = componentResult.moduleVersion
+                    return moduleVersion.group == orgJUnitPlatformGroup &&
+                        (moduleVersion.name == "junit-platform-engine" || moduleVersion.name == "junit-platform-commons")
+                }
+
+                if (!foundJunitPlatformComponent) {
+                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementation.name}, junit-platform-launcher will not be added")
+                    return
+                }
+
+                String junitPlatformLauncherDependencyAsString = "${orgJUnitPlatformGroup}:junit-platform-launcher:${foundJunitPlatformComponent.moduleVersion.version}"
+                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementation.name}, " +
+                    "adding junit-platform-launcher (${junitPlatformLauncherDependencyAsString}) to testRuntimeOnly")
+                project.configurations.named("testRuntimeOnly").configure({ Configuration testRuntimeOnly ->
+                    testRuntimeOnly.dependencies.add(project.dependencies.create(junitPlatformLauncherDependencyAsString))
+                } as Action<Configuration>)
             }
         }
     }

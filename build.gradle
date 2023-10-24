@@ -24,7 +24,7 @@ buildscript {
 
 sourceCompatibility = 1.8
 
-ext.pitestAggregatorVersion = "1.9.11"   //Must be equal to default PIT version in PitestPlugin
+ext.pitestAggregatorVersion = "1.15.0"   //Must be equal to default PIT version in PitestPlugin
 
 repositories {
     mavenCentral()
@@ -46,7 +46,7 @@ dependencies {
     testImplementation('org.spockframework:spock-junit4:2.3-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
     }
-    testImplementation 'net.bytebuddy:byte-buddy:1.12.19' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.8' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
