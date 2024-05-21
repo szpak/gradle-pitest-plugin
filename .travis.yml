@@ -16,6 +16,7 @@ install:
   - rvm install 2.4.1
   - ruby --version
   # last Ruby 2.4 compatible version
+  - gem install --no-document multipart-post -v 2.3.0
   - gem install --no-document faraday -v 1.10.1
   - gem install --no-document faraday-net_http -v 2.1.0
   - gem install --no-document public_suffix -v 4.0.7
