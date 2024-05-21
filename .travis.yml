@@ -42,7 +42,8 @@ matrix:
       env: PITEST_REGRESSION_TESTS=quick
     - jdk: openjdk15
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
-    - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
-      before_install:
-        - . gradle/install-jdk.sh -W ~/custom-java --url "https://api.adoptopenjdk.net/v2/binary/releases/openjdk11?openjdk_impl=openj9&os=linux&arch=x64&release=latest&type=jdk&heap_size=normal"
-        - ./gradlew --version
+#    # Old API returns error as of 20240521
+#    - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true
+#      before_install:
+#        - . gradle/install-jdk.sh -W ~/custom-java --url "https://api.adoptopenjdk.net/v2/binary/releases/openjdk11?openjdk_impl=openj9&os=linux&arch=x64&release=latest&type=jdk&heap_size=normal"
+#        - ./gradlew --version
