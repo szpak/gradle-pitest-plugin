@@ -4,6 +4,7 @@ apply plugin: 'codenarc'
 apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 apply from: "$rootDir/gradle/report-version-consistency-check.gradle"
 apply plugin: "com.github.ben-manes.versions"
+apply plugin: 'org.owasp.dependencycheck'
 
 buildscript {
     repositories {
@@ -19,6 +20,7 @@ buildscript {
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0' //override version for more reliable releasing from Travis
         classpath 'com.gradle.publish:plugin-publish-plugin:0.16.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.42.0'
+        classpath 'org.owasp:dependency-check-gradle:8.2.1'
     }
 }
 
