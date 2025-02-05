@@ -124,3 +124,16 @@ tasks.withType(CodeNarc) { codeNarcTask ->
         }
     })
 }
+
+gradlePlugin {
+    plugins {
+        pitestPlugin {
+            id = 'info.solidsoft.pitest'
+            implementationClass = 'info.solidsoft.gradle.pitest.PitestPlugin'
+        }
+        pitestAggregatorPlugin {
+            id = 'info.solidsoft.pitest.aggregator'
+            implementationClass = 'info.solidsoft.gradle.pitest.PitestAggregatorPlugin'
+        }
+    }
+}
