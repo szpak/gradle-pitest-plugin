@@ -29,6 +29,7 @@ test {
 }
 
 pitest {
+    useClasspathFile = false
     pitestVersion = "1.14.4"
     junit5PluginVersion = "1.2.0"    //with no longer shaded junit-platform-launcher
     verbose = true  //for "ClassNotFoundException: org.junit.platform.launcher.core.LauncherFactory" which should not happen

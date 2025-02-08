@@ -50,6 +50,7 @@ class BasicProjectBuilderSpec extends Specification {
         pitestConfig = project.getExtensions().getByType(PitestPluginExtension)
 
         project.group = 'test.group'
+        project.pitest.useClasspathFile = false
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
