@@ -129,7 +129,7 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
     private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, PITEST_REPORT_DIRECTORY_NAME))
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
