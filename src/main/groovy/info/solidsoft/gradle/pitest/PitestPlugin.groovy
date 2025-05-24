@@ -111,8 +111,8 @@ class PitestPlugin implements Plugin<Project> {
         setupReportDirInExtensionWithProblematicTypeForGradle5()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
-        extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
-        extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
+        extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> List.of(ss) })
+        extension.mainSourceSets.set(javaSourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map { SourceSet ss -> List.of(ss) })
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
         extension.verbosity.set("NO_SPINNER")
@@ -120,6 +120,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
+        //TODO: findByName() is suboptimal, but "named(...).isPreset()" triggers too early initialization with "Configuration with name 'pitest' not found"
         if (project.rootProject.buildscript.configurations.findByName(PITEST_CONFIGURATION_NAME) != null) {
             throw new GradleException("The '${PITEST_CONFIGURATION_NAME}' buildscript configuration found in the root project. " +
                 "This is no longer supported in 1.5.0+ and has to be changed to the regular (sub)project configuration. " +
