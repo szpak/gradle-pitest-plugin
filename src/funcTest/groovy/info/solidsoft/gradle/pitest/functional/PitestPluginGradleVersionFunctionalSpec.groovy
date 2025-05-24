@@ -1,7 +1,5 @@
 package info.solidsoft.gradle.pitest.functional
 
-import com.google.common.base.Predicate
-import com.google.common.base.Predicates
 import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
@@ -15,7 +13,9 @@ import org.gradle.util.GradleVersion
 import org.spockframework.runtime.extension.builtin.PreconditionContext
 import spock.lang.IgnoreIf
 import spock.util.Exceptions
+import spock.util.environment.RestoreSystemProperties
 
+import java.util.function.Predicate
 import java.util.regex.Pattern
 
 import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT
@@ -32,7 +32,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("8.3")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("8.14.1")
 
     //Based on https://docs.gradle.org/current/userguide/compatibility.html
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
@@ -49,10 +49,18 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
+    @RestoreSystemProperties
     void "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
-            classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
+            classpathFilter = GradleRunner.CLASSPATH_DEFAULT & FILTER_SPOCK_JAR
+        and:
+            if (requestedGradleVersion.startsWith("8.")) {
+                //TODO: Eliminate:
+                // - Disabling Gradle user home cache cleanup with the 'org.gradle.cache.cleanup' property has been deprecated. This is scheduled to be removed in Gradle 9.0. Consult the upgrading guide for further information: https://docs.gradle.org/8.14.1/userguide/upgrading_version_8.html#disabling_user_home_cache_cleanup
+                // - The ReportingExtension.getBaseDir() method has been deprecated. This is scheduled to be removed in Gradle 9.0. Please use the getBaseDirectory() property method instead. Consult the upgrading guide for further information: https://docs.gradle.org/8.14.1/userguide/upgrading_version_8.html#reporting-base-dir
+                System.setProperty("ignoreDeprecations", "true")
+            }
         when:
             copyResources("testProjects/simple1", "")
         then:
@@ -71,6 +79,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             requestedGradleVersion << applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique()
     }
 
+    //TODO: Could be restored minimal version upgrade
     @IgnoreIf({ new PreconditionContext().javaVersion >= 13 })   //There is no unsupported version of Gradle which can be used with Java 13
     void "should fail with meaningful error message with too old Gradle version"() {
         given:
@@ -105,10 +114,11 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE6_VERSIONS = ["6.9.2", "6.8.3", "6.7", "6.6", "6.5",
                                                           PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = ["7.6.2", "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
-    private static final List<String> GRADLE8_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "8.2.1", "8.1.1", "8.0.2"]
-    private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(), GRADLE8_VERSIONS.first(),
-                                                                PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
+    private static final List<String> GRADLE7_VERSIONS = ["7.6.3", "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
+    private static final List<String> GRADLE8_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "8.9", "8.8", "8.7", "8.6.4", "8.5", "8.4", "8.3",
+                                                          "8.2.1", "8.1.1", "8.0.2"]
+    private static final List<String> GRADLE_LATEST_VERSIONS = [/*GRADLE6_VERSIONS.first(),*/ GRADLE7_VERSIONS.first(), GRADLE8_VERSIONS.first(),
+                                                                /*PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version*/]
 
     @SuppressWarnings('GroovyFallthrough')
     private List<String> resolveRequestedGradleVersions() {

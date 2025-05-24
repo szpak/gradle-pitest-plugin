@@ -1,7 +1,8 @@
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'codenarc'
-apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
+//TODO: Introduce new releasing mechanism - CDBoy is not compatible with Gradle 7+ (due to using old 'maven' plugin)
+//apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
 apply from: "$rootDir/gradle/report-version-consistency-check.gradle"
 apply plugin: "com.github.ben-manes.versions"
 
@@ -39,11 +40,11 @@ dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
-    testImplementation('org.spockframework:spock-core:2.3-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.3-groovy-2.5') {
+    testImplementation('org.spockframework:spock-junit4:2.3-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     testImplementation 'net.bytebuddy:byte-buddy:1.14.8' //for Spying in Spock
@@ -52,7 +53,7 @@ dependencies {
     funcTestImplementation sourceSets.test.output
     funcTestImplementation configurations.testImplementation
     funcTestRuntimeOnly configurations.testRuntimeOnly
-    funcTestImplementation('com.netflix.nebula:nebula-test:7.10.2') {
+    funcTestImplementation('com.netflix.nebula:nebula-test:10.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
@@ -67,7 +68,7 @@ task funcTest(type: Test) {
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
 check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
-uploadArchives.dependsOn funcTest, check
+//uploadArchives.dependsOn funcTest, check  //TODO: Adjust to new publishing solution
 
 task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
@@ -92,7 +93,7 @@ tasks.withType(Test).configureEach { testTask ->
     }
 }
 
-tasks.validateTaskProperties {
+tasks.validatePlugins {
     enableStricterValidation = true
     failOnWarning = true
 }

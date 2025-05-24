@@ -81,4 +81,26 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
     }
 
+    //Due to deprecated "-b build-foo.gradle" - https://docs.gradle.org/7.6.2/userguide/upgrading_version_7.html#configuring_custom_build_layout
+    protected void deleteExistingOrFail(String path, File baseDir = getProjectDir()) {
+        assert existingFileOrFail(path, baseDir).delete()
+    }
+
+    protected void renameExistingFailToBuildGradle(String path, File baseDir = getProjectDir()) {
+        assert existingFileOrFail(path , baseDir).renameTo(existingFileOrFail("build.gradle"))
+    }
+
+    protected void renameExistingFailToSettingsGradle(String path, File baseDir = getProjectDir()) {
+        assert existingFileOrFail(path , baseDir).renameTo(existingFileOrFail("settings.gradle"))
+    }
+
+    //Adopted from Nebula's Integration trait
+    private File existingFileOrFail(String path, File baseDir = getProjectDir()) {
+        String[] splitted = path.split('/')
+        File directory = splitted.size() > 1 ? directory(splitted[0..-2].join('/'), baseDir) : baseDir
+        File file = new File(directory, splitted[-1])
+        assert file.exists()
+        return file
+    }
+
 }

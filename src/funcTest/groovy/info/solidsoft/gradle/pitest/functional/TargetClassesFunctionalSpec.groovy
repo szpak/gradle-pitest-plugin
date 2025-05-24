@@ -11,13 +11,17 @@ class TargetClassesFunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFile << """
                 apply plugin: 'java'
                 apply plugin: 'info.solidsoft.pitest'
+
+                repositories {
+                    mavenCentral()
+                }
             """.stripIndent()
         and:
             writeHelloWorld('gradle.pitest.test.hello')
         when:
             ExecutionResult result = runTasksWithFailure('pitest')
         then:
-            assertStdOutOrStdErrContainsGivenText(result, "No value has been specified for property 'targetClasses'")
+            assertStdOutOrStdErrContainsGivenText(result, "property 'targetClasses' doesn't have a configured value")
     }
 
 }
