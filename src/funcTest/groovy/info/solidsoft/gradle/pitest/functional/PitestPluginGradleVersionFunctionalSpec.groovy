@@ -13,7 +13,6 @@ import org.gradle.util.GradleVersion
 import org.spockframework.runtime.extension.builtin.PreconditionContext
 import spock.lang.IgnoreIf
 import spock.util.Exceptions
-import spock.util.environment.RestoreSystemProperties
 
 import java.util.function.Predicate
 import java.util.regex.Pattern
@@ -49,18 +48,10 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         daemonMaxIdleTimeInSecondsInMemorySafeMode = 1  //trying to mitigate "Gradle killed" issues with Travis
     }
 
-    @RestoreSystemProperties
     void "should run mutation analysis with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = GradleRunner.CLASSPATH_DEFAULT & FILTER_SPOCK_JAR
-        and:
-            if (requestedGradleVersion.startsWith("8.")) {
-                //TODO: Eliminate:
-                // - Disabling Gradle user home cache cleanup with the 'org.gradle.cache.cleanup' property has been deprecated. This is scheduled to be removed in Gradle 9.0. Consult the upgrading guide for further information: https://docs.gradle.org/8.14.1/userguide/upgrading_version_8.html#disabling_user_home_cache_cleanup
-                // - The ReportingExtension.getBaseDir() method has been deprecated. This is scheduled to be removed in Gradle 9.0. Please use the getBaseDirectory() property method instead. Consult the upgrading guide for further information: https://docs.gradle.org/8.14.1/userguide/upgrading_version_8.html#reporting-base-dir
-                System.setProperty("ignoreDeprecations", "true")
-            }
         when:
             copyResources("testProjects/simple1", "")
         then:

@@ -4,7 +4,6 @@ import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import spock.lang.Issue
-import spock.util.environment.RestoreSystemProperties
 
 @CompileDynamic
 class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
@@ -93,14 +92,10 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
-    @RestoreSystemProperties
     void "should not reference project data at execution time (causing InvalidUserCodeException in Gradle 8.1+)"() {
         given:
             gradleVersion = "8.1"
             classpathFilter = GradleRunner.CLASSPATH_DEFAULT & PitestPluginGradleVersionFunctionalSpec.FILTER_SPOCK_JAR
-        and:
-            //TODO: Explain "cache cleanup" deprecation
-            System.setProperty("ignoreDeprecations", "true")
         and:
             copyResources("testProjects/junit5simple", "")
         when:
