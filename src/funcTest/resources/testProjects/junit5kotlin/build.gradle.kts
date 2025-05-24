@@ -10,15 +10,20 @@ buildscript {
     }
     dependencies {
 //        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24")
     }
 }
 
 group = "pitest.test.kotlin"
 
 apply(plugin = "java")
-apply(plugin ="org.jetbrains.kotlin.jvm")
+apply(plugin = "org.jetbrains.kotlin.jvm")
 apply(plugin = "info.solidsoft.pitest")
+
+//For some reason "java.sourceCompatibility = ..." no longer works
+configure<JavaPluginExtension> {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
 
 repositories {
     mavenCentral()

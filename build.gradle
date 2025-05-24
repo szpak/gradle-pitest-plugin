@@ -36,6 +36,11 @@ sourceSets {
     funcTest
 }
 
+configurations {
+    funcTestImplementation.extendsFrom testImplementation
+    funcTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
@@ -51,8 +56,6 @@ dependencies {
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
-    funcTestImplementation configurations.testImplementation
-    funcTestRuntimeOnly configurations.testRuntimeOnly
     funcTestImplementation('com.netflix.nebula:nebula-test:10.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
@@ -111,8 +114,8 @@ tasks.register("codenarc") {
 //Workaround on https://github.com/gradle/gradle/issues/12663
 tasks.withType(CodeNarc) { codeNarcTask ->
     reports {
-        text.enabled = true
-        html.enabled = true
+        text.required = true
+        html.required = true
     }
     codeNarcTask.finalizedBy(project.task("print${codeNarcTask.name.capitalize()}") {
         onlyIf {

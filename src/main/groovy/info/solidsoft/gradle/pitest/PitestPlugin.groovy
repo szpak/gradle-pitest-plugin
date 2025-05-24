@@ -250,7 +250,12 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addJUnitPlatformLauncherDependencyIfNeeded() {
-        project.configurations.named("testImplementation").configure { testImplementation ->
+        //Starting with Gradle 8.8.0, Configuration implements "Named" which generates runtime error on "testConfiguration.name" for plugin compiled
+        //with 8.8.0+ and executed with lower versions. Keep constant name as workaround
+        //Related commit: https://github.com/gradle/gradle/commit/61220ea4fdb30b5c7265dd41e7ac4d70896c957b
+        final String testImplementationConfigurationName = "testImplementation"
+
+        project.configurations.named(testImplementationConfigurationName).configure { testImplementation ->
             testImplementation.withDependencies { directDependencies ->
                 if (!extension.addJUnitPlatformLauncher.isPresent() || !extension.addJUnitPlatformLauncher.get()) {
                     log.info("'addJUnitPlatformLauncher' feature explicitly disabled in configuration. " +
@@ -262,7 +267,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 final String orgJUnitPlatformGroup = "org.junit.platform"
 
-                log.debug("Direct ${testImplementation.name} dependencies (${directDependencies.size()}): ${directDependencies}")
+                log.debug("Direct ${testImplementationConfigurationName} dependencies (${directDependencies.size()}): ${directDependencies}")
 
                 //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
                 Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
@@ -272,7 +277,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
                 Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
-                log.debug("All resolved components ${testImplementation.name} (${allResolvedComponents.size()}): ${allResolvedComponents}")
+                log.debug("All resolved components ${testImplementationConfigurationName} (${allResolvedComponents.size()}): ${allResolvedComponents}")
 
                 ResolvedComponentResult foundJunitPlatformComponent = allResolvedComponents.find { ResolvedComponentResult componentResult ->
                     ModuleVersionIdentifier moduleVersion = componentResult.moduleVersion
@@ -281,12 +286,12 @@ class PitestPlugin implements Plugin<Project> {
                 }
 
                 if (!foundJunitPlatformComponent) {
-                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementation.name}, junit-platform-launcher will not be added")
+                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementationConfigurationName}, junit-platform-launcher will not be added")
                     return
                 }
 
                 String junitPlatformLauncherDependencyAsString = "${orgJUnitPlatformGroup}:junit-platform-launcher:${foundJunitPlatformComponent.moduleVersion.version}"
-                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementation.name}, " +
+                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementationConfigurationName}, " +
                     "adding junit-platform-launcher (${junitPlatformLauncherDependencyAsString}) to testRuntimeOnly")
                 project.configurations.named("testRuntimeOnly").configure({ Configuration testRuntimeOnly ->
                     testRuntimeOnly.dependencies.add(project.dependencies.create(junitPlatformLauncherDependencyAsString))
