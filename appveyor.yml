@@ -1,5 +1,8 @@
 version: "{branch} {build}"
 
+image:
+  - Visual Studio 2022
+
 build:
   verbosity: detailed
 
