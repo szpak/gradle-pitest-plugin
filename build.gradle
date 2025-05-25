@@ -51,10 +51,6 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    //for "@Rule TemporaryFolder"
-    testImplementation('org.spockframework:spock-junit4:2.4-M6-groovy-3.0') {
-        exclude group: 'org.codehaus.groovy'
-    }
     testImplementation 'net.bytebuddy:byte-buddy:1.17.5' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)

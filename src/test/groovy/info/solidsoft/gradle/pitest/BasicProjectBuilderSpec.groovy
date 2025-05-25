@@ -20,9 +20,8 @@ import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static info.solidsoft.gradle.pitest.PitestPlugin.PITEST_TASK_NAME
 
@@ -33,8 +32,8 @@ import static info.solidsoft.gradle.pitest.PitestPlugin.PITEST_TASK_NAME
 @CompileDynamic
 class BasicProjectBuilderSpec extends Specification {
 
-    @Rule
-    protected TemporaryFolder tmpProjectDir = new TemporaryFolder()
+    @TempDir
+    protected File tmpProjectDir
 
     protected Project project
     protected PitestPluginExtension pitestConfig
@@ -42,7 +41,7 @@ class BasicProjectBuilderSpec extends Specification {
     //TODO: There is a regression in 2.14.1 with API jar regeneration for every test - https://discuss.gradle.org/t/performance-regression-in-projectbuilder-in-2-14-and-3-0/18956
     //https://github.com/gradle/gradle/commit/3216f07b3acb4cbbb8241d8a1d50b8db9940f37e
     void setup() {
-        project = ProjectBuilder.builder().withProjectDir(tmpProjectDir.root).build()
+        project = ProjectBuilder.builder().withProjectDir(tmpProjectDir).build()
 
         project.pluginManager.apply('java')   //to add SourceSets
         project.pluginManager.apply('info.solidsoft.pitest')

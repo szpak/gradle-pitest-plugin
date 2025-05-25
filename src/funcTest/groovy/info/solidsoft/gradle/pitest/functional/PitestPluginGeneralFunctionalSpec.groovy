@@ -3,15 +3,15 @@ package info.solidsoft.gradle.pitest.functional
 import groovy.transform.CompileDynamic
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Issue
+import spock.lang.TempDir
+import spock.util.io.FileSystemFixture
 
 @CompileDynamic
 class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    @Rule
-    protected TemporaryFolder tmpDir = new TemporaryFolder()
+    @TempDir
+    private FileSystemFixture tmpDir
 
     void "enable PIT plugin when on classpath and pass plugin configuration to PIT"() {
         given:
@@ -56,8 +56,8 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
     @Issue(["https://github.com/gradle/gradle/issues/12351", "https://github.com/szpak/gradle-pitest-plugin/issues/189"])
     void "allow to use RegularFileProperty @Input and @Output fields in task"() {
         given:
-            File historyInputLocation = tmpDir.newFile()
-            File historyOutputLocation = tmpDir.newFile()
+            File historyInputLocation = tmpDir.file("hInput").toFile()
+            File historyOutputLocation = tmpDir.file("hOutput").toFile()
         and:
             buildFile << getBasicGradlePitestConfig()
             buildFile << """

@@ -56,7 +56,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
 
     void "should not filter source set directory by default"() {
         given:
-            File testClassesDir = new File(new File(new File(new File(tmpProjectDir.root, 'build'), 'classes'), 'java'), 'test')
+            File testClassesDir = new File(new File(new File(new File(tmpProjectDir, 'build'), 'classes'), 'java'), 'test')
         and:
             PitestTask task = getJustOnePitestTaskOrFail()
         expect:
@@ -173,7 +173,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
     }
 
     private File addFileWithFileNameAsDependencyAndReturnAsFile(String depFileName, String configurationName = 'implementation') {
-        File depFile = new File(tmpProjectDir.root, depFileName)
+        File depFile = new File(tmpProjectDir, depFileName)
         project.dependencies.add(configurationName, project.files(depFile))
         return depFile
     }
