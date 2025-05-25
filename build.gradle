@@ -114,18 +114,19 @@ tasks.register("codenarc") {
 }
 
 //Workaround on https://github.com/gradle/gradle/issues/12663
+//TODO: "configureEach{}" causes: "DefaultTaskContainer#register(String, Action) on task set cannot be executed in the current context" - https://github.com/gradle/gradle/issues/26668
 tasks.withType(CodeNarc) { codeNarcTask ->
     reports {
         text.required = true
         html.required = true
     }
-    codeNarcTask.finalizedBy(project.task("print${codeNarcTask.name.capitalize()}") {
+    codeNarcTask.finalizedBy(tasks.register("print${codeNarcTask.name.capitalize()}") {
         onlyIf {
             codeNarcTask.state.failure != null
         }
         doLast {
             logger.warn("\n****************************** CODE NARC ******************************")
-            logger.warn(codeNarcTask.reports.text.destination.text.trim())
+            logger.warn(codeNarcTask.reports.text.outputLocation.getAsFile().get().text.trim())
             logger.warn("****************************** CODE NARC ******************************\n")
         }
     })
