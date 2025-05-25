@@ -16,10 +16,10 @@ test_script:
 
 environment:
   matrix:
-  - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    #Regression tests with different Gradle versions only on JDK 8
+  - JAVA_HOME: C:\Program Files\Java\jdk17
+    #Regression tests with different Gradle versions only on JDK 17
     PITEST_REGRESSION_TESTS: quick
-  - JAVA_HOME: C:\Program Files\Java\jdk11
+  - JAVA_HOME: C:\Program Files\Java\jdk21
     PITEST_REGRESSION_TESTS: latestOnly
 
 matrix:
