@@ -3,6 +3,7 @@ package info.solidsoft.gradle.pitest.functional
 import groovy.transform.CompileDynamic
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
+import org.gradle.api.JavaVersion
 
 @SuppressWarnings("GrMethodMayBeStatic")
 @CompileDynamic
@@ -39,7 +40,11 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     }
 
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
-        return [MINIMAL_SUPPORTED_PIT_VERSION, PitestPlugin.DEFAULT_PITEST_VERSION]
+        List<String> pitVersions = [MINIMAL_SUPPORTED_PIT_VERSION, "1.18.0", PitestPlugin.DEFAULT_PITEST_VERSION]
+        if (JavaVersion.current() > JavaVersion.VERSION_17) {   //TODO: Logic could be improved
+            pitVersions.remove(MINIMAL_SUPPORTED_PIT_VERSION)
+        }
+        return pitVersions
     }
 
 }

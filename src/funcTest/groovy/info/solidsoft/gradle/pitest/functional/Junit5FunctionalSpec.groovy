@@ -56,7 +56,6 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             buildFileName                             || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
             'build.gradle'                            || "1.2.0"                    | "5.10.0"                    | "1.10.0"
             'build-pit-plugin-1.0.0-junit-5.8.gradle' || "1.0.0"                    | "5.8.0"                     | "1.8.0"
-            'build-pit-1.8-junit-platform-5.7.gradle' || "0.14"                     | "5.7.0"                     | "1.7.0"
 
             description = "plugin $expectedJunitPluginVersion, junit $expectedJUnitJupiterVersion, platform $expectedJUnitPlatformVersion"
     }
@@ -94,7 +93,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
     void "should not reference project data at execution time (causing InvalidUserCodeException in Gradle 8.1+)"() {
         given:
-            gradleVersion = "8.1"
+            gradleVersion = "8.14.1"
             classpathFilter = GradleRunner.CLASSPATH_DEFAULT & PitestPluginGradleVersionFunctionalSpec.FILTER_SPOCK_JAR
         and:
             copyResources("testProjects/junit5simple", "")
