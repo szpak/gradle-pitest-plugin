@@ -2,7 +2,9 @@
 
 ## 1.19.0 - Unreleased
 
+ - Java 17 is minimal supported* version
  - Gradle 8.0 is minimal supported* version
+ - Upgrade Gradle wrapper to 8.14.1
  - TODO
 
 

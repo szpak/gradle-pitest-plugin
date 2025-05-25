@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
 //        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21")
     }
 }
 

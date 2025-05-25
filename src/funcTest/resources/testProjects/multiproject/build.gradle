@@ -39,7 +39,7 @@ configure(project(':itest')) {
 
     //Additional configuration to resolve :shared project JAR as mutable code path for PIT
     configurations {
-        mutableCodeBase { transitive false }
+        mutableCodeBase { transitive = false }
         dependencies {
             mutableCodeBase.extendsFrom(project(':shared').configurations.implementation)
         }

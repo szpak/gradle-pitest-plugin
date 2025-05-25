@@ -19,7 +19,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             copyResources("testRepos", "")  //Custom artifacts due to: https://github.com/hcoles/pitest-plugins/pull/4
             buildFile << """
                 repositories {
-                    maven { url "./customPluginRepo/" }
+                    maven { url = "./customPluginRepo/" }
                 }
                 dependencies {
                     pitest 'org.pitest.plugins:pitest-plugin-configuration-reporter-plugin:0.0.2'
