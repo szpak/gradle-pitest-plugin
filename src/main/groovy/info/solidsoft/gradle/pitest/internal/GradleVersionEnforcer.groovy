@@ -35,7 +35,7 @@ class GradleVersionEnforcer {
 
             if (GradleUtil.isPropertyNotDefinedOrFalse(project, propertyNameToDisable)) {
                 log.warn("Aborting the build with the meaningful error message to prevent confusion. If you are sure it is an error, " +
-                    "please report it in the plugin issue tracker and in the meantime use '-D${propertyNameToDisable}' to disable this check")
+                    "please report it in the plugin issue tracker and in the meantime use '-P${propertyNameToDisable}' to disable this check")
 
                 throw new GradleException("'${PitestPlugin.PLUGIN_ID}' requires Gradle ${minimalSupportedVersion.version}")
             }

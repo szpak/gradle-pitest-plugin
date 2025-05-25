@@ -1,5 +1,11 @@
 # gradle-pitest-plugin changelog
 
+## 1.19.0 - Unreleased
+
+ - Gradle 8.0 is minimal supported* version
+ - TODO
+
+
 ## 1.15.0 - 2023-09-28
 
  - Automatically add `junit-platform-launcher` dependency to `testRuntimeOnly` for JUnit Platform projects - [#337](https://github.com/szpak/gradle-pitest-plugin/issues/337) - help from [Björn Kautler](https://github.com/Vampire)

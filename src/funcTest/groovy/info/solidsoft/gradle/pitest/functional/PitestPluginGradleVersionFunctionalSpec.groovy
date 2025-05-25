@@ -52,12 +52,19 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = GradleRunner.CLASSPATH_DEFAULT & FILTER_SPOCK_JAR
+        and:
+            List<String> executionParameters = ['pitest', '--warning-mode', 'all']
+        and:
+            //For testing with unsupported Gradle 6 and 7 (possibly with lower Java versions)
+            if (GradleVersion.version(requestedGradleVersion) < PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION) {
+                executionParameters << "-Pgpp.disableGradleVersionEnforcement"
+            }
         when:
             copyResources("testProjects/simple1", "")
         then:
             fileExists('build.gradle')
         when:
-            ExecutionResult result = runTasksSuccessfully('pitest', '--warning-mode', 'all')
+            ExecutionResult result = runTasksSuccessfully(*executionParameters)
         then:
             result.wasExecuted(':pitest')
             result.standardOutput.contains('Generated 1 mutations Killed 1 (100%)')
