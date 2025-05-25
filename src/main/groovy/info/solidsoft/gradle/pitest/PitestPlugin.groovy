@@ -202,7 +202,7 @@ class PitestPlugin implements Plugin<Project> {
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
         task.launchClasspath.setFrom({
-            project.configurations[PITEST_CONFIGURATION_NAME]
+            project.configurations.named(PITEST_CONFIGURATION_NAME)
         } as Callable<Configuration>)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
