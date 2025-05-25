@@ -3,7 +3,7 @@
 ## 1.19.0 - Unreleased
 
  - Java 17 is minimal supported* version
- - Gradle 8.0 is minimal supported* version
+ - Gradle 8.4 is minimal supported* version
  - PIT 1.19.4 by default
  - Initial support for Gradle 9 (no warnings with 9.0-m8)
  - Upgrade Gradle wrapper to 8.14.1
