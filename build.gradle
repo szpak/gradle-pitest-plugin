@@ -50,6 +50,7 @@ dependencies {
     testImplementation('org.spockframework:spock-core:2.4-M6-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     //for "@Rule TemporaryFolder"
     testImplementation('org.spockframework:spock-junit4:2.4-M6-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
