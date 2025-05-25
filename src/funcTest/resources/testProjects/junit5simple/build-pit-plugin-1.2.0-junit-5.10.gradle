@@ -21,7 +21,7 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 }
 
 test {
@@ -29,6 +29,6 @@ test {
 }
 
 pitest {
-    junit5PluginVersion = "1.2.3"
+    junit5PluginVersion = "1.2.0"    //with no longer shaded junit-platform-launcher
     verbose = true  //for "ClassNotFoundException: org.junit.platform.launcher.core.LauncherFactory" which should not happen
 }

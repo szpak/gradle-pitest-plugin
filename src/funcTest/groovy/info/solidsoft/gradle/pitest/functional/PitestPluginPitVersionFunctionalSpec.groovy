@@ -40,7 +40,7 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
     }
 
     private List<String> getPitVersionsCompatibleWithCurrentJavaVersion() {
-        List<String> pitVersions = [MINIMAL_SUPPORTED_PIT_VERSION, "1.18.0", PitestPlugin.DEFAULT_PITEST_VERSION]
+        List<String> pitVersions = [MINIMAL_SUPPORTED_PIT_VERSION, "1.17.1", "1.18.0", PitestPlugin.DEFAULT_PITEST_VERSION] //1.17.1 first version with JDK 24 support
         if (JavaVersion.current() > JavaVersion.VERSION_17) {   //TODO: Logic could be improved
             pitVersions.remove(MINIMAL_SUPPORTED_PIT_VERSION)
         }

@@ -5,6 +5,7 @@
  - Java 17 is minimal supported* version
  - Gradle 8.4 is minimal supported* version
  - PIT 1.19.4 by default
+- Ability to build and run with JDK 24
  - Initial support for Gradle 9 (no warnings with 9.0-m8)
  - Upgrade Gradle wrapper to 8.14.1
  - TODO
