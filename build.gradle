@@ -12,7 +12,7 @@ buildscript {
         mavenLocal()
         maven {
             //for Plugin Publish plugin
-            url 'https://plugins.gradle.org/m2/'
+            url = 'https://plugins.gradle.org/m2/'
         }
     }
     dependencies {
@@ -23,9 +23,11 @@ buildscript {
     }
 }
 
-sourceCompatibility = 1.8
+java {
+    sourceCompatibility = 1.8
+}
 
- ext.pitestAggregatorVersion = "1.17.0"   //Must be equal to default PIT version in PitestPlugin
+ext.pitestAggregatorVersion = "1.17.0"   //Must be equal to default PIT version in PitestPlugin
 
 repositories {
     mavenCentral()
@@ -61,7 +63,7 @@ dependencies {
     }
 }
 
-task funcTest(type: Test) {
+tasks.register("funcTest", Test) {
     description = 'Run the functional tests.'
     group = 'Verification'
     testClassesDirs = sourceSets.funcTest.output.classesDirs
@@ -73,9 +75,9 @@ check.shouldRunAfter funcTest
 check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
 //uploadArchives.dependsOn funcTest, check  //TODO: Adjust to new publishing solution
 
-task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/allTests")
-    reportOn test, funcTest
+tasks.register("testReport", TestReport) {
+    destinationDirectory = file(layout.buildDirectory.dir("reports/allTests"))
+    testResults.from(test*.binaryResultsDirectory, funcTest*.binaryResultsDirectory)
 }
 
 tasks.withType(Test).configureEach { testTask ->
