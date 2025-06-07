@@ -108,7 +108,7 @@ if (hasProperty('pluginPortal')) {
     apply plugin: 'com.gradle.plugin-publish'
 
     publishPlugins {
-        onlyIf("Not for SNAPSHOTs and when not explicitly enabled") { !project.version.endsWith("-SNAPSHOT") && hasProperty('pluginPortal') }
+        onlyIf("Not for SNAPSHOTs and when not explicitly enabled") { !project.version.endsWith("-SNAPSHOT") }
 //        mustRunAfter releaseRepository
     }
 
