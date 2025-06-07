@@ -81,33 +81,35 @@ nexusPublishing {
     }
 }
 
+//in fact, plugins configuration is for java-gradle-plugin and only leverages in publish-plugin, so it could be moved to build.gradle
+gradlePlugin {
+    website = "https://github.com/${repoSlug}"
+    vcsUrl = "https://github.com/${repoSlug}"
+    plugins {
+        pitestPlugin {
+            id = 'info.solidsoft.pitest'
+            implementationClass = 'info.solidsoft.gradle.pitest.PitestPlugin'
+            displayName = 'gradle-pitest-plugin'
+            description = 'Gradle plugin for PIT mutation testing'
+            tags = ['test', 'pit', 'mutation-testing']
+        }
+        pitestAggregatorPlugin {
+            id = 'info.solidsoft.pitest.aggregator'
+            implementationClass = 'info.solidsoft.gradle.pitest.PitestAggregatorPlugin'
+            displayName = 'gradle-pitest-aggregator-plugin'
+            description = 'Gradle aggregator plugin for PIT mutation testing'
+            tags = ['test', 'pit', 'mutation-testing']
+        }
+    }
+}
+
 if (hasProperty('pluginPortal')) {
 
     apply plugin: 'com.gradle.plugin-publish'
 
-    pluginBundle {
-        website = "https://github.com/${repoSlug}"
-        vcsUrl = "https://github.com/${repoSlug}"
-
-        plugins {
-            plugin {
-                id = 'info.solidsoft.pitest'
-                displayName = 'gradle-pitest-plugin'
-                description = 'Gradle plugin for PIT mutation testing'
-                tags = ['test', 'pit', 'mutation-testing']
-            }
-        }
-
-        mavenCoordinates {
-            groupId = project.group
-            artifactId = project.name
-        }
-    }
-
     publishPlugins {
-        onlyIf("Not for SNAPSHOTs") { !project.version.endsWith("-SNAPSHOT") }
+        onlyIf("Not for SNAPSHOTs and when not explicitly enabled") { !project.version.endsWith("-SNAPSHOT") }
 //        mustRunAfter releaseRepository
     }
-//    ciBuild.dependsOn publishPlugins
 
 }
