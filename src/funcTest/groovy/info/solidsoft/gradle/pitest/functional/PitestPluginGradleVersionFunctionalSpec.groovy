@@ -120,7 +120,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final List<String> GRADLE7_VERSIONS = ["7.6.4", "7.5.1", "7.4.2", "7.3.3", "7.2", "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
     private static final List<String> GRADLE8_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "8.14.1", "8.13", "8.12.1", "8.11.1", "8.10.2",
                                                           "8.9", "8.8", "8.7", "8.6.4", "8.5", "8.4", "8.3", "8.2.1", "8.1.1", "8.0.2"]
-    private static final List<String> GRADLE9_VERSIONS = ["9.0.0-milestone-8"]
+    private static final List<String> GRADLE9_VERSIONS = ["9.0.0-milestone-9"]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(), GRADLE8_VERSIONS.first(),
                                                                 GRADLE9_VERSIONS.first(), PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 
