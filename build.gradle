@@ -2,7 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'codenarc'
 //TODO: Introduce new releasing mechanism - CDBoy is not compatible with Gradle 7+ (due to using old 'maven' plugin)
-//apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
+apply from: "$rootDir/gradle/publishing.gradle"
 apply from: "$rootDir/gradle/report-version-consistency-check.gradle"
 apply plugin: "com.github.ben-manes.versions"
 
@@ -16,8 +16,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0' //override version for more reliable releasing from Travis
+        classpath 'pl.allegro.tech.build.axion-release:pl.allegro.tech.build.axion-release.gradle.plugin:1.18.18'
+        classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.16.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.52.0'
     }
@@ -70,7 +70,13 @@ tasks.register("funcTest", Test) {
 funcTest.shouldRunAfter test
 check.shouldRunAfter funcTest
 check.dependsOn funcTestClasses     //or more generically: tasks.withType(AbstractCompile)
-//uploadArchives.dependsOn funcTest, check  //TODO: Adjust to new publishing solution
+
+//Both cannot be put into publishing.gradle due to: https://github.com/gradle/gradle/issues/1262
+tasks.withType(com.gradle.publish.PublishTask).configureEach { it.dependsOn(funcTest, check) }
+////do not generate extra load on Nexus with new staging repository if signing fails
+tasks.withType(io.github.gradlenexus.publishplugin.InitializeNexusStagingRepository).configureEach {
+    shouldRunAfter(tasks.withType(Sign))
+}
 
 tasks.register("testReport", TestReport) {
     destinationDirectory = file(layout.buildDirectory.dir("reports/allTests"))
