@@ -7,7 +7,9 @@
  - PIT 1.19.5 by default
  - Ability to build and run with JDK 24
  - Initial support for Gradle 9 (no warnings with 9.0-m9)
+ - Ability to override verbose from command line - [#341](https://github.com/szpak/gradle-pitest-plugin/pull/341) - PR by [pfoerd](https://github.com/Pfoerd)
  - Define plugins in build.gradle instead of .properties files - [#373](https://github.com/szpak/gradle-pitest-plugin/pull/373) - PR by [mitchellmebane](https://github.com/mitchellmebane)
+ - Added examples of using plugin with Kotlin DSL - [#355](https://github.com/szpak/gradle-pitest-plugin/pull/355) - PR by [mfvanek](https://github.com/mfvanek)
  - Upgrade Gradle wrapper to 8.14.2
 
 **Compatibility notes**. Java 17+ and Gradle 8.4+ are the minimal supported versions.
@@ -20,7 +22,7 @@ Missing features:
 
 Full list of changes: https://github.com/szpak/gradle-pitest-plugin/compare/v1.15.0...v1.19.0-rc2
 
-Thanks to all the contributors to this release: @mitchellmebane, @ThomGeG.
+Thanks to all the contributors to this release: @Pfoerd, @mitchellmebane, @ThomGeG, @mfvanek.
 
 
 ## 1.15.0 - 2023-09-28
