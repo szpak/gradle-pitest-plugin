@@ -25,7 +25,7 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
     void "should aggregate report from subproject"() {
         given:
             copyResources("testProjects/multiproject", "")
-            renameExistingFailToBuildGradle("build-report.gradle")
+            renameExistingFileToBuildGradle("build-report.gradle")
             renameExistingFailToSettingsGradle("settings-report.gradle")
         when:
             ExecutionResult result = runTasks('pitest', 'pitestReportAggregate')

@@ -40,7 +40,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     void "should work with junit5 without explicitly adding dependency (#description)"() {
         given:
             copyResources("testProjects/junit5simple", "")
-            renameExistingFailToBuildGradle(buildFileName)
+            renameExistingFileToBuildGradle(buildFileName)
         when:
             ExecutionResult result = runTasks('pitest')
         then:

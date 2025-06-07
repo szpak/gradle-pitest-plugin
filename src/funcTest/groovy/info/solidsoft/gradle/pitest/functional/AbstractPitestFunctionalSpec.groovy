@@ -4,6 +4,10 @@ import groovy.transform.CompileDynamic
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+
 @CompileDynamic
 @SuppressWarnings("AbstractClassWithoutAbstractMethod")
 abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
@@ -83,24 +87,17 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     //Due to deprecated "-b build-foo.gradle" - https://docs.gradle.org/7.6.2/userguide/upgrading_version_7.html#configuring_custom_build_layout
     protected void deleteExistingOrFail(String path, File baseDir = getProjectDir()) {
-        assert existingFileOrFail(path, baseDir).delete()
+        Files.delete(new File(baseDir, path).toPath())
     }
 
-    protected void renameExistingFailToBuildGradle(String path, File baseDir = getProjectDir()) {
-        assert existingFileOrFail(path , baseDir).renameTo(existingFileOrFail("build.gradle"))
+    protected void renameExistingFileToBuildGradle(String path, File baseDir = getProjectDir()) {
+        Path sourceFile = new File(baseDir, path).toPath()
+        Files.move(sourceFile, sourceFile.resolveSibling("build.gradle"), StandardCopyOption.REPLACE_EXISTING)
     }
 
     protected void renameExistingFailToSettingsGradle(String path, File baseDir = getProjectDir()) {
-        assert existingFileOrFail(path , baseDir).renameTo(existingFileOrFail("settings.gradle"))
-    }
-
-    //Adopted from Nebula's Integration trait
-    private File existingFileOrFail(String path, File baseDir = getProjectDir()) {
-        String[] splitted = path.split('/')
-        File directory = splitted.size() > 1 ? directory(splitted[0..-2].join('/'), baseDir) : baseDir
-        File file = new File(directory, splitted[-1])
-        assert file.exists()
-        return file
+        Path sourceFile = new File(baseDir, path).toPath()
+        Files.move(sourceFile, sourceFile.resolveSibling("settings.gradle"), StandardCopyOption.REPLACE_EXISTING)
     }
 
 }
