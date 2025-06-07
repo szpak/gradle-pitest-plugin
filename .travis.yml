@@ -1,30 +1,31 @@
 language: groovy
 
-install:
-  # Secrets (including encrypted PGP key) are not available in PR - skip release configuration to do not fail build
-  - |
-    if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
-      # There is problem with aborting build on command in if failure - http://steven.casagrande.io/articles/travis-ci-and-if-statements/
-      openssl aes-256-cbc -K $encrypted_5393bb1c9f2d_key -iv $encrypted_5393bb1c9f2d_iv -in gradle/gpg-key.asc.enc -d | gpg --fast-import || travis_terminate 1
-      export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'
-    fi;
-  - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
-  - git config user.email "szpak-ci@users.noreply.github.com"
-  - git config user.name "Szpak CI Bot"
-  # Chandler for release notes synchronization
-  - ruby --version
-  - rvm install 2.4.1
-  - ruby --version
-  # last Ruby 2.4 compatible version
-  - gem install --no-document multipart-post -v 2.3.0
-  - gem install --no-document faraday -v 1.10.1
-  - gem install --no-document faraday-net_http -v 2.1.0
-  - gem install --no-document public_suffix -v 4.0.7
-  - gem install --no-document octokit -v 4.25.1 
-  - gem install --no-document chandler -v 0.7.0
+#install:
+#  # Secrets (including encrypted PGP key) are not available in PR - skip release configuration to do not fail build
+#  - |
+#    if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
+#      # There is problem with aborting build on command in if failure - http://steven.casagrande.io/articles/travis-ci-and-if-statements/
+#      openssl aes-256-cbc -K $encrypted_5393bb1c9f2d_key -iv $encrypted_5393bb1c9f2d_iv -in gradle/gpg-key.asc.enc -d | gpg --fast-import || travis_terminate 1
+#      export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'
+#    fi;
+#  - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
+#  - git config user.email "szpak-ci@users.noreply.github.com"
+#  - git config user.name "Szpak CI Bot"
+#  # Chandler for release notes synchronization
+#  - ruby --version
+#  - rvm install 2.4.1
+#  - ruby --version
+#  # last Ruby 2.4 compatible version
+#  - gem install --no-document multipart-post -v 2.3.0
+#  - gem install --no-document faraday -v 1.10.1
+#  - gem install --no-document faraday-net_http -v 2.1.0
+#  - gem install --no-document public_suffix -v 4.0.7
+#  - gem install --no-document octokit -v 4.25.1
+#  - gem install --no-document chandler -v 0.7.0
 
 script:
-  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
+#  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
+  - ./gradlew check funcTest -s -i -Pcompatibility
 
 cache:
   directories:
@@ -38,9 +39,11 @@ env:
   - secure: cyJye89u5k+Ct13HC95LME72pdsXmtmWJIR3x4MxQfvFG/Q1Uz3FtnSj7oJH5xJ9oH3bzHd0k5sB38u1g2LTIov/Em+dSVBIGgcs49nMSlbVye0Ilt7A1x0c/7LidxKT/DiWu4jgFcf8VyEdd9LVQXBaO12sLsk6nk6RjTUKnU8=
 matrix:
   include:
-    - jdk: openjdk11
+    - jdk: openjdk17
       env: PITEST_REGRESSION_TESTS=quick
-    - jdk: openjdk15
+    - jdk: openjdk21
+      env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
+    - jdk: openjdk24
       env: PITEST_REGRESSION_TESTS=latestOnly SKIP_RELEASE=true
 #    # Old API returns error as of 20240521
 #    - env: JDK="OpenJ9 11" PITEST_REGRESSION_TESTS=quick SKIP_RELEASE=true

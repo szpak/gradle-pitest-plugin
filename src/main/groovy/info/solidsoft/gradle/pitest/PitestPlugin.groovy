@@ -55,9 +55,10 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.15.0'
-    @Internal   //6.4 due to main -> mainClass change to avoid deprecation warning in Gradle 7.x - https://github.com/szpak/gradle-pitest-plugin/pull/289
-    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("6.4") //public as used also in regression tests
+    public final static String DEFAULT_PITEST_VERSION = '1.19.5'
+    @Internal   //8.x just to be more ready for 9.x, could work with lower versions at runtime
+                //(8.4 instead of 8.0 to have first version supporting JDK 21 LTS)
+    public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("8.4") //public as used also in regression tests
 
     private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
@@ -111,8 +112,8 @@ class PitestPlugin implements Plugin<Project> {
         setupReportDirInExtensionWithProblematicTypeForGradle5()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
-        extension.testSourceSets.set([javaSourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME)])
-        extension.mainSourceSets.set([javaSourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)])
+        extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
+        extension.mainSourceSets.set(javaSourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
         extension.useClasspathFile.set(false)
         extension.verbosity.set("NO_SPINNER")
@@ -120,6 +121,7 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
+        //TODO: findByName() is suboptimal, but "named(...).isPreset()" triggers too early initialization with "Configuration with name 'pitest' not found"
         if (project.rootProject.buildscript.configurations.findByName(PITEST_CONFIGURATION_NAME) != null) {
             throw new GradleException("The '${PITEST_CONFIGURATION_NAME}' buildscript configuration found in the root project. " +
                 "This is no longer supported in 1.5.0+ and has to be changed to the regular (sub)project configuration. " +
@@ -129,7 +131,7 @@ class PitestPlugin implements Plugin<Project> {
 
     @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
     private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDir, PITEST_REPORT_DIRECTORY_NAME))
+        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
@@ -201,7 +203,7 @@ class PitestPlugin implements Plugin<Project> {
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
         task.launchClasspath.setFrom({
-            project.configurations[PITEST_CONFIGURATION_NAME]
+            project.configurations.named(PITEST_CONFIGURATION_NAME)
         } as Callable<Configuration>)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
@@ -249,7 +251,12 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void addJUnitPlatformLauncherDependencyIfNeeded() {
-        project.configurations.named("testImplementation").configure { testImplementation ->
+        //Starting with Gradle 8.8.0, Configuration implements "Named" which generates runtime error on "testConfiguration.name" for plugin compiled
+        //with 8.8.0+ and executed with lower versions. Keep constant name as workaround
+        //Related commit: https://github.com/gradle/gradle/commit/61220ea4fdb30b5c7265dd41e7ac4d70896c957b
+        final String testImplementationConfigurationName = "testImplementation"
+
+        project.configurations.named(testImplementationConfigurationName).configure { testImplementation ->
             testImplementation.withDependencies { directDependencies ->
                 if (!extension.addJUnitPlatformLauncher.isPresent() || !extension.addJUnitPlatformLauncher.get()) {
                     log.info("'addJUnitPlatformLauncher' feature explicitly disabled in configuration. " +
@@ -261,7 +268,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 final String orgJUnitPlatformGroup = "org.junit.platform"
 
-                log.debug("Direct ${testImplementation.name} dependencies (${directDependencies.size()}): ${directDependencies}")
+                log.debug("Direct ${testImplementationConfigurationName} dependencies (${directDependencies.size()}): ${directDependencies}")
 
                 //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
                 Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
@@ -271,7 +278,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
                 Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
-                log.debug("All resolved components ${testImplementation.name} (${allResolvedComponents.size()}): ${allResolvedComponents}")
+                log.debug("All resolved components ${testImplementationConfigurationName} (${allResolvedComponents.size()}): ${allResolvedComponents}")
 
                 ResolvedComponentResult foundJunitPlatformComponent = allResolvedComponents.find { ResolvedComponentResult componentResult ->
                     ModuleVersionIdentifier moduleVersion = componentResult.moduleVersion
@@ -280,12 +287,12 @@ class PitestPlugin implements Plugin<Project> {
                 }
 
                 if (!foundJunitPlatformComponent) {
-                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementation.name}, junit-platform-launcher will not be added")
+                    log.info("No ${orgJUnitPlatformGroup} components founds in ${testImplementationConfigurationName}, junit-platform-launcher will not be added")
                     return
                 }
 
                 String junitPlatformLauncherDependencyAsString = "${orgJUnitPlatformGroup}:junit-platform-launcher:${foundJunitPlatformComponent.moduleVersion.version}"
-                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementation.name}, " +
+                log.info("${orgJUnitPlatformGroup} component (${foundJunitPlatformComponent}) found in ${testImplementationConfigurationName}, " +
                     "adding junit-platform-launcher (${junitPlatformLauncherDependencyAsString}) to testRuntimeOnly")
                 project.configurations.named("testRuntimeOnly").configure({ Configuration testRuntimeOnly ->
                     testRuntimeOnly.dependencies.add(project.dependencies.create(junitPlatformLauncherDependencyAsString))

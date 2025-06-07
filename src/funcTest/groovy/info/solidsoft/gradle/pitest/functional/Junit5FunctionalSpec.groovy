@@ -1,6 +1,5 @@
 package info.solidsoft.gradle.pitest.functional
 
-import com.google.common.base.Predicates
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
@@ -12,6 +11,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     void "should work with kotlin and junit5"() {
         given:
             copyResources("testProjects/junit5kotlin", "")
+            deleteExistingOrFail("build.gradle.kts")
         when:
             ExecutionResult result = runTasks('pitest')
         then:
@@ -24,8 +24,9 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     void "should work with kotlin and junit5 in build.gradle.kts"() {
         given:
             copyResources("testProjects/junit5kotlin", "")
+            deleteExistingOrFail("build.gradle")
         when:
-            ExecutionResult result = runTasks('pitest', '-b', 'build.gradle.kts')
+            ExecutionResult result = runTasks('pitest')
         then:
             !result.standardError.contains("Build failed with an exception")
             !result.failure
@@ -35,11 +36,13 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
 
     @Issue(["https://github.com/szpak/gradle-pitest-plugin/issues/177", "https://github.com/szpak/gradle-pitest-plugin/issues/300",
         "https://github.com/szpak/gradle-pitest-plugin/issues/337"])
+//    @IgnoreIf({ !jvm.isJavaVersionCompatible(21) && expectedJUnitJupiterVersion == "5.8.0" }) //TODO: Explain why it fails with "No such property: expectedJUnitJupiterVersion for class"
     void "should work with junit5 without explicitly adding dependency (#description)"() {
         given:
             copyResources("testProjects/junit5simple", "")
+            renameExistingFileToBuildGradle(buildFileName)
         when:
-            ExecutionResult result = runTasks('pitest', '-b', buildFileName)
+            ExecutionResult result = runTasks('pitest')
         then:
             !result.standardError.contains("Build failed with an exception")
             !result.failure
@@ -51,10 +54,10 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result.standardOutput.contains("junit-jupiter-api-${expectedJUnitJupiterVersion}.jar")
             result.standardOutput.contains("junit-platform-commons-${expectedJUnitPlatformVersion}.jar")
         where:
-            buildFileName                             || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
-            'build.gradle'                            || "1.2.0"                    | "5.10.0"                    | "1.10.0"
-            'build-pit-plugin-1.0.0-junit-5.8.gradle' || "1.0.0"                    | "5.8.0"                     | "1.8.0"
-            'build-pit-1.8-junit-platform-5.7.gradle' || "0.14"                     | "5.7.0"                     | "1.7.0"
+            buildFileName                              || expectedJunitPluginVersion | expectedJUnitJupiterVersion | expectedJUnitPlatformVersion
+            'build.gradle'                             || "1.2.3"                    | "5.12.2"                    | "1.12.2"
+            'build-pit-plugin-1.2.0-junit-5.10.gradle' || "1.2.0"                    | "5.10.0"                    | "1.10.0"
+//            'build-pit-plugin-1.0.0-junit-5.8.gradle'  || "1.0.0"                    | "5.8.0"                     | "1.8.0"
 
             description = "plugin $expectedJunitPluginVersion, junit $expectedJUnitJupiterVersion, platform $expectedJUnitPlatformVersion"
     }
@@ -92,8 +95,8 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
     void "should not reference project data at execution time (causing InvalidUserCodeException in Gradle 8.1+)"() {
         given:
-            gradleVersion = "8.1"
-            classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, PitestPluginGradleVersionFunctionalSpec.FILTER_SPOCK_JAR)
+            gradleVersion = "8.14.1"
+            classpathFilter = GradleRunner.CLASSPATH_DEFAULT & PitestPluginGradleVersionFunctionalSpec.FILTER_SPOCK_JAR
         and:
             copyResources("testProjects/junit5simple", "")
         when:

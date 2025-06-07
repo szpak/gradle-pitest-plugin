@@ -1,5 +1,28 @@
 # gradle-pitest-plugin changelog
 
+## 1.19.0-rc-2 - Unreleased
+
+ - Java 17 is minimal supported* version
+ - Gradle 8.4 is minimal supported* version
+ - PIT 1.19.5 by default
+ - Ability to build and run with JDK 24
+ - Initial support for Gradle 9 (no warnings with 9.0-m9)
+ - Define plugins in build.gradle instead of .properties files - [#373](https://github.com/szpak/gradle-pitest-plugin/pull/373) - PR by [mitchellmebane](https://github.com/mitchellmebane)
+ - Upgrade Gradle wrapper to 8.14.2
+
+**Compatibility notes**. Java 17+ and Gradle 8.4+ are the minimal supported versions.
+
+**PLEASE NOTE**. This version is just a refresh variant of 1.15.0, compatible with latest Gradle version (8.14/9.0). No PIT 1.19.0 features parity is developed.
+
+Missing features:
+1. Automatic releasing from CI to Maven Central and Gradle Plugins (as previously used CDeliveryBoy is not compatible with Gradle 7+).
+2. Releasing also to Maven Central (not just only to Gradle Plugins).
+
+Full list of changes: https://github.com/szpak/gradle-pitest-plugin/compare/v1.15.0...v1.19.0-rc2
+
+Thanks to all the contributors to this release: @mitchellmebane, @ThomGeG.
+
+
 ## 1.15.0 - 2023-09-28
 
  - Automatically add `junit-platform-launcher` dependency to `testRuntimeOnly` for JUnit Platform projects - [#337](https://github.com/szpak/gradle-pitest-plugin/issues/337) - help from [Björn Kautler](https://github.com/Vampire)

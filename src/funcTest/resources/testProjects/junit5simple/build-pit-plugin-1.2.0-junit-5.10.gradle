@@ -18,15 +18,10 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-//    //Not needed, 'junit5PluginVersion' should implicitly add it in requested version
-//    pitest 'org.pitest:pitest-junit5-plugin:0.14'
-}
-
 group = "pitest.test"
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 }
 
 test {
@@ -34,7 +29,6 @@ test {
 }
 
 pitest {
-    pitestVersion = "1.8.1" //PIT 1.9.0 required junit5PluginVersion 1.0.0+ which doesn't support older JUnit Platform 1.7
-//    testPlugin = "junit5" //not needed - 'junit5PluginVersion' should implicitly set it
-    junit5PluginVersion = "0.14"
+    junit5PluginVersion = "1.2.0"    //with no longer shaded junit-platform-launcher
+    verbose = true  //for "ClassNotFoundException: org.junit.platform.launcher.core.LauncherFactory" which should not happen
 }

@@ -22,7 +22,7 @@ repositories {
 group = "pitest.test"
 
 dependencies {
-    testImplementation 'org.spockframework:spock-core:2.0-groovy-2.5'
+    testImplementation 'org.spockframework:spock-core:2.4-M6-groovy-3.0'
 }
 
 test {

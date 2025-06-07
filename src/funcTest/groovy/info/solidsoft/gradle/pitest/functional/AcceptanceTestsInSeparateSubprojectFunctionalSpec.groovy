@@ -2,7 +2,6 @@ package info.solidsoft.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
-import spock.util.environment.RestoreSystemProperties
 
 import java.nio.file.Paths
 
@@ -23,12 +22,13 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
             result.getStandardOutput().contains('Generated 4 mutations Killed 3 (75%)')
     }
 
-    @RestoreSystemProperties
     void "should aggregate report from subproject"() {
         given:
             copyResources("testProjects/multiproject", "")
+            renameExistingFileToBuildGradle("build-report.gradle")
+            renameExistingFailToSettingsGradle("settings-report.gradle")
         when:
-            ExecutionResult result = runTasks('pitest', 'pitestReportAggregate', '-c', 'settings-report.gradle')
+            ExecutionResult result = runTasks('pitest', 'pitestReportAggregate')
         then:
             !result.standardError.contains("Build failed with an exception")
             !result.failure
