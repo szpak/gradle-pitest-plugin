@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Usage
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.TaskCollection
@@ -105,7 +106,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     private File getReportBaseDirectory() {
         if (project.extensions.findByType(ReportingExtension)) {
-            return project.extensions.getByType(ReportingExtension).baseDir
+            return project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get()
         }
         return new File(project.buildDir, "reports")
     }
@@ -126,7 +127,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             }.collect(Collectors.toList())
     }
 
-    private static List<ConfigurableFileCollection> collectClasspathDirs(List<TaskCollection<PitestTask>> pitestTasks) {
+    private static List<FileCollection> collectClasspathDirs(List<TaskCollection<PitestTask>> pitestTasks) {
         return pitestTasks.stream()
             .flatMap { tc ->
                 tc.stream()
@@ -138,14 +139,14 @@ class PitestAggregatorPlugin implements Plugin<Project> {
     private static Set<Provider<File>> collectMutationFiles(Set<Project> pitestProjects) {
         return pitestProjects.stream()
             .map { prj -> prj.extensions.getByType(PitestPluginExtension) }
-            .map { extension -> extension.reportDir.file(MUTATION_FILE_NAME) }
+            .map { extension -> extension.reportDir.file(MUTATION_FILE_NAME) as Provider<File> }
             .collect(Collectors.toSet())
     }
 
     private static Set<Provider<File>> collectLineCoverageFiles(Set<Project> pitestProjects) {
         return pitestProjects.stream()
             .map { prj -> prj.extensions.getByType(PitestPluginExtension) }
-            .map { extension -> extension.reportDir.file(LINE_COVERAGE_FILE_NAME) }
+            .map { extension -> extension.reportDir.file(LINE_COVERAGE_FILE_NAME) as Provider<File> }
             .collect(Collectors.toSet())
     }
 

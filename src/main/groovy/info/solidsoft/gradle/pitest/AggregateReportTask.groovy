@@ -18,6 +18,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
 
@@ -31,6 +32,7 @@ import java.nio.charset.Charset
  */
 @Incubating
 @CompileStatic
+@DisableCachingByDefault(because = "TODO")  //TODO: Issue detected by "validatePlugins" task after upgrade to Gradle 7 - TODO: Report issue or implement
 abstract class AggregateReportTask extends DefaultTask {
 
     @OutputDirectory

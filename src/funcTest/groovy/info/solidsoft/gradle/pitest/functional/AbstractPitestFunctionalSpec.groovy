@@ -4,6 +4,10 @@ import groovy.transform.CompileDynamic
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+
 @CompileDynamic
 @SuppressWarnings("AbstractClassWithoutAbstractMethod")
 abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
@@ -79,6 +83,21 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     protected boolean isJava14Compatible() {
         return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
+    }
+
+    //Due to deprecated "-b build-foo.gradle" - https://docs.gradle.org/7.6.2/userguide/upgrading_version_7.html#configuring_custom_build_layout
+    protected void deleteExistingOrFail(String path, File baseDir = getProjectDir()) {
+        Files.delete(new File(baseDir, path).toPath())
+    }
+
+    protected void renameExistingFileToBuildGradle(String path, File baseDir = getProjectDir()) {
+        Path sourceFile = new File(baseDir, path).toPath()
+        Files.move(sourceFile, sourceFile.resolveSibling("build.gradle"), StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    protected void renameExistingFailToSettingsGradle(String path, File baseDir = getProjectDir()) {
+        Path sourceFile = new File(baseDir, path).toPath()
+        Files.move(sourceFile, sourceFile.resolveSibling("settings.gradle"), StandardCopyOption.REPLACE_EXISTING)
     }
 
 }
