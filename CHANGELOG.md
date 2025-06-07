@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.19.0-rc-2 - Unreleased
+## 1.19.0-rc.1 - 2025-06-07
 
  - Java 17 is minimal supported* version
  - Gradle 8.4 is minimal supported* version
