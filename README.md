@@ -118,7 +118,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.19.0-rc.1' //not needed when a default PIT version should be used
+    pitestVersion = '1.19.6' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -132,7 +132,7 @@ Idiomatic and more portable configuration:
 ```kotlin
 pitest {
     targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
-    pitestVersion.set("1.19.0-rc.1") //not needed when a default PIT version should be used
+    pitestVersion.set("1.19.6") //not needed when a default PIT version should be used
     threads.set(4)
     outputFormats.set(setOf("XML", "HTML"))
     timestampedReports.set(false)
@@ -144,7 +144,7 @@ can be used for configuring plugin (instead of the `set()` method):
 ```kotlin
 pitest {
     targetClasses = setOf("our.base.package.*") //by default "${project.group}.*"
-    pitestVersion = "1.19.0-rc.1" //not needed when a default PIT version should be used
+    pitestVersion = "1.19.6" //not needed when a default PIT version should be used
     threads = 4
     outputFormats = setOf("XML", "HTML")
     timestampedReports = false
