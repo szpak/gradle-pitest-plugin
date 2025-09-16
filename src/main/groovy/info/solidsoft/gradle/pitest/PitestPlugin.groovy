@@ -195,7 +195,7 @@ class PitestPlugin implements Plugin<Project> {
         task.additionalClasspathFile.set(
             project.layout.buildDirectory.file(PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME)
         )
-        task.mutableCodePaths.setFrom(allMutableCodePaths.get())
+        task.mutableCodePaths.setFrom(allMutableCodePaths)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
