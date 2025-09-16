@@ -183,7 +183,10 @@ class PitestPlugin implements Plugin<Project> {
         task.additionalClasspath.setFrom(
             project.providers.provider {
                 Set<SourceSet> sourceSets = extension.testSourceSets.get() as Set<SourceSet>
-                Set<File> runtimeClasspathFiles = sourceSets.collectMany { it.runtimeClasspath.files } as Set<File>
+
+                Set<File> runtimeClasspathFiles = sourceSets.collectMany { SourceSet sourceSet ->
+                    sourceSet.runtimeClasspath.files
+                } as Set<File>
                 List<String> fileExtensionsToFilter = extension.fileExtensionsToFilter.getOrElse([])
                 Set<File> filteredFiles = runtimeClasspathFiles.findAll { File file ->
                     !fileExtensionsToFilter.any { extension -> file.name.endsWith(".$extension") }
