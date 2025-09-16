@@ -104,7 +104,7 @@ if (hasProperty('pluginPortal')) {
 
 if (hasProperty('changelogSync')) {
 
-    task syncChangelog(type: Exec) {
+    tasks.register('syncChangelog', Exec) {
         doFirst { logger.info("Synchronizing changelog with GitHub for version ${project.version}") }
         commandLine 'chandler', 'push', "release/${project.version}", '--tag-prefix=release/'
     }
