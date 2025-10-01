@@ -71,10 +71,10 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
         given:
             project.pitest.useClasspathFile = true
         and:
-            new File(project.buildDir.absolutePath).mkdir() //in ProjectBuilder "build" directory is not created by default
+            project.layout.buildDirectory.get().asFile.mkdirs() //in ProjectBuilder "build" directory is not created by default
         expect:
-            File createClasspathFile = new File(project.buildDir, "pitClasspath")
-            task.taskArgumentMap()['classPathFile'] == createClasspathFile.absolutePath
+            File createClasspathFile = project.layout.buildDirectory.dir("pitClasspath").get().asFile
+        task.taskArgumentMap()['classPathFile'] == createClasspathFile.absolutePath
             !task.taskArgumentMap()['classPath']
         and:
             //TODO
@@ -288,11 +288,11 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
     }
 
     private String sourceSetBuiltJavaClasses(String sourceSetName) {
-        return new File(project.buildDir, "classes/java/${sourceSetName}").absolutePath
+        return project.layout.buildDirectory.file("classes/java/${sourceSetName}").get().asFile.absolutePath
     }
 
     private String sourceSetBuiltResources(String sourceSetName) {
-        return new File(project.buildDir, "resources/${sourceSetName}").absolutePath
+        return project.layout.buildDirectory.file("resources/${sourceSetName}").get().asFile.absolutePath
     }
 
 }

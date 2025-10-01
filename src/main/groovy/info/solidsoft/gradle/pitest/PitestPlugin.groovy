@@ -27,7 +27,6 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ModuleVersionIdentifier
 import org.gradle.api.artifacts.result.ResolutionResult
 import org.gradle.api.artifacts.result.ResolvedComponentResult
-import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.plugins.JavaPlugin
@@ -55,7 +54,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.19.5'
+    public final static String DEFAULT_PITEST_VERSION = '1.20.3'
     @Internal   //8.x just to be more ready for 9.x, could work with lower versions at runtime
                 //(8.4 instead of 8.0 to have first version supporting JDK 21 LTS)
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("8.4") //public as used also in regression tests
@@ -176,25 +175,36 @@ class PitestPlugin implements Plugin<Project> {
         task.sourceDirs.setFrom(extension.mainSourceSets.map { mainSourceSet -> mainSourceSet*.allSource*.srcDirs })
         task.detectInlinedCode.set(extension.detectInlinedCode)
         task.timestampedReports.set(extension.timestampedReports)
-        Callable<Set<File>> allMutableCodePaths = {
-            calculateBaseMutableCodePaths() + (extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>)
+        Provider<Set<File>> allMutableCodePaths = project.providers.provider {
+            Set<File> basePaths = calculateBaseMutableCodePaths()
+            Set<File> additionalPaths = extension.additionalMutableCodePaths.getOrElse([] as Set) as Set<File>
+            return basePaths + additionalPaths
         }
-        task.additionalClasspath.setFrom({
-            List<FileCollection> testRuntimeClasspath = (extension.testSourceSets.get() as Set<SourceSet>)*.runtimeClasspath
-            FileCollection combinedTaskClasspath = project.objects.fileCollection().from(testRuntimeClasspath)
-            List<String> fileExtensionsToFilter = extension.fileExtensionsToFilter.getOrElse([])
-            FileCollection filteredCombinedTaskClasspath = combinedTaskClasspath.filter { File file ->
-                !fileExtensionsToFilter.find { extension -> file.name.endsWith(".$extension") }
-            } + project.files(allMutableCodePaths)
-            return filteredCombinedTaskClasspath
-        } as Callable<FileCollection>)
+        task.additionalClasspath.setFrom(
+            project.providers.provider {
+                Set<SourceSet> sourceSets = extension.testSourceSets.get() as Set<SourceSet>
+
+                Set<File> runtimeClasspathFiles = sourceSets.collectMany { SourceSet sourceSet ->
+                    sourceSet.runtimeClasspath.files
+                } as Set<File>
+                List<String> fileExtensionsToFilter = extension.fileExtensionsToFilter.getOrElse([])
+                Set<File> filteredFiles = runtimeClasspathFiles.findAll { File file ->
+                    !fileExtensionsToFilter.any { extension -> file.name.endsWith(".$extension") }
+                }
+                return project.files(filteredFiles + allMutableCodePaths.get())
+            }
+        )
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
-        task.additionalClasspathFile.set(new File(project.buildDir, PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME))
+        task.additionalClasspathFile.set(
+            project.layout.buildDirectory.file(PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME)
+        )
         task.mutableCodePaths.setFrom(allMutableCodePaths)
         task.historyInputLocation.set(extension.historyInputLocation)
         task.historyOutputLocation.set(extension.historyOutputLocation)
         task.enableDefaultIncrementalAnalysis.set(extension.enableDefaultIncrementalAnalysis)
-        task.defaultFileForHistoryData.set(new File(project.buildDir, PIT_HISTORY_DEFAULT_FILE_NAME))
+        task.defaultFileForHistoryData.set(
+            project.layout.buildDirectory.file(PIT_HISTORY_DEFAULT_FILE_NAME)
+        )
         task.mutationThreshold.set(extension.mutationThreshold)
         task.coverageThreshold.set(extension.coverageThreshold)
         task.testStrengthThreshold.set(extension.testStrengthThreshold)
@@ -309,7 +319,7 @@ class PitestPlugin implements Plugin<Project> {
                 final GradleVersion minimalPitVersionNotNeedingTestPluginProperty = GradleVersion.version("1.6.7")
                 if (GradleVersion.version(configuredPitVersion) >= minimalPitVersionNotNeedingTestPluginProperty) {
                     log.info("Passing '--testPlugin' to PIT disabled for PIT 1.6.7+. See https://github.com/szpak/gradle-pitest-plugin/issues/277")
-                    pitestTask.testPlugin.set((String)null)
+                    pitestTask.testPlugin.set((String) null)
                 }
             } catch (IllegalArgumentException e) {
                 log.warn("Error during PIT versions comparison. Is '$configuredPitVersion' really valid? If yes, please report that case. " +

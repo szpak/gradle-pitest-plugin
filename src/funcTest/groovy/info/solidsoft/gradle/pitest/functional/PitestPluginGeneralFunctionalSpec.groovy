@@ -134,7 +134,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             result2.getStandardOutput().contains("Task :pitest FROM-CACHE")
     }
 
-    private String quoteBackslashesInWindowsPath(File file) {
+    private static String quoteBackslashesInWindowsPath(File file) {
         //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
         return file.absolutePath.replaceAll('\\\\', '\\\\\\\\')
     }

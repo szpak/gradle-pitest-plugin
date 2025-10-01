@@ -108,7 +108,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         if (project.extensions.findByType(ReportingExtension)) {
             return project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get()
         }
-        return new File(project.buildDir, "reports")
+        return project.layout.buildDirectory.dir("reports").get().asFile
     }
 
     private Set<Project> getProjectsWithPitestPlugin() {

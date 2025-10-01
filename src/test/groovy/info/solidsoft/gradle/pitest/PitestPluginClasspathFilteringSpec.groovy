@@ -168,7 +168,7 @@ class PitestPluginClasspathFilteringSpec extends BasicProjectBuilderSpec {
             !forceClasspathResolutionAndReturnIt(task).contains(libFile.path)
     }
 
-    private String forceClasspathResolutionAndReturnIt(PitestTask task) {
+    private static String forceClasspathResolutionAndReturnIt(PitestTask task) {
         return task.taskArgumentMap()['classPath']
     }
 
