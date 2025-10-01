@@ -19,7 +19,7 @@ buildscript {
         classpath 'pl.allegro.tech.build.axion-release:pl.allegro.tech.build.axion-release.gradle.plugin:1.20.1'
         classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0'
         classpath 'com.gradle.publish:plugin-publish-plugin:2.0.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.52.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.53.0'
     }
 }
 
