@@ -3,6 +3,7 @@
 ## 1.19.0-rc.2 - Unreleased
 
  - pitestReportAggregate task is compatible with configuration cache in Gradle 9 - [#381](https://github.com/szpak/gradle-pitest-plugin/issues/381) - PR by [Luis Guillermo Gómez Galeano ](https://github.com/luisgomez29)
+ - PIT 1.20.3 by default
  - Upgrade Gradle wrapper to 8.14.3
 
 Thanks to all the contributors to this release: @luisgomez29.
