@@ -15,6 +15,14 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
     void setup() {
         fork = true //to make stdout assertion work with Gradle 2.x - http://forums.gradle.org/gradle/topics/unable-to-catch-stdout-stderr-when-using-tooling-api-i-gradle-2-x#reply_15357743
         memorySafeMode = true   //shutdown Daemon after a few seconds of inactivity
+        enableConfigurationCache() // Create gradle.properties file with configuration cache enabled
+    }
+
+    private void enableConfigurationCache() {
+        File gradlePropsFile = new File(getProjectDir(), "gradle.properties")
+        gradlePropsFile.text = """
+                org.gradle.configuration-cache=true
+        """.stripIndent()
     }
 
     protected static String getBasicGradlePitestConfig() {

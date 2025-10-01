@@ -6,7 +6,6 @@ import org.gradle.api.Incubating
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
@@ -36,30 +35,29 @@ import java.nio.charset.Charset
 abstract class AggregateReportTask extends DefaultTask {
 
     @OutputDirectory
-    final DirectoryProperty reportDir
+    abstract DirectoryProperty getReportDir()
 
     @OutputFile
-    final RegularFileProperty reportFile
+    abstract RegularFileProperty getReportFile()
 
     @SkipWhenEmpty
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    final ConfigurableFileCollection sourceDirs
+    abstract ConfigurableFileCollection getSourceDirs()
 
     @SkipWhenEmpty
     @InputFiles
     @Classpath
-    final ConfigurableFileCollection additionalClasspath
+    abstract ConfigurableFileCollection getAdditionalClasspath()
 
     @SkipWhenEmpty
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    final ConfigurableFileCollection mutationFiles
+    abstract ConfigurableFileCollection getMutationFiles()
 
-    @SkipWhenEmpty
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    final ConfigurableFileCollection lineCoverageFiles
+    abstract ConfigurableFileCollection getLineCoverageFiles()
 
     //Stricter isolation level - https://docs.gradle.org/nightly/userguide/worker_api.html#changing_the_isolation_mode
     @InputFiles
@@ -68,41 +66,26 @@ abstract class AggregateReportTask extends DefaultTask {
 
     @Input
     @Optional
-    final Property<Charset> inputCharset
+    abstract Property<Charset> getInputCharset()
 
     @Input
     @Optional
-    final Property<Charset> outputCharset
+    abstract Property<Charset> getOutputCharset()
 
     @Input
     @Optional
-    final Property<Integer> testStrengthThreshold
+    abstract Property<Integer> getTestStrengthThreshold()
 
     @Input
     @Optional
-    final Property<Integer> mutationThreshold
+    abstract Property<Integer> getMutationThreshold()
 
     @Input
     @Optional
-    final Property<Integer> maxSurviving
+    abstract Property<Integer> getMaxSurviving()
 
     @Inject
     abstract WorkerExecutor getWorkerExecutor()
-
-    AggregateReportTask() {
-        ObjectFactory of = project.objects
-        reportDir = of.directoryProperty()
-        reportFile = of.fileProperty()
-        sourceDirs = of.fileCollection()
-        additionalClasspath = of.fileCollection()
-        mutationFiles = of.fileCollection()
-        lineCoverageFiles = of.fileCollection()
-        inputCharset = of.property(Charset)
-        outputCharset = of.property(Charset)
-        testStrengthThreshold = of.property(Integer)
-        mutationThreshold = of.property(Integer)
-        maxSurviving = of.property(Integer)
-    }
 
     @TaskAction
     void aggregate() {

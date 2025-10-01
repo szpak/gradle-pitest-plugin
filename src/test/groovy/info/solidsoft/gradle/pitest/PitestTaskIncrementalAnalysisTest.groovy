@@ -39,7 +39,7 @@ class PitestTaskIncrementalAnalysisTest extends BasicProjectBuilderSpec implemen
         given:
             project.pitest."$propertyName" = true
         and:
-            String pitHistoryDefaultFile = new File(project.buildDir, PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).path
+            String pitHistoryDefaultFile = project.layout.buildDirectory.file(PitestPlugin.PIT_HISTORY_DEFAULT_FILE_NAME).get().asFile.path
         when:
             Map<String, String> createdMap = task.taskArgumentMap()
         then:

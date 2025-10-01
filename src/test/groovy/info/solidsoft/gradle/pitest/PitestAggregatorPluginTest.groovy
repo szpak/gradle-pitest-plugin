@@ -53,13 +53,15 @@ class PitestAggregatorPluginTest extends Specification {
 
     private void assertThatTasksAreInGroup(List<String> taskNames, String group) {
         taskNames.each { String taskName ->
-            Task task = project.tasks[taskName]
-            assert task.group == group
+            project.tasks.named(taskName).configure { Task task ->
+                assert task.group == group
+            }
         }
     }
 
     private void triggerEvaluateForAggregateTask() {
-        project.tasks[PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_TASK_NAME]
+        project.tasks.named(PitestAggregatorPlugin.PITEST_REPORT_AGGREGATE_TASK_NAME).configure {
+        }
     }
 
 }

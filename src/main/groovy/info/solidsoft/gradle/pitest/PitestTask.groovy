@@ -424,25 +424,25 @@ class PitestTask extends JavaExec {
         }
     }
 
-    private Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
+    private static Map<String, String> removeEntriesWithNullOrEmptyValue(Map<String, String> map) {
         return map.findAll { entry -> entry.value != null && entry.value != "" }
     }
 
-    private List<String> argumentsListFromMap(Map<String, String> taskArgumentsMap) {
+    private static List<String> argumentsListFromMap(Map<String, String> taskArgumentsMap) {
         return taskArgumentsMap.collect { k, v ->
             "--$k=$v".toString()
         }
     }
 
-    private <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
+    private static <T> String optionalPropertyAsString(Provider<T> optionalSetProperty) {
         return optionalSetProperty.getOrNull()?.toString()
     }
 
-    private String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
+    private static String optionalCollectionAsString(SetProperty<String> optionalSetProperty) {
         return optionalSetProperty.getOrNull()?.join(',')
     }
 
-    private String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
+    private static String optionalCollectionAsString(ListProperty<String> optionalListProperty) {
         return optionalListProperty.getOrNull()?.join(',')
     }
 
