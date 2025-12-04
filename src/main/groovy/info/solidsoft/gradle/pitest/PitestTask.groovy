@@ -225,13 +225,19 @@ class PitestTask extends JavaExec {
     @Optional
     final Property<Boolean> useClasspathJar
 
-    @Input
-    @Optional
+    @Internal
     final Property<Charset> inputEncoding
 
     @Input
     @Optional
+    final Provider<String> inputEncodingString
+
+    @Internal
     final Property<Charset> outputEncoding
+
+    @Input
+    @Optional
+    final Provider<String> outputEncodingString
 
     @Input
     @Optional
@@ -306,7 +312,9 @@ class PitestTask extends JavaExec {
         maxSurviving = of.property(Integer)
         useClasspathJar = of.property(Boolean)
         inputEncoding = of.property(Charset)
+        inputEncodingString = inputEncoding.map(Object.&toString)
         outputEncoding = of.property(Charset)
+        outputEncodingString = outputEncoding.map(Object.&toString)
         additionalClasspath = of.fileCollection()
         useAdditionalClasspathFile = of.property(Boolean)
         additionalClasspathFile = of.fileProperty()
