@@ -258,7 +258,9 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
 
     void "should consider testSourceSets in (additional) classpath"() {
         given:
-            project.sourceSets { intTest }
+            configureTask("intTestClasses") {
+                project.sourceSets { intTest }
+            }
             project.pitest.testSourceSets = [project.sourceSets.intTest]
         expect:
             task.taskArgumentMap()['classPath'].split(",") as Set ==

@@ -181,19 +181,21 @@ class PitestPlugin implements Plugin<Project> {
             return basePaths + additionalPaths
         }
         task.additionalClasspath.setFrom(
-            project.providers.provider {
-                Set<SourceSet> sourceSets = extension.testSourceSets.get() as Set<SourceSet>
-
-                Set<File> runtimeClasspathFiles = sourceSets.collectMany { SourceSet sourceSet ->
-                    sourceSet.runtimeClasspath.files
-                } as Set<File>
-                List<String> fileExtensionsToFilter = extension.fileExtensionsToFilter.getOrElse([])
-                Set<File> filteredFiles = runtimeClasspathFiles.findAll { File file ->
-                    !fileExtensionsToFilter.any { extension -> file.name.endsWith(".$extension") }
-                }
-                return project.files(filteredFiles + allMutableCodePaths.get())
+            extension.testSourceSets.zip(extension.fileExtensionsToFilter.orElse([])) { sourceSets, fileExtensionsToFilter ->
+                sourceSets
+                    *.runtimeClasspath
+                    *.elements
+                    *.map { fileSystemLocations ->
+                        fileSystemLocations
+                            .findAll { fileSystemLocation ->
+                                !fileExtensionsToFilter.any { extension ->
+                                    fileSystemLocation.asFile.name.endsWith(".$extension")
+                                }
+                            }
+                    }
             }
         )
+        task.additionalClasspath.from(allMutableCodePaths)
         task.useAdditionalClasspathFile.set(extension.useClasspathFile)
         task.additionalClasspathFile.set(
             project.layout.buildDirectory.file(PIT_ADDITIONAL_CLASSPATH_DEFAULT_FILE_NAME)

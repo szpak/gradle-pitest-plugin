@@ -19,6 +19,8 @@ import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.internal.tasks.TaskExecutionOutcome
+import org.gradle.api.internal.tasks.TaskStateInternal
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.TempDir
@@ -49,6 +51,25 @@ class BasicProjectBuilderSpec extends Specification {
         pitestConfig = project.getExtensions().getByType(PitestPluginExtension)
 
         project.group = 'test.group'
+
+        // trick the "Querying the mapped value of ... before task '...' has completed is not supported" check
+        // as here in the unit tests, the tasks will never be executed when resolving these providers
+        project.tasks.configureEach {
+            state.outcome = TaskExecutionOutcome.EXECUTED
+        }
+    }
+
+    protected void configureTask(String taskName, Closure block) {
+        project.tasks.named { name -> name == taskName }.configureEach { task ->
+            TaskStateInternal
+                .getDeclaredField("outcome")
+                .tap { field -> field.accessible = true }
+                .set(task.state, null)
+        }
+        block()
+        project.tasks.named { name -> name == taskName }.configureEach { task ->
+            task.state.outcome = TaskExecutionOutcome.EXECUTED
+        }
     }
 
     protected PitestTask getJustOnePitestTaskOrFail() {
