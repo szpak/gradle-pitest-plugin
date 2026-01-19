@@ -6,6 +6,7 @@
  - Remove explicit "dependsOn" for `pitest` task - [#388](https://github.com/szpak/gradle-pitest-plugin/issues/388)
  - Use classpath file in PIT by default (e.g. to avoid issues with long classpath on Windows) - [#237](https://github.com/szpak/gradle-pitest-plugin/issues/237) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/347) by [Dávid Szigecsán](https://github.com/sigee)
  - PIT 1.22.0 by default
+ - Fix broken badges in README
 
 **Compatibility notes**.
 1. `useClasspathFile` is enabled by default. It should not be a problem in the majority of cases, but still can be disabled explicitly with:
