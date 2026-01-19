@@ -47,11 +47,11 @@ dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
-    testImplementation('org.spockframework:spock-core:2.4-M6-groovy-3.0') {
+    testImplementation('org.spockframework:spock-core:2.4-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation 'net.bytebuddy:byte-buddy:1.17.7' //for Spying in Spock
+    testImplementation 'net.bytebuddy:byte-buddy:1.18.4' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
