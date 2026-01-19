@@ -1,6 +1,6 @@
 # gradle-pitest-plugin changelog
 
-## 1.19.0-rc.3 - Unreleased
+## 1.19.0-rc.3 - 2026-01-19
 
  - Properly map additional classpath inputs to not lose task dependencies (also fix [regression](https://github.com/szpak/gradle-pitest-plugin/issues/385) with "NoClassDefFoundError" in rc.2) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/387) by [Björn Kautler](https://github.com/Vampire)
  - Remove explicit "dependsOn" for `pitest` task - [#388](https://github.com/szpak/gradle-pitest-plugin/issues/388)

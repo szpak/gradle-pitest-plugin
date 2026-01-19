@@ -17,7 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 ```groovy
 plugins {
     id 'java' //or 'java-library' - depending on your needs
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 ```
 
@@ -27,7 +27,7 @@ plugins {
 ```kotlin
 plugins {
     id("java") //or "java-library" - depending on your needs
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 ```
 </details>
@@ -68,7 +68,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.2'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.3'
     }
 }
 ```
@@ -86,7 +86,7 @@ buildscript {
         //}
     }
     dependencies {
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.2")
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.3")
     }
 }
 ```
@@ -117,7 +117,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.20.3' //not needed when a default PIT version should be used
+    pitestVersion = '1.22.0' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -131,7 +131,7 @@ Idiomatic and more portable configuration:
 ```kotlin
 pitest {
     targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
-    pitestVersion.set("1.20.3") //not needed when a default PIT version should be used
+    pitestVersion.set("1.22.0") //not needed when a default PIT version should be used
     threads.set(4)
     outputFormats.set(setOf("XML", "HTML"))
     timestampedReports.set(false)
@@ -143,7 +143,7 @@ can be used for configuring plugin (instead of the `set()` method):
 ```kotlin
 pitest {
     targetClasses = setOf("our.base.package.*") //by default "${project.group}.*"
-    pitestVersion = "1.20.3" //not needed when a default PIT version should be used
+    pitestVersion = "1.22.0" //not needed when a default PIT version should be used
     threads = 4
     outputFormats = setOf("XML", "HTML")
     timestampedReports = false
@@ -254,7 +254,7 @@ all subprojects which should be processed with PIT. A sample snippet from build.
 ```groovy
 //in root project configuration
 plugins {
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2' apply false
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3' apply false
 }
 
 subprojects {
@@ -277,7 +277,7 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 subprojects {
@@ -302,7 +302,7 @@ task `pitestReportAggregate`. Root project must be properly configured to use `p
 ```groovy
 //in root project configuration
 plugins {
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2' apply false
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3' apply false
 }
 
 apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
@@ -332,7 +332,7 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 apply(plugin = "info.solidsoft.pitest.aggregator")
 
@@ -448,7 +448,7 @@ Starting with this release the configuration required to use PIT with JUnit 5 ha
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 
 pitest {
@@ -464,7 +464,7 @@ pitest {
 ```kotlin
 plugins {
     id("java")
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 pitest {
@@ -487,7 +487,7 @@ To enable PIT plugins, it is enough to add it to the pitest configuration in the
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 
 repositories {
@@ -505,7 +505,7 @@ dependencies {
 ```kotlin
 plugins {
     id("java")
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 repositories {
