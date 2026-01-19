@@ -91,7 +91,6 @@ class PitestPlugin implements Plugin<Project> {
                 t.description = "Run PIT analysis for java classes"
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
-                t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
                 suppressPassingDeprecatedTestPluginForNewerPitVersions(t)
             }
@@ -228,13 +227,6 @@ class PitestPlugin implements Plugin<Project> {
     private Set<File> calculateBaseMutableCodePaths() {
         Set<SourceSet> sourceSets = extension.mainSourceSets.get()
         return sourceSets*.output.classesDirs.files.flatten() as Set<File>
-    }
-
-    private Set<String> calculateTasksToDependOn() {
-        Set<SourceSet> testSourceSets = extension.testSourceSets.get()
-        Set<String> tasksToDependOn = testSourceSets.collect { sourceSet -> sourceSet.name + "Classes" } as Set
-        log.debug("pitest tasksToDependOn: $tasksToDependOn")
-        return tasksToDependOn
     }
 
     private void addPitDependencies(Configuration pitestConfiguration) {
