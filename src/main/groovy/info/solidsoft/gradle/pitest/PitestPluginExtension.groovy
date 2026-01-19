@@ -142,7 +142,7 @@ class PitestPluginExtension {
      * Use classpath file instead of passing classpath in a command line
      *
      * Useful with very long classpath and Windows - see https://github.com/hcoles/pitest/issues/276
-     * Disabled by default.
+     * Enabled by default (since 1.19.0).
      *
      * @since 1.2.0
      */

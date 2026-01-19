@@ -29,6 +29,7 @@ test {
 }
 
 pitest {
+    useClasspathFile = false    //to see expected JUnit Jupiter JAR version on stdout
     junit5PluginVersion = "1.2.3"
     verbose = true  //for "ClassNotFoundException: org.junit.platform.launcher.core.LauncherFactory" which should not happen
 }

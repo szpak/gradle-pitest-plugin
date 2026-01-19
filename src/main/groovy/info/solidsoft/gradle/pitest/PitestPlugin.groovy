@@ -114,7 +114,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
         extension.mainSourceSets.set(javaSourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
-        extension.useClasspathFile.set(false)
+        extension.useClasspathFile.set(true)
         extension.verbosity.set("NO_SPINNER")
         extension.addJUnitPlatformLauncher.set(true)
     }
