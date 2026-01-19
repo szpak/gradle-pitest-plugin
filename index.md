@@ -3,11 +3,10 @@
 The plugin provides an ability to perform a [mutation testing](https://en.wikipedia.org/wiki/Mutation_testing) and
 calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
+![Maven Central](https://img.shields.io/maven-central/v/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
 [![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/info.solidsoft.pitest)](https://plugins.gradle.org/plugin/info.solidsoft.pitest)
 [![Build Status Travis](https://app.travis-ci.com/szpak/gradle-pitest-plugin.svg?branch=master)](https://app.travis-ci.com/szpak/gradle-pitest-plugin)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
+[![Windows Build Status](https://img.shields.io/appveyor/build/szpak/gradle-pitest-plugin/master.svg?label=Windows%20build)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin)
 
 ## Quick start
 
@@ -18,7 +17,7 @@ Add gradle-pitest-plugin to the `plugins` configuration in your `build.gradle` f
 ```groovy
 plugins {
     id 'java' //or 'java-library' - depending on your needs
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 ```
 
@@ -28,7 +27,7 @@ plugins {
 ```kotlin
 plugins {
     id("java") //or "java-library" - depending on your needs
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 ```
 </details>
@@ -69,7 +68,7 @@ buildscript {
         //maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.2'
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.3'
     }
 }
 ```
@@ -87,7 +86,7 @@ buildscript {
         //}
     }
     dependencies {
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.2")
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.19.0-rc.3")
     }
 }
 ```
@@ -118,7 +117,7 @@ The Pitest plugin does not need to be additionally configured if you use JUnit 4
 ```groovy
 pitest {
     targetClasses = ['our.base.package.*']  //by default "${project.group}.*"
-    pitestVersion = '1.20.3' //not needed when a default PIT version should be used
+    pitestVersion = '1.22.0' //not needed when a default PIT version should be used
     threads = 4
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
@@ -132,7 +131,7 @@ Idiomatic and more portable configuration:
 ```kotlin
 pitest {
     targetClasses.set(setOf("our.base.package.*")) //by default "${project.group}.*"
-    pitestVersion.set("1.20.3") //not needed when a default PIT version should be used
+    pitestVersion.set("1.22.0") //not needed when a default PIT version should be used
     threads.set(4)
     outputFormats.set(setOf("XML", "HTML"))
     timestampedReports.set(false)
@@ -144,7 +143,7 @@ can be used for configuring plugin (instead of the `set()` method):
 ```kotlin
 pitest {
     targetClasses = setOf("our.base.package.*") //by default "${project.group}.*"
-    pitestVersion = "1.20.3" //not needed when a default PIT version should be used
+    pitestVersion = "1.22.0" //not needed when a default PIT version should be used
     threads = 4
     outputFormats = setOf("XML", "HTML")
     timestampedReports = false
@@ -173,7 +172,7 @@ to add integration tests located in a different source set)
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
  - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
- - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default)
+ - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, enabled by default)
  - `fileExtensionsToFilter` - provides ability to filter additional file extensions from PIT classpath (see [#53](https://github.com/szpak/gradle-pitest-plugin/issues/53))
 
 For example:
@@ -184,7 +183,7 @@ pitest {
     testSourceSets = [sourceSets.test, sourceSets.integrationTest]
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
     jvmArgs = ['-Xmx1024m']
-    useClasspathFile = true     //useful with bigger projects on Windows
+    useClasspathFile = true     //useful with bigger projects on Windows, enabled by default
     fileExtensionsToFilter.addAll('xml', 'orbit')
 }
 ```
@@ -198,7 +197,7 @@ pitest {
     testSourceSets.set(listOf(sourceSets.test.get(), sourceSets.getByName("integrationTest")))
     mainSourceSets.set(listOf(sourceSets.main.get(), sourceSets.getByName("additionalMain")))
     jvmArgs.set(listOf("-Xmx1024m"))
-    useClasspathFile.set(true) //useful with bigger projects on Windows
+    useClasspathFile.set(true) //useful with bigger projects on Windows, enabled by default
     fileExtensionsToFilter.addAll("xml", "orbit")
 }
 ```
@@ -255,7 +254,7 @@ all subprojects which should be processed with PIT. A sample snippet from build.
 ```groovy
 //in root project configuration
 plugins {
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2' apply false
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3' apply false
 }
 
 subprojects {
@@ -278,7 +277,7 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 subprojects {
@@ -303,7 +302,7 @@ task `pitestReportAggregate`. Root project must be properly configured to use `p
 ```groovy
 //in root project configuration
 plugins {
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2' apply false
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3' apply false
 }
 
 apply plugin: 'info.solidsoft.pitest.aggregator' // to 'pitestReportAggregate' appear
@@ -333,7 +332,7 @@ subprojects {
 ```kotlin
 //in root project configuration
 plugins {
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 apply(plugin = "info.solidsoft.pitest.aggregator")
 
@@ -449,7 +448,7 @@ Starting with this release the configuration required to use PIT with JUnit 5 ha
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 
 pitest {
@@ -465,7 +464,7 @@ pitest {
 ```kotlin
 plugins {
     id("java")
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 pitest {
@@ -488,7 +487,7 @@ To enable PIT plugins, it is enough to add it to the pitest configuration in the
 ```groovy
 plugins {
     id 'java'
-    id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.3'
 }
 
 repositories {
@@ -506,7 +505,7 @@ dependencies {
 ```kotlin
 plugins {
     id("java")
-    id("info.solidsoft.pitest") version "1.19.0-rc.2"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
 }
 
 repositories {
@@ -702,4 +701,5 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-46065645-1', 'solidsoft.info');
 ga('send', 'pageview');
 </script>
+
 
