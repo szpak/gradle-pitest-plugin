@@ -1,5 +1,26 @@
 # gradle-pitest-plugin changelog
 
+## 1.19.0-rc.3 - Unreleased
+
+ - Properly map additional classpath inputs to not lose task dependencies (also fix [regression](https://github.com/szpak/gradle-pitest-plugin/issues/385) with "NoClassDefFoundError" in rc.2) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/387) by [Björn Kautler](https://github.com/Vampire)
+ - Remove explicit "dependsOn" for `pitest` task - [#388](https://github.com/szpak/gradle-pitest-plugin/issues/388)
+ - Use classpath file in PIT by default (e.g. to avoid issues with long classpath on Windows) - [#237](https://github.com/szpak/gradle-pitest-plugin/issues/237) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/347) by [Dávid Szigecsán](https://github.com/sigee)
+ - PIT 1.22.0 by default
+
+**Compatibility notes**.
+1. `useClasspathFile` is enabled by default. It should not be a problem in the majority of cases, but still can be disabled explicitly with:
+
+```groovy
+pitest {
+    useClasspathFile = false
+}
+```
+
+2. The `pitest` task no longer explicitly depends on tasks related testSourceSets. It should be no longer necessary with [#387](https://github.com/szpak/gradle-pitest-plugin/pull/387) merged. In case of new failures, consider adjusting the `additionalClasspath` property.
+
+Thanks to all the contributors to this release: @Vampire, @sigee, @luisgomez29.
+
+
 ## 1.19.0-rc.2 - 2025-10-01
 
  - pitestReportAggregate task is compatible with configuration cache in Gradle 9 - [#381](https://github.com/szpak/gradle-pitest-plugin/issues/381) - PR by [Luis Guillermo Gómez Galeano ](https://github.com/luisgomez29)

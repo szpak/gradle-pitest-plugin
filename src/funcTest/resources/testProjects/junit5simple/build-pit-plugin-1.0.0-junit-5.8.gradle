@@ -29,5 +29,6 @@ test {
 }
 
 pitest {
+    useClasspathFile = false    //to see expected JUnit Jupiter JAR version on stdout
     junit5PluginVersion = "1.0.0"
 }

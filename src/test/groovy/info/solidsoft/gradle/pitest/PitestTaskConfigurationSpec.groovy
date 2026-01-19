@@ -26,8 +26,7 @@ import java.nio.charset.Charset
 class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements WithPitestTaskInitialization {
 
     @SuppressWarnings("JUnitPublicField")   //public to be used also in functional tests
-    public static final List<String> PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT = ['classPathFile',
-                                                                                'features',
+    public static final List<String> PIT_PARAMETERS_NAMES_NOT_SET_BY_DEFAULT = ['features',
                                                                                 'excludedTestClasses',
                                                                                 'testPlugin',
                                                                                 'threads',
@@ -262,6 +261,8 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
                 project.sourceSets { intTest }
             }
             project.pitest.testSourceSets = [project.sourceSets.intTest]
+        and:
+            project.pitest.useClasspathFile = false
         expect:
             task.taskArgumentMap()['classPath'].split(",") as Set ==
                 [

@@ -54,7 +54,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.20.3'
+    public final static String DEFAULT_PITEST_VERSION = '1.22.0'
     @Internal   //8.x just to be more ready for 9.x, could work with lower versions at runtime
                 //(8.4 instead of 8.0 to have first version supporting JDK 21 LTS)
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("8.4") //public as used also in regression tests
@@ -91,7 +91,6 @@ class PitestPlugin implements Plugin<Project> {
                 t.description = "Run PIT analysis for java classes"
                 t.group = PITEST_TASK_GROUP
                 configureTaskDefault(t)
-                t.dependsOn(calculateTasksToDependOn())
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
                 suppressPassingDeprecatedTestPluginForNewerPitVersions(t)
             }
@@ -114,7 +113,7 @@ class PitestPlugin implements Plugin<Project> {
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
         extension.mainSourceSets.set(javaSourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
         extension.fileExtensionsToFilter.set(DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH)
-        extension.useClasspathFile.set(false)
+        extension.useClasspathFile.set(true)
         extension.verbosity.set("NO_SPINNER")
         extension.addJUnitPlatformLauncher.set(true)
     }
@@ -228,13 +227,6 @@ class PitestPlugin implements Plugin<Project> {
     private Set<File> calculateBaseMutableCodePaths() {
         Set<SourceSet> sourceSets = extension.mainSourceSets.get()
         return sourceSets*.output.classesDirs.files.flatten() as Set<File>
-    }
-
-    private Set<String> calculateTasksToDependOn() {
-        Set<SourceSet> testSourceSets = extension.testSourceSets.get()
-        Set<String> tasksToDependOn = testSourceSets.collect { sourceSet -> sourceSet.name + "Classes" } as Set
-        log.debug("pitest tasksToDependOn: $tasksToDependOn")
-        return tasksToDependOn
     }
 
     private void addPitDependencies(Configuration pitestConfiguration) {

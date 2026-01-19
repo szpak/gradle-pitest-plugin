@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.PackageScope
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.internal.tasks.TaskExecutionOutcome
 import org.gradle.api.internal.tasks.TaskStateInternal
 import org.gradle.testfixtures.ProjectBuilder
@@ -52,6 +53,8 @@ class BasicProjectBuilderSpec extends Specification {
 
         project.group = 'test.group'
 
+        rouchEmptyPitClasspathFileWorkaround(project)
+
         // trick the "Querying the mapped value of ... before task '...' has completed is not supported" check
         // as here in the unit tests, the tasks will never be executed when resolving these providers
         project.tasks.configureEach {
@@ -77,6 +80,14 @@ class BasicProjectBuilderSpec extends Specification {
         assert tasks?.size() == 1 : "Expected tasks: '$PITEST_TASK_NAME', All tasks: ${project.tasks}"
         assert tasks[0] instanceof PitestTask
         return (PitestTask)tasks[0]
+    }
+
+    //as "useClasspathFile" is enabled by default (#237) the tests with ProjectBuilder would file on missing file
+    //(alternatively "project.pitest.useClasspathFile = false" could be used)
+    private static void rouchEmptyPitClasspathFileWorkaround(Project project) {
+        DirectoryProperty buildDirectoryProperty = project.layout.buildDirectory
+        buildDirectoryProperty.get().asFile.mkdirs()
+        buildDirectoryProperty.dir("pitClasspath").get().asFile.createNewFile()
     }
 
 }

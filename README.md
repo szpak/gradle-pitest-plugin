@@ -3,11 +3,10 @@
 The plugin provides an ability to perform a [mutation testing](https://en.wikipedia.org/wiki/Mutation_testing) and
 calculate a mutation coverage of a [Gradle](https://gradle.org/)-based projects with [PIT](http://pitest.org/).
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
+![Maven Central](https://img.shields.io/maven-central/v/info.solidsoft.gradle.pitest/gradle-pitest-plugin)
 [![Gradle Plugin Portal Version](https://img.shields.io/gradle-plugin-portal/v/info.solidsoft.pitest)](https://plugins.gradle.org/plugin/info.solidsoft.pitest)
 [![Build Status Travis](https://app.travis-ci.com/szpak/gradle-pitest-plugin.svg?branch=master)](https://app.travis-ci.com/szpak/gradle-pitest-plugin)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/szpak/gradle-pitest-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin/)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=szpak/gradle-pitest-plugin)](https://dependabot.com)
+[![Windows Build Status](https://img.shields.io/appveyor/build/szpak/gradle-pitest-plugin/master.svg?label=Windows%20build)](https://ci.appveyor.com/project/szpak/gradle-pitest-plugin)
 
 ## Quick start
 
@@ -173,7 +172,7 @@ to add integration tests located in a different source set)
 another Java processes for mutation testing execution and usually `jvmArgs` should be used to for example increase maximum memory size
 (see [#7](https://github.com/szpak/gradle-pitest-plugin/issues/7));
  - `additionalMutableCodePaths` - additional classes to mutate (useful for integration tests with production code in a different module - see [#25](https://github.com/szpak/gradle-pitest-plugin/issues/25))
- - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, disabled by default)
+ - `useClasspathFile` - enables passing additional classpath as a file content (useful for Windows users with lots of classpath elements, enabled by default)
  - `fileExtensionsToFilter` - provides ability to filter additional file extensions from PIT classpath (see [#53](https://github.com/szpak/gradle-pitest-plugin/issues/53))
 
 For example:
@@ -184,7 +183,7 @@ pitest {
     testSourceSets = [sourceSets.test, sourceSets.integrationTest]
     mainSourceSets = [sourceSets.main, sourceSets.additionalMain]
     jvmArgs = ['-Xmx1024m']
-    useClasspathFile = true     //useful with bigger projects on Windows
+    useClasspathFile = true     //useful with bigger projects on Windows, enabled by default
     fileExtensionsToFilter.addAll('xml', 'orbit')
 }
 ```
@@ -198,7 +197,7 @@ pitest {
     testSourceSets.set(listOf(sourceSets.test.get(), sourceSets.getByName("integrationTest")))
     mainSourceSets.set(listOf(sourceSets.main.get(), sourceSets.getByName("additionalMain")))
     jvmArgs.set(listOf("-Xmx1024m"))
-    useClasspathFile.set(true) //useful with bigger projects on Windows
+    useClasspathFile.set(true) //useful with bigger projects on Windows, enabled by default
     fileExtensionsToFilter.addAll("xml", "orbit")
 }
 ```
