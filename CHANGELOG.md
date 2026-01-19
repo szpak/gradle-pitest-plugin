@@ -1,8 +1,20 @@
 # gradle-pitest-plugin changelog
 
 ## 1.19.0-rc.3 - Unreleased
- - Properly map additional classpath inputs to not loose task dependencies (also fix [regression](https://github.com/szpak/gradle-pitest-plugin/issues/385) with "NoClassDefFoundError" in rc.2) - [#387](https://github.com/szpak/gradle-pitest-plugin/pull/387) PR by [Björn Kautler](https://github.com/Vampire)
+ - Properly map additional classpath inputs to not loose task dependencies (also fix [regression](https://github.com/szpak/gradle-pitest-plugin/issues/385) with "NoClassDefFoundError" in rc.2) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/387) by [Björn Kautler](https://github.com/Vampire)
+ - Use classpath file in PIT by default (e.g. to avoid issues with long classpath on Windows) - [#237](https://github.com/szpak/gradle-pitest-plugin/issues/237) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/347) by [Dávid Szigecsán](https://github.com/sigee)
  - PIT 1.22.0 by default
+
+**Compatibility notes**. `useClasspathFile` is enabled by default. It should not be a problem in the majority of cases, but still can be disabled explicitly with:
+
+```groovy
+pitest {
+    useClasspathFile = false
+}
+```
+
+Thanks to all the contributors to this release: @Vampire, @sigee, @luisgomez29.
+
 
 ## 1.19.0-rc.2 - 2025-10-01
 
