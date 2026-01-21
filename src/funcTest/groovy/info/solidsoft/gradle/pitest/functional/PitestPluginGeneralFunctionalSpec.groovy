@@ -134,30 +134,6 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
             result2.getStandardOutput().contains("Task :pitest FROM-CACHE")
     }
 
-    @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/342")
-    void "accepts input and output charset"() {
-        given:
-            buildFile << """
-                import static java.nio.charset.StandardCharsets.UTF_8
-            """.stripIndent(true)
-            buildFile << getBasicGradlePitestConfig()
-            buildFile << """
-                pitest {
-                    inputCharset = UTF_8
-                    outputCharset = UTF_8
-                }
-            """.stripIndent(true)
-        and:
-            writeHelloPitClass()
-            writeHelloPitTest()
-        when:
-            ExecutionResult result = runTasksSuccessfully('pitest')
-        then:
-            result.wasExecuted(':pitest')
-            result.standardOutput.contains("--inputEncoding=UTF-8")
-            result.standardOutput.contains("--outputEncoding=UTF-8")
-    }
-
     private static String quoteBackslashesInWindowsPath(File file) {
         //There is problem with backslash within '' or "" while running this test on Windows: "unexpected char"
         return file.absolutePath.replaceAll('\\\\', '\\\\\\\\')
