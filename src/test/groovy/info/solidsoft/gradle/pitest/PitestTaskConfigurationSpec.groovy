@@ -19,6 +19,7 @@ import groovy.transform.CompileDynamic
 import spock.lang.Issue
 
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 
 //TODO: Think if task initialization with WithPitestTaskInitialization is not performed to early
 //      (see PitestTaskTestPluginConfigurationSpec for corner case with login in PitestPlugin)
@@ -274,14 +275,11 @@ class PitestTaskConfigurationSpec extends BasicProjectBuilderSpec implements Wit
 
     void "should set input/output encoding in PIT for input/output charset"() {
         given:
-            String inputEncodingAsString = "ISO-8859-2"
-            String outputEncodingAsString = "ISO-8859-1"
-        and:
-            project.pitest.inputCharset = Charset.forName(inputEncodingAsString)
-            project.pitest.outputCharset = Charset.forName(outputEncodingAsString)
+            project.pitest.inputCharset = StandardCharsets.UTF_8
+            project.pitest.outputCharset = StandardCharsets.ISO_8859_1
         expect:
-            task.taskArgumentMap()['inputEncoding'] == inputEncodingAsString
-            task.taskArgumentMap()['outputEncoding'] == outputEncodingAsString
+            task.taskArgumentMap()['inputEncoding'] == "UTF-8"
+            task.taskArgumentMap()['outputEncoding'] == "ISO-8859-1"
     }
 
     private Set<String> assembleMainSourceDirAsStringSet() {
