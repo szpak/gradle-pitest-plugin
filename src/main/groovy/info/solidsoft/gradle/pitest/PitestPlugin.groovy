@@ -24,6 +24,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleVersionIdentifier
 import org.gradle.api.artifacts.result.ResolutionResult
 import org.gradle.api.artifacts.result.ResolvedComponentResult
@@ -274,11 +275,7 @@ class PitestPlugin implements Plugin<Project> {
 
                 log.debug("Direct ${testImplementationConfigurationName} dependencies (${directDependencies.size()}): ${directDependencies}")
 
-                //copy() seems to copy also something that refers to original configuration and generates StackOverflow on getting components
-                Configuration tmpTestImplementation = project.configurations.maybeCreate("tmpTestImplementation")
-                directDependencies.each { directDependency ->
-                    tmpTestImplementation.dependencies.add(directDependency)
-                }
+                Configuration tmpTestImplementation = project.configurations.detachedConfiguration(directDependencies.toArray(Dependency[]::new))
 
                 ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
                 Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
