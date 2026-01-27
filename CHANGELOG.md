@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.19.0 - Unreleased
+
+- Use a detached configuration to determine the platform-launcher dependency to avoid `ConcurrentModificationException` in `GradleDependencyReportTask` - [#390](https://github.com/szpak/gradle-pitest-plugin/issues/390) - [#393](https://github.com/szpak/gradle-pitest-plugin/pull/393) by [Björn Kautler](https://github.com/Vampire)
+
 ## 1.19.0-rc.3 - 2026-01-19
 
  - Properly map additional classpath inputs to not lose task dependencies (also fix [regression](https://github.com/szpak/gradle-pitest-plugin/issues/385) with "NoClassDefFoundError" in rc.2) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/387) by [Björn Kautler](https://github.com/Vampire)
