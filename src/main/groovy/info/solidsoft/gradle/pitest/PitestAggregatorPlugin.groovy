@@ -9,10 +9,10 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Usage
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.TaskCollection
+import org.gradle.api.tasks.compile.AbstractCompile
 
 import java.util.function.Consumer
 import java.util.stream.Collectors
@@ -72,9 +72,9 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
             List<TaskCollection<PitestTask>> pitestTasks = getAllPitestTasks()
             sourceDirs.from = collectSourceDirs(pitestTasks)
-            additionalClasspath.from = collectClasspathDirs(pitestTasks)
 
             Set<Project> projectsWithPitest = getProjectsWithPitestPlugin()
+            addCompiledClassesDirsToClasspath(task, projectsWithPitest)
             mutationFiles.from = collectMutationFiles(projectsWithPitest)
             lineCoverageFiles.from = collectLineCoverageFiles(projectsWithPitest)
 
@@ -127,13 +127,12 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             }.collect(Collectors.toList())
     }
 
-    private static List<FileCollection> collectClasspathDirs(List<TaskCollection<PitestTask>> pitestTasks) {
-        return pitestTasks.stream()
-            .flatMap { tc ->
-                tc.stream()
-                    .map { task -> task.additionalClasspath }
-                    .map { cfc -> cfc.filter { File f -> f.isDirectory() } }
-            }.collect(Collectors.toList())
+    private static void addCompiledClassesDirsToClasspath(AggregateReportTask task, Set<Project> projectsWithPitest) {
+        projectsWithPitest.each { prj ->
+            prj.tasks.withType(AbstractCompile).configureEach { compileTask ->
+                task.additionalClasspath.from(compileTask.destinationDirectory)
+            }
+        }
     }
 
     private static Set<Provider<File>> collectMutationFiles(Set<Project> pitestProjects) {
