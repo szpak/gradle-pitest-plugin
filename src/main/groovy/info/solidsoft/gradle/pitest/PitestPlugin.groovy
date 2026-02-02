@@ -15,7 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -348,8 +347,12 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureOutgoingConfigurations() {
         log.debug("PitestPlugin: Creating outgoing configurations for project ${project.name}")
-        def mutationsXml = extension.reportDir.map { Directory d -> d.file("mutations.xml") }
-        def lineCoverageXml = extension.reportDir.map { Directory d -> d.file("linecoverage.xml") }
+        def mutationsXml = extension.reportDir.map { Directory d ->
+            d.file(PitestAttributes.MUTATION_FILE_NAME)
+        }
+        def lineCoverageXml = extension.reportDir.map { Directory d ->
+            d.file(PitestAttributes.LINE_COVERAGE_FILE_NAME)
+        }
 
         addOutgoingConfiguration("pitestReportElements", PitestAttributes.REPORT) { Configuration conf ->
             conf.outgoing.artifact(mutationsXml) { artifact ->

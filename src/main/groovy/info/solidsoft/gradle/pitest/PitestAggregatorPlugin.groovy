@@ -33,9 +33,6 @@ class PitestAggregatorPlugin implements Plugin<Project> {
     //visibility for testing
     @PackageScope static final String PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME = "pitestReport"
 
-    private static final String MUTATION_FILE_NAME = "mutations.xml"
-    private static final String LINE_COVERAGE_FILE_NAME = "linecoverage.xml"
-
     private final GradleVersionEnforcer gradleVersionEnforcer
     private Project project
 
@@ -51,11 +48,19 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         Configuration pitestReportConfiguration = createPitestReportConfiguration()
         addPitAggregateReportDependency(pitestReportConfiguration)
 
-        Configuration pitestReportAggregation = createAggregationConfiguration(PITEST_REPORT_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.REPORT)
-        Configuration pitestSourcesAggregation = createAggregationConfiguration(PITEST_SOURCES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.SOURCES)
-        Configuration pitestClassesAggregation = createAggregationConfiguration(PITEST_CLASSES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.CLASSES)
+        Configuration pitestReportAggregation = createAggregationConfiguration(
+            PITEST_REPORT_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.REPORT
+        )
+        Configuration pitestSourcesAggregation = createAggregationConfiguration(
+            PITEST_SOURCES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.SOURCES
+        )
+        Configuration pitestClassesAggregation = createAggregationConfiguration(
+            PITEST_CLASSES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.CLASSES
+        )
 
-        configureAggregateReportTask(pitestReportConfiguration, pitestReportAggregation, pitestSourcesAggregation, pitestClassesAggregation)
+        configureAggregateReportTask(
+            pitestReportConfiguration, pitestReportAggregation, pitestSourcesAggregation, pitestClassesAggregation
+        )
     }
 
     private Configuration createPitestReportConfiguration() {
@@ -105,8 +110,8 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         task.sourceDirs.from = getLenientArtifactFiles(pitestSourcesAggregation)
 
         FileCollection reportFiles = getLenientArtifactFiles(pitestReportAggregation)
-        task.mutationFiles.from = reportFiles.filter { File f -> f.name == MUTATION_FILE_NAME }
-        task.lineCoverageFiles.from = reportFiles.filter { File f -> f.name == LINE_COVERAGE_FILE_NAME }
+        task.mutationFiles.from = filterMutationFiles(reportFiles)
+        task.lineCoverageFiles.from = filterLineCoverageFiles(reportFiles)
         task.additionalClasspath.from = getLenientArtifactFiles(pitestClassesAggregation)
 
         findPluginExtension().ifPresent({ PitestPluginExtension extension ->
@@ -145,6 +150,14 @@ class PitestAggregatorPlugin implements Plugin<Project> {
             return reportingExtension.baseDirectory
         }
         return project.layout.buildDirectory.dir("reports")
+    }
+
+    private static FileCollection filterMutationFiles(FileCollection reportFiles) {
+        return reportFiles.filter { File f -> f.name == PitestAttributes.MUTATION_FILE_NAME }
+    }
+
+    private static FileCollection filterLineCoverageFiles(FileCollection reportFiles) {
+       return reportFiles.filter { File f -> f.name == PitestAttributes.LINE_COVERAGE_FILE_NAME }
     }
 
 }

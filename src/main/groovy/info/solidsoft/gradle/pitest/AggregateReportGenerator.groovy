@@ -71,7 +71,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
     }
 
     private static void mergeMutationReports(ConfigurableFileCollection mutationFiles, File outputDir) {
-        File mergedReport = new File(outputDir, "mutations.xml")
+        File mergedReport = new File(outputDir, PitestAttributes.MUTATION_FILE_NAME)
         mergedReport.withWriter { writer ->
             writer.write("<mutations>\n")
             mutationFiles.each { File xmlReport ->

@@ -10,6 +10,8 @@ class PitestAttributes {
     static final String REPORT = "report"
     static final String SOURCES = "sources"
     static final String CLASSES = "classes"
+    static final String MUTATION_FILE_NAME = "mutations.xml"
+    static final String LINE_COVERAGE_FILE_NAME = "linecoverage.xml"
 
     private PitestAttributes() { }
 
