@@ -4,14 +4,18 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
 import org.gradle.api.Incubating
-import org.gradle.api.provider.Property
-import org.gradle.workers.WorkAction
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.provider.Property
+import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
+import org.gradle.workers.WorkAction
 import org.pitest.aggregate.AggregationResult
 import org.pitest.aggregate.ReportAggregator
 import org.pitest.mutationtest.config.DirectoryResultOutputStrategy
 import org.pitest.mutationtest.config.UndatedReportDirCreationStrategy
 
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.function.Consumer
 
 @Slf4j
@@ -71,18 +75,61 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
     }
 
     private static void mergeMutationReports(ConfigurableFileCollection mutationFiles, File outputDir) {
+        if (mutationFiles.isEmpty()) {
+            return
+        }
+
+        outputDir.mkdirs()
+        List<File> sortedFiles = mutationFiles.files.findAll { File f -> f.exists() }
+            .toList().sort { File f -> f.absolutePath }
+
         File mergedReport = new File(outputDir, PitestAttributes.MUTATION_FILE_NAME)
-        mergedReport.withWriter { writer ->
-            writer.write("<mutations>\n")
-            mutationFiles.each { File xmlReport ->
-                if (xmlReport.exists()) {
-                     String xmlContent = xmlReport.text
-                     xmlContent = xmlContent.replaceAll("<\\?xml[^>]*>", "")
-                     xmlContent = xmlContent.replaceAll("</?mutations( partial=\"true\")?>", "")
-                     writer.write(xmlContent.trim() + "\n")
-                }
+
+        if (sortedFiles.size() == 1) {
+            File source = sortedFiles[0]
+            if (mergedReport.exists() && FileUtils.contentEquals(source, mergedReport)) {
+                return
             }
-            writer.write("</mutations>")
+            Files.copy(source.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            return
+        }
+
+        File tempFile = new File(outputDir, "${PitestAttributes.MUTATION_FILE_NAME}.tmp")
+
+        try {
+            tempFile.withWriter('UTF-8') { writer ->
+                writer.write('<?xml version="1.0" encoding="UTF-8"?>')
+                writer.newLine()
+                writer.write('<mutations>')
+                writer.newLine()
+
+                sortedFiles.each { File xmlReport ->
+                    xmlReport.withReader('UTF-8') { reader ->
+                        reader.eachLine { line ->
+                            String trimmed = line.trim()
+                            if (!trimmed.startsWith("<?xml") && !trimmed.startsWith("<mutations") &&
+                                !trimmed.startsWith("</mutations>")) {
+                                writer.write(line)
+                                writer.newLine()
+                            }
+                        }
+                    }
+                }
+                writer.write('</mutations>')
+            }
+
+            if (mergedReport.exists() && FileUtils.contentEquals(tempFile, mergedReport)) {
+                return
+            }
+
+            try {
+                Files.move(tempFile.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE)
+            } catch (AtomicMoveNotSupportedException ignored) {
+                Files.move(tempFile.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+        } finally {
+            tempFile.delete()
         }
     }
 

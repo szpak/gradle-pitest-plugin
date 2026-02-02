@@ -125,6 +125,9 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     private static FileCollection getLenientArtifactFiles(Configuration configuration) {
         return configuration.incoming.artifactView { view ->
+            // Lenient is required to ignore dependencies (subprojects) that do not have the Pitest plugin applied
+            // and thus do not match the requested attributes (Category/Usage).
+            // Without this, the build would fail if any subproject is not configured for Pitest.
             view.lenient(true)
         }.files
     }
