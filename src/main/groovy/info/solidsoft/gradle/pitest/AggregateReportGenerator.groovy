@@ -6,6 +6,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Incubating
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
+import org.gradle.api.file.ConfigurableFileCollection
 import org.pitest.aggregate.AggregationResult
 import org.pitest.aggregate.ReportAggregator
 import org.pitest.mutationtest.config.DirectoryResultOutputStrategy
@@ -39,6 +40,8 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
 
         log.info("Aggregated report ${parameters.reportFile.asFile.get().absolutePath}")
 
+        mergeMutationReports(parameters.mutationFiles, parameters.reportDir.asFile.get())
+
         consumeIfPropertyIsSet(parameters.testStrengthThreshold) { threshold ->
             if (aggregationResult.testStrength < threshold) {
                 throw new GradleException(
@@ -64,6 +67,22 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
                         "surviving mutants, but only $threshold survivors allowed"
                 )
             }
+        }
+    }
+
+    private static void mergeMutationReports(ConfigurableFileCollection mutationFiles, File outputDir) {
+        File mergedReport = new File(outputDir, "mutations.xml")
+        mergedReport.withWriter { writer ->
+            writer.write("<mutations>\n")
+            mutationFiles.each { File xmlReport ->
+                if (xmlReport.exists()) {
+                     String xmlContent = xmlReport.text
+                     xmlContent = xmlContent.replaceAll("<\\?xml[^>]*>", "")
+                     xmlContent = xmlContent.replaceAll("</?mutations( partial=\"true\")?>", "")
+                     writer.write(xmlContent.trim() + "\n")
+                }
+            }
+            writer.write("</mutations>")
         }
     }
 

@@ -30,6 +30,9 @@ import org.gradle.api.artifacts.result.ResolutionResult
 import org.gradle.api.artifacts.result.ResolvedComponentResult
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.Usage
+import org.gradle.api.file.Directory
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
@@ -95,6 +98,7 @@ class PitestPlugin implements Plugin<Project> {
                 t.shouldRunAfter(project.tasks.named(TEST_TASK_NAME))
                 suppressPassingDeprecatedTestPluginForNewerPitVersions(t)
             }
+            configureOutgoingConfigurations()
         }
     }
 
@@ -108,7 +112,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        setupReportDirInExtensionWithProblematicTypeForGradle5()
+        setupReportDir()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
@@ -128,9 +132,13 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
-    private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
+    private void setupReportDir() {
+        ReportingExtension reporting = project.extensions.findByType(ReportingExtension)
+        if (reporting) {
+            extension.reportDir.convention(reporting.baseDirectory.dir(PITEST_REPORT_DIRECTORY_NAME))
+        } else {
+            extension.reportDir.convention(project.layout.buildDirectory.dir("reports/${PITEST_REPORT_DIRECTORY_NAME}"))
+        }
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
@@ -316,6 +324,61 @@ class PitestPlugin implements Plugin<Project> {
                 log.warn("Error during PIT versions comparison. Is '$configuredPitVersion' really valid? If yes, please report that case. " +
                     "Assuming PIT version is newer than 1.6.7.")
                 log.warn("Original exception: ${e.class.name}:${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Creates a new outgoing configuration with the standard Pitest attributes.
+     *
+     * @param name The name of the configuration to create
+     * @param artifactType The artifact type attribute value
+     * @param extraConfig Additional configuration action to apply
+     */
+    private void addOutgoingConfiguration(String name, String artifactType, Action<Configuration> extraConfig) {
+        project.configurations.create(name) { Configuration conf ->
+            conf.canBeResolved = false
+            conf.canBeConsumed = true
+            conf.attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.VERIFICATION))
+            conf.attributes.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, "pitest"))
+            conf.attributes.attribute(PitestAttributes.ARTIFACT_TYPE, artifactType)
+            extraConfig.execute(conf)
+        }
+    }
+
+    private void configureOutgoingConfigurations() {
+        log.debug("PitestPlugin: Creating outgoing configurations for project ${project.name}")
+        def mutationsXml = extension.reportDir.map { Directory d -> d.file("mutations.xml") }
+        def lineCoverageXml = extension.reportDir.map { Directory d -> d.file("linecoverage.xml") }
+
+        addOutgoingConfiguration("pitestReportElements", PitestAttributes.REPORT) { Configuration conf ->
+            conf.outgoing.artifact(mutationsXml) { artifact ->
+                artifact.builtBy(project.tasks.named(PITEST_TASK_NAME))
+            }
+            conf.outgoing.artifact(lineCoverageXml) { artifact ->
+                artifact.builtBy(project.tasks.named(PITEST_TASK_NAME))
+            }
+        }
+
+        addOutgoingConfiguration("pitestSourcesElements", PitestAttributes.SOURCES) { Configuration conf ->
+            project.afterEvaluate {
+                extension.mainSourceSets.get().each { SourceSet sourceSet ->
+                    sourceSet.allSource.srcDirs.each { File srcDir ->
+                        conf.outgoing.artifact(srcDir)
+                    }
+                }
+            }
+        }
+
+        addOutgoingConfiguration("pitestClassesElements", PitestAttributes.CLASSES) { Configuration conf ->
+            project.afterEvaluate {
+                extension.mainSourceSets.get().each { SourceSet sourceSet ->
+                    sourceSet.output.classesDirs.each { File classesDir ->
+                        conf.outgoing.artifact(classesDir) { artifact ->
+                            artifact.builtBy(sourceSet.output)
+                        }
+                    }
+                }
             }
         }
     }
