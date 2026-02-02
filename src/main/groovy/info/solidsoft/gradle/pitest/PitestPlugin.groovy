@@ -32,6 +32,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.Usage
 import org.gradle.api.file.Directory
+import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
@@ -347,10 +348,10 @@ class PitestPlugin implements Plugin<Project> {
 
     private void configureOutgoingConfigurations() {
         log.debug("PitestPlugin: Creating outgoing configurations for project ${project.name}")
-        def mutationsXml = extension.reportDir.map { Directory d ->
+        Provider<RegularFile> mutationsXml = extension.reportDir.map { Directory d ->
             d.file(PitestAttributes.MUTATION_FILE_NAME)
         }
-        def lineCoverageXml = extension.reportDir.map { Directory d ->
+        Provider<RegularFile> lineCoverageXml = extension.reportDir.map { Directory d ->
             d.file(PitestAttributes.LINE_COVERAGE_FILE_NAME)
         }
 

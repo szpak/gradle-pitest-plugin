@@ -9,10 +9,12 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.Usage
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.plugins.JavaPlugin
 
 import java.util.function.Consumer
 
@@ -27,9 +29,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     public static final String PLUGIN_ID = "info.solidsoft.pitest.aggregator"
     public static final String PITEST_REPORT_AGGREGATE_TASK_NAME = "pitestReportAggregate"
-    public static final String PITEST_REPORT_AGGREGATION_CONFIGURATION_NAME = "pitestReportAggregation"
-    public static final String PITEST_SOURCES_AGGREGATION_CONFIGURATION_NAME = "pitestSourcesAggregation"
-    public static final String PITEST_CLASSES_AGGREGATION_CONFIGURATION_NAME = "pitestClassesAggregation"
+    public static final String PITEST_AGGREGATION_CONFIGURATION_NAME = "pitestAggregation"
     //visibility for testing
     @PackageScope static final String PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME = "pitestReport"
 
@@ -48,19 +48,8 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         Configuration pitestReportConfiguration = createPitestReportConfiguration()
         addPitAggregateReportDependency(pitestReportConfiguration)
 
-        Configuration pitestReportAggregation = createAggregationConfiguration(
-            PITEST_REPORT_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.REPORT
-        )
-        Configuration pitestSourcesAggregation = createAggregationConfiguration(
-            PITEST_SOURCES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.SOURCES
-        )
-        Configuration pitestClassesAggregation = createAggregationConfiguration(
-            PITEST_CLASSES_AGGREGATION_CONFIGURATION_NAME, PitestAttributes.CLASSES
-        )
-
-        configureAggregateReportTask(
-            pitestReportConfiguration, pitestReportAggregation, pitestSourcesAggregation, pitestClassesAggregation
-        )
+        Configuration pitestAggregation = createPitestAggregationConfiguration()
+        configureAggregateReportTask(pitestReportConfiguration, pitestAggregation)
     }
 
     private Configuration createPitestReportConfiguration() {
@@ -73,46 +62,51 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         }
     }
 
-    private void configureAggregateReportTask(Configuration pitestReportConfiguration, Configuration pitestReportAggregation,
-                                              Configuration pitestSourcesAggregation, Configuration pitestClassesAggregation) {
+    private void configureAggregateReportTask(Configuration pitestReportConfiguration, Configuration pitestAggregation) {
         project.tasks.register(PITEST_REPORT_AGGREGATE_TASK_NAME, AggregateReportTask) { t ->
             t.description = "Aggregate PIT reports"
             t.group = PitestPlugin.PITEST_TASK_GROUP
             t.pitestReportClasspath.from(pitestReportConfiguration)
-
-            configureTaskDefaults(t, pitestReportAggregation, pitestSourcesAggregation, pitestClassesAggregation)
+            configureTaskDefaults(t, pitestAggregation)
         }
     }
 
-    private Configuration createAggregationConfiguration(String name, String artifactType) {
-        Configuration configuration = project.configurations.create(name).with { configuration ->
-             visible = false
-             canBeConsumed = false
-             canBeResolved = true
-             configuration.attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.VERIFICATION))
-             configuration.attributes.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, "pitest"))
-             configuration.attributes.attribute(PitestAttributes.ARTIFACT_TYPE, artifactType)
-             return configuration
+    private Configuration createPitestAggregationConfiguration() {
+        Configuration configuration = project.configurations.create(PITEST_AGGREGATION_CONFIGURATION_NAME).with { configuration ->
+            visible = false
+            canBeConsumed = false
+            canBeResolved = true
+            transitive = false
+            return configuration
         }
 
-        project.subprojects.each { subproject ->
-            project.dependencies.add(name, subproject)
+        configuration.defaultDependencies { dependencies ->
+            // Include root project if it has both pitest and java plugins
+            if (project.plugins.hasPlugin(PitestPlugin.PLUGIN_ID) && project.plugins.hasPlugin(JavaPlugin)) {
+                dependencies.add(project.dependencies.create(project))
+            }
+
+            // Include all subprojects with both pitest and java plugins
+            project.subprojects.each { subproject ->
+                if (subproject.plugins.hasPlugin(PitestPlugin.PLUGIN_ID) && subproject.plugins.hasPlugin(JavaPlugin)) {
+                    dependencies.add(project.dependencies.create(subproject))
+                }
+            }
         }
         return configuration
     }
 
-    private void configureTaskDefaults(AggregateReportTask task, Configuration pitestReportAggregation,
-                                       Configuration pitestSourcesAggregation, Configuration pitestClassesAggregation) {
+    private void configureTaskDefaults(AggregateReportTask task, Configuration pitestAggregation) {
         task.reportDir.convention(getReportBaseDirectory().map { Directory d ->
             d.dir(PitestPlugin.PITEST_REPORT_DIRECTORY_NAME)
         })
         task.reportFile.convention(task.reportDir.file("index.html"))
-        task.sourceDirs.from = getLenientArtifactFiles(pitestSourcesAggregation)
+        task.sourceDirs.from = getArtifactFiles(pitestAggregation, PitestAttributes.SOURCES)
 
-        FileCollection reportFiles = getLenientArtifactFiles(pitestReportAggregation)
+        FileCollection reportFiles = getArtifactFiles(pitestAggregation, PitestAttributes.REPORT)
         task.mutationFiles.from = filterMutationFiles(reportFiles)
         task.lineCoverageFiles.from = filterLineCoverageFiles(reportFiles)
-        task.additionalClasspath.from = getLenientArtifactFiles(pitestClassesAggregation)
+        task.additionalClasspath.from = getArtifactFiles(pitestAggregation, PitestAttributes.CLASSES)
 
         findPluginExtension().ifPresent({ PitestPluginExtension extension ->
             task.inputCharset.set(extension.inputCharset)
@@ -123,12 +117,15 @@ class PitestAggregatorPlugin implements Plugin<Project> {
         } as Consumer<PitestPluginExtension>)   //Simplify with Groovy 3+
     }
 
-    private static FileCollection getLenientArtifactFiles(Configuration configuration) {
+    private FileCollection getArtifactFiles(Configuration configuration, String artifactType) {
         return configuration.incoming.artifactView { view ->
-            // Lenient is required to ignore dependencies (subprojects) that do not have the Pitest plugin applied
-            // and thus do not match the requested attributes (Category/Usage).
-            // Without this, the build would fail if any subproject is not configured for Pitest.
-            view.lenient(true)
+            view.withVariantReselection()
+            view.componentFilter { id -> id in ProjectComponentIdentifier }
+            view.attributes { attributes ->
+                attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.VERIFICATION))
+                attributes.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, "pitest"))
+                attributes.attribute(PitestAttributes.ARTIFACT_TYPE, artifactType)
+            }
         }.files
     }
 
@@ -160,7 +157,7 @@ class PitestAggregatorPlugin implements Plugin<Project> {
     }
 
     private static FileCollection filterLineCoverageFiles(FileCollection reportFiles) {
-       return reportFiles.filter { File f -> f.name == PitestAttributes.LINE_COVERAGE_FILE_NAME }
+        return reportFiles.filter { File f -> f.name == PitestAttributes.LINE_COVERAGE_FILE_NAME }
     }
 
 }

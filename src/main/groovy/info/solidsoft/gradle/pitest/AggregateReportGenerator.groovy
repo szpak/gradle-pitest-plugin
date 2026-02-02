@@ -6,7 +6,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Incubating
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
-import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import org.gradle.workers.WorkAction
 import org.pitest.aggregate.AggregationResult
 import org.pitest.aggregate.ReportAggregator
@@ -87,7 +86,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
 
         if (sortedFiles.size() == 1) {
             File source = sortedFiles[0]
-            if (mergedReport.exists() && FileUtils.contentEquals(source, mergedReport)) {
+            if (mergedReport.exists() && filesContentEquals(source, mergedReport)) {
                 return
             }
             Files.copy(source.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING)
@@ -118,7 +117,7 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
                 writer.write('</mutations>')
             }
 
-            if (mergedReport.exists() && FileUtils.contentEquals(tempFile, mergedReport)) {
+            if (mergedReport.exists() && filesContentEquals(tempFile, mergedReport)) {
                 return
             }
 
@@ -137,6 +136,16 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
         if (property.isPresent()) {
             applyPropertyCode.accept(property.get())
         }
+    }
+
+    private static boolean filesContentEquals(File file1, File file2) {
+        if (!file1.exists() || !file2.exists()) {
+            return false
+        }
+        if (file1.length() != file2.length()) {
+            return false
+        }
+        return Files.mismatch(file1.toPath(), file2.toPath()) == -1L
     }
 
 }
