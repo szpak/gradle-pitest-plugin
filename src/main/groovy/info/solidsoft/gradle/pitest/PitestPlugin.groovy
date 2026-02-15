@@ -329,14 +329,14 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     /**
-     * Creates a new outgoing configuration with the standard Pitest attributes.
+     * Registers a new outgoing configuration with the standard Pitest attributes.
      *
      * @param name The name of the configuration to create
      * @param artifactType The artifact type attribute value
      * @param extraConfig Additional configuration action to apply
      */
     private void addOutgoingConfiguration(String name, String artifactType, Action<Configuration> extraConfig) {
-        project.configurations.create(name) { Configuration conf ->
+        project.configurations.register(name) { Configuration conf ->
             conf.canBeResolved = false
             conf.canBeConsumed = true
             conf.attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.VERIFICATION))
@@ -365,22 +365,18 @@ class PitestPlugin implements Plugin<Project> {
         }
 
         addOutgoingConfiguration("pitestSourcesElements", PitestAttributes.SOURCES) { Configuration conf ->
-            project.afterEvaluate {
-                extension.mainSourceSets.get().each { SourceSet sourceSet ->
-                    sourceSet.allSource.srcDirs.each { File srcDir ->
-                        conf.outgoing.artifact(srcDir)
-                    }
+            extension.mainSourceSets.get().each { SourceSet sourceSet ->
+                sourceSet.allSource.srcDirs.each { File srcDir ->
+                    conf.outgoing.artifact(srcDir)
                 }
             }
         }
 
         addOutgoingConfiguration("pitestClassesElements", PitestAttributes.CLASSES) { Configuration conf ->
-            project.afterEvaluate {
-                extension.mainSourceSets.get().each { SourceSet sourceSet ->
-                    sourceSet.output.classesDirs.each { File classesDir ->
-                        conf.outgoing.artifact(classesDir) { artifact ->
-                            artifact.builtBy(sourceSet.output)
-                        }
+            extension.mainSourceSets.get().each { SourceSet sourceSet ->
+                sourceSet.output.classesDirs.each { File classesDir ->
+                    conf.outgoing.artifact(classesDir) { artifact ->
+                        artifact.builtBy(sourceSet.output)
                     }
                 }
             }
