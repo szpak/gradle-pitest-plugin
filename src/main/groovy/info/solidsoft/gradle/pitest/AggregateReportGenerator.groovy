@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
 import org.gradle.api.Incubating
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
 import org.pitest.aggregate.AggregationResult
@@ -11,6 +12,9 @@ import org.pitest.aggregate.ReportAggregator
 import org.pitest.mutationtest.config.DirectoryResultOutputStrategy
 import org.pitest.mutationtest.config.UndatedReportDirCreationStrategy
 
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.function.Consumer
 
 @Slf4j
@@ -38,6 +42,8 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
         AggregationResult aggregationResult = aggregator.aggregateReport()
 
         log.info("Aggregated report ${parameters.reportFile.asFile.get().absolutePath}")
+
+        mergeMutationReports(parameters.mutationFiles, parameters.reportDir.asFile.get())
 
         consumeIfPropertyIsSet(parameters.testStrengthThreshold) { threshold ->
             if (aggregationResult.testStrength < threshold) {
@@ -67,10 +73,79 @@ abstract class AggregateReportGenerator implements WorkAction<AggregateReportWor
         }
     }
 
+    private static void mergeMutationReports(ConfigurableFileCollection mutationFiles, File outputDir) {
+        if (mutationFiles.isEmpty()) {
+            return
+        }
+
+        outputDir.mkdirs()
+        List<File> sortedFiles = mutationFiles.files.findAll { File f -> f.exists() }
+            .toList().sort { File f -> f.absolutePath }
+
+        File mergedReport = new File(outputDir, PitestAttributes.MUTATION_FILE_NAME)
+
+        if (sortedFiles.size() == 1) {
+            File source = sortedFiles[0]
+            if (mergedReport.exists() && filesContentEquals(source, mergedReport)) {
+                return
+            }
+            Files.copy(source.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            return
+        }
+
+        File tempFile = new File(outputDir, "${PitestAttributes.MUTATION_FILE_NAME}.tmp")
+
+        try {
+            tempFile.withWriter('UTF-8') { writer ->
+                writer.write('<?xml version="1.0" encoding="UTF-8"?>')
+                writer.newLine()
+                writer.write('<mutations>')
+                writer.newLine()
+
+                sortedFiles.each { File xmlReport ->
+                    xmlReport.withReader('UTF-8') { reader ->
+                        reader.eachLine { line ->
+                            String trimmed = line.trim()
+                            if (!trimmed.startsWith("<?xml") && !trimmed.startsWith("<mutations") &&
+                                !trimmed.startsWith("</mutations>")) {
+                                writer.write(line)
+                                writer.newLine()
+                            }
+                        }
+                    }
+                }
+                writer.write('</mutations>')
+            }
+
+            if (mergedReport.exists() && filesContentEquals(tempFile, mergedReport)) {
+                return
+            }
+
+            try {
+                Files.move(tempFile.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE)
+            } catch (AtomicMoveNotSupportedException ignored) {
+                Files.move(tempFile.toPath(), mergedReport.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+        } finally {
+            tempFile.delete()
+        }
+    }
+
     private static <T> void consumeIfPropertyIsSet(Property<T> property, Consumer<T> applyPropertyCode) {
         if (property.isPresent()) {
             applyPropertyCode.accept(property.get())
         }
+    }
+
+    private static boolean filesContentEquals(File file1, File file2) {
+        if (!file1.exists() || !file2.exists()) {
+            return false
+        }
+        if (file1.length() != file2.length()) {
+            return false
+        }
+        return Files.mismatch(file1.toPath(), file2.toPath()) == -1L
     }
 
 }

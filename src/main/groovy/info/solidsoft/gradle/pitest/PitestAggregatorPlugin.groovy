@@ -4,18 +4,17 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
 import org.gradle.api.Incubating
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.Usage
-import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
-import org.gradle.api.tasks.TaskCollection
-
-import java.util.function.Consumer
-import java.util.stream.Collectors
 
 /**
  * The plugin to aggregate pitest subprojects reports
@@ -28,14 +27,11 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     public static final String PLUGIN_ID = "info.solidsoft.pitest.aggregator"
     public static final String PITEST_REPORT_AGGREGATE_TASK_NAME = "pitestReportAggregate"
+    public static final String PITEST_AGGREGATION_CONFIGURATION_NAME = "pitestAggregation"
     //visibility for testing
     @PackageScope static final String PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME = "pitestReport"
 
-    private static final String MUTATION_FILE_NAME = "mutations.xml"
-    private static final String LINE_COVERAGE_FILE_NAME = "linecoverage.xml"
-
     private final GradleVersionEnforcer gradleVersionEnforcer
-    private Project project
 
     PitestAggregatorPlugin() {
         this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION)
@@ -43,118 +39,129 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        this.project = project
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
 
-        Configuration pitestReportConfiguration = project.configurations.create(PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME).with { configuration ->
-            attributes.attribute(Usage.USAGE_ATTRIBUTE, (Usage) project.objects.named(Usage, Usage.JAVA_RUNTIME))
-            visible = false
-            canBeConsumed = false
-            canBeResolved = true
-            return configuration
-        }
+        NamedDomainObjectProvider<Configuration> pitestReportConfiguration = registerPitestReportConfiguration(project)
+        addPitAggregateReportDependency(project, pitestReportConfiguration)
 
-        addPitAggregateReportDependency(pitestReportConfiguration)
+        NamedDomainObjectProvider<Configuration> pitestAggregation = registerPitestAggregationConfiguration(project)
+        configureAggregateReportTask(project, pitestReportConfiguration, pitestAggregation)
+    }
+
+    private static NamedDomainObjectProvider<Configuration> registerPitestReportConfiguration(Project project) {
+        return project.configurations.register(PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME) { Configuration configuration ->
+            configuration.attributes.attribute(Usage.USAGE_ATTRIBUTE,
+                (Usage) project.objects.named(Usage, Usage.JAVA_RUNTIME))
+            configuration.visible = false
+            configuration.canBeConsumed = false
+            configuration.canBeResolved = true
+        }
+    }
+
+    private static void configureAggregateReportTask(Project project,
+                                                     NamedDomainObjectProvider<Configuration> pitestReportConfiguration,
+                                                     NamedDomainObjectProvider<Configuration> pitestAggregation) {
         project.tasks.register(PITEST_REPORT_AGGREGATE_TASK_NAME, AggregateReportTask) { t ->
             t.description = "Aggregate PIT reports"
             t.group = PitestPlugin.PITEST_TASK_GROUP
-            configureTaskDefaults(t)
-            //shouldRunAfter should be enough, but it fails in functional tests as :pitestReportAggregate is executed before :pitest tasks from subprojects
-            t.mustRunAfter(project.allprojects.collect { Project p -> p.tasks.withType(PitestTask) })
             t.pitestReportClasspath.from(pitestReportConfiguration)
+            configureTaskDefaults(project, t, pitestAggregation)
         }
     }
 
-    private void configureTaskDefaults(AggregateReportTask aggregateReportTask) {
-        aggregateReportTask.with { task ->
-            reportDir.set(new File(getReportBaseDirectory(), PitestPlugin.PITEST_REPORT_DIRECTORY_NAME))
-            reportFile.set(reportDir.file("index.html"))
+    private static NamedDomainObjectProvider<Configuration> registerPitestAggregationConfiguration(Project project) {
+        NamedDomainObjectProvider<Configuration> configurationProvider = project.configurations.register(
+                PITEST_AGGREGATION_CONFIGURATION_NAME) { Configuration configuration ->
+            configuration.visible = false
+            configuration.canBeConsumed = false
+            configuration.canBeResolved = true
+            configuration.transitive = false
+        }
 
-            List<TaskCollection<PitestTask>> pitestTasks = getAllPitestTasks()
-            sourceDirs.from = collectSourceDirs(pitestTasks)
-            additionalClasspath.from = collectClasspathDirs(pitestTasks)
+        configurationProvider.configure { Configuration configuration ->
+            configuration.defaultDependencies { dependencies ->
+                // Include root project if it has both pitest and java plugins applied
+                if (project.pluginManager.hasPlugin(PitestPlugin.PLUGIN_ID)
+                        && project.pluginManager.hasPlugin("java")) {
+                    dependencies.add(project.dependencies.create(project))
+                }
 
-            Set<Project> projectsWithPitest = getProjectsWithPitestPlugin()
-            mutationFiles.from = collectMutationFiles(projectsWithPitest)
-            lineCoverageFiles.from = collectLineCoverageFiles(projectsWithPitest)
+                // Include all subprojects with both pitest and java plugins applied
+                project.subprojects.each { Project subproject ->
+                    if (subproject.pluginManager.hasPlugin(PitestPlugin.PLUGIN_ID)
+                            && subproject.pluginManager.hasPlugin("java")) {
+                        dependencies.add(project.dependencies.create(subproject))
+                    }
+                }
+            }
+        }
+        return configurationProvider
+    }
 
-            findPluginExtension().ifPresent({ PitestPluginExtension extension ->
-                inputCharset.set(extension.inputCharset)
-                outputCharset.set(extension.outputCharset)
-                testStrengthThreshold.set(extension.reportAggregatorProperties.testStrengthThreshold)
-                mutationThreshold.set(extension.reportAggregatorProperties.mutationThreshold)
-                maxSurviving.set(extension.reportAggregatorProperties.maxSurviving)
-            } as Consumer<PitestPluginExtension>)   //Simplify with Groovy 3+
+    private static void configureTaskDefaults(Project project, AggregateReportTask task,
+                                              NamedDomainObjectProvider<Configuration> pitestAggregation) {
+        task.reportDir.convention(getReportBaseDirectory(project).map { Directory d ->
+            d.dir(PitestPlugin.PITEST_REPORT_DIRECTORY_NAME)
+        })
+        task.reportFile.convention(task.reportDir.file("index.html"))
+        task.sourceDirs.from(getArtifactFiles(project, pitestAggregation.get(), PitestAttributes.SOURCES))
+
+        FileCollection reportFiles = getArtifactFiles(project, pitestAggregation.get(), PitestAttributes.REPORT)
+        task.mutationFiles.from(filterMutationFiles(reportFiles))
+        task.lineCoverageFiles.from(filterLineCoverageFiles(reportFiles))
+        task.additionalClasspath.from(getArtifactFiles(project, pitestAggregation.get(), PitestAttributes.CLASSES))
+
+        project.pluginManager.withPlugin(PitestPlugin.PLUGIN_ID) {
+            PitestPluginExtension extension = project.extensions.findByType(PitestPluginExtension)
+            if (extension != null) {
+                task.inputCharset.set(extension.inputCharset)
+                task.outputCharset.set(extension.outputCharset)
+                task.testStrengthThreshold.set(extension.reportAggregatorProperties.testStrengthThreshold)
+                task.mutationThreshold.set(extension.reportAggregatorProperties.mutationThreshold)
+                task.maxSurviving.set(extension.reportAggregatorProperties.maxSurviving)
+            }
         }
     }
 
-    private void addPitAggregateReportDependency(Configuration pitestReportConfiguration) {
-        pitestReportConfiguration.withDependencies { dependencies ->
-            String pitestVersion = findPluginExtension()
-                .map { extension -> extension.pitestVersion.get() }
-                .orElse(PitestPlugin.DEFAULT_PITEST_VERSION)
+    private static FileCollection getArtifactFiles(Project project, Configuration configuration, String artifactType) {
+        return configuration.incoming.artifactView { view ->
+            view.withVariantReselection()
+            view.componentFilter { id -> id in ProjectComponentIdentifier }
+            view.attributes { attributes ->
+                attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.VERIFICATION))
+                attributes.attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, "pitest"))
+                attributes.attribute(PitestAttributes.ARTIFACT_TYPE, artifactType)
+            }
+        }.files
+    }
 
-            dependencies.add(project.dependencies.create("org.pitest:pitest-aggregator:$pitestVersion"))
+    private static void addPitAggregateReportDependency(Project project,
+                                                        NamedDomainObjectProvider<Configuration> pitestReportConfiguration) {
+        pitestReportConfiguration.configure { Configuration configuration ->
+            configuration.withDependencies { dependencies ->
+                PitestPluginExtension extension = project.extensions.findByType(PitestPluginExtension)
+                String pitestVersion = extension != null ? extension.pitestVersion.get() : PitestPlugin.DEFAULT_PITEST_VERSION
+
+                dependencies.add(project.dependencies.create("org.pitest:pitest-aggregator:$pitestVersion"))
+                dependencies.add(project.dependencies.create("org.pitest:pitest-html-report:$pitestVersion"))
+            }
         }
     }
 
-    private Optional<PitestPluginExtension> findPluginExtension() {
-        return Optional.ofNullable(project.extensions.findByType(PitestPluginExtension))
-            .map { extension -> Optional.of(extension) }   //Optional::of with Groovy 3
-            .orElseGet { findPitestExtensionInSubprojects(project) }
-    }
-
-    private File getReportBaseDirectory() {
-        if (project.extensions.findByType(ReportingExtension)) {
-            return project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get()
+    private static Provider<Directory> getReportBaseDirectory(Project project) {
+        ReportingExtension reportingExtension = project.extensions.findByType(ReportingExtension)
+        if (reportingExtension) {
+            return reportingExtension.baseDirectory
         }
-        return project.layout.buildDirectory.dir("reports").get().asFile
+        return project.layout.buildDirectory.dir("reports")
     }
 
-    private Set<Project> getProjectsWithPitestPlugin() {
-        return project.allprojects.findAll { prj -> prj.plugins.hasPlugin(PitestPlugin.PLUGIN_ID) }
+    private static FileCollection filterMutationFiles(FileCollection reportFiles) {
+        return reportFiles.filter { File f -> f.name == PitestAttributes.MUTATION_FILE_NAME }
     }
 
-    private List<TaskCollection<PitestTask>> getAllPitestTasks() {
-        return project.allprojects.collect { p -> p.tasks.withType(PitestTask) }
-    }
-
-    private static List<ConfigurableFileCollection> collectSourceDirs(List<TaskCollection<PitestTask>> pitestTasks) {
-        return pitestTasks.stream()
-            .flatMap { tc ->
-                tc.stream()
-                    .map { task -> task.sourceDirs }
-            }.collect(Collectors.toList())
-    }
-
-    private static List<FileCollection> collectClasspathDirs(List<TaskCollection<PitestTask>> pitestTasks) {
-        return pitestTasks.stream()
-            .flatMap { tc ->
-                tc.stream()
-                    .map { task -> task.additionalClasspath }
-                    .map { cfc -> cfc.filter { File f -> f.isDirectory() } }
-            }.collect(Collectors.toList())
-    }
-
-    private static Set<Provider<File>> collectMutationFiles(Set<Project> pitestProjects) {
-        return pitestProjects.stream()
-            .map { prj -> prj.extensions.getByType(PitestPluginExtension) }
-            .map { extension -> extension.reportDir.file(MUTATION_FILE_NAME) as Provider<File> }
-            .collect(Collectors.toSet())
-    }
-
-    private static Set<Provider<File>> collectLineCoverageFiles(Set<Project> pitestProjects) {
-        return pitestProjects.stream()
-            .map { prj -> prj.extensions.getByType(PitestPluginExtension) }
-            .map { extension -> extension.reportDir.file(LINE_COVERAGE_FILE_NAME) as Provider<File> }
-            .collect(Collectors.toSet())
-    }
-
-    private static Optional<PitestPluginExtension> findPitestExtensionInSubprojects(Project project) {
-        return project.subprojects.stream()
-            .map { subproject -> subproject.extensions.findByType(PitestPluginExtension) }
-            .filter { extension -> extension != null }
-            .findFirst()
+    private static FileCollection filterLineCoverageFiles(FileCollection reportFiles) {
+        return reportFiles.filter { File f -> f.name == PitestAttributes.LINE_COVERAGE_FILE_NAME }
     }
 
 }
