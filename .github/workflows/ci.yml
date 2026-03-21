@@ -11,15 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    container:
-      image: container-registry.oracle.com/graalvm/jdk:25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4
 
-      - name: Build and unit test
+      - name: Build and test
         run: ./gradlew build --no-daemon --warning-mode=all
 
       - name: Validate plugins
@@ -27,9 +31,10 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6db9a6b7e75b195db0cb23deacb33 # v4
         with:
           name: test-reports
           path: |
             build/reports/tests/
             build/reports/codenarc/
+          retention-days: 14

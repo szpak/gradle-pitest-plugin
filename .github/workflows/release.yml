@@ -10,31 +10,57 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    container:
-      image: container-registry.oracle.com/graalvm/jdk:25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4
 
-      - name: Build and test
-        run: ./gradlew build --no-daemon
+      - name: Build
+        run: ./gradlew build --no-daemon --warning-mode=all
+
+      - name: Validate plugins
+        run: ./gradlew validatePlugins --no-daemon
 
       - name: Upload plugin JAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6db9a6b7e75b195db0cb23deacb33 # v4
         with:
           name: plugin-jar
           path: build/libs/*.jar
+          retention-days: 90
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6db9a6b7e75b195db0cb23deacb33 # v4
         with:
           name: test-reports
           path: |
             build/reports/tests/
             build/reports/codenarc/
+          retention-days: 30
+
+      - name: Create reports archive
+        if: success()
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          tar -czf gradle-pitest-plugin-${VERSION}-reports.tar.gz \
+            build/reports/tests/ \
+            build/reports/codenarc/ \
+            2>/dev/null || true
+
+      - name: Upload reports archive
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6db9a6b7e75b195db0cb23deacb33 # v4
+        with:
+          name: release-reports
+          path: gradle-pitest-plugin-*-reports.tar.gz
+          retention-days: 90
 
   release:
     runs-on: ubuntu-latest
@@ -42,21 +68,27 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
 
       - name: Download plugin JAR
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           name: plugin-jar
           path: artifacts/
+
+      - name: Download reports archive
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+        with:
+          name: release-reports
 
       - name: Extract release notes from CHANGES.md
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
 
-          # Extract section between two version headers
+          # Extract the section between two version headers.
+          # From "## [X.Y.Z]" until next "## [" or end of file.
           awk -v ver="$VERSION" '
             /^## \[/ {
               if (found) exit
@@ -67,7 +99,7 @@ jobs:
             found { print }
           ' CHANGES.md > release-notes.md
 
-          # Fallback if no section found
+          # Fallback if no section found for this version.
           if [ ! -s release-notes.md ]; then
             echo "No release notes found for version $VERSION in CHANGES.md."
             {
@@ -85,6 +117,7 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title "gradle-pitest-plugin ${GITHUB_REF_NAME}" \
             --notes-file release-notes.md \
-            artifacts/*.jar
+            artifacts/*.jar \
+            gradle-pitest-plugin-*-reports.tar.gz
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

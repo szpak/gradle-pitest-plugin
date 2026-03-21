@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Gradle 9.x and JDK 25 Compatibility
+## [Unreleased]
+
+## [1.20.0] - 2026-03-21
+
+Gradle 9.x and JDK 25 Compatibility
 
 ### Added
 - Gradle 9.4.1 support with zero deprecation warnings
@@ -64,3 +68,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Tested Gradle:** 6.5 through 9.4.1
 - **Groovy 4:** Plugin compiled with Gradle 9 (Groovy 4.0.29) requires Gradle ≥ 7.0 at runtime (hard constraint from Groovy 4 bytecode)
 - **nebula-test 12.0.0:** Not yet published to Maven Central — must be built from source with Spock 2.x `testMethodName` patch for functional tests
+
+[Unreleased]: https://github.com/dantte-lp/gradle-pitest-plugin/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/dantte-lp/gradle-pitest-plugin/releases/tag/v1.20.0
