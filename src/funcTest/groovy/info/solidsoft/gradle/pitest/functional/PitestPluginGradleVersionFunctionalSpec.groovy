@@ -31,7 +31,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("9.3.0")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("9.4.1")
 
     //Based on https://docs.gradle.org/current/userguide/compatibility.html
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
@@ -42,6 +42,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         (JavaVersion.VERSION_22): GradleVersion.version("8.7"),
         (JavaVersion.VERSION_23): GradleVersion.version("8.10"),
         (JavaVersion.VERSION_24): GradleVersion.version("8.14"),
+        (JavaVersion.VERSION_25): GradleVersion.version("9.4.1"),
     ].withDefault { requestedVersion ->
         return requestedVersion < JavaVersion.VERSION_15
             ? PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
@@ -117,10 +118,10 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
     private static final String REGRESSION_TESTS_ENV_NAME = "PITEST_REGRESSION_TESTS"
     private static final List<String> GRADLE6_VERSIONS = ["6.9.2", "6.8.3", "6.7", "6.6", "6.5",
                                                           PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
-    private static final List<String> GRADLE7_VERSIONS = ["7.6.4", "7.5.1", "7.4.2", "7.3.3", "7.2", "7.5.1", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
-    private static final List<String> GRADLE8_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "8.14.3", "8.13", "8.12.1", "8.11.1", "8.10.2",
+    private static final List<String> GRADLE7_VERSIONS = ["7.6.4", "7.5.1", "7.4.2", "7.4.1", "7.3.3", "7.2", "7.1.1", "7.0.2"]
+    private static final List<String> GRADLE8_VERSIONS = ["8.14.3", "8.13", "8.12.1", "8.11.1", "8.10.2",
                                                           "8.9", "8.8", "8.7", "8.6.4", "8.5", "8.4", "8.3", "8.2.1", "8.1.1", "8.0.2"]
-    private static final List<String> GRADLE9_VERSIONS = ["9.3.0", "9.2.0", "9.1.0", "9.0.0"]
+    private static final List<String> GRADLE9_VERSIONS = [LATEST_KNOWN_GRADLE_VERSION.version, "9.4.0", "9.3.0", "9.2.0", "9.1.0", "9.0.0"]
     private static final List<String> GRADLE_LATEST_VERSIONS = [GRADLE6_VERSIONS.first(), GRADLE7_VERSIONS.first(), GRADLE8_VERSIONS.first(),
                                                                 GRADLE9_VERSIONS.first(), PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION.version]
 
@@ -135,7 +136,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
             case "quick":
                 return GRADLE_LATEST_VERSIONS
             case "full":
-                return GRADLE6_VERSIONS + GRADLE7_VERSIONS + GRADLE8_VERSIONS
+                return GRADLE6_VERSIONS + GRADLE7_VERSIONS + GRADLE8_VERSIONS + GRADLE9_VERSIONS
             default:
                 log.warn("Unsupported $REGRESSION_TESTS_ENV_NAME value '`$regressionTestsLevel`' (expected 'latestOnly', 'quick' or 'full'). " +
                     "Assuming 'latestOnly'.")

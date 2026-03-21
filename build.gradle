@@ -1,3 +1,7 @@
+import org.gradle.api.tasks.testing.TestListener
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestResult
+
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'codenarc'
@@ -18,24 +22,32 @@ buildscript {
     dependencies {
         classpath 'pl.allegro.tech.build.axion-release:pl.allegro.tech.build.axion-release.gradle.plugin:1.21.1'
         classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:2.0.0'
-        classpath 'com.gradle.publish:plugin-publish-plugin:2.0.0'
+        classpath 'com.gradle.publish:plugin-publish-plugin:2.1.1'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.53.0'
     }
 }
 
 java {
-    sourceCompatibility = 1.8
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
-ext.pitestAggregatorVersion = "1.22.0"   //Must be equal to default PIT version in PitestPlugin
+ext.pitestAggregatorVersion = "1.23.0"   //Must be equal to default PIT version in PitestPlugin
 
 repositories {
     mavenCentral()
     mavenLocal()
+    gradlePluginPortal()  //nebula-test 12.x published here
 }
 
 sourceSets {
     funcTest
+}
+
+//Gradle 9.4+ moves gradleApi() to compileOnlyApi; register funcTest for automatic gradleApi() access
+gradlePlugin {
+    testSourceSets sourceSets.funcTest
 }
 
 configurations {
@@ -47,17 +59,22 @@ dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
-    testImplementation('org.spockframework:spock-core:2.4-groovy-3.0') {
-        exclude group: 'org.codehaus.groovy'
+    //Gradle 9.4+ moves gradleApi() to compileOnlyApi; tests need it at runtime for ProjectBuilder
+    testImplementation gradleApi()
+
+    testImplementation('org.spockframework:spock-core:2.4-groovy-4.0') {
+        exclude group: 'org.apache.groovy'
     }
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation 'net.bytebuddy:byte-buddy:1.18.4' //for Spying in Spock
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
+    testImplementation 'net.bytebuddy:byte-buddy:1.18.7' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
-    funcTestImplementation('com.netflix.nebula:nebula-test:10.6.2') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    funcTestImplementation('com.netflix.nebula:nebula-test:12.0.0') {
+        exclude group: 'org.apache.groovy', module: 'groovy-all'
     }
+    //nebula-test 12.x no longer pulls JUnit 4 transitively but uses it internally
+    funcTestImplementation 'junit:junit:4.13.2'
 }
 
 tasks.register("funcTest", Test) {
@@ -66,6 +83,8 @@ tasks.register("funcTest", Test) {
     testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
     jvmArgs '-Xmx1g'
+    //Ignore deprecation warnings from third-party plugins (e.g. Kotlin) in spawned Gradle builds
+    systemProperty 'ignoreDeprecations', 'true'
 }
 
 funcTest.shouldRunAfter test
@@ -92,13 +111,18 @@ tasks.withType(Test).configureEach { testTask ->
             exceptionFormat = 'full'
         }
 
-        afterSuite { desc, result ->
-            if (!desc.parent) {
-                if (result.testCount == 0) {
-                    throw new IllegalStateException("No tests were found. Failing the build")
+        addTestListener(new TestListener() {
+            void beforeSuite(TestDescriptor suite) {}
+            void afterSuite(TestDescriptor suite, TestResult result) {
+                if (!suite.parent) {
+                    if (result.testCount == 0) {
+                        throw new IllegalStateException("No tests were found. Failing the build")
+                    }
                 }
             }
-        }
+            void beforeTest(TestDescriptor testDescriptor) {}
+            void afterTest(TestDescriptor testDescriptor, TestResult result) {}
+        })
     }
 }
 

@@ -15,7 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -55,7 +54,7 @@ class PitestPlugin implements Plugin<Project> {
     public final static String PITEST_REPORT_DIRECTORY_NAME = 'pitest'
     public final static String PITEST_CONFIGURATION_NAME = 'pitest'
 
-    public final static String DEFAULT_PITEST_VERSION = '1.22.0'
+    public final static String DEFAULT_PITEST_VERSION = '1.23.0'
     @Internal   //8.x just to be more ready for 9.x, could work with lower versions at runtime
                 //(8.4 instead of 8.0 to have first version supporting JDK 21 LTS)
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("8.4") //public as used also in regression tests
@@ -100,7 +99,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
-            visible = false
+            //visible = false removed: deprecated in Gradle 9.1 (no effect since 9.0)
             description = "The PIT libraries to be used for this project."
             return configuration
         }
@@ -108,7 +107,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        setupReportDirInExtensionWithProblematicTypeForGradle5()
+        setupDefaultReportDir()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
@@ -119,6 +118,8 @@ class PitestPlugin implements Plugin<Project> {
         extension.addJUnitPlatformLauncher.set(true)
     }
 
+    //Note: On Gradle 9+ this method is effectively dead code — buildscript.configurations is immutable,
+    //so users can't accidentally add 'pitest' there. Kept for Gradle 8.x users where the scenario is still possible.
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
         //TODO: findByName() is suboptimal, but "named(...).isPreset()" triggers too early initialization with "Configuration with name 'pitest' not found"
         if (project.rootProject.buildscript.configurations.findByName(PITEST_CONFIGURATION_NAME) != null) {
@@ -128,9 +129,8 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
-    private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
+    private void setupDefaultReportDir() {
+        extension.reportDir.set(project.extensions.getByType(ReportingExtension).baseDirectory.dir(PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
@@ -215,7 +215,7 @@ class PitestPlugin implements Plugin<Project> {
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
         task.launchClasspath.setFrom({
-            project.configurations.named(PITEST_CONFIGURATION_NAME)
+            project.configurations.named(PITEST_CONFIGURATION_NAME).get()
         } as Callable<Configuration>)
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)

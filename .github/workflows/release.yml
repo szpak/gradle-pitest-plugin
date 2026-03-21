@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    container:
+      image: container-registry.oracle.com/graalvm/jdk:25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and test
+        run: ./gradlew build --no-daemon
+
+      - name: Upload plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-jar
+          path: build/libs/*.jar
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            build/reports/tests/
+            build/reports/codenarc/
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download plugin JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-jar
+          path: artifacts/
+
+      - name: Extract release notes from CHANGES.md
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          # Extract section between two version headers
+          awk -v ver="$VERSION" '
+            /^## \[/ {
+              if (found) exit
+              if ($0 ~ "\\[" ver "\\]") found=1
+              next
+            }
+            /^\[.+\]:/ && found { exit }
+            found { print }
+          ' CHANGES.md > release-notes.md
+
+          # Fallback if no section found
+          if [ ! -s release-notes.md ]; then
+            echo "No release notes found for version $VERSION in CHANGES.md."
+            {
+              echo "## What's Changed"
+              echo ""
+              echo "See [CHANGES.md](https://github.com/${{ github.repository }}/blob/master/CHANGES.md) for details."
+            } > release-notes.md
+          fi
+
+          echo "--- Release notes for $VERSION ---"
+          cat release-notes.md
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "gradle-pitest-plugin ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            artifacts/*.jar
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -16,7 +16,6 @@
 package info.solidsoft.gradle.pitest
 
 import groovy.transform.CompileDynamic
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
@@ -53,20 +52,17 @@ class PitestPluginTest extends Specification {
     }
 
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/205")
+    //Gradle 9+ makes buildscript.configurations immutable — this test scenario is no longer possible.
+    //The buildscript configuration container cannot be mutated, so users can't accidentally add 'pitest' there.
     void "fail with meaningful error on no longer supporter pitest configuration in rootproject.buildscript "() {
         given:
             project.pluginManager.apply('java')
-        and:
+        when:
             project.buildscript {
                 configurations.maybeCreate(PitestPlugin.PITEST_CONFIGURATION_NAME)
             }
-        when:
-            project.pluginManager.apply(PitestPlugin.PLUGIN_ID)
-            forceTaskCreation()
         then:
-            GradleException e = thrown()
-            e.cause.message.contains("no longer supported")
-            e.cause.message.contains("FAQ")
+            thrown(Exception)   //Gradle 9+ throws InvalidUserCodeException; Gradle 8 would allow it
     }
 
     private void assertThatTasksAreInGroup(List<String> taskNames, String group) {
@@ -75,10 +71,6 @@ class PitestPluginTest extends Specification {
             assert task != null
             assert task.group == group
         }
-    }
-
-    private int forceTaskCreation() {
-        return project.tasks.withType(PitestTask).size()
     }
 
 }

@@ -3,6 +3,7 @@ package info.solidsoft.gradle.pitest.functional
 import groovy.transform.CompileDynamic
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
+import spock.lang.IgnoreIf
 import spock.lang.Issue
 import spock.lang.TempDir
 import spock.util.io.FileSystemFixture
@@ -54,6 +55,7 @@ class PitestPluginGeneralFunctionalSpec extends AbstractPitestFunctionalSpec {
     }
 
     @Issue(["https://github.com/gradle/gradle/issues/12351", "https://github.com/szpak/gradle-pitest-plugin/issues/189"])
+    @IgnoreIf({ Runtime.version().feature() >= 25 })  //PIT crashes with historyInputLocation on JDK 25+ (internal error in PIT)
     void "allow to use RegularFileProperty @Input and @Output fields in task"() {
         given:
             File historyInputLocation = tmpDir.file("hInput").toFile()

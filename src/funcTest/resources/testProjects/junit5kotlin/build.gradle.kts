@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
 //        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20")
     }
 }
 
@@ -22,7 +22,7 @@ apply(plugin = "info.solidsoft.pitest")
 
 //For some reason "java.sourceCompatibility = ..." no longer works
 configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -42,7 +42,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 

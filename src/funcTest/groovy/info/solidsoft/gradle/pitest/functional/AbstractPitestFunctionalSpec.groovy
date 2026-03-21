@@ -13,6 +13,12 @@ import java.nio.file.StandardCopyOption
 abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
 
     void setup() {
+        //Workaround: nebula-test BaseIntegrationSpec uses JUnit 4 @Rule TestName which returns null
+        //under Spock 2.x + JUnit Platform. Parent setup() NPEs, so re-initialize here.
+        if (!projectDir) {
+            String methodName = specificationContext?.currentIteration?.parent?.name ?: 'test'
+            initialize(getClass(), methodName)
+        }
         fork = true //to make stdout assertion work with Gradle 2.x - http://forums.gradle.org/gradle/topics/unable-to-catch-stdout-stderr-when-using-tooling-api-i-gradle-2-x#reply_15357743
         memorySafeMode = true   //shutdown Daemon after a few seconds of inactivity
         enableConfigurationCache() // Create gradle.properties file with configuration cache enabled
