@@ -15,7 +15,6 @@
  */
 package info.solidsoft.gradle.pitest
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -100,7 +99,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
-            visible = false
+            //visible = false removed: deprecated in Gradle 9.1, no effect since 9.0
             description = "The PIT libraries to be used for this project."
             return configuration
         }
@@ -108,7 +107,7 @@ class PitestPlugin implements Plugin<Project> {
 
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        setupReportDirInExtensionWithProblematicTypeForGradle5()
+        setupDefaultReportDir()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
@@ -128,9 +127,8 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
-    private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
+    private void setupDefaultReportDir() {
+        extension.reportDir.set(project.extensions.getByType(ReportingExtension).baseDirectory.dir(PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
