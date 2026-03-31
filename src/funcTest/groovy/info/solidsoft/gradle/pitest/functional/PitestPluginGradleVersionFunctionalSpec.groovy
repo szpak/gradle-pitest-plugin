@@ -42,6 +42,7 @@ class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSp
         (JavaVersion.VERSION_22): GradleVersion.version("8.7"),
         (JavaVersion.VERSION_23): GradleVersion.version("8.10"),
         (JavaVersion.VERSION_24): GradleVersion.version("8.14"),
+        (JavaVersion.VERSION_25): GradleVersion.version("9.4.1"),
     ].withDefault { requestedVersion ->
         return requestedVersion < JavaVersion.VERSION_15
             ? PitestPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
