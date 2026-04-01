@@ -15,6 +15,7 @@
  */
 package info.solidsoft.gradle.pitest
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import info.solidsoft.gradle.pitest.internal.GradleVersionEnforcer
@@ -97,11 +98,18 @@ class PitestPlugin implements Plugin<Project> {
 
     private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
-            if (GradleVersion.current() < GradleVersion.version("9.0")) {
-                visible = false
-            }
+            setVisibleFalseOnPassedConfigurationForGradle8(configuration)
             description = "The PIT libraries to be used for this project."
             return configuration
+        }
+    }
+
+    @CompileDynamic
+    @Deprecated //remove once Gradle 9 is minimal supported version
+    @SuppressWarnings('GrMethodMayBeStatic')
+    private void setVisibleFalseOnPassedConfigurationForGradle8(Configuration configuration) {
+        if (GradleVersion.current() < GradleVersion.version("9.0")) {
+            configuration.visible = false
         }
     }
 
