@@ -7,6 +7,7 @@ import org.gradle.api.Incubating
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.util.GradleVersion
 import org.gradle.api.attributes.Usage
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.Directory
@@ -49,7 +50,9 @@ class PitestAggregatorPlugin implements Plugin<Project> {
 
         Configuration pitestReportConfiguration = project.configurations.create(PITEST_REPORT_AGGREGATE_CONFIGURATION_NAME).with { configuration ->
             attributes.attribute(Usage.USAGE_ATTRIBUTE, (Usage) project.objects.named(Usage, Usage.JAVA_RUNTIME))
-            //visible = false removed: deprecated in Gradle 9.1, no effect since 9.0
+            if (GradleVersion.current() < GradleVersion.version("9.0")) {
+                visible = false
+            }
             canBeConsumed = false
             canBeResolved = true
             return configuration

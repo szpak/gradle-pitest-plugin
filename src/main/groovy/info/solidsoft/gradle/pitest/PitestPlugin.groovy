@@ -37,8 +37,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.util.GradleVersion
 
-import java.util.concurrent.Callable
-
 import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -99,7 +97,9 @@ class PitestPlugin implements Plugin<Project> {
 
     private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
-            //visible = false removed: deprecated in Gradle 9.1, no effect since 9.0
+            if (GradleVersion.current() < GradleVersion.version("9.0")) {
+                visible = false
+            }
             description = "The PIT libraries to be used for this project."
             return configuration
         }
@@ -212,9 +212,7 @@ class PitestPlugin implements Plugin<Project> {
         task.exportLineCoverage.set(extension.exportLineCoverage)
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
-        task.launchClasspath.setFrom({
-            project.configurations.named(PITEST_CONFIGURATION_NAME).get()
-        } as Callable<Configuration>)
+        task.launchClasspath.setFrom(project.configurations.named(PITEST_CONFIGURATION_NAME))
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
