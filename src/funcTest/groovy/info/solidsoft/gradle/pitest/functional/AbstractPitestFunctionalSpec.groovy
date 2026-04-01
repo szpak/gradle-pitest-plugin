@@ -84,15 +84,6 @@ abstract class AbstractPitestFunctionalSpec extends IntegrationSpec {
         assert result.standardOutput.contains(textToContain) || result.standardError.contains(textToContain)
     }
 
-    //TODO: Switch to Gradle mechanism once upgraded to 6.x
-    protected boolean isJava13Compatible() {
-        return System.getProperty("java.version").startsWith("13") || isJava14Compatible()
-    }
-
-    protected boolean isJava14Compatible() {
-        return System.getProperty("java.version").startsWith("14") || System.getProperty("java.version").startsWith("15")
-    }
-
     //Due to deprecated "-b build-foo.gradle" - https://docs.gradle.org/7.6.2/userguide/upgrading_version_7.html#configuring_custom_build_layout
     protected void deleteExistingOrFail(String path, File baseDir = getProjectDir()) {
         Files.delete(new File(baseDir, path).toPath())

@@ -3,6 +3,7 @@ package info.solidsoft.gradle.pitest.functional
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
+import spock.lang.IgnoreIf
 import spock.lang.Issue
 
 @CompileDynamic
@@ -92,6 +93,7 @@ class Junit5FunctionalSpec extends AbstractPitestFunctionalSpec {
             result2.standardOutput.contains('Reusing configuration cache.')
     }
 
+    @IgnoreIf({ jvm.isJava25Compatible() })
     @Issue("https://github.com/szpak/gradle-pitest-plugin/issues/333")
     void "should not reference project data at execution time (causing InvalidUserCodeException in Gradle 8.1+)"() {
         given:

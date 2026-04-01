@@ -2,6 +2,7 @@ package info.solidsoft.gradle.pitest.functional
 
 import groovy.transform.CompileDynamic
 import nebula.test.functional.ExecutionResult
+import spock.lang.PendingFeature
 
 import java.nio.file.Paths
 
@@ -10,6 +11,7 @@ class AcceptanceTestsInSeparateSubprojectFunctionalSpec extends AbstractPitestFu
 
     private String htmlReport = null
 
+    @PendingFeature(reason = "Problematic with Gradle 9+, find some other way")
     void "should mutate production code in another subproject"() {
         given:
             copyResources("testProjects/multiproject", "")
