@@ -1,5 +1,9 @@
 # gradle-pitest-plugin changelog
 
+## 1.20.0 - Unreleased
+
+ - Fix Gradle 9 deprecation warnings - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/398) by [Pavel Lavrukhin](https://github.com/dantte-lp)
+
 ## 1.19.0 - 2026-03-29
 
 - Use a detached configuration to determine the platform-launcher dependency to avoid `ConcurrentModificationException` in `GradleDependencyReportTask` - [#390](https://github.com/szpak/gradle-pitest-plugin/issues/390) - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/393) by [Björn Kautler](https://github.com/Vampire)

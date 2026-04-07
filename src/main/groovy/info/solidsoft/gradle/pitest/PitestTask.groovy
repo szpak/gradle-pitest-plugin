@@ -48,7 +48,7 @@ import java.nio.charset.Charset
 @CompileStatic
 @CacheableTask
 @SuppressWarnings("UnstableApiUsage")   //@Option
-class PitestTask extends JavaExec {
+abstract class PitestTask extends JavaExec {
 
     @Input
     @Optional

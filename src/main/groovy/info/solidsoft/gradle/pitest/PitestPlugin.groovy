@@ -38,8 +38,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.util.GradleVersion
 
-import java.util.concurrent.Callable
-
 import static org.gradle.api.plugins.JavaPlugin.TEST_TASK_NAME
 import static org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -100,15 +98,24 @@ class PitestPlugin implements Plugin<Project> {
 
     private Configuration createConfiguration() {
         return project.configurations.maybeCreate(PITEST_CONFIGURATION_NAME).with { configuration ->
-            visible = false
+            setVisibleFalseOnPassedConfigurationForGradle8(configuration)
             description = "The PIT libraries to be used for this project."
             return configuration
         }
     }
 
+    @CompileDynamic
+    @Deprecated //remove once Gradle 9 is minimal supported version
+    @SuppressWarnings('GrMethodMayBeStatic')
+    private void setVisibleFalseOnPassedConfigurationForGradle8(Configuration configuration) {
+        if (GradleVersion.current() < GradleVersion.version("9.0")) {
+            configuration.visible = false
+        }
+    }
+
     private void setupExtensionWithDefaults() {
         extension = project.extensions.create("pitest", PitestPluginExtension, project)
-        setupReportDirInExtensionWithProblematicTypeForGradle5()
+        setupDefaultReportDir()
         extension.pitestVersion.set(DEFAULT_PITEST_VERSION)
         SourceSetContainer javaSourceSets = project.extensions.getByType(SourceSetContainer)
         extension.testSourceSets.set(javaSourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map { SourceSet ss -> [ss] })
@@ -128,9 +135,8 @@ class PitestPlugin implements Plugin<Project> {
         }
     }
 
-    @CompileDynamic //To keep Gradle <6.0 compatibility - see https://github.com/gradle/gradle/issues/10953
-    private void setupReportDirInExtensionWithProblematicTypeForGradle5() {
-        extension.reportDir.set(new File(project.extensions.getByType(ReportingExtension).baseDirectory.asFile.get(), PITEST_REPORT_DIRECTORY_NAME))
+    private void setupDefaultReportDir() {
+        extension.reportDir.set(project.extensions.getByType(ReportingExtension).baseDirectory.dir(PITEST_REPORT_DIRECTORY_NAME))
     }
 
     @SuppressWarnings("UnnecessarySetter")  //Due to: task.sourceDirs.setFrom() in CodeNarc
@@ -214,9 +220,7 @@ class PitestPlugin implements Plugin<Project> {
         task.exportLineCoverage.set(extension.exportLineCoverage)
         task.jvmPath.set(extension.jvmPath)
         task.mainProcessJvmArgs.set(extension.mainProcessJvmArgs)
-        task.launchClasspath.setFrom({
-            project.configurations.named(PITEST_CONFIGURATION_NAME)
-        } as Callable<Configuration>)
+        task.launchClasspath.setFrom(project.configurations.named(PITEST_CONFIGURATION_NAME))
         task.pluginConfiguration.set(extension.pluginConfiguration)
         task.maxSurviving.set(extension.maxSurviving)
         task.useClasspathJar.set(extension.useClasspathJar)
