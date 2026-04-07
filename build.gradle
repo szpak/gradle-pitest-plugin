@@ -1,3 +1,7 @@
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestListener
+import org.gradle.api.tasks.testing.TestResult
+
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'codenarc'
@@ -92,13 +96,19 @@ tasks.withType(Test).configureEach { testTask ->
             exceptionFormat = 'full'
         }
 
-        afterSuite { desc, result ->
-            if (!desc.parent) {
-                if (result.testCount == 0) {
-                    throw new IllegalStateException("No tests were found. Failing the build")
+        //Use TestListener interface instead of deprecated afterSuite(Closure) - see Gradle 9.4 upgrade guide
+        addTestListener(new TestListener() {
+            void beforeSuite(TestDescriptor suite) {}
+            void afterSuite(TestDescriptor suite, TestResult result) {
+                if (!suite.parent) {
+                    if (result.testCount == 0) {
+                        throw new IllegalStateException("No tests were found. Failing the build")
+                    }
                 }
             }
-        }
+            void beforeTest(TestDescriptor testDescriptor) {}
+            void afterTest(TestDescriptor testDescriptor, TestResult result) {}
+        })
     }
 }
 

@@ -31,7 +31,7 @@ import static info.solidsoft.gradle.pitest.PitestTaskConfigurationSpec.PIT_PARAM
 @CompileDynamic
 class PitestPluginGradleVersionFunctionalSpec extends AbstractPitestFunctionalSpec {
 
-    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("9.3.0")
+    private static final GradleVersion LATEST_KNOWN_GRADLE_VERSION = GradleVersion.version("9.4.1")
 
     //Based on https://docs.gradle.org/current/userguide/compatibility.html
     private static final Map<JavaVersion, GradleVersion> MINIMAL_GRADLE_VERSION_FOR_JAVA_VERSION = [
