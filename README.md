@@ -644,13 +644,12 @@ gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/relea
 ## Known issues
 
  - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1; since 1.20.0 the plugin
-   demotes PIT's own progress narration and the "Mutators"/"Timings" sections of the mutation report to INFO,
-   regardless of `verbosity`, so by default you see just the "Statistics" summary. Deliberately does *not*
-   filter any `MINION :`-prefixed line, and shows any individual per-mutator block that reports a real
-   `RUN_ERROR`/`MEMORY_ERROR` - hiding an actual problem behind `--info` would be worse than the noise. Pass
-   `--info` to see the full report. If a JVM/agent warning is what's bothering you - e.g. Mockito's byte-buddy
-   self-attach warning - pass the JVM flag it suggests to the child processes instead, e.g.
-   `pitest { jvmArgs = ["-XX:+EnableDynamicAgentLoading"] }`)
+   demotes PIT's own progress narration, some well-known minion/JVM boilerplate (SLF4J multiple-bindings
+   warnings, the Mockito/byte-buddy self-attach warning, the CDS "sharing" warning), and the "Mutators"/
+   "Timings" sections of the mutation report to INFO, regardless of `verbosity`, so by default you see just
+   the "Statistics" summary. Deliberately does *not* filter minion output in general, and shows any individual
+   per-mutator block that reports a real `RUN_ERROR`/`MEMORY_ERROR` - hiding an actual problem behind `--info`
+   would be worse than the noise. Pass `--info` to see the full report.)
 
 ## Development
 

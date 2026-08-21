@@ -39,6 +39,15 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             line << [
                 "1:03:03 PM PIT >> INFO : Overriding configured number of threads (1) to be 8",
                 "1:03:04 PM PIT >> INFO : Verbose logging is disabled. If you encounter a problem, please enable it before reporting an issue.",
+                "11:34:21 AM PIT >> INFO : MINION : SLF4J(W): Class path contains multiple SLF4J providers.",
+                "11:34:21 AM PIT >> INFO : MINION : SLF4J(W): Found provider [org.apache.logging.slf4j.SLF4JServiceProvider@1fdca564]",
+                "11:34:21 AM PIT >> INFO : MINION : SLF4J(I): Actual provider is of type [org.apache.logging.slf4j.SLF4JServiceProvider@1fdca564]",
+                "11:34:22 AM PIT >> INFO : MINION : OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended",
+                "12:43:14 PM PIT >> INFO : MINION : Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK.",
+                "12:43:14 PM PIT >> INFO : MINION : WARNING: A Java agent has been loaded dynamically (/path/to/byte-buddy-agent-1.18.10.jar)",
+                "12:43:14 PM PIT >> INFO : MINION : WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning",
+                "12:43:14 PM PIT >> INFO : MINION : WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information",
+                "12:43:14 PM PIT >> INFO : MINION : WARNING: Dynamic loading of agents will be disallowed by default in a future release",
             ]
     }
 
@@ -63,7 +72,6 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             delegate.toString() == line + "\n"
         where:
             line << [
-                "1:03:05 PM PIT >> INFO : MINION : Mockito is currently self-attaching to enable the inline-mock-maker.",
                 "1:03:05 PM PIT >> INFO : MINION : Test timed out after 4000 ms",
                 "1:03:05 PM PIT >> INFO : MINION : java.lang.AssertionError: expected <5> but was <4>",
             ]

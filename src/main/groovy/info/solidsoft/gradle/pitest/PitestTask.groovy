@@ -53,9 +53,11 @@ import java.util.regex.Pattern
 @SuppressWarnings("UnstableApiUsage")   //@Option
 abstract class PitestTask extends JavaExec {
 
-    //Allowlist, not a blanket "PIT >> INFO :" match: that channel also carries minion output (including a real
-    //timeout/failure) and PIT's own narration can carry a real problem too (e.g. "Minion exited abnormally due
-    //to UNKNOWN_ERROR") - https://github.com/szpak/gradle-pitest-plugin/issues/147
+    //Allowlist, not a blanket "PIT >> INFO :" or "MINION :" match: those channels also carry minion output
+    //(including a real timeout/failure) and PIT's own narration can carry a real problem too (e.g. "Minion
+    //exited abnormally due to UNKNOWN_ERROR") - https://github.com/szpak/gradle-pitest-plugin/issues/147
+    //A few entries below do match specific, unambiguous minion-echoed boilerplate (SLF4J, CDS sharing) - that's
+    //fine, since they're exact known-boring lines, not a broad match on the whole channel.
     private static final List<String> NOISY_LINE_MARKERS = [
         'Overriding configured number of threads',
         'Verbose logging is disabled',
@@ -68,6 +70,16 @@ abstract class PitestTask extends JavaExec {
         'Largest test (',
         'Incremental analysis reduced number of mutations by',
         'Completed in',
+        'SLF4J(W): Class path contains multiple SLF4J providers',
+        'SLF4J(W): Found provider [',
+        'SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings',
+        'SLF4J(I): Actual provider is of type [',
+        'Sharing is only supported for boot loader classes',
+        'Mockito is currently self-attaching to enable the inline-mock-maker',
+        'WARNING: A Java agent has been loaded dynamically',
+        'WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading',
+        'WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage',
+        'WARNING: Dynamic loading of agents will be disallowed by default in a future release',
     ].asImmutable()
 
     @Input
