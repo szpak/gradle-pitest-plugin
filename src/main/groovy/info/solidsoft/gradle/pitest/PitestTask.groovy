@@ -348,10 +348,13 @@ abstract class PitestTask extends JavaExec {
     //Lines matching one of these markers are PIT/JVM startup chatter rather than the mutation report -
     //demote them to INFO instead of always showing them regardless of the build's log level.
     //See: https://github.com/szpak/gradle-pitest-plugin/issues/147
+    //Deliberately narrow: "MINION :"-prefixed lines are excluded here even though most instances are JVM/agent
+    //startup noise, because that same channel is how a minion's timeout or failure output would surface too -
+    //filtering on that prefix would risk hiding a real problem behind --info. Use childProcessJvmArgs (e.g.
+    //"-XX:+EnableDynamicAgentLoading") to address the Mockito/byte-buddy self-attach warning at its source instead.
     private static final List<String> NOISY_LINE_MARKERS = [
         'Overriding configured number of threads',
         'Verbose logging is disabled',
-        'MINION :',
     ].asImmutable()
 
     @Override

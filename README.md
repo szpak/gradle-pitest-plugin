@@ -643,9 +643,13 @@ gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/relea
 
 ## Known issues
 
- - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1; some of the most common
-   noise - thread count override, verbose-logging notice, minion JVM/agent warnings - is filtered out of the
-   default output regardless of `verbosity` since 1.20.0, but not everything can be filtered this way)
+ - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1; since 1.20.0 the plugin
+   filters PIT's own "overriding configured number of threads" and "verbose logging is disabled" notices out of
+   the default output regardless of `verbosity`; deliberately does *not* filter any `MINION :`-prefixed line,
+   since that channel is also how a minion's timeout or failure would surface, and hiding it behind `--info`
+   would be worse than the noise. If a JVM/agent warning is what's bothering you - e.g. Mockito's byte-buddy
+   self-attach warning - pass the JVM flag it suggests to the child processes instead, e.g.
+   `pitest { jvmArgs = ["-XX:+EnableDynamicAgentLoading"] }`)
 
 ## Development
 

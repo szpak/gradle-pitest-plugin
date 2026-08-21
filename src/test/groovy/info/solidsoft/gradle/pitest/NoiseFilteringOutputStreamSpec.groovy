@@ -39,7 +39,6 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             line << [
                 "1:03:03 PM PIT >> INFO : Overriding configured number of threads (1) to be 8",
                 "1:03:04 PM PIT >> INFO : Verbose logging is disabled. If you encounter a problem, please enable it before reporting an issue.",
-                "1:03:05 PM PIT >> INFO : MINION : Mockito is currently self-attaching to enable the inline-mock-maker.",
             ]
     }
 
@@ -52,6 +51,22 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             0 * logger.info(_)
         and:
             delegate.toString() == line + "\n"
+    }
+
+    @Unroll
+    void "should pass minion output through unfiltered, in case it reports a real timeout or failure: '#line'"() {
+        when:
+            writeLine(line)
+        then:
+            0 * logger.info(_)
+        and:
+            delegate.toString() == line + "\n"
+        where:
+            line << [
+                "1:03:05 PM PIT >> INFO : MINION : Mockito is currently self-attaching to enable the inline-mock-maker.",
+                "1:03:05 PM PIT >> INFO : MINION : Test timed out after 4000 ms",
+                "1:03:05 PM PIT >> INFO : MINION : java.lang.AssertionError: expected <5> but was <4>",
+            ]
     }
 
     void "should pass the mutation report summary through to the delegate stream by default"() {
