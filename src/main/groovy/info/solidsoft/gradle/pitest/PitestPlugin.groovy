@@ -324,7 +324,7 @@ class PitestPlugin implements Plugin<Project> {
         }
 
         try {
-            def managedVersions = dependencyManagementExtension.managedVersions
+            Map<String, String> managedVersions = dependencyManagementExtension.managedVersions as Map<String, String>
             managedVersions.each { String coordinates, String version ->
                 configuration.resolutionStrategy.force("${coordinates}:${version}")
             }
