@@ -3,7 +3,7 @@
 ## 1.20.0 - Unreleased
 
  - Fix Gradle 9 deprecation warnings - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/398) by [Pavel Lavrukhin](https://github.com/dantte-lp)
- - Filter PIT's own "overriding configured number of threads" and "verbose logging is disabled" notices out of the `pitest` task output, demoting them to INFO instead of always showing regardless of build log level (deliberately leaves minion output untouched, since that's also how a minion's timeout or failure would surface) - [#147](https://github.com/szpak/gradle-pitest-plugin/issues/147)
+ - Reduce noise in the `pitest` task output, demoting to INFO instead of always showing regardless of build log level: PIT's own progress narration (e.g. "overriding configured number of threads", "verbose logging is disabled"), and the per-mutator breakdown ("Mutators" section) and "Timings" section of the mutation report. The "Statistics" summary (and anything printed after it) always stays visible, as does any individual per-mutator block that reports a real `RUN_ERROR`/`MEMORY_ERROR`, and all minion output - so an actual problem still shows up by default - [#147](https://github.com/szpak/gradle-pitest-plugin/issues/147)
 
 ## 1.19.0 - 2026-03-29
 

@@ -44,7 +44,7 @@ class NoiseFilteringOutputStreamSpec extends Specification {
 
     void "should pass a non-noisy line through to the delegate stream unchanged"() {
         given:
-            String line = "================================================================================"
+            String line = "Some other, unrecognized build message"
         when:
             writeLine(line)
         then:
@@ -78,6 +78,82 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             0 * logger.info(_)
         and:
             delegate.toString() == line + "\n"
+    }
+
+    void "should hide the Mutators and Timings sections (including their headers) but keep Statistics and anything after it visible"() {
+        given:
+            List<String> loggedInfoLines = []
+            logger.info(_) >> { String l -> loggedInfoLines << l }
+        and:
+            List<String> reportLines = [
+                "================================================================================",
+                "- Mutators",
+                "================================================================================",
+                "> org.pitest.mutationtest.engine.gregor.mutators.returns.PrimitiveReturnsMutator",
+                ">> Generated 16 Killed 12 (75%)",
+                "> KILLED 12 SURVIVED 4 TIMED_OUT 0 NON_VIABLE 0",
+                "> MEMORY_ERROR 0 NOT_STARTED 0 STARTED 0 RUN_ERROR 0",
+                "> NO_COVERAGE 0",
+                "--------------------------------------------------------------------------------",
+                "================================================================================",
+                "- Timings",
+                "================================================================================",
+                "> pre-scan for mutations : < 1 second",
+                "--------------------------------------------------------------------------------",
+                "================================================================================",
+                "- Statistics",
+                "================================================================================",
+                ">> Line Coverage (for mutated classes only): 1191/1290 (92%)",
+                "Enhanced functionality available at https://www.arcmutate.com/",
+            ]
+        when:
+            reportLines.each { writeLine(it) }
+        then:
+            delegate.toString() == ([
+                "================================================================================",
+                "- Statistics",
+                "================================================================================",
+                ">> Line Coverage (for mutated classes only): 1191/1290 (92%)",
+                "Enhanced functionality available at https://www.arcmutate.com/",
+            ].join("\n") + "\n")
+        and: "everything from Mutators and Timings (including their headers) was demoted to info instead of dropped"
+            //Note: reportLines minus the visible tail, NOT via List.minus() - it removes every occurrence of a
+            //matched element (there are several identical "====" separator lines), not just the intended ones.
+            loggedInfoLines == reportLines[0..<(reportLines.size() - 5)]
+    }
+
+    void "should keep a mutator block visible when it reports a real RUN_ERROR or MEMORY_ERROR"() {
+        given:
+            List<String> loggedInfoLines = []
+            logger.info(_) >> { String l -> loggedInfoLines << l }
+        and:
+            List<String> boringBlock = [
+                "> org.pitest.mutationtest.engine.gregor.mutators.returns.PrimitiveReturnsMutator",
+                ">> Generated 16 Killed 12 (75%)",
+                "> KILLED 12 SURVIVED 4 TIMED_OUT 0 NON_VIABLE 0",
+                "> MEMORY_ERROR 0 NOT_STARTED 0 STARTED 0 RUN_ERROR 0",
+                "> NO_COVERAGE 0",
+                "--------------------------------------------------------------------------------",
+            ]
+            List<String> blockWithRunError = [
+                "> org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator",
+                ">> Generated 94 Killed 83 (88%)",
+                "> KILLED 83 SURVIVED 8 TIMED_OUT 0 NON_VIABLE 0",
+                "> MEMORY_ERROR 0 NOT_STARTED 0 STARTED 0 RUN_ERROR 2",
+                "> NO_COVERAGE 3",
+                "--------------------------------------------------------------------------------",
+            ]
+        and:
+            List<String> mutatorsHeader = ["================================================================================", "- Mutators",
+                                            "================================================================================"]
+        when: "entering the Mutators section, then writing a boring block and one reporting a real error"
+            mutatorsHeader.each { writeLine(it) }
+            (boringBlock + blockWithRunError).each { writeLine(it) }
+        then:
+            delegate.toString() == blockWithRunError.join("\n") + "\n"
+        and: "the header and the boring block were demoted to info in full - not checked via list membership, " +
+            "since the boring block's delimiter line is textually identical to the error block's"
+            loggedInfoLines == mutatorsHeader + boringBlock
     }
 
     void "should flush a pending, not yet newline-terminated line on close without closing the delegate"() {

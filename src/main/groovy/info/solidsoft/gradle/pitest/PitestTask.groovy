@@ -345,16 +345,28 @@ abstract class PitestTask extends JavaExec {
         return jvmPath.isPresent() ? jvmPath.asFile.get().absolutePath : null
     }
 
-    //Lines matching one of these markers are PIT/JVM startup chatter rather than the mutation report -
-    //demote them to INFO instead of always showing them regardless of the build's log level.
+    //Lines matching one of these markers are PIT's own progress narration (printed before the mutation report,
+    //at PIT's own "INFO" verbosity) rather than something a user needs to see by default - demote them to
+    //Gradle's INFO level instead of always showing them regardless of the build's log level.
     //See: https://github.com/szpak/gradle-pitest-plugin/issues/147
-    //Deliberately narrow: "MINION :"-prefixed lines are excluded here even though most instances are JVM/agent
-    //startup noise, because that same channel is how a minion's timeout or failure output would surface too -
-    //filtering on that prefix would risk hiding a real problem behind --info. Use childProcessJvmArgs (e.g.
-    //"-XX:+EnableDynamicAgentLoading") to address the Mockito/byte-buddy self-attach warning at its source instead.
+    //Deliberately an allowlist of specific, known-boring phrasings rather than a blanket "PIT >> INFO :" match:
+    //that channel is also how a minion's raw output (including a real timeout or failure) gets echoed back
+    //("PIT >> INFO : MINION : ..."), and PIT's own narration can carry a real problem too (e.g. "Minion exited
+    //abnormally due to UNKNOWN_ERROR", see 1.15.0 in CHANGELOG.md) - a broad match would risk hiding either
+    //behind --info. Use childProcessJvmArgs (e.g. "-XX:+EnableDynamicAgentLoading") to address the Mockito/
+    //byte-buddy self-attach warning at its source instead of trying to filter it here.
     private static final List<String> NOISY_LINE_MARKERS = [
         'Overriding configured number of threads',
         'Verbose logging is disabled',
+        'mutation test units',                                //"Created N mutation test units[ in pre scan]"
+        'test classes to minion',                              //"Sending N test classes to minion"
+        'Sent tests to minion',
+        'Calculated coverage in',
+        'tests took longer than',
+        'Slowest test (',
+        'Largest test (',
+        'Incremental analysis reduced number of mutations by',
+        'Completed in',
     ].asImmutable()
 
     @Override
@@ -367,15 +379,37 @@ abstract class PitestTask extends JavaExec {
         super.exec()
     }
 
-    //Filters known-noisy PIT/JVM startup lines out of the process output stream, redirecting them to
-    //the Gradle logger at INFO level, while passing everything else (in particular the mutation report)
-    //through untouched so it keeps showing up regardless of the build's log level, as before.
+    //Filters PIT's own progress narration and the per-mutator breakdown/timings report sections out of the
+    //process output stream, redirecting them to the Gradle logger at INFO level. The Statistics section (and
+    //anything printed after it) always passes through untouched, as does any individual per-mutator block that
+    //reports a real RUN_ERROR or MEMORY_ERROR, and all minion output - so an actual problem still shows up
+    //regardless of the build's log level, as before.
     @PackageScope
     static class NoiseFilteringOutputStream extends OutputStream {
+
+        //PIT prints its mutation report as a sequence of "======\n- SectionName\n======" headers. Everything
+        //in the Mutators/Timings sections is pure "how it ran" detail; Statistics (and anything after it, e.g.
+        //the closing ad line or build messages) is the actual result and always passes through.
+        private static final java.util.regex.Pattern SECTION_RULE_LINE = ~/^={5,}$/
+        private static final java.util.regex.Pattern SECTION_NAME_LINE = ~/^- (.+)$/
+        private static final java.util.regex.Pattern MUTATOR_BLOCK_DELIMITER_LINE = ~/^-{5,}$/
+        private static final java.util.regex.Pattern RUN_ERROR_COUNT = ~/RUN_ERROR\s+(\d+)/
+        private static final java.util.regex.Pattern MEMORY_ERROR_COUNT = ~/MEMORY_ERROR\s+(\d+)/
+
+        private enum Section {
+            PREAMBLE, MUTATORS, TIMINGS, VISIBLE   //VISIBLE covers Statistics and anything after it
+        }
 
         private final OutputStream delegate
         private final Logger logger
         private final ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream()
+
+        private Section currentSection = Section.PREAMBLE
+        private final List<String> headerBuffer = []
+        private boolean awaitingSectionName = false
+        private boolean awaitingClosingSectionRule = false
+        private String pendingSectionName = null
+        private final List<String> mutatorBlockBuffer = []
 
         NoiseFilteringOutputStream(OutputStream delegate, Logger logger) {
             this.delegate = delegate
@@ -385,7 +419,9 @@ abstract class PitestTask extends JavaExec {
         @Override
         void write(int b) throws IOException {
             if (b == (int) ((char) '\n')) {
-                flushLine()
+                String line = lineBuffer.toString()
+                lineBuffer.reset()
+                processLine(line)
             } else {
                 lineBuffer.write(b)
             }
@@ -399,20 +435,121 @@ abstract class PitestTask extends JavaExec {
         @Override
         void close() throws IOException {
             if (lineBuffer.size() > 0) {
-                flushLine()
+                String line = lineBuffer.toString()
+                lineBuffer.reset()
+                processLine(line)
+            }
+            //Stream ended mid-header or mid-block (shouldn't normally happen) - default to showing rather than
+            //hiding, since we can no longer tell what section this belonged to.
+            flushHeaderBufferAsPlainLines()
+            if (!mutatorBlockBuffer.isEmpty()) {
+                mutatorBlockBuffer.each { String bufferedLine -> writeToDelegate(bufferedLine) }
+                mutatorBlockBuffer.clear()
             }
             delegate.flush()   //do not close - the delegate defaults to System.out/System.err
         }
 
-        private void flushLine() throws IOException {
-            String line = lineBuffer.toString()
-            lineBuffer.reset()
-            if (NOISY_LINE_MARKERS.any { String marker -> line.contains(marker) }) {
-                logger.info(line)
-            } else {
-                delegate.write(line.getBytes())
-                delegate.write((int) ((char) '\n'))
+        private void processLine(String line) {
+            if (awaitingClosingSectionRule) {
+                if (SECTION_RULE_LINE.matcher(line).matches()) {
+                    headerBuffer << line
+                    finalizeHeader()
+                } else {
+                    flushHeaderBufferAsPlainLines()
+                    processLine(line)
+                }
+                return
             }
+            if (awaitingSectionName) {
+                java.util.regex.Matcher nameMatcher = SECTION_NAME_LINE.matcher(line)
+                if (nameMatcher.matches()) {
+                    pendingSectionName = nameMatcher.group(1)
+                    headerBuffer << line
+                    awaitingSectionName = false
+                    awaitingClosingSectionRule = true
+                } else {
+                    awaitingSectionName = false
+                    flushHeaderBufferAsPlainLines()
+                    processLine(line)
+                }
+                return
+            }
+            if (SECTION_RULE_LINE.matcher(line).matches()) {
+                headerBuffer << line
+                awaitingSectionName = true
+                return
+            }
+
+            switch (currentSection) {
+                case Section.MUTATORS:
+                    mutatorBlockBuffer << line
+                    if (MUTATOR_BLOCK_DELIMITER_LINE.matcher(line).matches()) {
+                        flushMutatorBlock()
+                    }
+                    break
+                case Section.TIMINGS:
+                    logger.info(line)
+                    break
+                case Section.PREAMBLE:
+                    if (NOISY_LINE_MARKERS.any { String marker -> line.contains(marker) }) {
+                        logger.info(line)
+                    } else {
+                        writeToDelegate(line)
+                    }
+                    break
+                default: //VISIBLE
+                    writeToDelegate(line)
+            }
+        }
+
+        private void finalizeHeader() {
+            Section newSection
+            switch (pendingSectionName) {
+                case "Mutators": newSection = Section.MUTATORS; break
+                case "Timings": newSection = Section.TIMINGS; break
+                default: newSection = Section.VISIBLE   //"Statistics" and any future/unrecognized section
+            }
+            boolean headerVisible = (newSection == Section.VISIBLE)
+            headerBuffer.each { String bufferedLine ->
+                if (headerVisible) {
+                    writeToDelegate(bufferedLine)
+                } else {
+                    logger.info(bufferedLine)
+                }
+            }
+            headerBuffer.clear()
+            awaitingClosingSectionRule = false
+            pendingSectionName = null
+            currentSection = newSection
+        }
+
+        private void flushHeaderBufferAsPlainLines() {
+            headerBuffer.each { String bufferedLine -> writeToDelegate(bufferedLine) }
+            headerBuffer.clear()
+        }
+
+        private void flushMutatorBlock() {
+            boolean reportsRealError = mutatorBlockBuffer.any { String bufferedLine ->
+                hasNonZeroCount(bufferedLine, RUN_ERROR_COUNT) || hasNonZeroCount(bufferedLine, MEMORY_ERROR_COUNT)
+            }
+            mutatorBlockBuffer.each { String bufferedLine ->
+                if (reportsRealError) {
+                    writeToDelegate(bufferedLine)
+                } else {
+                    logger.info(bufferedLine)
+                }
+            }
+            mutatorBlockBuffer.clear()
+        }
+
+        private static boolean hasNonZeroCount(String line, java.util.regex.Pattern countPattern) {
+            java.util.regex.Matcher matcher = countPattern.matcher(line)
+            return matcher.find() && matcher.group(1).toInteger() > 0
+        }
+
+        private void writeToDelegate(String line) {
+            delegate.write(line.getBytes())
+            delegate.write((int) ((char) '\n'))
         }
     }
 
