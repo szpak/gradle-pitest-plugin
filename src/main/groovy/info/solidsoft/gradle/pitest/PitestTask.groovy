@@ -21,6 +21,7 @@ import org.gradle.api.Incubating
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.logging.Logger
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
@@ -41,6 +42,8 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
 
 import java.nio.charset.Charset
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Gradle task implementation for Pitest.
@@ -49,6 +52,35 @@ import java.nio.charset.Charset
 @CacheableTask
 @SuppressWarnings("UnstableApiUsage")   //@Option
 abstract class PitestTask extends JavaExec {
+
+    //Allowlist, not a blanket "PIT >> INFO :" or "MINION :" match: those channels also carry minion output
+    //(including a real timeout/failure) and PIT's own narration can carry a real problem too (e.g. "Minion
+    //exited abnormally due to UNKNOWN_ERROR") - https://github.com/szpak/gradle-pitest-plugin/issues/147
+    //A few entries below do match specific, unambiguous minion-echoed boilerplate (SLF4J, CDS sharing) - that's
+    //fine, since they're exact known-boring lines, not a broad match on the whole channel.
+    private static final List<String> NOISY_LINE_MARKERS = [
+        'Overriding configured number of threads',
+        'Verbose logging is disabled',
+        'mutation test units',
+        'test classes to minion',
+        'Sent tests to minion',
+        'Calculated coverage in',
+        'tests took longer than',
+        'Slowest test (',
+        'Largest test (',
+        'Incremental analysis reduced number of mutations by',
+        'Completed in',
+        'SLF4J(W): Class path contains multiple SLF4J providers',
+        'SLF4J(W): Found provider [',
+        'SLF4J(W): See https://www.slf4j.org/codes.html#multiple_bindings',
+        'SLF4J(I): Actual provider is of type [',
+        'Sharing is only supported for boot loader classes',
+        'Mockito is currently self-attaching to enable the inline-mock-maker',
+        'WARNING: A Java agent has been loaded dynamically',
+        'WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading',
+        'WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage',
+        'WARNING: Dynamic loading of agents will be disallowed by default in a future release',
+    ].asImmutable()
 
     @Input
     @Optional
@@ -349,7 +381,166 @@ abstract class PitestTask extends JavaExec {
         args = argumentsForPit()
         jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         classpath = getLaunchClasspath()
+        standardOutput = new NoiseFilteringOutputStream(standardOutput ?: System.out, logger)
+        errorOutput = new NoiseFilteringOutputStream(errorOutput ?: System.err, logger)
         super.exec()
+    }
+
+    //Demotes the Mutators/Timings report sections to INFO; Statistics, any RUN_ERROR/MEMORY_ERROR, and all
+    //minion output always pass through.
+    @PackageScope
+    @SuppressWarnings('CloseWithoutCloseable')   //false positive - OutputStream already implements Closeable
+    static class NoiseFilteringOutputStream extends OutputStream {
+
+        private static final Pattern SECTION_RULE_LINE = ~/^={5,}$/
+        private static final Pattern SECTION_NAME_LINE = ~/^- (.+)$/
+        private static final Pattern MUTATOR_BLOCK_DELIMITER_LINE = ~/^-{5,}$/
+        private static final Pattern RUN_ERROR_COUNT = ~/RUN_ERROR\s+(\d+)/
+        private static final Pattern MEMORY_ERROR_COUNT = ~/MEMORY_ERROR\s+(\d+)/
+
+        private enum Section { PREAMBLE, MUTATORS, TIMINGS, VISIBLE }
+
+        private final OutputStream delegate
+        private final Logger logger
+        private final ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream()
+
+        private Section currentSection = Section.PREAMBLE
+        private final List<String> headerBuffer = []
+        private boolean awaitingSectionName = false
+        private boolean awaitingClosingSectionRule = false
+        private String pendingSectionName = null
+        private final List<String> mutatorBlockBuffer = []
+
+        NoiseFilteringOutputStream(OutputStream delegate, Logger logger) {
+            this.delegate = delegate
+            this.logger = logger
+        }
+
+        @Override
+        void write(int b) throws IOException {
+            if (b == (int) ((char) '\n')) {
+                processLine(readBufferedLine())
+            } else {
+                lineBuffer.write(b)
+            }
+        }
+
+        @Override
+        void flush() throws IOException {
+            delegate.flush()
+        }
+
+        @Override
+        void close() throws IOException {
+            if (lineBuffer.size() > 0) {
+                processLine(readBufferedLine())
+            }
+            flushHeaderBufferAsPlainLines()
+            if (!mutatorBlockBuffer.isEmpty()) {
+                mutatorBlockBuffer.each { String bufferedLine -> writeToDelegate(bufferedLine) }
+                mutatorBlockBuffer.clear()
+            }
+            delegate.flush()   //not closed - delegate defaults to System.out/System.err
+        }
+
+        @SuppressWarnings('UnnecessaryToString')   //false positive - lineBuffer is a ByteArrayOutputStream, not a String
+        private String readBufferedLine() {
+            String line = lineBuffer.toString()
+            lineBuffer.reset()
+            return line
+        }
+
+        private void processLine(String line) {
+            if (awaitingClosingSectionRule) {
+                if (SECTION_RULE_LINE.matcher(line).matches()) {
+                    headerBuffer << line
+                    finalizeHeader()
+                } else {
+                    flushHeaderBufferAsPlainLines()
+                    processLine(line)
+                }
+                return
+            }
+            if (awaitingSectionName) {
+                Matcher nameMatcher = SECTION_NAME_LINE.matcher(line)
+                if (nameMatcher.matches()) {
+                    pendingSectionName = nameMatcher.group(1)
+                    headerBuffer << line
+                    awaitingSectionName = false
+                    awaitingClosingSectionRule = true
+                } else {
+                    awaitingSectionName = false
+                    flushHeaderBufferAsPlainLines()
+                    processLine(line)
+                }
+                return
+            }
+            if (SECTION_RULE_LINE.matcher(line).matches()) {
+                headerBuffer << line
+                awaitingSectionName = true
+                return
+            }
+
+            switch (currentSection) {
+                case Section.MUTATORS:
+                    mutatorBlockBuffer << line
+                    if (MUTATOR_BLOCK_DELIMITER_LINE.matcher(line).matches()) {
+                        flushMutatorBlock()
+                    }
+                    break
+                case Section.TIMINGS:
+                    logger.info(line)
+                    break
+                case Section.PREAMBLE:
+                    if (NOISY_LINE_MARKERS.any { String marker -> line.contains(marker) }) {
+                        logger.info(line)
+                    } else {
+                        writeToDelegate(line)
+                    }
+                    break
+                default: //VISIBLE
+                    writeToDelegate(line)
+            }
+        }
+
+        private void finalizeHeader() {
+            Section newSection
+            switch (pendingSectionName) {
+                case "Mutators": newSection = Section.MUTATORS; break
+                case "Timings": newSection = Section.TIMINGS; break
+                default: newSection = Section.VISIBLE
+            }
+            boolean headerVisible = (newSection == Section.VISIBLE)
+            headerBuffer.each { String bufferedLine -> headerVisible ? writeToDelegate(bufferedLine) : logger.info(bufferedLine) }
+            headerBuffer.clear()
+            awaitingClosingSectionRule = false
+            pendingSectionName = null
+            currentSection = newSection
+        }
+
+        private void flushHeaderBufferAsPlainLines() {
+            headerBuffer.each { String bufferedLine -> writeToDelegate(bufferedLine) }
+            headerBuffer.clear()
+        }
+
+        private void flushMutatorBlock() {
+            boolean reportsRealError = mutatorBlockBuffer.any { String bufferedLine ->
+                hasNonZeroCount(bufferedLine, RUN_ERROR_COUNT) || hasNonZeroCount(bufferedLine, MEMORY_ERROR_COUNT)
+            }
+            mutatorBlockBuffer.each { String bufferedLine -> reportsRealError ? writeToDelegate(bufferedLine) : logger.info(bufferedLine) }
+            mutatorBlockBuffer.clear()
+        }
+
+        private static boolean hasNonZeroCount(String line, Pattern countPattern) {
+            Matcher matcher = countPattern.matcher(line)
+            return matcher.find() && matcher.group(1).toInteger() > 0
+        }
+
+        private void writeToDelegate(String line) {
+            delegate.write(line.getBytes())
+            delegate.write((int) ((char) '\n'))
+        }
+
     }
 
     private List<String> argumentsForPit() {
