@@ -42,6 +42,8 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.options.Option
 
 import java.nio.charset.Charset
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Gradle task implementation for Pitest.
@@ -50,6 +52,23 @@ import java.nio.charset.Charset
 @CacheableTask
 @SuppressWarnings("UnstableApiUsage")   //@Option
 abstract class PitestTask extends JavaExec {
+
+    //Allowlist, not a blanket "PIT >> INFO :" match: that channel also carries minion output (including a real
+    //timeout/failure) and PIT's own narration can carry a real problem too (e.g. "Minion exited abnormally due
+    //to UNKNOWN_ERROR") - https://github.com/szpak/gradle-pitest-plugin/issues/147
+    private static final List<String> NOISY_LINE_MARKERS = [
+        'Overriding configured number of threads',
+        'Verbose logging is disabled',
+        'mutation test units',
+        'test classes to minion',
+        'Sent tests to minion',
+        'Calculated coverage in',
+        'tests took longer than',
+        'Slowest test (',
+        'Largest test (',
+        'Incremental analysis reduced number of mutations by',
+        'Completed in',
+    ].asImmutable()
 
     @Input
     @Optional
@@ -345,30 +364,6 @@ abstract class PitestTask extends JavaExec {
         return jvmPath.isPresent() ? jvmPath.asFile.get().absolutePath : null
     }
 
-    //Lines matching one of these markers are PIT's own progress narration (printed before the mutation report,
-    //at PIT's own "INFO" verbosity) rather than something a user needs to see by default - demote them to
-    //Gradle's INFO level instead of always showing them regardless of the build's log level.
-    //See: https://github.com/szpak/gradle-pitest-plugin/issues/147
-    //Deliberately an allowlist of specific, known-boring phrasings rather than a blanket "PIT >> INFO :" match:
-    //that channel is also how a minion's raw output (including a real timeout or failure) gets echoed back
-    //("PIT >> INFO : MINION : ..."), and PIT's own narration can carry a real problem too (e.g. "Minion exited
-    //abnormally due to UNKNOWN_ERROR", see 1.15.0 in CHANGELOG.md) - a broad match would risk hiding either
-    //behind --info. Use childProcessJvmArgs (e.g. "-XX:+EnableDynamicAgentLoading") to address the Mockito/
-    //byte-buddy self-attach warning at its source instead of trying to filter it here.
-    private static final List<String> NOISY_LINE_MARKERS = [
-        'Overriding configured number of threads',
-        'Verbose logging is disabled',
-        'mutation test units',                                //"Created N mutation test units[ in pre scan]"
-        'test classes to minion',                              //"Sending N test classes to minion"
-        'Sent tests to minion',
-        'Calculated coverage in',
-        'tests took longer than',
-        'Slowest test (',
-        'Largest test (',
-        'Incremental analysis reduced number of mutations by',
-        'Completed in',
-    ].asImmutable()
-
     @Override
     void exec() {
         args = argumentsForPit()
@@ -379,26 +374,19 @@ abstract class PitestTask extends JavaExec {
         super.exec()
     }
 
-    //Filters PIT's own progress narration and the per-mutator breakdown/timings report sections out of the
-    //process output stream, redirecting them to the Gradle logger at INFO level. The Statistics section (and
-    //anything printed after it) always passes through untouched, as does any individual per-mutator block that
-    //reports a real RUN_ERROR or MEMORY_ERROR, and all minion output - so an actual problem still shows up
-    //regardless of the build's log level, as before.
+    //Demotes the Mutators/Timings report sections to INFO; Statistics, any RUN_ERROR/MEMORY_ERROR, and all
+    //minion output always pass through.
     @PackageScope
+    @SuppressWarnings('CloseWithoutCloseable')   //false positive - OutputStream already implements Closeable
     static class NoiseFilteringOutputStream extends OutputStream {
 
-        //PIT prints its mutation report as a sequence of "======\n- SectionName\n======" headers. Everything
-        //in the Mutators/Timings sections is pure "how it ran" detail; Statistics (and anything after it, e.g.
-        //the closing ad line or build messages) is the actual result and always passes through.
-        private static final java.util.regex.Pattern SECTION_RULE_LINE = ~/^={5,}$/
-        private static final java.util.regex.Pattern SECTION_NAME_LINE = ~/^- (.+)$/
-        private static final java.util.regex.Pattern MUTATOR_BLOCK_DELIMITER_LINE = ~/^-{5,}$/
-        private static final java.util.regex.Pattern RUN_ERROR_COUNT = ~/RUN_ERROR\s+(\d+)/
-        private static final java.util.regex.Pattern MEMORY_ERROR_COUNT = ~/MEMORY_ERROR\s+(\d+)/
+        private static final Pattern SECTION_RULE_LINE = ~/^={5,}$/
+        private static final Pattern SECTION_NAME_LINE = ~/^- (.+)$/
+        private static final Pattern MUTATOR_BLOCK_DELIMITER_LINE = ~/^-{5,}$/
+        private static final Pattern RUN_ERROR_COUNT = ~/RUN_ERROR\s+(\d+)/
+        private static final Pattern MEMORY_ERROR_COUNT = ~/MEMORY_ERROR\s+(\d+)/
 
-        private enum Section {
-            PREAMBLE, MUTATORS, TIMINGS, VISIBLE   //VISIBLE covers Statistics and anything after it
-        }
+        private enum Section { PREAMBLE, MUTATORS, TIMINGS, VISIBLE }
 
         private final OutputStream delegate
         private final Logger logger
@@ -419,9 +407,7 @@ abstract class PitestTask extends JavaExec {
         @Override
         void write(int b) throws IOException {
             if (b == (int) ((char) '\n')) {
-                String line = lineBuffer.toString()
-                lineBuffer.reset()
-                processLine(line)
+                processLine(readBufferedLine())
             } else {
                 lineBuffer.write(b)
             }
@@ -435,18 +421,21 @@ abstract class PitestTask extends JavaExec {
         @Override
         void close() throws IOException {
             if (lineBuffer.size() > 0) {
-                String line = lineBuffer.toString()
-                lineBuffer.reset()
-                processLine(line)
+                processLine(readBufferedLine())
             }
-            //Stream ended mid-header or mid-block (shouldn't normally happen) - default to showing rather than
-            //hiding, since we can no longer tell what section this belonged to.
             flushHeaderBufferAsPlainLines()
             if (!mutatorBlockBuffer.isEmpty()) {
                 mutatorBlockBuffer.each { String bufferedLine -> writeToDelegate(bufferedLine) }
                 mutatorBlockBuffer.clear()
             }
-            delegate.flush()   //do not close - the delegate defaults to System.out/System.err
+            delegate.flush()   //not closed - delegate defaults to System.out/System.err
+        }
+
+        @SuppressWarnings('UnnecessaryToString')   //false positive - lineBuffer is a ByteArrayOutputStream, not a String
+        private String readBufferedLine() {
+            String line = lineBuffer.toString()
+            lineBuffer.reset()
+            return line
         }
 
         private void processLine(String line) {
@@ -461,7 +450,7 @@ abstract class PitestTask extends JavaExec {
                 return
             }
             if (awaitingSectionName) {
-                java.util.regex.Matcher nameMatcher = SECTION_NAME_LINE.matcher(line)
+                Matcher nameMatcher = SECTION_NAME_LINE.matcher(line)
                 if (nameMatcher.matches()) {
                     pendingSectionName = nameMatcher.group(1)
                     headerBuffer << line
@@ -507,16 +496,10 @@ abstract class PitestTask extends JavaExec {
             switch (pendingSectionName) {
                 case "Mutators": newSection = Section.MUTATORS; break
                 case "Timings": newSection = Section.TIMINGS; break
-                default: newSection = Section.VISIBLE   //"Statistics" and any future/unrecognized section
+                default: newSection = Section.VISIBLE
             }
             boolean headerVisible = (newSection == Section.VISIBLE)
-            headerBuffer.each { String bufferedLine ->
-                if (headerVisible) {
-                    writeToDelegate(bufferedLine)
-                } else {
-                    logger.info(bufferedLine)
-                }
-            }
+            headerBuffer.each { String bufferedLine -> headerVisible ? writeToDelegate(bufferedLine) : logger.info(bufferedLine) }
             headerBuffer.clear()
             awaitingClosingSectionRule = false
             pendingSectionName = null
@@ -532,18 +515,12 @@ abstract class PitestTask extends JavaExec {
             boolean reportsRealError = mutatorBlockBuffer.any { String bufferedLine ->
                 hasNonZeroCount(bufferedLine, RUN_ERROR_COUNT) || hasNonZeroCount(bufferedLine, MEMORY_ERROR_COUNT)
             }
-            mutatorBlockBuffer.each { String bufferedLine ->
-                if (reportsRealError) {
-                    writeToDelegate(bufferedLine)
-                } else {
-                    logger.info(bufferedLine)
-                }
-            }
+            mutatorBlockBuffer.each { String bufferedLine -> reportsRealError ? writeToDelegate(bufferedLine) : logger.info(bufferedLine) }
             mutatorBlockBuffer.clear()
         }
 
-        private static boolean hasNonZeroCount(String line, java.util.regex.Pattern countPattern) {
-            java.util.regex.Matcher matcher = countPattern.matcher(line)
+        private static boolean hasNonZeroCount(String line, Pattern countPattern) {
+            Matcher matcher = countPattern.matcher(line)
             return matcher.find() && matcher.group(1).toInteger() > 0
         }
 
@@ -551,6 +528,7 @@ abstract class PitestTask extends JavaExec {
             delegate.write(line.getBytes())
             delegate.write((int) ((char) '\n'))
         }
+
     }
 
     private List<String> argumentsForPit() {

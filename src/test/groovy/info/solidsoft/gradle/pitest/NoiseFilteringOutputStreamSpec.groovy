@@ -23,9 +23,9 @@ import spock.lang.Unroll
 @CompileDynamic
 class NoiseFilteringOutputStreamSpec extends Specification {
 
-    ByteArrayOutputStream delegate = new ByteArrayOutputStream()
-    Logger logger = Mock()
-    OutputStream noiseFilteringOutputStream = new PitestTask.NoiseFilteringOutputStream(delegate, logger)
+    private final ByteArrayOutputStream delegate = new ByteArrayOutputStream()
+    private final Logger logger = Mock()
+    private final OutputStream noiseFilteringOutputStream = new PitestTask.NoiseFilteringOutputStream(delegate, logger)
 
     @Unroll
     void "should redirect noisy line '#line' to the logger at info level instead of the delegate stream"() {
@@ -107,7 +107,7 @@ class NoiseFilteringOutputStreamSpec extends Specification {
                 "Enhanced functionality available at https://www.arcmutate.com/",
             ]
         when:
-            reportLines.each { writeLine(it) }
+            reportLines.each { String line -> writeLine(line) }
         then:
             delegate.toString() == ([
                 "================================================================================",
@@ -147,8 +147,8 @@ class NoiseFilteringOutputStreamSpec extends Specification {
             List<String> mutatorsHeader = ["================================================================================", "- Mutators",
                                             "================================================================================"]
         when: "entering the Mutators section, then writing a boring block and one reporting a real error"
-            mutatorsHeader.each { writeLine(it) }
-            (boringBlock + blockWithRunError).each { writeLine(it) }
+            mutatorsHeader.each { String line -> writeLine(line) }
+            (boringBlock + blockWithRunError).each { String line -> writeLine(line) }
         then:
             delegate.toString() == blockWithRunError.join("\n") + "\n"
         and: "the header and the boring block were demoted to info in full - not checked via list membership, " +
@@ -169,7 +169,7 @@ class NoiseFilteringOutputStreamSpec extends Specification {
 
     private void writeLine(String line) {
         noiseFilteringOutputStream.write(line.bytes)
-        noiseFilteringOutputStream.write('\n' as char as int)
+        noiseFilteringOutputStream.write(('\n' as char) as int)
     }
 
 }
