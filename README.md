@@ -643,7 +643,9 @@ gradle-pitest plugin [1.5.0](https://github.com/szpak/gradle-pitest-plugin/relea
 
 ## Known issues
 
- - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1)
+ - too verbose output from PIT (also see `verbosity` option introduced with PIT 1.7.1; some of the most common
+   noise - thread count override, verbose-logging notice, minion JVM/agent warnings - is filtered out of the
+   default output regardless of `verbosity` since 1.20.0, but not everything can be filtered this way)
 
 ## Development
 

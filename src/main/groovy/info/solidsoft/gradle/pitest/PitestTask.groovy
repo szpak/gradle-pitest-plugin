@@ -21,6 +21,7 @@ import org.gradle.api.Incubating
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.logging.Logger
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
@@ -344,12 +345,72 @@ abstract class PitestTask extends JavaExec {
         return jvmPath.isPresent() ? jvmPath.asFile.get().absolutePath : null
     }
 
+    //Lines matching one of these markers are PIT/JVM startup chatter rather than the mutation report -
+    //demote them to INFO instead of always showing them regardless of the build's log level.
+    //See: https://github.com/szpak/gradle-pitest-plugin/issues/147
+    private static final List<String> NOISY_LINE_MARKERS = [
+        'Overriding configured number of threads',
+        'Verbose logging is disabled',
+        'MINION :',
+    ].asImmutable()
+
     @Override
     void exec() {
         args = argumentsForPit()
         jvmArgs = ((List<String>) getMainProcessJvmArgs().getOrNull() ?: getJvmArgs())
         classpath = getLaunchClasspath()
+        standardOutput = new NoiseFilteringOutputStream(standardOutput ?: System.out, logger)
+        errorOutput = new NoiseFilteringOutputStream(errorOutput ?: System.err, logger)
         super.exec()
+    }
+
+    //Filters known-noisy PIT/JVM startup lines out of the process output stream, redirecting them to
+    //the Gradle logger at INFO level, while passing everything else (in particular the mutation report)
+    //through untouched so it keeps showing up regardless of the build's log level, as before.
+    @PackageScope
+    static class NoiseFilteringOutputStream extends OutputStream {
+
+        private final OutputStream delegate
+        private final Logger logger
+        private final ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream()
+
+        NoiseFilteringOutputStream(OutputStream delegate, Logger logger) {
+            this.delegate = delegate
+            this.logger = logger
+        }
+
+        @Override
+        void write(int b) throws IOException {
+            if (b == (int) ((char) '\n')) {
+                flushLine()
+            } else {
+                lineBuffer.write(b)
+            }
+        }
+
+        @Override
+        void flush() throws IOException {
+            delegate.flush()
+        }
+
+        @Override
+        void close() throws IOException {
+            if (lineBuffer.size() > 0) {
+                flushLine()
+            }
+            delegate.flush()   //do not close - the delegate defaults to System.out/System.err
+        }
+
+        private void flushLine() throws IOException {
+            String line = lineBuffer.toString()
+            lineBuffer.reset()
+            if (NOISY_LINE_MARKERS.any { String marker -> line.contains(marker) }) {
+                logger.info(line)
+            } else {
+                delegate.write(line.getBytes())
+                delegate.write((int) ((char) '\n'))
+            }
+        }
     }
 
     private List<String> argumentsForPit() {
