@@ -58,6 +58,8 @@ class PitestPlugin implements Plugin<Project> {
                 //(8.4 instead of 8.0 to have first version supporting JDK 21 LTS)
     public static final GradleVersion MINIMAL_SUPPORTED_GRADLE_VERSION = GradleVersion.version("8.4") //public as used also in regression tests
 
+    private static final GradleVersion GRADLE_VERSION_WITH_BUILD_FEATURES_API = GradleVersion.version("8.5")
+
     private static final String PITEST_JUNIT5_PLUGIN_NAME = "junit5"
     private final static List<String> DYNAMIC_LIBRARY_EXTENSIONS = ['so', 'dll', 'dylib']
     private final static List<String> DEFAULT_FILE_EXTENSIONS_TO_FILTER_FROM_CLASSPATH = ['pom'] + DYNAMIC_LIBRARY_EXTENSIONS
@@ -127,11 +129,27 @@ class PitestPlugin implements Plugin<Project> {
     }
 
     private void failWithMeaningfulErrorMessageOnUnsupportedConfigurationInRootProjectBuildScript() {
+        if (isIsolatedProjectsActive()) {
+            return
+        }
         //TODO: findByName() is suboptimal, but "named(...).isPreset()" triggers too early initialization with "Configuration with name 'pitest' not found"
         if (project.rootProject.buildscript.configurations.findByName(PITEST_CONFIGURATION_NAME) != null) {
             throw new GradleException("The '${PITEST_CONFIGURATION_NAME}' buildscript configuration found in the root project. " +
                 "This is no longer supported in 1.5.0+ and has to be changed to the regular (sub)project configuration. " +
                 "See the project FAQ for migration details.")
+        }
+    }
+
+    @CompileDynamic
+    private boolean isIsolatedProjectsActive() {
+        if (GradleVersion.current() < GRADLE_VERSION_WITH_BUILD_FEATURES_API) {
+            return false
+        }
+        try {
+            def buildFeatures = project.services.get(Class.forName('org.gradle.api.configuration.BuildFeatures'))
+            return buildFeatures.isolatedProjects.active.get()
+        } catch (Exception ignored) {
+            return false
         }
     }
 
