@@ -3,6 +3,7 @@
 ## 1.20.0 - Unreleased
 
  - Fix Gradle 9 deprecation warnings - [PR](https://github.com/szpak/gradle-pitest-plugin/pull/398) by [Pavel Lavrukhin](https://github.com/dantte-lp)
+ - Fix `junit-platform-launcher` auto-detection resolving a mismatched version on projects relying on a `dependencyManagement`-style managed-versions extension (e.g. Spring's `io.spring.dependency-management` plugin) - the detached configuration used for detection is invisible to `project.configurations.all{}`, which is how such plugins normally apply their managed versions - regression from [#390](https://github.com/szpak/gradle-pitest-plugin/issues/390)/1.19.0
 
 ## 1.19.0 - 2026-03-29
 
