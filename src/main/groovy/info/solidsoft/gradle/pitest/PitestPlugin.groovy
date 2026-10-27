@@ -280,6 +280,7 @@ class PitestPlugin implements Plugin<Project> {
                 log.debug("Direct ${testImplementationConfigurationName} dependencies (${directDependencies.size()}): ${directDependencies}")
 
                 Configuration tmpTestImplementation = project.configurations.detachedConfiguration(directDependencies.toArray(Dependency[]::new))
+                applyManagedVersionsIfPresent(tmpTestImplementation)
 
                 ResolutionResult resolutionResult = tmpTestImplementation.incoming.resolutionResult
                 Set<ResolvedComponentResult> allResolvedComponents = resolutionResult.allComponents
@@ -303,6 +304,34 @@ class PitestPlugin implements Plugin<Project> {
                     testRuntimeOnly.dependencies.add(project.dependencies.create(junitPlatformLauncherDependencyAsString))
                 } as Action<Configuration>)
             }
+        }
+    }
+
+    //A detached configuration is invisible to project.configurations.all{}, which is the hook version-management
+    //plugins normally rely on to enforce their managed versions. Without this, junit-platform-launcher's version
+    //can be resolved against unmanaged transitive defaults instead of the project's actual (e.g. BOM-managed)
+    //JUnit version, causing a mismatch with what testRuntimeClasspath really uses at test execution time.
+    //Gradle-native platform()/BOM dependencies aren't affected by this - they are declared as regular dependencies
+    //and are already included in "directDependencies" above.
+    //Duck-typed rather than a compile-time dependency: looks for any extension named "dependencyManagement"
+    //exposing a "managedVersions" map, which is how Spring's io.spring.dependency-management plugin (currently
+    //the only known implementer of this convention) exposes its managed versions.
+    @CompileDynamic
+    private void applyManagedVersionsIfPresent(Configuration configuration) {
+        def dependencyManagementExtension = project.extensions.findByName("dependencyManagement")
+        if (dependencyManagementExtension == null) {
+            return
+        }
+
+        try {
+            Map<String, String> managedVersions = dependencyManagementExtension.managedVersions as Map<String, String>
+            managedVersions.each { String coordinates, String version ->
+                configuration.resolutionStrategy.force("${coordinates}:${version}")
+            }
+            log.debug("Applied ${managedVersions.size()} managed version(s) from the 'dependencyManagement' " +
+                "extension to the detached configuration used to detect the junit-platform-launcher version")
+        } catch (Exception e) {
+            log.debug("Could not read managed versions from the 'dependencyManagement' extension: ${e.name}: ${e.message}")
         }
     }
 
