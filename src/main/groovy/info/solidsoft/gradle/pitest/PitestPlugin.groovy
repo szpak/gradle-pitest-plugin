@@ -331,7 +331,7 @@ class PitestPlugin implements Plugin<Project> {
             log.debug("Applied ${managedVersions.size()} managed version(s) from the 'dependencyManagement' " +
                 "extension to the detached configuration used to detect the junit-platform-launcher version")
         } catch (Exception e) {
-            log.debug("Could not read managed versions from the 'dependencyManagement' extension: ${e.message}")
+            log.debug("Could not read managed versions from the 'dependencyManagement' extension: ${e.name}: ${e.message}")
         }
     }
 
