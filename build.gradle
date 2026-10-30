@@ -28,7 +28,7 @@ buildscript {
 }
 
 java {
-    sourceCompatibility = 1.8
+    sourceCompatibility = 17
 }
 
 ext.pitestAggregatorVersion = "1.22.1"   //Must be equal to default PIT version in PitestPlugin
@@ -51,16 +51,19 @@ dependencies {
     implementation localGroovy()
     compileOnly "org.pitest:pitest-aggregator:$pitestAggregatorVersion"
 
-    testImplementation('org.spockframework:spock-core:2.4-groovy-3.0') {
-        exclude group: 'org.codehaus.groovy'
+    testImplementation('org.spockframework:spock-core:2.4-groovy-4.0') {
+        exclude group: 'org.apache.groovy'
     }
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation 'net.bytebuddy:byte-buddy:1.18.4' //for Spying in Spock
 
     funcTestImplementation sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestImplementation sourceSets.test.output
-    funcTestImplementation('com.netflix.nebula:nebula-test:10.6.2') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    funcTestImplementation('com.netflix.nebula:nebula-test:11.13.0') {
+        exclude group: 'org.apache.groovy'
+    }
+    funcTestImplementation('org.spockframework:spock-junit4:2.4-groovy-4.0') {  //seems to be needed by Nebula 11
+        exclude group: 'org.apache.groovy'
     }
 }
 

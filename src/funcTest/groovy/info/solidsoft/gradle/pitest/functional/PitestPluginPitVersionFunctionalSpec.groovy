@@ -4,6 +4,7 @@ import groovy.transform.CompileDynamic
 import info.solidsoft.gradle.pitest.PitestPlugin
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.JavaVersion
+import org.gradle.util.GradleVersion
 
 @SuppressWarnings("GrMethodMayBeStatic")
 @CompileDynamic
@@ -43,6 +44,10 @@ class PitestPluginPitVersionFunctionalSpec extends AbstractPitestFunctionalSpec 
         List<String> pitVersions = [MINIMAL_SUPPORTED_PIT_VERSION, "1.17.1", "1.18.0", PitestPlugin.DEFAULT_PITEST_VERSION] //1.17.1 first version with JDK 24 support
         if (JavaVersion.current() > JavaVersion.VERSION_17) {   //TODO: Logic could be improved
             pitVersions.remove(MINIMAL_SUPPORTED_PIT_VERSION)
+        }
+        //PIT < 1.19.0 uses ASM 9.7 which doesn't support class file version 69 (JDK 25)
+        if (JavaVersion.current() >= JavaVersion.VERSION_25) {
+            pitVersions.removeAll { String v -> GradleVersion.version(v) < GradleVersion.version("1.19.0") }
         }
         return pitVersions
     }
